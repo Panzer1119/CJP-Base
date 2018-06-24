@@ -16,8 +16,14 @@
 
 package de.codemakers.base;
 
+import java.io.InputStream;
+import java.io.PrintStream;
+
 public class Standard {
-
+    
     public static final String NAME = Standard.class.getName();
-
+    public static final PrintStream SYSTEM_OUTPUT_STREAM = System.out;
+    public static final PrintStream SYSTEM_ERROR_STREAM = System.err;
+    public static final InputStream SYSTEM_INPUT_STREAM = System.in;
+    
 }
