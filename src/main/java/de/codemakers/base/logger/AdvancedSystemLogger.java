@@ -46,7 +46,7 @@ public class AdvancedSystemLogger extends AdvancedLogger {
                 log(object, (Instant) arguments[0]);
             }
         } else {
-            Standard.SYSTEM_OUTPUT_STREAM.println(object);
+            log(object);
         }
     }
     
@@ -79,6 +79,16 @@ public class AdvancedSystemLogger extends AdvancedLogger {
         if (throwable != null) {
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
         }
+    }
+    
+    /**
+     * Handles the internally generated Log Messages
+     *
+     * @param object Log Message
+     */
+    @Override
+    protected final void logFinal(Object object) {
+        Standard.SYSTEM_OUTPUT_STREAM.println(object);
     }
     
 }

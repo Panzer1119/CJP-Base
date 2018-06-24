@@ -25,20 +25,27 @@ public class AdvancedLoggerTest1 {
     
     public static final void main(String[] args) {
         final AdvancedLogger advancedLogger = new AdvancedLogger() {
+            
             @Override
-            public void log(Object object, Object... arguments) {
+            protected final void logFinal(Object object) {
+                Logger.DEFAULT_LOGGER.log(object);
+            }
+    
+            @Override
+            public final void log(Object object, Object... arguments) {
                 Logger.DEFAULT_LOGGER.log(object, arguments);
             }
     
             @Override
-            public void logErr(Object object, Throwable throwable, Object... arguments) {
+            public final void logErr(Object object, Throwable throwable, Object... arguments) {
                 Logger.DEFAULT_LOGGER.logErr(object, throwable, arguments);
             }
     
             @Override
-            public void handleError(Throwable throwable) {
+            public final void handleError(Throwable throwable) {
                 Logger.DEFAULT_LOGGER.handleError(throwable);
             }
+            
         };
         advancedLogger.log("Test 1.1", null, Thread.currentThread(), new Exception().getStackTrace()[0]);
         advancedLogger.log("Test 1.2", null, Thread.currentThread(), null);

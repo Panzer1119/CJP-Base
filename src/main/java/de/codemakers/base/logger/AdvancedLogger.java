@@ -25,7 +25,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public abstract class AdvancedLogger implements ILogger {
-
+    
     public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
     
     private ZoneId zoneId = ZoneId.systemDefault();
@@ -49,8 +49,10 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        log(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement)), EMPTY_BYTE_ARRAY);
+        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement)));
     }
+    
+    protected abstract void logFinal(Object object);
     
     public String formatThread(Thread thread) {
         if (thread == null) {
