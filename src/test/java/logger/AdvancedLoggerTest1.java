@@ -19,6 +19,8 @@ package logger;
 import de.codemakers.base.logger.AdvancedLogger;
 import de.codemakers.base.logger.Logger;
 
+import java.time.Instant;
+
 public class AdvancedLoggerTest1 {
     
     public static final void main(String[] args) {
@@ -38,9 +40,13 @@ public class AdvancedLoggerTest1 {
                 Logger.DEFAULT_LOGGER.handleError(throwable);
             }
         };
-        advancedLogger.log("Test", null, Thread.currentThread(), new Exception().getStackTrace()[0]);
-        advancedLogger.log("Test", null, null, new Exception().getStackTrace()[0]);
-        advancedLogger.log("Test", null, Thread.currentThread(), null);
+        advancedLogger.log("Test 1.1", null, Thread.currentThread(), new Exception().getStackTrace()[0]);
+        advancedLogger.log("Test 1.2", null, Thread.currentThread(), null);
+        advancedLogger.log("Test 1.3", null, null, new Exception().getStackTrace()[0]);
+        advancedLogger.log("Test 2.1", null, Thread.currentThread());
+        advancedLogger.log("Test 2.2", null, null);
+        advancedLogger.log("Test 3.1", Instant.now());
+        advancedLogger.log("Test 3.2");
     }
     
 }

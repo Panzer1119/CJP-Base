@@ -19,9 +19,14 @@ package de.codemakers.base.logger;
 public class Logger {
     
     public static final ILogger DEFAULT_LOGGER = createDefaultLogger();
+    public static final AdvancedLogger DEFAULT_ADVANCED_LOGGER = createDefaultAdvancedLogger();
     
     private static final ILogger createDefaultLogger() {
         return new SystemLogger();
+    }
+    
+    private static final AdvancedLogger createDefaultAdvancedLogger() {
+        return new AdvancedSystemLogger();
     }
     
 }

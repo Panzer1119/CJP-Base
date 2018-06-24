@@ -19,61 +19,64 @@ package de.codemakers.base;
 import de.codemakers.base.action.Action;
 import de.codemakers.base.action.RunningAction;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class CJP {
-
+    
     private static final CJP CJP = new CJP(Runtime.getRuntime().availableProcessors());
-
+    public static final Class<?>[] CJP_LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.SystemLogger.class};
+    public static final String[] CJP_LOGGER_CLASS_NAMES = Arrays.asList(CJP_LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
+    
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownInstance()));
     }
-
+    
     private ExecutorService fixedExecutorService;
     private ScheduledExecutorService scheduledExecutorService;
     private ExecutorService singleExecutorService;
-
+    
     public CJP(ExecutorService fixedExecutorService, ScheduledExecutorService scheduledExecutorService) {
         this.fixedExecutorService = fixedExecutorService;
         this.scheduledExecutorService = scheduledExecutorService;
         this.singleExecutorService = Executors.newSingleThreadExecutor();
     }
-
+    
     public CJP(int fixedThreadPoolSize) {
         this(Executors.newScheduledThreadPool(fixedThreadPoolSize), Executors.newSingleThreadScheduledExecutor());
     }
-
+    
     public static final void shutdownInstance() {
         CJP.stopExecutorServiceNow();
     }
-
+    
     public static final RunningAction shutdown() {
         return shutdown(0);
     }
-
+    
     public static final RunningAction shutdown(int status) {
         return Action.ofToughRunnable(() -> System.exit(status));
     }
-
+    
     public static final CJP getInstance() {
         return CJP;
     }
-
+    
     public final ExecutorService getFixedExecutorService() {
         return fixedExecutorService;
     }
-
+    
     public final ScheduledExecutorService getScheduledExecutorService() {
         return scheduledExecutorService;
     }
-
+    
     public final ExecutorService getSingleExecutorService() {
         return singleExecutorService;
     }
-
+    
     public final CJP stopExecutorServiceNow() {
         if (fixedExecutorService != null) {
             fixedExecutorService.shutdownNow();
@@ -89,7 +92,7 @@ public class CJP {
         }
         return this;
     }
-
+    
     public final CJP stopExecutors(long timeout, TimeUnit unit) {
         if (fixedExecutorService == null && scheduledExecutorService == null && singleExecutorService == null) {
             return this;
@@ -101,7 +104,7 @@ public class CJP {
         shutdownExecutor(timeout, unit, singleExecutorService);
         return stopExecutorServiceNow();
     }
-
+    
     private final long shutdownExecutor(long timeout, TimeUnit unit, ExecutorService executorService) {
         final long timestamp = System.currentTimeMillis();
         if (executorService != null) {
@@ -114,5 +117,5 @@ public class CJP {
         }
         return Math.max(0, timeout - (System.currentTimeMillis() - timestamp));
     }
-
+    
 }
