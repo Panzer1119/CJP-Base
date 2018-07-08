@@ -16,9 +16,18 @@
 
 package de.codemakers.base.logger;
 
+/**
+ * Logger Class for default Instances
+ */
 public class Logger {
     
+    /**
+     * Default {@link de.codemakers.base.logger.ILogger} Instance
+     */
     public static final ILogger DEFAULT_LOGGER = createDefaultLogger();
+    /**
+     * Default {@link de.codemakers.base.logger.AdvancedLogger} Instance
+     */
     public static final AdvancedLogger DEFAULT_ADVANCED_LOGGER = createDefaultAdvancedLogger();
     
     private static final ILogger createDefaultLogger() {
