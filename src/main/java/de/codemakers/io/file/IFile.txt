@@ -1,0 +1,33 @@
+String:getName
+IFile:getParent
+String:getPath
+FileType:getType
+IFile:getAbsoluteFile
+URL:toURL
+URI:toURI
+boolean:canRead
+boolean:canWrite
+boolean:exists
+boolean:isDirectory
+boolean:isFile
+boolean:isHidden
+boolean:isCustom
+long:created
+long:lastModified
+long:length
+boolean:delete
+boolean:deleteOnExit
+boolean:renameTo:String name
+boolean:setLastModified:long time
+boolean:setReadOnly
+boolean:setWritable:boolean writable, boolean ownerOnly
+boolean:setWritable:boolean writable
+boolean:setReadable:boolean readable, boolean ownerOnly
+boolean:setReadable:boolean readable
+boolean:setExecutable:boolean executable, boolean ownerOnly
+boolean:setExecutable:boolean executable
+boolean:canExecute
+boolean:copy:IFile destination
+boolean:copyToDir:IFile destination
+boolean:move:IFile destination
+boolean:moveToDir:IFile destination
