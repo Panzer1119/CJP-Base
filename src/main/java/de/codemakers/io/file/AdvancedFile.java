@@ -16,12 +16,15 @@
 
 package de.codemakers.io.file;
 
+import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,6 +54,10 @@ public class AdvancedFile implements FileOperations, DirectoryOperations {
         System.arraycopy(paths, 0, this.paths, 0, paths.length);
         this.paths[paths.length] = name;
         checkFile();
+    }
+    
+    public AdvancedFile(File file) {
+        this(file.getPath());
     }
     
     private void checkFile() {
@@ -141,7 +148,7 @@ public class AdvancedFile implements FileOperations, DirectoryOperations {
             }
             return files;
         } else {
-            throw new UnsupportedOperationException("");
+            throw new UnsupportedOperationException();
             //return null; //TODO Implement the resource walker thing
         }
     }
@@ -154,12 +161,25 @@ public class AdvancedFile implements FileOperations, DirectoryOperations {
     
     @Override
     public boolean createNewFile() {
-        return false;
+        checkForFile();
+        try {
+            return toFile().createNewFile();
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return false;
+        }
     }
     
     @Override
     public byte[] toBytes() {
-        return new byte[0];
+        checkForExistance();
+        checkForFile();
+        try {
+            return Files.readAllBytes(toFile().toPath());
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
     }
     
     @Override
@@ -169,17 +189,22 @@ public class AdvancedFile implements FileOperations, DirectoryOperations {
     
     @Override
     public String getName() {
-        return null;
+        return paths[paths.length - 1];
     }
     
     @Override
     public IFile getParent() {
-        return null;
+        if (type.isExtern()) {
+            return new AdvancedFile(toFile().getParentFile());
+        } else {
+            throw new UnsupportedOperationException();
+            //return null; //TODO Implement the resource walker thing
+        }
     }
     
     @Override
     public String getPath() {
-        return null;
+        return toPath();
     }
     
     @Override
@@ -189,132 +214,232 @@ public class AdvancedFile implements FileOperations, DirectoryOperations {
     
     @Override
     public IFile getAbsoluteFile() {
-        return null;
+        if (type.isExtern()) {
+            return new AdvancedFile(toFile().getAbsoluteFile());
+        } else {
+            final String[] paths_copy = Arrays.copyOf(paths, paths.length);
+            paths_copy[0] = UNIX_PATH_SEPARATOR + paths_copy[0];
+            return new AdvancedFile(paths_copy);
+        }
     }
     
     @Override
     public URL toURL() {
-        return null;
+        try {
+            if (type.isExtern()) {
+                return toFile().toURL();
+            } else {
+                return new URL(toPath());
+            }
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
     }
     
     @Override
     public URI toURI() {
-        return null;
+        try {
+            if (type.isExtern()) {
+                return toFile().toURI();
+            } else {
+                return new URI(toPath());
+            }
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
     }
     
     @Override
     public boolean canRead() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().canRead();
+        } else {
+            return exists();
+        }
     }
     
     @Override
     public boolean canWrite() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().canWrite();
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean exists() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().exists();
+        } else {
+            throw new UnsupportedOperationException();
+            //return null; //TODO Implement the resource walker thing
+        }
     }
     
     @Override
     public boolean isDirectory() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().isDirectory();
+        } else {
+            throw new UnsupportedOperationException();
+            //return null; //TODO Implement the resource walker thing
+        }
     }
     
     @Override
     public boolean isFile() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().isFile();
+        } else {
+            throw new UnsupportedOperationException();
+            //return null; //TODO Implement the resource walker thing
+        }
     }
     
     @Override
     public boolean isHidden() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().isHidden();
+        } else {
+            throw new UnsupportedOperationException();
+            //return null; //TODO Implement the resource walker thing
+        }
     }
     
     @Override
     public boolean isCustom() {
-        return false;
+        return type.isCustom();
     }
     
     @Override
     public long created() {
-        return 0;
+        return lastModified(); //TODO Is this even possible???
     }
     
     @Override
     public long lastModified() {
-        return 0;
+        if (type.isExtern()) {
+            return toFile().lastModified();
+        } else {
+            throw new UnsupportedOperationException();
+            //return null; //TODO Implement the resource walker thing
+        }
     }
     
     @Override
     public long length() {
-        return 0;
+        if (type.isExtern()) {
+            return toFile().length();
+        } else {
+            throw new UnsupportedOperationException();
+            //return null; //TODO Implement the resource walker thing
+        }
     }
     
     @Override
     public boolean delete() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().delete();
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean deleteOnExit() {
-        return false;
+        if (type.isExtern()) {
+            toFile().deleteOnExit();
+            return true;
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean renameTo(String name) {
-        return false;
+        if (type.isExtern()) {
+            return toFile().renameTo(new File(toPath() + OSUtil.CURRENT_OS_HELPER.getFileSeparator() + name));
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean setLastModified(long time) {
-        return false;
+        if (type.isExtern()) {
+            return toFile().setLastModified(time);
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean setReadOnly() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().setReadOnly();
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean setWritable(boolean writable, boolean ownerOnly) {
-        return false;
+        if (type.isExtern()) {
+            return toFile().setWritable(writable, ownerOnly);
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean setReadable(boolean readable, boolean ownerOnly) {
-        return false;
+        if (type.isExtern()) {
+            return toFile().setReadable(readable, ownerOnly);
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean setExecutable(boolean executable, boolean ownerOnly) {
-        return false;
+        if (type.isExtern()) {
+            return toFile().setExecutable(executable, ownerOnly);
+        } else {
+            return false;
+        }
     }
     
     @Override
     public boolean canExecute() {
-        return false;
+        if (type.isExtern()) {
+            return toFile().canExecute();
+        } else {
+            throw new UnsupportedOperationException();
+            //return null; //TODO Implement the resource walker thing
+        }
     }
     
     @Override
     public boolean copy(IFile destination) {
-        return false;
+        return false; //TODO Implement this
     }
     
     @Override
     public boolean copyToDir(IFile destination) {
-        return false;
+        return false; //TODO Implement this
     }
     
     @Override
     public boolean move(IFile destination) {
-        return false;
+        return false; //TODO Implement this
     }
     
     @Override
     public boolean moveToDir(IFile destination) {
-        return false;
+        return false; //TODO Implement this
     }
     
     @Override
