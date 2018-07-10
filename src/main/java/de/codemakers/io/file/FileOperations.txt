@@ -1,0 +1,3 @@
+boolean:createNewFile
+byte[]:toBytes
+<T> T:openAs:Class<T extends IFile> type
