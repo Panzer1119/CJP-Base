@@ -25,4 +25,10 @@ public class OSUtil {
     public static final String JAVA_VERSION = System.getProperty("java.version");
     public static final OS OS = de.codemakers.base.os.OS.getOS(OS_NAME);
     
+    public static final WindowsHelper WINDOWS_HELPER = new WindowsHelper();
+    public static final LinuxHelper LINUX_HELPER = new LinuxHelper();
+    public static final MacOSHelper MAC_OS_HELPER = new MacOSHelper();
+    public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
+    public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
+    
 }
