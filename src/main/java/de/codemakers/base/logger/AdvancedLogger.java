@@ -46,10 +46,10 @@ public abstract class AdvancedLogger implements ILogger {
      */
     public static final String DEFAULT_STACK_TRACE_ELEMENT_FORMAT = "%1$s.%2$s(%3$s:%4$s)";
     
-    private ZoneId zoneId = ZoneId.systemDefault();
-    private DateTimeFormatter dateTimeFormatter = DEFAULT_DATE_TIME_FORMATTER;
-    private String logFormat = DEFAULT_LOG_FORMAT;
-    private String stackTraceElementFormat = DEFAULT_STACK_TRACE_ELEMENT_FORMAT;
+    protected ZoneId zoneId = ZoneId.systemDefault();
+    protected DateTimeFormatter dateTimeFormatter = DEFAULT_DATE_TIME_FORMATTER;
+    protected String logFormat = DEFAULT_LOG_FORMAT;
+    protected String stackTraceElementFormat = DEFAULT_STACK_TRACE_ELEMENT_FORMAT;
     
     /**
      * Logs an {@link java.lang.Object} with an default {@link java.time.Instant} derived from {@link Instant#now()}, {@link java.lang.Thread} derived from {@link Thread#currentThread()} and {@link java.lang.StackTraceElement} derived from {@link Exception#getStackTrace()}

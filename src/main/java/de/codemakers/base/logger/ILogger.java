@@ -23,6 +23,7 @@ public interface ILogger {
     
     /**
      * Logs an {@link java.lang.Object}
+     *
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
      * @param arguments Arguments
      */
@@ -30,6 +31,7 @@ public interface ILogger {
     
     /**
      * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable}
+     *
      * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      * @param arguments Arguments
@@ -38,6 +40,7 @@ public interface ILogger {
     
     /**
      * Handles an Error
+     *
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      */
     void handleError(Throwable throwable);

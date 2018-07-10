@@ -30,12 +30,50 @@ public class Logger {
      */
     public static final AdvancedLogger DEFAULT_ADVANCED_LOGGER = createDefaultAdvancedLogger();
     
+    public static ILogger LOGGER = DEFAULT_ADVANCED_LOGGER;
+    
     private static final ILogger createDefaultLogger() {
         return new SystemLogger();
     }
     
     private static final AdvancedLogger createDefaultAdvancedLogger() {
         return new AdvancedSystemLogger();
+    }
+    
+    /**
+     * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.logger.Logger#LOGGER}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     * @param arguments Arguments
+     */
+    public static final void log(Object object, Object... arguments) {
+        if (LOGGER != null) {
+            LOGGER.log(object, arguments);
+        }
+    }
+    
+    /**
+     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} using the {@link de.codemakers.base.logger.Logger#LOGGER}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
+     * @param throwable Error (e.g. an {@link java.lang.Exception})
+     * @param arguments Arguments
+     */
+    public static final void logErr(Object object, Throwable throwable, Object... arguments) {
+        if (LOGGER != null) {
+            LOGGER.logErr(object, throwable, arguments);
+        }
+    }
+    
+    /**
+     * Handles an Error using the {@link de.codemakers.base.logger.Logger#LOGGER}
+     *
+     * @param throwable Error (e.g. an {@link java.lang.Exception})
+     */
+    public static final void handleError(Throwable throwable) {
+        if (LOGGER != null) {
+            LOGGER.handleError(throwable);
+        }
     }
     
 }
