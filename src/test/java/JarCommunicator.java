@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-import de.codemakers.base.io.SerializationUtil;
+import de.codemakers.io.SerializationUtil;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

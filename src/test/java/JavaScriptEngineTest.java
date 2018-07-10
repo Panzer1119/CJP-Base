@@ -15,9 +15,9 @@
  */
 
 import de.codemakers.base.CJP;
-import de.codemakers.base.io.SerializationUtil;
 import de.codemakers.base.scripting.JavaScriptEngine;
 import de.codemakers.base.scripting.JavaScriptEngineBuilder;
+import de.codemakers.io.SerializationUtil;
 
 import javax.script.ScriptException;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +26,7 @@ public class JavaScriptEngineTest {
     
     public static final void main(String[] args) throws ScriptException, InterruptedException {
         final JavaScriptEngineBuilder javaScriptEngineBuilder = new JavaScriptEngineBuilder();
-        //javaScriptEngineBuilder.addImports("Packages.de.codemakers.base.io.SerializationUtil");
+        //javaScriptEngineBuilder.addImports("Packages.de.codemakers.io.SerializationUtil");
         javaScriptEngineBuilder.addImports(SerializationUtil.class);
         final JavaScriptEngine javaScriptEngine = javaScriptEngineBuilder.build();
         //final String code = "System.currentTimeMillis();";
