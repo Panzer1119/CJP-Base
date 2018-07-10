@@ -16,13 +16,16 @@
 
 package de.codemakers.io.file;
 
+import java.util.List;
+
 public interface DirectoryOperations extends IFile {
     
     boolean mkdir();
     
     boolean mkdirs();
     
-    IFile listFiles();
+    List<IFile> listFiles();
     
+    IFile[] listFilesAsArray();
     
 }

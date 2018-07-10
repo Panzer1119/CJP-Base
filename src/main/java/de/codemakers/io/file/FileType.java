@@ -17,8 +17,10 @@
 package de.codemakers.io.file;
 
 public enum FileType {
+    FILE (true, true),
     FILE_ABSOLUTE(true, true),
     FILE_RELATIVE(false, true),
+    FILE_INTERN (true, false),
     FILE_INTERN_ABSOLUTE(true, false),
     FILE_INTERN_RELATIVE(false, false),
     CUSTOM(true, true),

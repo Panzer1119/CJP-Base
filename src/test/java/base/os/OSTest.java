@@ -18,11 +18,23 @@ package base.os;
 
 import de.codemakers.base.os.OSUtil;
 
+import java.io.File;
+
 public class OSTest {
     
     public static final void main(String[] args) {
         System.out.println(OSUtil.OS_NAME);
         System.out.println(OSUtil.OS);
+        final File file_absolute = new File("absolute").getAbsoluteFile();
+        final File file_relative = new File("relative");
+        System.out.println(file_absolute);
+        System.out.println(file_relative);
+        System.out.println(file_absolute.isAbsolute());
+        System.out.println(file_relative.isAbsolute());
+        System.out.println(OSUtil.CURRENT_OS_HELPER.isPathAbsolute(file_absolute.getPath()));
+        System.out.println(OSUtil.CURRENT_OS_HELPER.isPathAbsolute(file_relative.getPath()));
+        System.out.println(OSUtil.WINDOWS_HELPER.isPathAbsolute(file_absolute.getPath()));
+        System.out.println(OSUtil.WINDOWS_HELPER.isPathAbsolute(file_relative.getPath()));
     }
     
 }

@@ -16,47 +16,140 @@
 
 package de.codemakers.io.file;
 
+import de.codemakers.base.os.OSUtil;
+
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class AdvancedFile implements FileOperations, DirectoryOperations {
     
     public static final String INTERN_PREFIX = "jar:";
+    public static final String UNIX_PATH_SEPARATOR = "/";
     
-    private final String[] path;
+    private final String[] paths;
+    private String path = null;
+    private File file = null;
     private FileType type = FileType.UNKNOWN;
     
-    public AdvancedFile(String... path) {
-        Objects.requireNonNull(path);
-        if (path.length == 0) {
-            path = new String[] {""};
+    public AdvancedFile(String... paths) {
+        Objects.requireNonNull(paths);
+        if (paths.length == 0) {
+            paths = new String[] {""};
         }
-        this.path = path;
+        this.paths = paths;
+        checkFile();
+    }
+    
+    public AdvancedFile(String[] paths, String name) {
+        Objects.requireNonNull(paths);
+        Objects.requireNonNull(name);
+        this.paths = new String[paths.length + 1];
+        System.arraycopy(paths, 0, this.paths, 0, paths.length);
+        this.paths[paths.length] = name;
         checkFile();
     }
     
     private void checkFile() {
-        if (path[0].startsWith(INTERN_PREFIX)) {
-            path[0] = path[0].substring(INTERN_PREFIX.length());
+        if (paths[0].startsWith(INTERN_PREFIX)) {
+            type = FileType.FILE_INTERN;
+            paths[0] = paths[0].substring(INTERN_PREFIX.length());
+            if (paths[0].startsWith(UNIX_PATH_SEPARATOR)) {
+                type = FileType.FILE_INTERN_ABSOLUTE;
+            } else {
+                type = FileType.FILE_INTERN_RELATIVE;
+            }
         } else {
-            type = FileType.FILE_ABSOLUTE;
+            type = FileType.FILE;
+            if (toFile().isAbsolute()) {
+                type = FileType.FILE_ABSOLUTE;
+            } else {
+                type = FileType.FILE_RELATIVE;
+            }
+        }
+    }
+    
+    public String toPath() {
+        if (path == null) {
+            final String separator = type.isExtern() ? OSUtil.CURRENT_OS_HELPER.getFileSeparator() : UNIX_PATH_SEPARATOR;
+            path = "";
+            for (String g : paths) {
+                path += g + separator;
+            }
+            if (!path.isEmpty()) {
+                path = path.substring(0, path.length() - separator.length());
+            }
+        }
+        return path;
+    }
+    
+    public File toFile() {
+        if (file == null) {
+            file = new File(toPath());
+        }
+        return file;
+    }
+    
+    private void checkForExtern() {
+        if (!type.isExtern()) {
+            throw new RuntimeException(toString() + " is not an external file");
+        }
+    }
+    
+    private void checkForFile() {
+        if (!isFile()) {
+            throw new RuntimeException(toString() + " is not a file");
+        }
+    }
+    
+    private void checkForDirectory() {
+        if (!isFile()) {
+            throw new RuntimeException(toString() + " is not a directory");
+        }
+    }
+    
+    private void checkForExistance() {
+        if (!isFile()) {
+            throw new RuntimeException(toString() + " does not exist");
         }
     }
     
     @Override
     public boolean mkdir() {
-        return false;
+        checkForExtern();
+        checkForDirectory();
+        return toFile().mkdir();
     }
     
     @Override
     public boolean mkdirs() {
-        return false;
+        checkForExtern();
+        checkForDirectory();
+        return toFile().mkdirs();
     }
     
     @Override
-    public IFile listFiles() {
-        return null;
+    public List<IFile> listFiles() {
+        checkForDirectory();
+        if (type.isExtern()) {
+            final List<IFile> files = new ArrayList<>();
+            for (String f : toFile().list()) {
+                files.add(new AdvancedFile(paths, f));
+            }
+            return files;
+        } else {
+            throw new UnsupportedOperationException("");
+            //return null; //TODO Implement the resource walker thing
+        }
+    }
+    
+    @Override
+    public IFile[] listFilesAsArray() {
+        checkForDirectory();
+        return (IFile[]) listFiles().toArray();
     }
     
     @Override
@@ -91,7 +184,7 @@ public class AdvancedFile implements FileOperations, DirectoryOperations {
     
     @Override
     public FileType getType() {
-        return null;
+        return type;
     }
     
     @Override
@@ -222,6 +315,11 @@ public class AdvancedFile implements FileOperations, DirectoryOperations {
     @Override
     public boolean moveToDir(IFile destination) {
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return "AdvancedFile{" + "path='" + toPath() + '\'' + ", file=" + toFile() + ", file(absolute)=" + toFile().getAbsoluteFile() + ", type=" + getType() + '}';
     }
     
 }
