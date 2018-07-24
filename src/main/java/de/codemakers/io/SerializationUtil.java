@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package de.codemakers.base.io;
+package de.codemakers.io;
 
 import java.io.*;
 

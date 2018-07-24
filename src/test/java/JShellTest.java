@@ -15,9 +15,9 @@
  */
 
 import de.codemakers.base.CJP;
-import de.codemakers.base.io.SerializationUtil;
 import de.codemakers.base.scripting.JavaScriptEngine;
 import de.codemakers.base.scripting.JavaScriptEngineBuilder;
+import de.codemakers.io.SerializationUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

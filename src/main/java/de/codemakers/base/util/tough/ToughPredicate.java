@@ -21,10 +21,6 @@ public interface ToughPredicate<T> extends Tough<T, Boolean> {
 
     Boolean test(T t) throws Exception;
 
-    default ToughPredicate<T> negate() {
-        return (t) -> !test(t);
-    }
-
     default Boolean test(T t, ToughConsumer<Throwable> failure) {
         return test(t, false, failure);
     }
@@ -40,6 +36,10 @@ public interface ToughPredicate<T> extends Tough<T, Boolean> {
             }
             return onError;
         }
+    }
+    
+    default ToughPredicate<T> negate() {
+        return (t) -> !test(t);
     }
 
     default Boolean testWithoutException(T t) {

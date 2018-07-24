@@ -21,10 +21,6 @@ public interface ToughBiPredicate<T, U> extends Tough<T, Boolean> {
 
     Boolean test(T t, U u) throws Exception;
 
-    default ToughBiPredicate<T, U> negate() {
-        return (t, u) -> !test(t, u);
-    }
-
     default Boolean test(T t, U u, ToughConsumer<Throwable> failure) {
         return test(t, u, false, failure);
     }
@@ -40,6 +36,10 @@ public interface ToughBiPredicate<T, U> extends Tough<T, Boolean> {
             }
             return onError;
         }
+    }
+    
+    default ToughBiPredicate<T, U> negate() {
+        return (t, u) -> !test(t, u);
     }
 
     default Boolean testWithoutException(T t, U u) {

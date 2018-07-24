@@ -16,27 +16,34 @@
 
 package de.codemakers.base.events;
 
+import java.util.Objects;
+
 public class Event {
-
-    protected final long id;
-
+    
+    private final long id;
+    
     public Event() {
         this(System.nanoTime());
     }
-
+    
     public Event(long id) {
         this.id = id;
     }
-
+    
     public final long getID() {
         return id;
     }
-
+    
     @Override
     public String toString() {
         return getClass().getSimpleName() + ": id=" + id;
     }
-
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+    
     @Override
     public boolean equals(Object object) {
         if (object == null) {
@@ -47,5 +54,5 @@ public class Event {
         }
         return false;
     }
-
+    
 }
