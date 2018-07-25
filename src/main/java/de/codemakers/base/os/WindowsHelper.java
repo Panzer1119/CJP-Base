@@ -16,11 +16,32 @@
 
 package de.codemakers.base.os;
 
+import de.codemakers.base.os.function.BatteryInfo;
+import de.codemakers.base.os.function.OSFunction;
+import de.codemakers.base.os.function.SystemInfo;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 public class WindowsHelper implements OSHelper {
     
     public static final Pattern DRIVER_PATTERN = Pattern.compile("([A-Z]):\\\\(.*)");
+    
+    private static final AtomicLong LAST_ID = new AtomicLong(-1);
+    private static final Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
+    
+    static {
+        OS_FUNCTIONS.put(LAST_ID.incrementAndGet(), new SystemInfo() {
+            @Override
+            public BatteryInfo getBatteryInfo() {
+                return null;
+            }
+        });
+    }
     
     @Override
     public boolean isPathAbsolute(String path) {
@@ -43,6 +64,29 @@ public class WindowsHelper implements OSHelper {
     @Override
     public String getLineSeparator() {
         return "\r\n";
+    }
+    
+    @Override
+    public List<OSFunction> getOSFunctions() {
+        return (List<OSFunction>) OS_FUNCTIONS.values();
+    }
+    
+    @Override
+    public <T extends OSFunction> T getOSFunction(long id) {
+        return (T) OS_FUNCTIONS.get(id);
+    }
+    
+    @Override
+    public long addOSFunction(OSFunction osFunction) {
+        Objects.requireNonNull(osFunction);
+        final long id = LAST_ID.incrementAndGet();
+        OS_FUNCTIONS.put(id, osFunction);
+        return id;
+    }
+    
+    @Override
+    public boolean removeOSFunction(long id) {
+        return OS_FUNCTIONS.remove(id) != null;
     }
     
     @Override

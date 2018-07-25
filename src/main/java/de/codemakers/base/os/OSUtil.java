@@ -16,6 +16,8 @@
 
 package de.codemakers.base.os;
 
+import de.codemakers.base.os.function.OSFunction;
+
 public class OSUtil {
     
     public static final String[] STANDARD_OS_NAMES = new String[] {"Windows", "Linux", "Mac OS", "SunOS", "FreeBSD"};
@@ -30,5 +32,22 @@ public class OSUtil {
     public static final MacOSHelper MAC_OS_HELPER = new MacOSHelper();
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
+    
+    public static final <T extends OSFunction> T getFunction(Class<T> clazz) {
+        switch (OS) {
+            case WINDOWS:
+                return WINDOWS_HELPER.getOSFunction(clazz);
+            case MACOS:
+                return MAC_OS_HELPER.getOSFunction(clazz);
+            case LINUX:
+                return LINUX_HELPER.getOSFunction(clazz);
+            case FREEBSD:
+            case SUNOS:
+            case UNKNOWN:
+                return DEFAULT_HELPER.getOSFunction(clazz);
+            default:
+                return null;
+        }
+    }
     
 }
