@@ -52,7 +52,7 @@ public class MacOSHelper implements OSHelper {
                     final Matcher matcher = PATTERN.matcher(bufferedReader.lines().collect(Collectors.joining()));
                     if (matcher.matches()) {
                         bufferedReader.close();
-                        return new BatteryInfo(matcher.group(3), matcher.group(2), Double.parseDouble(matcher.group(4)), BatteryState.of(matcher.group(5)), (long) (Double.parseDouble(matcher.group(6).replace(':', '.')) * 60.0), TimeUnit.MINUTES);
+                        return new BatteryInfo(matcher.group(3), matcher.group(2), Double.parseDouble(matcher.group(4)) / 100.0, BatteryState.of(matcher.group(5)), (long) (Double.parseDouble(matcher.group(6).replace(':', '.')) * 60.0), TimeUnit.MINUTES);
                     }
                     bufferedReader.close();
                     return null;
