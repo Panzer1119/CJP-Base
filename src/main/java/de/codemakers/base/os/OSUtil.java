@@ -20,10 +20,11 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.*;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class OSUtil {
@@ -41,9 +42,6 @@ public class OSUtil {
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
     
-    public static final String PATTERN_BATTERY_INFO_MAC_OS_STRING = "Now drawing from '(.+)' (.+) \\(id=(\\d+)\\)\t(\\d{1,3})%; (.+); (\\d+:\\d{1,2})(?: remaining present: (\\w+))?";
-    public static final Pattern PATTERN_BATTERY_INFO_MAC_OS = Pattern.compile(PATTERN_BATTERY_INFO_MAC_OS_STRING);
-    
     public static final long OSFUNCTION_ID_SYSTEM_INFO_WINDOWS;
     public static final long OSFUNCTION_ID_SYSTEM_INFO_LINUX;
     public static final long OSFUNCTION_ID_SYSTEM_INFO_MAC_OS;
@@ -59,6 +57,23 @@ public class OSUtil {
         OSFUNCTION_ID_SYSTEM_INFO_LINUX = LINUX_HELPER.addOSFunction(new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
+                try {
+                    for (File file : LinuxHelper.FOLDER_AC.listFiles(new FileFilter() {
+                        @Override
+                        public boolean accept(File pathname) {
+                            for (File f : pathname.listFiles()) {
+                                if (f.getName().equalsIgnoreCase("uevent")) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    })) {
+                        System.out.println("Found valid Power Supply: " + file.getName());
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 return null;
             }
         });
@@ -67,7 +82,7 @@ public class OSUtil {
             public PowerInfo getBatteryInfo() {
                 try {
                     final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("pmset -g ps").getInputStream()));
-                    final Matcher matcher = PATTERN_BATTERY_INFO_MAC_OS.matcher(bufferedReader.lines().collect(Collectors.joining()));
+                    final Matcher matcher = MacOSHelper.PATTERN_BATTERY_INFO_MAC_OS.matcher(bufferedReader.lines().collect(Collectors.joining()));
                     if (matcher.matches()) {
                         bufferedReader.close();
                         return new PowerInfo(matcher.group(3), matcher.group(2), Double.parseDouble(matcher.group(4)) / 100.0, BatteryState.of(matcher.group(5)), -1, null, (long) (Double.parseDouble(matcher.group(6).replace(':', '.')) * 60.0), TimeUnit.MINUTES, PowerSupply.of(matcher.group(1)));

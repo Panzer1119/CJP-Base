@@ -18,6 +18,7 @@ package de.codemakers.base.os;
 
 import de.codemakers.base.os.functions.OSFunction;
 
+import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,6 +27,9 @@ public class LinuxHelper implements OSHelper {
     
     AtomicLong LAST_ID = new AtomicLong(-1);
     Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
+    
+    public static final String FOLDER_AC_STRING = "/sys/class/power_supply";
+    public static final File FOLDER_AC = new File(FOLDER_AC_STRING);
     
     @Override
     public boolean isPathAbsolute(String path) {
