@@ -30,6 +30,24 @@ public class LinuxHelper implements OSHelper {
     
     public static final String FOLDER_AC_STRING = "/sys/class/power_supply";
     public static final File FOLDER_AC = new File(FOLDER_AC_STRING);
+    public static final String FILE_UEVENT_NAME = "uevent";
+    
+    public static final String POWER_SUPPLY_NAME = "POWER_SUPPLY_NAME";
+    public static final String POWER_SUPPLY_STATUS = "POWER_SUPPLY_STATUS";
+    public static final String POWER_SUPPLY_PRESENT = "POWER_SUPPLY_PRESENT";
+    public static final String POWER_SUPPLY_TECHNOLOGY = "POWER_SUPPLY_TECHNOLOGY";
+    public static final String POWER_SUPPLY_CYCLE_COUNT = "POWER_SUPPLY_CYCLE_COUNT";
+    public static final String POWER_SUPPLY_VOLTAGE_MIN_DESIGN = "POWER_SUPPLY_VOLTAGE_MIN_DESIGN";
+    public static final String POWER_SUPPLY_VOLTAGE_NOW = "POWER_SUPPLY_VOLTAGE_NOW";
+    public static final String POWER_SUPPLY_POWER_NOW = "POWER_SUPPLY_POWER_NOW";
+    public static final String POWER_SUPPLY_ENERGY_FULL_DESIGN = "POWER_SUPPLY_ENERGY_FULL_DESIGN";
+    public static final String POWER_SUPPLY_ENERGY_FULL = "POWER_SUPPLY_ENERGY_FULL";
+    public static final String POWER_SUPPLY_ENERGY_NOW = "POWER_SUPPLY_ENERGY_NOW";
+    public static final String POWER_SUPPLY_CAPACITY = "POWER_SUPPLY_CAPACITY";
+    public static final String POWER_SUPPLY_CAPACITY_LEVEL = "POWER_SUPPLY_CAPACITY_LEVEL";
+    public static final String POWER_SUPPLY_MODEL_NAME = "POWER_SUPPLY_MODEL_NAME";
+    public static final String POWER_SUPPLY_MANUFACTURER = "POWER_SUPPLY_MANUFACTURER";
+    public static final String POWER_SUPPLY_SERIAL_NUMBER = "POWER_SUPPLY_SERIAL_NUMBER";
     
     @Override
     public boolean isPathAbsolute(String path) {

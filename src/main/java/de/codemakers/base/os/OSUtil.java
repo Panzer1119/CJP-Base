@@ -21,8 +21,9 @@ import de.codemakers.base.os.functions.*;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
+import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -58,18 +59,33 @@ public class OSUtil {
             @Override
             public PowerInfo getBatteryInfo() {
                 try {
-                    for (File file : LinuxHelper.FOLDER_AC.listFiles(new FileFilter() {
-                        @Override
-                        public boolean accept(File pathname) {
-                            for (File f : pathname.listFiles()) {
-                                if (f.getName().equalsIgnoreCase("uevent")) {
-                                    return true;
-                                }
-                            }
+                    for (File file : LinuxHelper.FOLDER_AC.listFiles(pathname -> {
+                        if (!pathname.isDirectory()) {
                             return false;
                         }
+                        for (File f : pathname.listFiles()) {
+                            if (f.getName().equalsIgnoreCase(LinuxHelper.FILE_UEVENT_NAME)) {
+                                return true;
+                            }
+                        }
+                        return false;
                     })) {
-                        System.out.println("Found valid Power Supply: " + file.getName());
+                        final File file_uevent = new File(file.getAbsolutePath() + File.separator + LinuxHelper.FILE_UEVENT_NAME);
+                        if (file_uevent.exists()) {
+                            final PowerSupply powerSupply = PowerSupply.of(file.getName());
+                            if (powerSupply != PowerSupply.BATTERY) {
+                                continue;
+                            }
+                            final Properties properties = new Properties();
+                            properties.load(new FileReader(file_uevent));
+                            return new PowerInfo(properties.getProperty(LinuxHelper.POWER_SUPPLY_SERIAL_NUMBER),
+                                    properties.getProperty(LinuxHelper.POWER_SUPPLY_NAME),
+                                    (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_NOW)) * 1.0 / (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_FULL)) * 1.0)),
+                                    BatteryState.of(properties.getProperty(LinuxHelper.POWER_SUPPLY_STATUS)),
+                                    -1, null, -1,
+                                    null,
+                                    powerSupply, properties);
+                        }
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();

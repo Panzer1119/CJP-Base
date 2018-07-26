@@ -20,7 +20,7 @@ import java.util.Objects;
 
 public enum PowerSupply {
     
-    BATTERY(new String[] {"battery"}),
+    BATTERY(new String[] {"battery", "bat", "bata"}),
     AC_POWER(new String[] {"ac power", "ac", "acpower"}),
     UNKNOWN(new String[0]);
     
