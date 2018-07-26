@@ -1,4 +1,20 @@
 /*
+ *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ */
+
+package de.codemakers;/*
  *    Copyright 2018 Paul Hagedorn (Panzer1119)
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +30,6 @@
  *    limitations under the License.
  */
 
-import de.codemakers.io.SerializationUtil;
-
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -26,13 +40,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class JarCommunicator {
+public class TCPJarCommunicator {
 
     public static final long ID = System.currentTimeMillis();
 
     private static final int PORT = 7484;
-    private static DatagramSocket DATAGRAM_SERVER_SOCKET;
-    private static DatagramSocket DATAGRAM_CLIENT_SOCKET;
+    private static ServerSocket SERVER_SOCKET = null;
+    private static Socket CLIENT_SOCKET = null;
+    private static ObjectOutputStream OOS = null;
     private static Thread SERVER_THREAD = null;
     private static Thread CLIENT_THREAD = null;
     private static final Map<Long, JarSocket> SOCKETS = new ConcurrentHashMap<>();
@@ -43,14 +58,8 @@ public class JarCommunicator {
     private static final int SERVER_START_TEST_RETRY_TIME = 150;
     private static final int SERVER_START_RETRY_TIME = 50;
     private static final int CLIENT_START_RETRY_TIME = 100;
-    private static final int BUFFER_SIZE = 1024;
 
     static {
-        try {
-            DATAGRAM_CLIENT_SOCKET = new DatagramSocket();
-        } catch (SocketException ex) {
-            ex.printStackTrace();
-        }
         if (initServer(0,0)) {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownServer()));
         }
@@ -66,14 +75,12 @@ public class JarCommunicator {
         */
     }
 
-    public static final boolean send(long id, Serializable object) {
+    public static final boolean send(long id, Serializable data) {
         try {
-            if (DATAGRAM_CLIENT_SOCKET == null) {
+            if (OOS == null) {
                 return false;
             }
-            final byte[] buffer = SerializationUtil.objectToBytes(object);
-            final DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getLocalHost(), PORT);
-            DATAGRAM_CLIENT_SOCKET.send(packet);
+            OOS.writeObject(new JarNetData(ID, id, data));
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -92,7 +99,7 @@ public class JarCommunicator {
 
     private static final boolean initServer(int start_tries, int start_test_tries) {
         if (start_tries > MAX_SERVER_START_TRIES) {
-            System.err.println("Could not start the " + JarCommunicator.class.getSimpleName() + " server on port " + PORT);
+            System.err.println("Could not start the " + TCPJarCommunicator.class.getSimpleName() + " server on port " + PORT);
             return false;
         } else if (start_test_tries > MAX_SERVER_START_TEST_TRIES) {
             //System.out.println("Some Instance is already running the Server!");
@@ -100,18 +107,27 @@ public class JarCommunicator {
             return false;
         }
         try {
-            DATAGRAM_SERVER_SOCKET = new DatagramSocket(PORT);
+            SERVER_SOCKET = new ServerSocket(PORT);
             SERVER_THREAD = new Thread(() -> {
                 try {
-                    byte[] buffer = new byte[BUFFER_SIZE];
                     while (true) {
-                        final DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        DATAGRAM_SERVER_SOCKET.receive(packet);
+                        final Socket socket = SERVER_SOCKET.accept();
                         final Thread thread = new Thread(() -> {
                             try {
-                                trigger((JarNetData) SerializationUtil.bytesToObject(packet.getData()));
+                                final ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                                final ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                                final long id = ois.readLong();
+                                SOCKETS.put(id, new JarSocket(id, socket, oos, ois));
+                                Object object = null;
+                                while ((object = ois.readObject()) != null) {
+                                    if (object instanceof JarNetData) {
+                                        trigger((JarNetData) object);
+                                    }
+                                }
                             } catch (Exception ex) {
-                                ex.printStackTrace();
+                                if (!(ex instanceof SocketException)) {
+                                    ex.printStackTrace();
+                                }
                             }
                         });
                         thread.start();
@@ -142,7 +158,6 @@ public class JarCommunicator {
     }
 
     private static final boolean initClient(int start_tries) {
-        /*
         if (start_tries > MAX_CLIENT_START_TRIES) {
             return false;
         }
@@ -176,20 +191,17 @@ public class JarCommunicator {
             }
             return initClient(++start_tries);
         }
-        */
-        return false;
     }
 
     private static final boolean shutdownServer() {
-        if (DATAGRAM_SERVER_SOCKET == null) {
+        if (SERVER_SOCKET == null) {
             return false;
         }
         //System.out.println("Server shutdown upcoming"); //TODO Remove this debug code
         try {
-            DATAGRAM_SERVER_SOCKET.disconnect();
-            DATAGRAM_SERVER_SOCKET.close();
+            SERVER_SOCKET.close();
             SERVER_THREAD.interrupt();
-            DATAGRAM_SERVER_SOCKET = null;
+            SERVER_SOCKET = null;
             return true;
         } catch (Exception ex) {
             return false;
