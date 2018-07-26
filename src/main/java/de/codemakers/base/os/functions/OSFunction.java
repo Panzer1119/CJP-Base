@@ -14,10 +14,25 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.os.function;
+package de.codemakers.base.os.functions;
 
-public abstract class SystemInfo implements OSFunction {
+public abstract class OSFunction {
     
-    public abstract BatteryInfo getBatteryInfo();
+    private final String name;
+    
+    public OSFunction() {
+        this(null);
+    }
+    
+    public OSFunction(String name) {
+        if (name == null) {
+            name = getClass().getSimpleName();
+        }
+        this.name = name;
+    }
+    
+    public String getName() {
+        return name;
+    }
     
 }

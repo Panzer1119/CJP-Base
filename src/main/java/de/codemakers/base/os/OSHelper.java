@@ -16,10 +16,10 @@
 
 package de.codemakers.base.os;
 
-import de.codemakers.base.os.function.OSFunction;
+import de.codemakers.base.os.functions.OSFunction;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public interface OSHelper {
@@ -40,24 +40,42 @@ public interface OSHelper {
         return getClass().getSimpleName() + ": fileSep = " + getFileSeparator() + ", pathSep = " + getPathSeparator() + ", newLine = " + newLine;
     }
     
-    List<OSFunction> getOSFunctions();
+    AtomicLong getIDCounter();
+    
+    Map<Long, OSFunction> getOSFunctionsMap();
+    
+    default List<OSFunction> getOSFunctions() {
+        return new ArrayList<>(getOSFunctionsMap().values());
+    }
     
     default <T extends OSFunction> List<T> getOSFunctions(Class<T> clazz) {
         Objects.requireNonNull(clazz);
+        /*
         final List<OSFunction> osFunctions = getOSFunctions();
         if (osFunctions == null || osFunctions.isEmpty()) {
             return null;
         }
         return osFunctions.stream().filter((osFunction) -> (clazz.isAssignableFrom(osFunction.getClass()))).map((osFunction) -> (T) osFunction).collect(Collectors.toList());
+        */
+        if (getOSFunctionsMap().isEmpty()) {
+            return null;
+        }
+        return getOSFunctionsMap().entrySet().stream().filter((entry) -> (clazz.isAssignableFrom(entry.getValue().getClass()))).map((entry) -> (T) entry.getValue()).collect(Collectors.toList());
     }
     
     default <T extends OSFunction> T getOSFunction(Class<T> clazz) {
         Objects.requireNonNull(clazz);
+        /*
         final List<OSFunction> osFunctions = getOSFunctions();
         if (osFunctions == null || osFunctions.isEmpty()) {
             return null;
         }
         return (T) osFunctions.stream().filter((osFunction) -> (clazz.isAssignableFrom(osFunction.getClass()))).findFirst().orElse(null);
+        */
+        if (getOSFunctionsMap().isEmpty()) {
+            return null;
+        }
+        return (T) getOSFunctionsMap().entrySet().stream().filter((entry) -> (clazz.isAssignableFrom(entry.getValue().getClass()))).map(AbstractMap.Entry::getValue).findFirst().orElse(null);
     }
     
     default List<OSFunction> getOSFunctions(String name) {
@@ -69,10 +87,19 @@ public interface OSHelper {
         return osFunctions.stream().filter((osFunction) -> (name.equals(osFunction.getName()))).collect(Collectors.toList());
     }
     
-    <T extends OSFunction> T getOSFunction(long id);
+    default <T extends OSFunction> T getOSFunction(long id) {
+        return (T) getOSFunctionsMap().get(id);
+    }
     
-    long addOSFunction(OSFunction osFunction);
+    default long addOSFunction(OSFunction osFunction) {
+        Objects.requireNonNull(osFunction);
+        final long id = getIDCounter().incrementAndGet();
+        getOSFunctionsMap().put(id, osFunction);
+        return id;
+    }
     
-    boolean removeOSFunction(long id);
+    default boolean removeOSFunction(long id) {
+        return getOSFunctionsMap().remove(id) != null;
+    }
     
 }

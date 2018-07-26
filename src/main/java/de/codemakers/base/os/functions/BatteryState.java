@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.os.function;
+package de.codemakers.base.os.functions;
 
 import java.util.Objects;
 

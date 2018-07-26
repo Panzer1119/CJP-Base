@@ -14,12 +14,10 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.os.function;
+package de.codemakers.base.os.functions;
 
-public interface OSFunction {
+public abstract class SystemInfo extends OSFunction {
     
-    default String getName() {
-        return getClass().getSimpleName();
-    }
+    public abstract PowerInfo getBatteryInfo();
     
 }

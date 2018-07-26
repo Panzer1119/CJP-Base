@@ -17,7 +17,7 @@
 package base.os;
 
 import de.codemakers.base.os.OSUtil;
-import de.codemakers.base.os.function.SystemInfo;
+import de.codemakers.base.os.functions.SystemInfo;
 
 public class OSFunctionTest {
     

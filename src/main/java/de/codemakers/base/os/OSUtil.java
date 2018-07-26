@@ -16,7 +16,15 @@
 
 package de.codemakers.base.os;
 
-import de.codemakers.base.os.function.OSFunction;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.os.functions.*;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class OSUtil {
     
@@ -33,6 +41,65 @@ public class OSUtil {
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
     
+    public static final String PATTERN_BATTERY_INFO_MAC_OS_STRING = "Now drawing from '(.+)' (.+) \\(id=(\\d+)\\)\t(\\d{1,3})%; (.+); (\\d+:\\d{1,2})(?: remaining present: (\\w+))?";
+    public static final Pattern PATTERN_BATTERY_INFO_MAC_OS = Pattern.compile(PATTERN_BATTERY_INFO_MAC_OS_STRING);
+    
+    public static final long OSFUNCTION_ID_SYSTEM_INFO_WINDOWS;
+    public static final long OSFUNCTION_ID_SYSTEM_INFO_LINUX;
+    public static final long OSFUNCTION_ID_SYSTEM_INFO_MAC_OS;
+    public static final long OSFUNCTION_ID_SYSTEM_INFO_CURRENT;
+    
+    static {
+        OSFUNCTION_ID_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.addOSFunction(new SystemInfo() {
+            @Override
+            public PowerInfo getBatteryInfo() {
+                return null;
+            }
+        });
+        OSFUNCTION_ID_SYSTEM_INFO_LINUX = LINUX_HELPER.addOSFunction(new SystemInfo() {
+            @Override
+            public PowerInfo getBatteryInfo() {
+                return null;
+            }
+        });
+        OSFUNCTION_ID_SYSTEM_INFO_MAC_OS = MAC_OS_HELPER.addOSFunction(new SystemInfo() {
+            @Override
+            public PowerInfo getBatteryInfo() {
+                try {
+                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("pmset -g ps").getInputStream()));
+                    final Matcher matcher = PATTERN_BATTERY_INFO_MAC_OS.matcher(bufferedReader.lines().collect(Collectors.joining()));
+                    if (matcher.matches()) {
+                        bufferedReader.close();
+                        return new PowerInfo(matcher.group(3), matcher.group(2), Double.parseDouble(matcher.group(4)) / 100.0, BatteryState.of(matcher.group(5)), -1, null, (long) (Double.parseDouble(matcher.group(6).replace(':', '.')) * 60.0), TimeUnit.MINUTES, PowerSupply.of(matcher.group(1)));
+                    }
+                    bufferedReader.close();
+                    return null;
+                } catch (Exception ex) {
+                    Logger.handleError(ex);
+                    return null;
+                }
+            }
+        });
+        switch (OS) {
+            case WINDOWS:
+                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(WINDOWS_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_WINDOWS));
+                break;
+            case MACOS:
+                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(LINUX_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_LINUX));
+                break;
+            case LINUX:
+                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(MAC_OS_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_MAC_OS));
+                break;
+            case FREEBSD:
+            case SUNOS:
+            case UNKNOWN:
+                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(DEFAULT_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_LINUX));
+                break;
+            default:
+                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = -1;
+        }
+    }
+    
     public static final <T extends OSFunction> T getFunction(Class<T> clazz) {
         switch (OS) {
             case WINDOWS:
@@ -48,6 +115,10 @@ public class OSUtil {
             default:
                 return null;
         }
+    }
+    
+    public static final <T extends OSFunction> T getCurrentFunction(Class<T> clazz) {
+        return CURRENT_OS_HELPER.getOSFunction(clazz);
     }
     
 }
