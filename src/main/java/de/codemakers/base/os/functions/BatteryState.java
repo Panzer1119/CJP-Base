@@ -24,8 +24,8 @@ public enum BatteryState {
     CHARGING (new String[] {"charging"}),
     DISCHARGING (new String[] {"discharging", "running"}),
     EMPTY (new String[] {"discharged", "empty"}),
-    ERROR (new String[] {null, "error"}),
-    UNKNOWN (new String[0]);
+    ERROR (new String[] {"error"}),
+    UNKNOWN (new String[] {"undefined", null});
     
     private final String[] names;
     
@@ -35,9 +35,10 @@ public enum BatteryState {
     
     public static final BatteryState of(String state) {
         Objects.requireNonNull(state);
+        final String state_lower = state.toLowerCase();
         for (BatteryState batteryState : values()) {
             for (String name : batteryState.names) {
-                if (state.equalsIgnoreCase(name)) {
+                if (state.equalsIgnoreCase(name) || state_lower.contains(name)) {
                     return batteryState;
                 }
             }

@@ -20,9 +20,10 @@ import java.util.Objects;
 
 public enum PowerSupply {
     
-    BATTERY(new String[] {"battery", "bat", "bata"}),
+    BATTERY(new String[] {"battery", "bat", "bata", "batta"}),
     AC_POWER(new String[] {"ac power", "ac", "acpower"}),
-    UNKNOWN(new String[0]);
+    USV(new String[] {"ups", "usv", "external"}),
+    UNKNOWN(new String[] {"undefined", null});
     
     private final String[] names;
     
@@ -32,9 +33,10 @@ public enum PowerSupply {
     
     public static final PowerSupply of(String state) {
         Objects.requireNonNull(state);
+        final String state_lower = state.toLowerCase();
         for (PowerSupply powerSupply : values()) {
             for (String name : powerSupply.names) {
-                if (state.equalsIgnoreCase(name)) {
+                if (state.equalsIgnoreCase(name) || state_lower.contains(name)) {
                     return powerSupply;
                 }
             }
