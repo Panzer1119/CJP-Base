@@ -20,12 +20,18 @@ import java.util.Objects;
 
 public enum BatteryState {
     
-    FULL (new String[] {"charged", "full"}),
-    CHARGING (new String[] {"charging"}),
-    DISCHARGING (new String[] {"discharging", "running"}),
-    EMPTY (new String[] {"discharged", "empty"}),
-    ERROR (new String[] {"error"}),
-    UNKNOWN (new String[] {"undefined", null});
+    FULL(new String[] {"charged", "full"}),
+    CHARGING_HIGH(new String[] {"charging and high"}),
+    CHARGING_LOW(new String[] {"charging and low"}),
+    CHARGING_CRITICAL(new String[] {"charging and critical"}),
+    CHARGING(new String[] {"charging"}),
+    PARTIALLY_CHARGED(new String[]{"partially charged", "partially full"}),
+    DISCHARGING(new String[] {"discharging", "running"}),
+    DISCHARGING_LOW(new String[] {"discharging and low"}),
+    DISCHARGING_CRITICAL(new String[] {"discharging and critical"}),
+    EMPTY(new String[] {"discharged", "empty"}),
+    ERROR(new String[] {"error"}),
+    UNKNOWN(new String[] {"undefined", null});
     
     private final String[] names;
     

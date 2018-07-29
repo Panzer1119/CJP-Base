@@ -52,7 +52,55 @@ public class OSUtil {
         OSFUNCTION_ID_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.addOSFunction(new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
-                return null;
+                try {
+                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("WMIC path Win32_Battery").getInputStream()));
+                    final String line_1 = bufferedReader.readLine();
+                    bufferedReader.readLine();
+                    final String line_2 = bufferedReader.readLine();
+                    bufferedReader.close();
+                    final Properties properties = new Properties();
+                    WindowsHelper.process(line_1, line_2, properties);
+                    final int batteryState_int = Integer.parseInt(properties.getProperty(WindowsHelper.BATTERY_STATUS));
+                    BatteryState batteryState = null;
+                    switch (batteryState_int) {
+                        case 1:
+                            batteryState = BatteryState.ERROR;
+                            break;
+                        case 3:
+                            batteryState = BatteryState.FULL;
+                            break;
+                        case 4:
+                            batteryState = BatteryState.DISCHARGING_LOW;
+                            break;
+                        case 5:
+                            batteryState = BatteryState.DISCHARGING_CRITICAL;
+                            break;
+                        case 6:
+                            batteryState = BatteryState.CHARGING;
+                            break;
+                        case 7:
+                            batteryState = BatteryState.CHARGING_HIGH;
+                            break;
+                        case 8:
+                            batteryState = BatteryState.CHARGING_LOW;
+                            break;
+                        case 9:
+                            batteryState = BatteryState.CHARGING_CRITICAL;
+                            break;
+                        case 11:
+                            batteryState = BatteryState.PARTIALLY_CHARGED;
+                            break;
+                        case 2:
+                        case 10:
+                        default:
+                            batteryState = BatteryState.UNKNOWN;
+                            break;
+                    }
+                    return new PowerInfo(properties.getProperty(WindowsHelper.DEVICE_ID), properties.getProperty(WindowsHelper.NAME), Double.parseDouble(properties.getProperty(WindowsHelper.ESTIMATED_CHARGE_REMAINING)) * 0.01, batteryState, Integer.parseInt(properties.getProperty(WindowsHelper.ESTIMATED_RUN_TIME)), TimeUnit.MINUTES, properties.getProperty(WindowsHelper.TIME_TO_FULL_CHARGE).isEmpty() ? -1 : Integer.parseInt(properties.getProperty(WindowsHelper.TIME_TO_FULL_CHARGE)), TimeUnit.MINUTES, PowerSupply.BATTERY, properties);
+                } catch (Exception ex) {
+                    Logger.handleError(ex);
+                    return null;
+                }
             }
         });
         OSFUNCTION_ID_SYSTEM_INFO_LINUX = LINUX_HELPER.addOSFunction(new SystemInfo() {
@@ -88,7 +136,7 @@ public class OSUtil {
                         }
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    Logger.handleError(ex);
                 }
                 return null;
             }

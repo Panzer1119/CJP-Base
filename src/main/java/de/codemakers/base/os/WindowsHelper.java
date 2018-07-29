@@ -19,6 +19,7 @@ package de.codemakers.base.os;
 import de.codemakers.base.os.functions.OSFunction;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
@@ -39,7 +40,7 @@ public class WindowsHelper implements OSHelper {
     public static final String NAME = "Name";
     public static final String SMART_BATTERY_VERSION = "SmartBatteryVersion";
     public static final String TIME_ON_BATTERY = "TimeOnBattery";
-    public static final String P_N_P_DEVICE_I_D = "PNPDeviceID";
+    public static final String PNP_DEVICE_ID = "PNPDeviceID";
     public static final String DESIGN_VOLTAGE = "DesignVoltage";
     public static final String POWER_MANAGEMENT_SUPPORTED = "PowerManagementSupported";
     public static final String SYSTEM_NAME = "SystemName";
@@ -47,7 +48,7 @@ public class WindowsHelper implements OSHelper {
     public static final String ERROR_DESCRIPTION = "ErrorDescription";
     public static final String STATUS = "Status";
     public static final String MAX_RECHARGE_TIME = "MaxRechargeTime";
-    public static final String DEVICE_I_D = "DeviceID";
+    public static final String DEVICE_ID = "DeviceID";
     public static final String EXPECTED_LIFE = "ExpectedLife";
     public static final String EXPECTED_BATTERY_LIFE = "ExpectedBatteryLife";
     public static final String INSTALL_DATE = "InstallDate";
@@ -99,6 +100,31 @@ public class WindowsHelper implements OSHelper {
     @Override
     public String toString() {
         return toStringIntern();
+    }
+    
+    public static final void process(String line_1, String line_2, Properties properties) {
+        while (true) {
+            if (line_1.isEmpty()) {
+                break;
+            }
+            final int i_1 = line_1.indexOf("  ");
+            final int i_2 = line_2.indexOf("  ");
+            if (i_1 == -1) {
+                properties.setProperty(line_1, line_2);
+                line_1 = "";
+                line_2 = "";
+            } else {
+                final String key = line_1.substring(0, i_1);
+                final String value = line_2.substring(0, i_2 < 0 ? line_2.length() : i_2);
+                int i = i_1;
+                while (i < line_1.length() && line_1.charAt(i) == ' ') {
+                    i++;
+                }
+                properties.setProperty(key, value);
+                line_1 = line_1.substring(i);
+                line_2 = line_2.substring(Math.min(line_2.length(), i));
+            }
+        }
     }
     
 }
