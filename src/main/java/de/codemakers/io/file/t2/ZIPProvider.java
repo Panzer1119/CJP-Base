@@ -172,7 +172,7 @@ public class ZIPProvider extends AdvancedProvider {
         if (data_parent == null || data_parent.length == 0) {
             try {
                 final ZipFile zipFile = new ZipFile(parent.getPathString());
-                final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator)))));
+                final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(Arrays.stream(subPath).collect(Collectors.joining(File.separator)))));
                 zipFile.close();
                 return data;
             } catch (Exception ex) {
@@ -181,7 +181,7 @@ public class ZIPProvider extends AdvancedProvider {
             }
         } else {
             try {
-                final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator));
+                final String subPath_ = Arrays.stream(subPath).collect(Collectors.joining(File.separator));
                 final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {

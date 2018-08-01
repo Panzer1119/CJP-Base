@@ -70,10 +70,7 @@ public class AdvancedFile {
         final List<String> paths_ = new ArrayList<>();
         for (String p : paths) {
             if (p.contains(separator)) {
-                final String[] split = p.split(separator);
-                for (String p_ : split) {
-                    paths_.add(p_);
-                }
+                paths_.addAll(Arrays.asList(p.split(separator)));
             } else {
                 paths_.add(p);
             }
@@ -96,7 +93,7 @@ public class AdvancedFile {
     
     public final String getPathString() {
         if (path == null) {
-            path = Arrays.asList(paths).stream().collect(Collectors.joining(separator));
+            path = Arrays.stream(paths).collect(Collectors.joining(separator));
         }
         if (parent != null) {
             path = parent.getPathString() + separator + path;
