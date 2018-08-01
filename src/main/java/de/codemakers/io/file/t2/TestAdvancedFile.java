@@ -42,35 +42,34 @@ public class TestAdvancedFile {
             }
             
             @Override
-            public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
-                try {
-                    final ZipFile zipFile = new ZipFile(parent.getPathString());
-                    final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator)))));
-                    zipFile.close();
-                    return data;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    return null;
-                }
-            }
-    
-            @Override
             public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data_parent) {
-                try {
-                    final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator));
-                    final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
-                    ZipEntry zipEntry = null;
-                    while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                        if (zipEntry.getName().equals(subPath_)) {
-                            break;
-                        }
+                if (data_parent == null || data_parent.length == 0) {
+                    try {
+                        final ZipFile zipFile = new ZipFile(parent.getPathString());
+                        final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator)))));
+                        zipFile.close();
+                        return data;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return null;
                     }
-                    final byte[] data = IOUtils.toByteArray(zipInputStream);
-                    zipInputStream.close();
-                    return data;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    return null;
+                } else {
+                    try {
+                        final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator));
+                        final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
+                        ZipEntry zipEntry = null;
+                        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                            if (zipEntry.getName().equals(subPath_)) {
+                                break;
+                            }
+                        }
+                        final byte[] data = IOUtils.toByteArray(zipInputStream);
+                        zipInputStream.close();
+                        return data;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return null;
+                    }
                 }
             }
     

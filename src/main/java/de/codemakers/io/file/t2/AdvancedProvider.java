@@ -38,9 +38,7 @@ public abstract class AdvancedProvider {
     
     public abstract List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
     
-    public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
-    
-    public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data_parent);
+    public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte... data_parent);
     
     public abstract boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data);
     
