@@ -31,6 +31,12 @@ public class TestAdvancedFileTest {
         System.out.println(advancedFile_1);
         System.out.println("=======================================================================================================================================================");
         advancedFile_1.listFiles(true).stream().map(TestAdvancedFile::getPathString).forEach(System.out::println);
+        System.out.println("=======================================================================================================================================================");
+        System.out.println("=======================================================================================================================================================");
+        final TestAdvancedFile advancedFile_2 = new TestAdvancedFile("test/1/2/3.zip/3/win.txt.zip");
+        System.out.println(advancedFile_2);
+        System.out.println("=======================================================================================================================================================");
+        advancedFile_2.listFiles(true).stream().map(TestAdvancedFile::getPathString).forEach(System.out::println);
     }
     
 }

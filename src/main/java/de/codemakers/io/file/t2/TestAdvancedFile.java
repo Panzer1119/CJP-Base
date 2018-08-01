@@ -71,9 +71,22 @@ public class TestAdvancedFile {
                         return null;
                     }
                 } else {
-                
+                    try {
+                        final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
+                        ZipEntry zipEntry = null;
+                        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                            final TestAdvancedFile advancedFile_ = new TestAdvancedFile(parent, zipEntry.getName());
+                            System.out.println("*===> " + zipEntry);
+                            System.out.println("*#==> " + advancedFile_);
+                            advancedFiles.add(advancedFile_);
+                        }
+                        zipInputStream.close();
+                        return advancedFiles;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return null;
+                    }
                 }
-                throw new UnsupportedOperationException("Coming soon TM");
             }
     
             @Override
