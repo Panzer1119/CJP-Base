@@ -16,7 +16,9 @@
 
 package de.codemakers.io.file.t2;
 
-import java.io.BufferedInputStream;
+import org.apache.commons.io.IOUtils;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class TestAdvancedFile {
     
@@ -42,16 +45,17 @@ public class TestAdvancedFile {
             public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
                 try {
                     final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining("/"));
-                    final double r = Math.random();
-                    System.out.println(r + " parent             : " + parent);
-                    System.out.println(r + " advancedFile       : " + advancedFile);
-                    System.out.println(r + " subPath_           : " + subPath_);
+                    //final double r = Math.random();
+                    //System.out.println(r + " parent             : " + parent);
+                    //System.out.println(r + " advancedFile       : " + advancedFile);
+                    //System.out.println(r + " subPath_           : " + subPath_);
                     final ZipFile zipFile = new ZipFile(parent.getPathString());
-                    System.out.println(r + " zipFile            : " + zipFile);
+                    //System.out.println(r + " zipFile            : " + zipFile);
                     final ZipEntry zipEntry = zipFile.getEntry(subPath_);
-                    System.out.println(r + " zipEntry           : " + zipEntry);
+                    //System.out.println(r + " zipEntry           : " + zipEntry);
+                    /*
                     final BufferedInputStream bufferedInputStream = new BufferedInputStream(zipFile.getInputStream(zipEntry));
-                    System.out.println(r + " bufferedInputStream: " + bufferedInputStream);
+                    //System.out.println(r + " bufferedInputStream: " + bufferedInputStream);
                     byte[] data = new byte[0];
                     final byte[] buffer = new byte[64];
                     int read = -1;
@@ -60,6 +64,8 @@ public class TestAdvancedFile {
                         System.arraycopy(buffer, 0, data, data.length - read, read);
                     }
                     bufferedInputStream.close();
+                    */
+                    final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipEntry));
                     zipFile.close();
                     return data;
                     //return Files.readAllBytes(new File(parent.toPathString("/") + "/" + path).toPath());
@@ -68,7 +74,27 @@ public class TestAdvancedFile {
                     return null;
                 }
             }
-            
+    
+            @Override
+            public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data_parent) {
+                try {
+                    final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining("/"));
+                    final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
+                    ZipEntry zipEntry = null;
+                    while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                        if (zipEntry.getName().equals(subPath_)) {
+                            break;
+                        }
+                    }
+                    final byte[] data = IOUtils.toByteArray(zipInputStream);
+                    zipInputStream.close();
+                    return data;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
+            }
+    
             @Override
             public boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data) {
                 throw new UnsupportedOperationException("Coming soon TM");
@@ -196,8 +222,8 @@ public class TestAdvancedFile {
     public final byte[] readBytes(TestAdvancedFile advancedFile) throws Exception {
         Objects.requireNonNull(provider);
         Objects.requireNonNull(advancedFile);
-        if (parent != null && false) {
-            return null;
+        if (parent != null) {
+            return provider.readBytes(this, advancedFile, advancedFile.paths, readBytes());
         } else {
             return provider.readBytes(this, advancedFile, advancedFile.paths);
         }

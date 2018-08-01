@@ -40,6 +40,8 @@ public abstract class AdvancedProvider {
     
     public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
     
+    public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data_parent);
+    
     public abstract boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data);
     
     public abstract boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
