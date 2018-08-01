@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file.t2;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class TestAdvancedFile {
     
@@ -31,32 +34,58 @@ public class TestAdvancedFile {
     static {
         PROVIDERS.add(new AdvancedProvider() {
             @Override
-            public List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+            public List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
             @Override
-            public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
-                return "Coming soon TM".getBytes();
+            public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
+                try {
+                    final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining("/"));
+                    final double r = Math.random();
+                    System.out.println(r + " parent             : " + parent);
+                    System.out.println(r + " advancedFile       : " + advancedFile);
+                    System.out.println(r + " subPath_           : " + subPath_);
+                    final ZipFile zipFile = new ZipFile(parent.getPathString());
+                    System.out.println(r + " zipFile            : " + zipFile);
+                    final ZipEntry zipEntry = zipFile.getEntry(subPath_);
+                    System.out.println(r + " zipEntry           : " + zipEntry);
+                    final BufferedInputStream bufferedInputStream = new BufferedInputStream(zipFile.getInputStream(zipEntry));
+                    System.out.println(r + " bufferedInputStream: " + bufferedInputStream);
+                    byte[] data = new byte[0];
+                    final byte[] buffer = new byte[64];
+                    int read = -1;
+                    while ((read = bufferedInputStream.read(buffer)) != -1) {
+                        data = Arrays.copyOf(data, data.length + read);
+                        System.arraycopy(buffer, 0, data, data.length - read, read);
+                    }
+                    bufferedInputStream.close();
+                    zipFile.close();
+                    return data;
+                    //return Files.readAllBytes(new File(parent.toPathString("/") + "/" + path).toPath());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
             }
             
             @Override
-            public boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, byte[] data) {
+            public boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
             @Override
-            public boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+            public boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
             @Override
-            public boolean deleteFile(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+            public boolean deleteFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
             @Override
-            public boolean mkdir(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+            public boolean mkdir(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
@@ -167,7 +196,11 @@ public class TestAdvancedFile {
     public final byte[] readBytes(TestAdvancedFile advancedFile) throws Exception {
         Objects.requireNonNull(provider);
         Objects.requireNonNull(advancedFile);
-        return provider.readBytes(this, advancedFile);
+        if (parent != null && false) {
+            return null;
+        } else {
+            return provider.readBytes(this, advancedFile, advancedFile.paths);
+        }
     }
     
     @Override

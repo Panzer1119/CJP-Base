@@ -36,17 +36,17 @@ import java.util.List;
 
 public abstract class AdvancedProvider {
     
-    public abstract List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile);
+    public abstract List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
     
-    public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile);
+    public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
     
-    public abstract boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, byte[] data);
+    public abstract boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data);
     
-    public abstract boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile);
+    public abstract boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
     
-    public abstract boolean deleteFile(TestAdvancedFile parent, TestAdvancedFile advancedFile);
+    public abstract boolean deleteFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
     
-    public abstract boolean mkdir(TestAdvancedFile parent, TestAdvancedFile advancedFile);
+    public abstract boolean mkdir(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
     
     public abstract boolean accept(TestAdvancedFile parent, String name, String name_lower, String name_upper);
     

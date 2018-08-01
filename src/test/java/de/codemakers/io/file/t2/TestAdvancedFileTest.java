@@ -20,8 +20,10 @@ public class TestAdvancedFileTest {
     
     public static final void main(String[] args) throws Exception {
         System.out.println("test");
-        final TestAdvancedFile advancedFile = new TestAdvancedFile("test/1/2/win.txt.zip/win.txt");
+        //final TestAdvancedFile advancedFile = new TestAdvancedFile("test/1/2/win_2.zip/win.txt.zip/win.txt");
+        final TestAdvancedFile advancedFile = new TestAdvancedFile("test/1/2/3.zip/3/win.txt.zip/win.txt");
         System.out.println(advancedFile);
+        System.out.println("===========");
         System.out.println(new String(advancedFile.readBytes()));
     }
     
