@@ -21,6 +21,7 @@ public class PathEntry {
     public final PathEntry parent;
     public final String name;
     public final boolean file;
+    public FileProvider provider;
     
     public PathEntry(String name, boolean file) {
         this(null, name, file);
@@ -42,6 +43,22 @@ public class PathEntry {
     
     public final boolean isFile() {
         return file;
+    }
+    
+    public final FileProvider getProvider() {
+        return provider;
+    }
+    
+    public final PathEntry setProvider(FileProvider provider) {
+        this.provider = provider;
+        return this;
+    }
+    
+    public final String toPathString(String separator) {
+        if (parent == null) {
+            return name;
+        }
+        return parent.toPathString(separator) + separator + name;
     }
     
     @Override
