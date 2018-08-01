@@ -16,9 +16,11 @@
 
 package de.codemakers.io.file.t1;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.io.BufferedInputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class ZIPProvider extends FileProvider {
     
@@ -37,7 +39,26 @@ public class ZIPProvider extends FileProvider {
     public byte[] readFile(String path) {
         //return new byte[0];
         try {
-            return Files.readAllBytes(new File(parent.toPathString("/") + "/" + path).toPath());
+            final double r = Math.random();
+            System.out.println(r + " parent: " + parent);
+            System.out.println(r + " path: " + path);
+            final ZipFile zipFile = new ZipFile(parent.toPathString("/"));
+            System.out.println(r + " zipFile: " + zipFile);
+            final ZipEntry zipEntry = zipFile.getEntry(path);
+            System.out.println(r + " zipEntry: " + zipEntry);
+            final BufferedInputStream bufferedInputStream = new BufferedInputStream(zipFile.getInputStream(zipEntry));
+            System.out.println(r + " bufferedInputStream: " + bufferedInputStream);
+            byte[] data = new byte[0];
+            final byte[] buffer = new byte[64];
+            int read = -1;
+            while ((read = bufferedInputStream.read(buffer)) != -1) {
+                data = Arrays.copyOf(data, data.length + read);
+                System.arraycopy(buffer, 0, data, data.length - read, read);
+            }
+            bufferedInputStream.close();
+            zipFile.close();
+            return data;
+            //return Files.readAllBytes(new File(parent.toPathString("/") + "/" + path).toPath());
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;

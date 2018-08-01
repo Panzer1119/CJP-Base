@@ -20,12 +20,11 @@ import java.io.File;
 import java.nio.file.Files;
 
 public class TestAdvancedFile {
-
+    
     public static final String FILE_SEPARATOR_WINDOWS = "\\";
     public static final String FILE_SEPARATOR_UNIX = "/";
-    
-    private PathEntry path = null;
     private final String separator;
+    private PathEntry path = null;
     
     public TestAdvancedFile(String path) {
         boolean isUnix = path.contains(FILE_SEPARATOR_UNIX);
@@ -71,6 +70,9 @@ public class TestAdvancedFile {
         if (fileProvider == null) {
             return Files.readAllBytes(new File(getPathString()).toPath());
         } else {
+            System.out.println("QUESTION : path.toPathString(separator)                    : " + path.toPathString(separator));
+            System.out.println("QUESTION : pathEntry.toPathString(separator)               : " + pathEntry.toPathString(separator));
+            System.out.println("QUESTION : path.subtract(pathEntry).toPathString(separator): " + path.subtract(pathEntry).toPathString(separator));
             return fileProvider.readFile(path.subtract(pathEntry).toPathString(separator));
         }
     }

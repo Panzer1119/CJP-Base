@@ -18,9 +18,9 @@ package de.codemakers.io.file.t1;
 
 public class PathEntry {
     
-    public PathEntry parent;
     public final String name;
     public final boolean file;
+    public PathEntry parent;
     public FileProvider provider;
     
     public PathEntry(String name, boolean file) {
@@ -67,12 +67,17 @@ public class PathEntry {
     public final PathEntry subtract(PathEntry pathEntry) {
         final PathEntry this_ = copy();
         PathEntry temp = this_;
-        while (pathEntry.parent != null) {
-            pathEntry = pathEntry.parent;
+        System.out.println("pathEntry: " + pathEntry.toPathString("/"));
+        System.out.println("this     : " + this.toPathString("/"));
+        System.out.println("this_    : " + this_.toPathString("/"));
+        System.out.println("temp     : " + temp.toPathString("/"));
+        while (temp.parent != null && !temp.parent.name.equals(pathEntry.name)) {
+            System.out.println("VOR  temp = " + temp);
             temp = temp.parent;
+            System.out.println("NACH temp = " + temp);
         }
         temp.parent = null;
-        return temp;
+        return this_;
     }
     
     public final PathEntry copy() {

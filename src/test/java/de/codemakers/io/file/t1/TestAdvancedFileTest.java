@@ -28,11 +28,13 @@ public class TestAdvancedFileTest {
         
         final PathEntry pathEntry_1 = new PathEntry(new PathEntry(new PathEntry("test_1", false), "test_2", false), "test.txt", true);
         final PathEntry pathEntry_2 = new PathEntry("test_1", false);
-        System.out.println("pathEntry_1 = " + pathEntry_1);
-        System.out.println("pathEntry_2 = " + pathEntry_2);
-        System.out.println(pathEntry_1.subtract(pathEntry_2));
+        System.out.println("=================================================");
+        System.out.println("pathEntry_1                      : " + pathEntry_1.toPathString("/"));
+        System.out.println("pathEntry_2                      : " + pathEntry_2.toPathString("/"));
+        System.out.println("pathEntry_1.subtract(pathEntry_2): " + pathEntry_1.subtract(pathEntry_2).toPathString("/"));
+        System.out.println("=================================================");
         
-        final TestAdvancedFile testAdvancedFile_1 = new TestAdvancedFile(new File("test/1/2/win.txt.zip").getAbsolutePath());
+        final TestAdvancedFile testAdvancedFile_1 = new TestAdvancedFile(new File("test/1/2/win.txt.zip/win.txt").getAbsolutePath());
         System.out.println(testAdvancedFile_1);
         System.out.println(new String(testAdvancedFile_1.toBytes()));
         
