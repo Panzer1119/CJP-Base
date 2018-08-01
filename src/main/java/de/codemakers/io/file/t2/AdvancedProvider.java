@@ -36,7 +36,7 @@ import java.util.List;
 
 public abstract class AdvancedProvider {
     
-    public abstract List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
+    public abstract List<TestAdvancedFile> listFiles(TestAdvancedFile parent, List<TestAdvancedFile> advancedFiles, TestAdvancedFile advancedFile, String[] subPath, boolean recursive, byte... data_parent);
     
     public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte... data_parent);
     

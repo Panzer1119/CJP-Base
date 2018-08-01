@@ -36,11 +36,46 @@ public class TestAdvancedFile {
     
     static {
         PROVIDERS.add(new AdvancedProvider() {
+    
             @Override
-            public List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
+            public List<TestAdvancedFile> listFiles(TestAdvancedFile parent, List<TestAdvancedFile> advancedFiles, TestAdvancedFile advancedFile, String[] subPath, boolean recursive, byte... data_parent) {
+                if (data_parent == null || data_parent.length == 0) {
+                    try {
+                        final ZipFile zipFile = new ZipFile(parent.getPathString());
+                        zipFile.stream().forEach((zipEntry) -> {
+                            final TestAdvancedFile advancedFile_ = new TestAdvancedFile(zipEntry.getName(), parent.paths);
+                            System.out.println("===> " + zipEntry);
+                            System.out.println("#==> " + advancedFile_);
+                            advancedFiles.add(advancedFile_);
+                        });
+                        zipFile.close();
+                        //
+                        /*
+                        final ZipFile zipFile1 = new ZipFile(parent.getPathString());
+                        final Enumeration<? extends ZipEntry> zipEntryEnumeration = zipFile1.entries();
+                        while (zipEntryEnumeration.hasMoreElements()) {
+                            final ZipEntry zipEntry = zipEntryEnumeration.nextElement();
+                            System.out.println("======> " + zipEntry + " == " + zipEntry.getName());
+                        }
+                        zipFile1.close();
+                        */
+                        //
+                        /*
+                        final ZipFile zipFile2 = new ZipFile(parent.getPathString());
+                        zipFile2.stream().forEach((zipEntry) -> System.out.println("#=====> " + zipEntry + " == " + zipEntry.getName()));
+                        zipFile2.close();
+                        */
+                        return advancedFiles;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return null;
+                    }
+                } else {
+                
+                }
                 throw new UnsupportedOperationException("Coming soon TM");
             }
-            
+    
             @Override
             public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data_parent) {
                 if (data_parent == null || data_parent.length == 0) {
@@ -72,7 +107,7 @@ public class TestAdvancedFile {
                     }
                 }
             }
-    
+            
             @Override
             public boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data) {
                 throw new UnsupportedOperationException("Coming soon TM");
@@ -102,12 +137,18 @@ public class TestAdvancedFile {
     
     private final String separator = "/"; //TODO Change this
     private String[] paths = new String[0];
-    private TestAdvancedFile parent;
+    private TestAdvancedFile parent = null;
     private AdvancedProvider provider = null;
     private String path = null;
     
     public TestAdvancedFile(String... paths) {
-        this(null, paths);
+        this((TestAdvancedFile) null, paths);
+    }
+    
+    public TestAdvancedFile(String name, String[] paths) {
+        this.paths = Arrays.copyOf(paths, paths.length + 1);
+        this.paths[this.paths.length - 1] = name;
+        init();
     }
     
     public TestAdvancedFile(TestAdvancedFile parent, String... paths) {
@@ -148,9 +189,9 @@ public class TestAdvancedFile {
         for (String p : paths_) {
             temp.add(p);
             final AdvancedProvider advancedProvider = getProvider(parent, p);
-            System.out.println("p = " + p);
+            //System.out.println("p = " + p);
             if (advancedProvider != null) {
-                System.out.println("Found provider: " + advancedProvider);
+                //System.out.println("Found provider: " + advancedProvider);
                 parent = new TestAdvancedFile(parent, advancedProvider, temp.toArray(new String[0]));
                 temp.clear();
             }
@@ -186,6 +227,9 @@ public class TestAdvancedFile {
         if (path == null) {
             path = Arrays.asList(paths).stream().collect(Collectors.joining(separator));
         }
+        if (parent != null) {
+            path = parent.getPathString() + separator + path;
+        }
         return path;
     }
     
@@ -204,6 +248,41 @@ public class TestAdvancedFile {
             return provider.readBytes(this, advancedFile, advancedFile.paths, readBytes());
         } else {
             return provider.readBytes(this, advancedFile, advancedFile.paths);
+        }
+    }
+    
+    public final List<TestAdvancedFile> listFiles() throws Exception {
+        return listFiles(false);
+    }
+    
+    public final List<TestAdvancedFile> listFiles(boolean recursive) throws Exception {
+        return listFiles(new ArrayList<>(), recursive);
+    }
+    
+    public final List<TestAdvancedFile> listFiles(List<TestAdvancedFile> advancedFiles, boolean recursive) throws Exception {
+        if (parent != null) {
+            return parent.listFiles(advancedFiles, recursive, this);
+        } else {
+            final File directory = new File(getPathString());
+            for (File file : directory.listFiles()) {
+                final TestAdvancedFile advancedFile = new TestAdvancedFile(file.getName(), paths);
+                advancedFiles.add(advancedFile);
+                if (recursive && file.isDirectory()) {
+                    advancedFile.listFiles(advancedFiles, recursive);
+                }
+            }
+            return advancedFiles;
+        }
+    }
+    
+    public final List<TestAdvancedFile> listFiles(List<TestAdvancedFile> advancedFiles, boolean recursive, TestAdvancedFile advancedFile) throws Exception {
+        Objects.requireNonNull(advancedFiles);
+        Objects.requireNonNull(provider);
+        Objects.requireNonNull(advancedFile);
+        if (parent != null) {
+            return provider.listFiles(this, advancedFiles, advancedFile, advancedFile.paths, recursive, readBytes());
+        } else {
+            return provider.listFiles(this, advancedFiles, advancedFile, advancedFile.paths, recursive);
         }
     }
     

@@ -23,8 +23,14 @@ public class TestAdvancedFileTest {
         //final TestAdvancedFile advancedFile = new TestAdvancedFile("test/1/2/win_2.zip/win.txt.zip/win.txt");
         final TestAdvancedFile advancedFile = new TestAdvancedFile("test/1/2/3.zip/3/win.txt.zip/win.txt");
         System.out.println(advancedFile);
-        System.out.println("===========");
+        System.out.println("=======================================================================================================================================================");
         System.out.println(new String(advancedFile.readBytes()));
+        System.out.println("=======================================================================================================================================================");
+        System.out.println("=======================================================================================================================================================");
+        final TestAdvancedFile advancedFile_1 = new TestAdvancedFile("test/1/2/3.zip");
+        System.out.println(advancedFile_1);
+        System.out.println("=======================================================================================================================================================");
+        advancedFile_1.listFiles(true).stream().map(TestAdvancedFile::getPathString).forEach(System.out::println);
     }
     
 }
