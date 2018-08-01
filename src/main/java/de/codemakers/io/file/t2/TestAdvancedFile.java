@@ -44,31 +44,10 @@ public class TestAdvancedFile {
             @Override
             public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
                 try {
-                    final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining("/"));
-                    //final double r = Math.random();
-                    //System.out.println(r + " parent             : " + parent);
-                    //System.out.println(r + " advancedFile       : " + advancedFile);
-                    //System.out.println(r + " subPath_           : " + subPath_);
                     final ZipFile zipFile = new ZipFile(parent.getPathString());
-                    //System.out.println(r + " zipFile            : " + zipFile);
-                    final ZipEntry zipEntry = zipFile.getEntry(subPath_);
-                    //System.out.println(r + " zipEntry           : " + zipEntry);
-                    /*
-                    final BufferedInputStream bufferedInputStream = new BufferedInputStream(zipFile.getInputStream(zipEntry));
-                    //System.out.println(r + " bufferedInputStream: " + bufferedInputStream);
-                    byte[] data = new byte[0];
-                    final byte[] buffer = new byte[64];
-                    int read = -1;
-                    while ((read = bufferedInputStream.read(buffer)) != -1) {
-                        data = Arrays.copyOf(data, data.length + read);
-                        System.arraycopy(buffer, 0, data, data.length - read, read);
-                    }
-                    bufferedInputStream.close();
-                    */
-                    final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipEntry));
+                    final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator)))));
                     zipFile.close();
                     return data;
-                    //return Files.readAllBytes(new File(parent.toPathString("/") + "/" + path).toPath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     return null;
@@ -78,7 +57,7 @@ public class TestAdvancedFile {
             @Override
             public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data_parent) {
                 try {
-                    final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining("/"));
+                    final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator));
                     final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
                     ZipEntry zipEntry = null;
                     while ((zipEntry = zipInputStream.getNextEntry()) != null) {
