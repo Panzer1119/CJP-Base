@@ -28,12 +28,13 @@ public class AdvancedFile {
     
     public static final List<AdvancedProvider> PROVIDERS = new ArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
+    public static final String FILE_SEPARATOR = File.separator;
     
     static {
         PROVIDERS.add(ZIP_PROVIDER);
     }
     
-    private final String separator = File.separator; //TODO Change this
+    private final String separator = FILE_SEPARATOR; //TODO Change this
     private String[] paths = new String[0];
     private AdvancedFile parent = null;
     private AdvancedProvider provider = null;
