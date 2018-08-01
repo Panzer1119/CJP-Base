@@ -16,9 +16,6 @@
 
 package de.codemakers.io.file.t2;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -26,121 +23,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 public class AdvancedFile {
     
     public static final List<AdvancedProvider> PROVIDERS = new ArrayList<>();
+    public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
     
     static {
-        PROVIDERS.add(new AdvancedProvider() {
-            
-            @Override
-            public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, boolean recursive, byte... data_parent) {
-                if (data_parent == null || data_parent.length == 0) {
-                    try {
-                        final ZipFile zipFile = new ZipFile(parent.getPathString());
-                        zipFile.stream().forEach((zipEntry) -> {
-                            final AdvancedFile advancedFile_ = new AdvancedFile(zipEntry.getName(), parent.paths);
-                            advancedFiles.add(advancedFile_);
-                        });
-                        zipFile.close();
-                        return advancedFiles;
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        return null;
-                    }
-                } else {
-                    try {
-                        final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
-                        ZipEntry zipEntry = null;
-                        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                            final AdvancedFile advancedFile_ = new AdvancedFile(parent, zipEntry.getName());
-                            advancedFiles.add(advancedFile_);
-                        }
-                        zipInputStream.close();
-                        return advancedFiles;
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        return null;
-                    }
-                }
-            }
-    
-            @Override
-            public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, AdvancedFileFilter fileFilter, boolean recursive, byte... data_parent) {
-                return null;
-            }
-    
-            @Override
-            public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, AdvancedFilenameFilter filenameFilter, boolean recursive, byte... data_parent) {
-                return null;
-            }
-    
-            @Override
-            public byte[] readBytes(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, byte[] data_parent) {
-                if (data_parent == null || data_parent.length == 0) {
-                    try {
-                        final ZipFile zipFile = new ZipFile(parent.getPathString());
-                        final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator)))));
-                        zipFile.close();
-                        return data;
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        return null;
-                    }
-                } else {
-                    try {
-                        final String subPath_ = Arrays.asList(subPath).stream().collect(Collectors.joining(File.separator));
-                        final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
-                        ZipEntry zipEntry = null;
-                        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                            if (zipEntry.getName().equals(subPath_)) {
-                                break;
-                            }
-                        }
-                        final byte[] data = IOUtils.toByteArray(zipInputStream);
-                        zipInputStream.close();
-                        return data;
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        return null;
-                    }
-                }
-            }
-            
-            @Override
-            public boolean writeBytes(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, byte[] data) {
-                throw new UnsupportedOperationException("Coming soon TM");
-            }
-            
-            @Override
-            public boolean createFile(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
-                throw new UnsupportedOperationException("Coming soon TM");
-            }
-            
-            @Override
-            public boolean deleteFile(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
-                throw new UnsupportedOperationException("Coming soon TM");
-            }
-            
-            @Override
-            public boolean mkdir(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
-                throw new UnsupportedOperationException("Coming soon TM");
-            }
-    
-            @Override
-            public boolean mkdirs(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
-                throw new UnsupportedOperationException("Coming soon TM");
-            }
-            
-            @Override
-            public boolean accept(AdvancedFile parent, String name) {
-                return name.toLowerCase().endsWith(".zip");
-            }
-        });
+        PROVIDERS.add(ZIP_PROVIDER);
     }
     
     private final String separator = "/"; //TODO Change this
@@ -227,6 +117,10 @@ public class AdvancedFile {
         }
         paths = paths_.toArray(new String[0]);
         */
+    }
+    
+    public final String[] getPaths() {
+        return paths;
     }
     
     public final String getPathString() {
