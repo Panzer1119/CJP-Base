@@ -34,21 +34,25 @@ package de.codemakers.io.file.t2;
 
 import java.util.List;
 
-public abstract class AdvancedProvider {
+public abstract class AdvancedProvider implements AdvancedFilenameFilter {
     
-    public abstract List<TestAdvancedFile> listFiles(TestAdvancedFile parent, List<TestAdvancedFile> advancedFiles, TestAdvancedFile advancedFile, String[] subPath, boolean recursive, byte... data_parent);
+    public abstract List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, boolean recursive, byte... data_parent);
     
-    public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte... data_parent);
+    public abstract List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, AdvancedFileFilter fileFilter, boolean recursive, byte... data_parent);
     
-    public abstract boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data);
+    public abstract List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, AdvancedFilenameFilter filenameFilter, boolean recursive, byte... data_parent);
     
-    public abstract boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
+    public abstract byte[] readBytes(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, byte... data_parent);
     
-    public abstract boolean deleteFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
+    public abstract boolean writeBytes(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, byte[] data);
     
-    public abstract boolean mkdir(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath);
+    public abstract boolean createFile(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath);
     
-    public abstract boolean accept(TestAdvancedFile parent, String name, String name_lower, String name_upper);
+    public abstract boolean deleteFile(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath);
+    
+    public abstract boolean mkdir(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath);
+    
+    public abstract boolean mkdirs(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath);
     
     @Override
     public String toString() {

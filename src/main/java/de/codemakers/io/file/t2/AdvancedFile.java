@@ -30,41 +30,23 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-public class TestAdvancedFile {
+public class AdvancedFile {
     
     public static final List<AdvancedProvider> PROVIDERS = new ArrayList<>();
     
     static {
         PROVIDERS.add(new AdvancedProvider() {
-    
+            
             @Override
-            public List<TestAdvancedFile> listFiles(TestAdvancedFile parent, List<TestAdvancedFile> advancedFiles, TestAdvancedFile advancedFile, String[] subPath, boolean recursive, byte... data_parent) {
+            public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, boolean recursive, byte... data_parent) {
                 if (data_parent == null || data_parent.length == 0) {
                     try {
                         final ZipFile zipFile = new ZipFile(parent.getPathString());
                         zipFile.stream().forEach((zipEntry) -> {
-                            final TestAdvancedFile advancedFile_ = new TestAdvancedFile(zipEntry.getName(), parent.paths);
-                            System.out.println("===> " + zipEntry);
-                            System.out.println("#==> " + advancedFile_);
+                            final AdvancedFile advancedFile_ = new AdvancedFile(zipEntry.getName(), parent.paths);
                             advancedFiles.add(advancedFile_);
                         });
                         zipFile.close();
-                        //
-                        /*
-                        final ZipFile zipFile1 = new ZipFile(parent.getPathString());
-                        final Enumeration<? extends ZipEntry> zipEntryEnumeration = zipFile1.entries();
-                        while (zipEntryEnumeration.hasMoreElements()) {
-                            final ZipEntry zipEntry = zipEntryEnumeration.nextElement();
-                            System.out.println("======> " + zipEntry + " == " + zipEntry.getName());
-                        }
-                        zipFile1.close();
-                        */
-                        //
-                        /*
-                        final ZipFile zipFile2 = new ZipFile(parent.getPathString());
-                        zipFile2.stream().forEach((zipEntry) -> System.out.println("#=====> " + zipEntry + " == " + zipEntry.getName()));
-                        zipFile2.close();
-                        */
                         return advancedFiles;
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -75,9 +57,7 @@ public class TestAdvancedFile {
                         final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
                         ZipEntry zipEntry = null;
                         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                            final TestAdvancedFile advancedFile_ = new TestAdvancedFile(parent, zipEntry.getName());
-                            System.out.println("*===> " + zipEntry);
-                            System.out.println("*#==> " + advancedFile_);
+                            final AdvancedFile advancedFile_ = new AdvancedFile(parent, zipEntry.getName());
                             advancedFiles.add(advancedFile_);
                         }
                         zipInputStream.close();
@@ -90,7 +70,17 @@ public class TestAdvancedFile {
             }
     
             @Override
-            public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data_parent) {
+            public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, AdvancedFileFilter fileFilter, boolean recursive, byte... data_parent) {
+                return null;
+            }
+    
+            @Override
+            public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, AdvancedFilenameFilter filenameFilter, boolean recursive, byte... data_parent) {
+                return null;
+            }
+    
+            @Override
+            public byte[] readBytes(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, byte[] data_parent) {
                 if (data_parent == null || data_parent.length == 0) {
                     try {
                         final ZipFile zipFile = new ZipFile(parent.getPathString());
@@ -122,64 +112,67 @@ public class TestAdvancedFile {
             }
             
             @Override
-            public boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath, byte[] data) {
+            public boolean writeBytes(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, byte[] data) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
             @Override
-            public boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
+            public boolean createFile(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
             @Override
-            public boolean deleteFile(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
+            public boolean deleteFile(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
             @Override
-            public boolean mkdir(TestAdvancedFile parent, TestAdvancedFile advancedFile, String[] subPath) {
+            public boolean mkdir(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
+                throw new UnsupportedOperationException("Coming soon TM");
+            }
+    
+            @Override
+            public boolean mkdirs(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
                 throw new UnsupportedOperationException("Coming soon TM");
             }
             
             @Override
-            public boolean accept(TestAdvancedFile parent, String name, String name_lower, String name_upper) {
-                return name_lower.endsWith(".zip") || name_upper.endsWith(".ZIP");
+            public boolean accept(AdvancedFile parent, String name) {
+                return name.toLowerCase().endsWith(".zip");
             }
         });
     }
     
     private final String separator = "/"; //TODO Change this
     private String[] paths = new String[0];
-    private TestAdvancedFile parent = null;
+    private AdvancedFile parent = null;
     private AdvancedProvider provider = null;
     private String path = null;
     
-    public TestAdvancedFile(String... paths) {
-        this((TestAdvancedFile) null, paths);
+    public AdvancedFile(String... paths) {
+        this((AdvancedFile) null, paths);
     }
     
-    public TestAdvancedFile(String name, String[] paths) {
+    public AdvancedFile(String name, String[] paths) {
         this.paths = Arrays.copyOf(paths, paths.length + 1);
         this.paths[this.paths.length - 1] = name;
         init();
     }
     
-    public TestAdvancedFile(TestAdvancedFile parent, String... paths) {
+    public AdvancedFile(AdvancedFile parent, String... paths) {
         this(parent, null, paths);
         init();
     }
     
-    public TestAdvancedFile(TestAdvancedFile parent, AdvancedProvider provider, String... paths) {
+    public AdvancedFile(AdvancedFile parent, AdvancedProvider provider, String... paths) {
         this.parent = parent;
         this.provider = provider;
         this.paths = paths;
     }
     
-    public static final AdvancedProvider getProvider(TestAdvancedFile parent, String name) {
+    public static final AdvancedProvider getProvider(AdvancedFile parent, String name) {
         Objects.requireNonNull(name);
-        final String name_lower = name.toLowerCase();
-        final String name_upper = name.toUpperCase();
-        return PROVIDERS.stream().filter((advancedProvider) -> advancedProvider.accept(parent, name, name_lower, name_upper)).findFirst().orElse(null);
+        return PROVIDERS.stream().filter((advancedProvider) -> advancedProvider.accept(parent, name)).findFirst().orElse(null);
     }
     
     private final void init() {
@@ -195,7 +188,7 @@ public class TestAdvancedFile {
             }
         }
         //paths = paths_.toArray(new String[0]);
-        //TestAdvancedFile advancedFile = null;
+        //AdvancedFile advancedFile = null;
         //for (String p : paths) {
         
         final List<String> temp = new ArrayList<>();
@@ -205,7 +198,7 @@ public class TestAdvancedFile {
             //System.out.println("p = " + p);
             if (advancedProvider != null) {
                 //System.out.println("Found provider: " + advancedProvider);
-                parent = new TestAdvancedFile(parent, advancedProvider, temp.toArray(new String[0]));
+                parent = new AdvancedFile(parent, advancedProvider, temp.toArray(new String[0]));
                 temp.clear();
             }
         }
@@ -219,13 +212,13 @@ public class TestAdvancedFile {
             System.out.println("p = " + p);
             if (advancedProvider != null) {
                 System.out.println("Found provider: " + advancedProvider);
-                parent = new TestAdvancedFile(parent, advancedProvider, p);
+                parent = new AdvancedFile(parent, advancedProvider, p);
                 iterator.remove();
             }
             /*
             if (advancedProvider != null || advancedFile == null) {
                 System.out.println("Found provider: " + advancedProvider);
-                advancedFile = new TestAdvancedFile(advancedFile, advancedProvider, p);
+                advancedFile = new AdvancedFile(advancedFile, advancedProvider, p);
             } else {
                 advancedFile.paths = Arrays.copyOf(advancedFile.paths, advancedFile.paths.length + 1);
                 advancedFile.paths[advancedFile.paths.length - 1] = p;
@@ -254,7 +247,7 @@ public class TestAdvancedFile {
         }
     }
     
-    public final byte[] readBytes(TestAdvancedFile advancedFile) throws Exception {
+    public final byte[] readBytes(AdvancedFile advancedFile) throws Exception {
         Objects.requireNonNull(provider);
         Objects.requireNonNull(advancedFile);
         if (parent != null) {
@@ -264,21 +257,21 @@ public class TestAdvancedFile {
         }
     }
     
-    public final List<TestAdvancedFile> listFiles() throws Exception {
+    public final List<AdvancedFile> listFiles() throws Exception {
         return listFiles(false);
     }
     
-    public final List<TestAdvancedFile> listFiles(boolean recursive) throws Exception {
+    public final List<AdvancedFile> listFiles(boolean recursive) throws Exception {
         return listFiles(new ArrayList<>(), recursive);
     }
     
-    public final List<TestAdvancedFile> listFiles(List<TestAdvancedFile> advancedFiles, boolean recursive) throws Exception {
+    public final List<AdvancedFile> listFiles(List<AdvancedFile> advancedFiles, boolean recursive) throws Exception {
         if (parent != null) {
             return parent.listFiles(advancedFiles, recursive, this);
         } else {
             final File directory = new File(getPathString());
             for (File file : directory.listFiles()) {
-                final TestAdvancedFile advancedFile = new TestAdvancedFile(file.getName(), paths);
+                final AdvancedFile advancedFile = new AdvancedFile(file.getName(), paths);
                 advancedFiles.add(advancedFile);
                 if (recursive && file.isDirectory()) {
                     advancedFile.listFiles(advancedFiles, recursive);
@@ -288,20 +281,20 @@ public class TestAdvancedFile {
         }
     }
     
-    public final List<TestAdvancedFile> listFiles(List<TestAdvancedFile> advancedFiles, boolean recursive, TestAdvancedFile advancedFile) throws Exception {
+    public final List<AdvancedFile> listFiles(List<AdvancedFile> advancedFiles, boolean recursive, AdvancedFile advancedFile) throws Exception {
         Objects.requireNonNull(advancedFiles);
         Objects.requireNonNull(provider);
         Objects.requireNonNull(advancedFile);
         if (parent != null) {
-            return provider.listFiles(this, advancedFiles, advancedFile, advancedFile.paths, recursive, readBytes());
+            return provider.listFiles(this, advancedFile, advancedFile.paths, advancedFiles, recursive, readBytes());
         } else {
-            return provider.listFiles(this, advancedFiles, advancedFile, advancedFile.paths, recursive);
+            return provider.listFiles(this, advancedFile, advancedFile.paths, advancedFiles, recursive);
         }
     }
     
     @Override
     public final String toString() {
-        return "TestAdvancedFile{" + "paths=" + Arrays.toString(paths) + ", parent=" + parent + ", provider=" + provider + ", path='" + path + '\'' + '}';
+        return "AdvancedFile{" + "paths=" + Arrays.toString(paths) + ", parent=" + parent + ", provider=" + provider + ", path='" + path + '\'' + '}';
     }
     
 }

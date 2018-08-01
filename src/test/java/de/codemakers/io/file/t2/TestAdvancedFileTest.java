@@ -20,23 +20,23 @@ public class TestAdvancedFileTest {
     
     public static final void main(String[] args) throws Exception {
         System.out.println("test");
-        //final TestAdvancedFile advancedFile = new TestAdvancedFile("test/1/2/win_2.zip/win.txt.zip/win.txt");
-        final TestAdvancedFile advancedFile = new TestAdvancedFile("test/1/2/3.zip/3/win.txt.zip/win.txt");
+        //final AdvancedFile advancedFile = new AdvancedFile("test/1/2/win_2.zip/win.txt.zip/win.txt");
+        final AdvancedFile advancedFile = new AdvancedFile("test/1/2/3.zip/3/win.txt.zip/win.txt");
         System.out.println(advancedFile);
         System.out.println("=======================================================================================================================================================");
         System.out.println(new String(advancedFile.readBytes()));
         System.out.println("=======================================================================================================================================================");
         System.out.println("=======================================================================================================================================================");
-        final TestAdvancedFile advancedFile_1 = new TestAdvancedFile("test/1/2/3.zip");
+        final AdvancedFile advancedFile_1 = new AdvancedFile("test/1/2/3.zip");
         System.out.println(advancedFile_1);
         System.out.println("=======================================================================================================================================================");
-        advancedFile_1.listFiles(true).stream().map(TestAdvancedFile::getPathString).forEach(System.out::println);
+        advancedFile_1.listFiles(true).stream().map(AdvancedFile::getPathString).forEach(System.out::println);
         System.out.println("=======================================================================================================================================================");
         System.out.println("=======================================================================================================================================================");
-        final TestAdvancedFile advancedFile_2 = new TestAdvancedFile("test/1/2/3.zip/3/win.txt.zip");
+        final AdvancedFile advancedFile_2 = new AdvancedFile("test/1/2/3.zip/3/win.txt.zip");
         System.out.println(advancedFile_2);
         System.out.println("=======================================================================================================================================================");
-        advancedFile_2.listFiles(true).stream().map(TestAdvancedFile::getPathString).forEach(System.out::println);
+        advancedFile_2.listFiles(true).stream().map(AdvancedFile::getPathString).forEach(System.out::println);
     }
     
 }
