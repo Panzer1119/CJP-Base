@@ -16,19 +16,59 @@
 
 package de.codemakers.io.file.t2;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class TestAdvancedFile {
     
     public static final List<AdvancedProvider> PROVIDERS = new ArrayList<>();
     
     static {
-        PROVIDERS.add(null);
+        PROVIDERS.add(new AdvancedProvider() {
+            @Override
+            public List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+                throw new UnsupportedOperationException("Coming soon TM");
+            }
+            
+            @Override
+            public byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+                return "Coming soon TM".getBytes();
+            }
+            
+            @Override
+            public boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, byte[] data) {
+                throw new UnsupportedOperationException("Coming soon TM");
+            }
+            
+            @Override
+            public boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+                throw new UnsupportedOperationException("Coming soon TM");
+            }
+            
+            @Override
+            public boolean deleteFile(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+                throw new UnsupportedOperationException("Coming soon TM");
+            }
+            
+            @Override
+            public boolean mkdir(TestAdvancedFile parent, TestAdvancedFile advancedFile) {
+                throw new UnsupportedOperationException("Coming soon TM");
+            }
+            
+            @Override
+            public boolean accept(TestAdvancedFile parent, String name, String name_lower, String name_upper) {
+                return name_lower.endsWith(".zip") || name_upper.endsWith(".ZIP");
+            }
+        });
     }
     
-    private String[] paths;
+    private final String separator = "/"; //TODO Change this
+    private String[] paths = new String[0];
     private TestAdvancedFile parent;
     private AdvancedProvider provider = null;
     private String path = null;
@@ -49,20 +89,85 @@ public class TestAdvancedFile {
     }
     
     public static final AdvancedProvider getProvider(TestAdvancedFile parent, String name) {
-        return PROVIDERS.stream().filter((advancedProvider) -> advancedProvider.accept(parent, name)).findFirst().orElse(null);
+        Objects.requireNonNull(name);
+        final String name_lower = name.toLowerCase();
+        final String name_upper = name.toUpperCase();
+        return PROVIDERS.stream().filter((advancedProvider) -> advancedProvider.accept(parent, name, name_lower, name_upper)).findFirst().orElse(null);
     }
     
     private final void init() {
-        TestAdvancedFile advancedFile = null;
+        final List<String> paths_ = new ArrayList<>();
         for (String p : paths) {
-            final AdvancedProvider advancedProvider = getProvider(advancedFile, p);
+            if (p.contains(separator)) {
+                final String[] split = p.split(separator);
+                for (String p_ : split) {
+                    paths_.add(p_);
+                }
+            } else {
+                paths_.add(p);
+            }
+        }
+        //paths = paths_.toArray(new String[0]);
+        //TestAdvancedFile advancedFile = null;
+        //for (String p : paths) {
+        
+        final List<String> temp = new ArrayList<>();
+        for (String p : paths_) {
+            temp.add(p);
+            final AdvancedProvider advancedProvider = getProvider(parent, p);
+            System.out.println("p = " + p);
             if (advancedProvider != null) {
+                System.out.println("Found provider: " + advancedProvider);
+                parent = new TestAdvancedFile(parent, advancedProvider, temp.toArray(new String[0]));
+                temp.clear();
+            }
+        }
+        paths = temp.toArray(new String[0]);
+        
+        /*
+        final Iterator<String> iterator = paths_.iterator();
+        while (iterator.hasNext()) {
+            final String p = iterator.next();
+            final AdvancedProvider advancedProvider = getProvider(advancedFile, p);
+            System.out.println("p = " + p);
+            if (advancedProvider != null) {
+                System.out.println("Found provider: " + advancedProvider);
+                parent = new TestAdvancedFile(parent, advancedProvider, p);
+                iterator.remove();
+            }
+            /*
+            if (advancedProvider != null || advancedFile == null) {
+                System.out.println("Found provider: " + advancedProvider);
                 advancedFile = new TestAdvancedFile(advancedFile, advancedProvider, p);
             } else {
                 advancedFile.paths = Arrays.copyOf(advancedFile.paths, advancedFile.paths.length + 1);
                 advancedFile.paths[advancedFile.paths.length - 1] = p;
             }
+            
         }
+        paths = paths_.toArray(new String[0]);
+        */
+    }
+    
+    public final String getPathString() {
+        if (path == null) {
+            path = Arrays.asList(paths).stream().collect(Collectors.joining(separator));
+        }
+        return path;
+    }
+    
+    public final byte[] readBytes() throws Exception {
+        if (parent != null) {
+            return parent.readBytes(this);
+        } else {
+            return Files.readAllBytes(new File(getPathString()).toPath());
+        }
+    }
+    
+    public final byte[] readBytes(TestAdvancedFile advancedFile) throws Exception {
+        Objects.requireNonNull(provider);
+        Objects.requireNonNull(advancedFile);
+        return provider.readBytes(this, advancedFile);
     }
     
     @Override

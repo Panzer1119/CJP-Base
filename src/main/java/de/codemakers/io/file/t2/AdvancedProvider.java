@@ -36,18 +36,23 @@ import java.util.List;
 
 public abstract class AdvancedProvider {
     
-    public abstract List<TestAdvancedFile> listFiles(TestAdvancedFile advancedFile);
+    public abstract List<TestAdvancedFile> listFiles(TestAdvancedFile parent, TestAdvancedFile advancedFile);
     
-    public abstract byte[] readBytes(TestAdvancedFile advancedFile);
+    public abstract byte[] readBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile);
     
-    public abstract boolean writeBytes(TestAdvancedFile advancedFile, byte[] data);
+    public abstract boolean writeBytes(TestAdvancedFile parent, TestAdvancedFile advancedFile, byte[] data);
     
-    public abstract boolean createFile(TestAdvancedFile advancedFile);
+    public abstract boolean createFile(TestAdvancedFile parent, TestAdvancedFile advancedFile);
     
-    public abstract boolean deleteFile(TestAdvancedFile advancedFile);
+    public abstract boolean deleteFile(TestAdvancedFile parent, TestAdvancedFile advancedFile);
     
-    public abstract boolean mkdir(TestAdvancedFile advancedFile);
+    public abstract boolean mkdir(TestAdvancedFile parent, TestAdvancedFile advancedFile);
     
-    public abstract boolean accept(TestAdvancedFile parent, String name);
+    public abstract boolean accept(TestAdvancedFile parent, String name, String name_lower, String name_upper);
+    
+    @Override
+    public String toString() {
+        return "AdvancedProvider{}";
+    }
     
 }
