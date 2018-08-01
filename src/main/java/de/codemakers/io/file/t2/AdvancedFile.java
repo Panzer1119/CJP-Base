@@ -33,7 +33,7 @@ public class AdvancedFile {
         PROVIDERS.add(ZIP_PROVIDER);
     }
     
-    private final String separator = "/"; //TODO Change this
+    private final String separator = File.separator; //TODO Change this
     private String[] paths = new String[0];
     private AdvancedFile parent = null;
     private AdvancedProvider provider = null;
@@ -77,46 +77,16 @@ public class AdvancedFile {
                 paths_.add(p);
             }
         }
-        //paths = paths_.toArray(new String[0]);
-        //AdvancedFile advancedFile = null;
-        //for (String p : paths) {
-        
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
             temp.add(p);
             final AdvancedProvider advancedProvider = getProvider(parent, p);
-            //System.out.println("p = " + p);
             if (advancedProvider != null) {
-                //System.out.println("Found provider: " + advancedProvider);
                 parent = new AdvancedFile(parent, advancedProvider, temp.toArray(new String[0]));
                 temp.clear();
             }
         }
         paths = temp.toArray(new String[0]);
-        
-        /*
-        final Iterator<String> iterator = paths_.iterator();
-        while (iterator.hasNext()) {
-            final String p = iterator.next();
-            final AdvancedProvider advancedProvider = getProvider(advancedFile, p);
-            System.out.println("p = " + p);
-            if (advancedProvider != null) {
-                System.out.println("Found provider: " + advancedProvider);
-                parent = new AdvancedFile(parent, advancedProvider, p);
-                iterator.remove();
-            }
-            /*
-            if (advancedProvider != null || advancedFile == null) {
-                System.out.println("Found provider: " + advancedProvider);
-                advancedFile = new AdvancedFile(advancedFile, advancedProvider, p);
-            } else {
-                advancedFile.paths = Arrays.copyOf(advancedFile.paths, advancedFile.paths.length + 1);
-                advancedFile.paths[advancedFile.paths.length - 1] = p;
-            }
-            
-        }
-        paths = paths_.toArray(new String[0]);
-        */
     }
     
     public final String[] getPaths() {
