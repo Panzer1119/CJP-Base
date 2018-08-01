@@ -17,8 +17,8 @@
 package de.codemakers.io.file.t1;
 
 public class PathEntry {
-
-    public final PathEntry parent;
+    
+    public PathEntry parent;
     public final String name;
     public final boolean file;
     public FileProvider provider;
@@ -31,6 +31,9 @@ public class PathEntry {
         this.parent = parent;
         this.name = name;
         this.file = file;
+        if (name.toLowerCase().endsWith(".zip")) {
+            provider = new ZIPProvider(this);
+        }
     }
     
     public final PathEntry getParent() {
@@ -59,6 +62,25 @@ public class PathEntry {
             return name;
         }
         return parent.toPathString(separator) + separator + name;
+    }
+    
+    public final PathEntry subtract(PathEntry pathEntry) {
+        final PathEntry this_ = copy();
+        PathEntry temp = this_;
+        while (pathEntry.parent != null) {
+            pathEntry = pathEntry.parent;
+            temp = temp.parent;
+        }
+        temp.parent = null;
+        return temp;
+    }
+    
+    public final PathEntry copy() {
+        if (parent == null) {
+            return new PathEntry(name, file);
+        } else {
+            return new PathEntry(parent.copy(), name, file);
+        }
     }
     
     @Override

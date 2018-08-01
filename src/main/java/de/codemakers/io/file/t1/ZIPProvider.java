@@ -16,9 +16,17 @@
 
 package de.codemakers.io.file.t1;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 
 public class ZIPProvider extends FileProvider {
+    
+    private PathEntry parent;
+    
+    public ZIPProvider(PathEntry parent) {
+        this.parent = parent;
+    }
     
     @Override
     public List<TestAdvancedFile> listFiles() {
@@ -27,7 +35,13 @@ public class ZIPProvider extends FileProvider {
     
     @Override
     public byte[] readFile(String path) {
-        return new byte[0];
+        //return new byte[0];
+        try {
+            return Files.readAllBytes(new File(parent.toPathString("/") + "/" + path).toPath());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
     
     @Override

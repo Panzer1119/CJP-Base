@@ -16,6 +16,9 @@
 
 package de.codemakers.io.file.t1;
 
+import java.io.File;
+import java.nio.file.Files;
+
 public class TestAdvancedFile {
 
     public static final String FILE_SEPARATOR_WINDOWS = "\\";
@@ -53,6 +56,23 @@ public class TestAdvancedFile {
     
     public final String getPathString() {
         return path.toPathString(getSeparator());
+    }
+    
+    public final byte[] toBytes() throws Exception {
+        PathEntry pathEntry = path;
+        FileProvider fileProvider = null;
+        while (pathEntry != null) {
+            if (pathEntry.getProvider() != null) {
+                fileProvider = pathEntry.getProvider();
+                break;
+            }
+            pathEntry = pathEntry.getParent();
+        }
+        if (fileProvider == null) {
+            return Files.readAllBytes(new File(getPathString()).toPath());
+        } else {
+            return fileProvider.readFile(path.subtract(pathEntry).toPathString(separator));
+        }
     }
     
     @Override
