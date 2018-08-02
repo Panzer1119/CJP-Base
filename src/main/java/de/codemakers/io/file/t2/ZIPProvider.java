@@ -226,7 +226,11 @@ public class ZIPProvider extends AdvancedProvider {
     
     @Override
     public boolean accept(AdvancedFile parent, String name) {
-        return name.toLowerCase().endsWith(".zip");
+        if (!name.contains(".")) {
+            return false;
+        }
+        final String name_lower = name.toLowerCase();
+        return name_lower.endsWith(".zip") || name_lower.endsWith(".jar");
     }
     
 }
