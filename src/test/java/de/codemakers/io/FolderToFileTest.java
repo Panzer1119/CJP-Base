@@ -20,6 +20,7 @@ import de.codemakers.base.logger.Logger;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class FolderToFileTest {
@@ -29,7 +30,7 @@ public class FolderToFileTest {
     public static final byte BYTE_FOLDER = -0xF;
     public static final byte BYTE_FOLDER_END = -0x8;
     
-    public static final void main(String[] args) {
+    public static final void main(String[] args) throws Exception {
         final int i = 23645;
         System.out.println("i = " + i);
         final LinkedList<Boolean> i_ = new LinkedList<>();
@@ -59,26 +60,50 @@ public class FolderToFileTest {
                 //System.out.print("0");
             }
         });
-        System.out.println();
-        File parent_ = folder.getParentFile();
-        File folder_ = folder;
-        while (!buffer.isEmpty()) {
-            final byte b = bitsToByte(buffer);
-            if (b == BYTE_FILE) {
-                bitsToFile(folder_, buffer);
-            } else if (b == BYTE_FOLDER) {
-                folder_ = bitsToFolder(folder_, buffer);
-                parent_ = folder_.getParentFile();
-            } else {
-                System.err.println("UNKNOWN FORMAT: " + b);
+        final boolean save = true;
+        if (!save) {
+            System.out.println();
+            File parent_ = folder.getParentFile();
+            File folder_ = folder;
+            while (!buffer.isEmpty()) {
+                final byte b = bitsToByte(buffer);
+                if (b == BYTE_FILE) {
+                    bitsToFile(folder_, buffer);
+                } else if (b == BYTE_FOLDER) {
+                    folder_ = bitsToFolder(folder_, buffer);
+                    parent_ = folder_.getParentFile();
+                } else {
+                    System.err.println("UNKNOWN FORMAT: " + b);
+                }
+                final byte b_ = bitsToByte(buffer);
+                if (b_ == BYTE_FOLDER_END) {
+                    folder_ = parent_;
+                    parent_ = folder_.getParentFile();
+                } else if (b_ != BYTE_NOTHING) {
+                    System.err.println("UNKNOWN END: " + b_);
+                }
             }
-            final byte b_ = bitsToByte(buffer);
-            if (b_ == BYTE_FOLDER_END) {
-                folder_ = parent_;
-                parent_ = folder_.getParentFile();
-            } else if (b_ != BYTE_NOTHING) {
-                System.err.println("UNKNOWN END: " + b_);
+        } else {
+            //System.out.println(String.format("buffer.size() = %d, buffer.size() / 8 = %d, (buffer.size() / 8) * 8 = %d, buffer.size() - ((buffer.size() / 8) * 8) = %d", buffer.size(), buffer.size() / 8, (buffer.size() / 8) * 8, buffer.size() - ((buffer.size() / 8) * 8)));
+            final long start_writing = System.currentTimeMillis();
+            System.out.println("Start Writing " + start_writing + ": " + output);
+            byte[] data = bitsToBytes(buffer.size() / 8, buffer);
+            final int remaining = buffer.size() - ((buffer.size() / 8) * 8);
+            if (remaining > 0) {
+                for (int i__ = 0; i__ < (8 - remaining); i__++) {
+                    buffer.addFirst(false);
+                }
+                data = Arrays.copyOf(data, data.length + 1);
+                final byte b = bitsToByte(buffer);
+                data[data.length - 1] = b;
             }
+            if (!buffer.isEmpty()) {
+                System.err.println("Buffer is not completely empty");
+                System.exit(-1);
+            }
+            Files.write(output.toPath(), data);
+            final long duration = System.currentTimeMillis() - start_writing;
+            System.out.println("Time Taken Writing: " + duration + "ms");
         }
     }
     
