@@ -106,10 +106,10 @@ public class AdvancedFile {
     
     public final String getPathString() {
         if (path == null) {
-            path = Arrays.stream(paths).collect(Collectors.joining(separator));
+            path = Arrays.stream(paths).collect(Collectors.joining(separator_string));
         }
         if (parent != null) {
-            path = parent.getPathString() + separator + path;
+            path = parent.getPathString() + separator_char + path;
         }
         return path;
     }
