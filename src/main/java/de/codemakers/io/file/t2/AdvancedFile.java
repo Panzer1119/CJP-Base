@@ -30,13 +30,16 @@ public class AdvancedFile {
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();
-    public static final String FILE_SEPARATOR_CURRENT_STRING = File.separator;
+    public static final String FILE_SEPARATOR_CURRENT_STRING = OSUtil.CURRENT_OS_HELPER.getFileSeparator();
+    public static final String FILE_SEPARATOR_NOT_CURRENT_STRING = FILE_SEPARATOR_CURRENT_STRING == FILE_SEPARATOR_WINDOWS_STRING ? FILE_SEPARATOR_DEFAULT_STRING : FILE_SEPARATOR_WINDOWS_STRING;
     public static final char FILE_SEPARATOR_WINDOWS_CHAR = OSUtil.WINDOWS_HELPER.getFileSeparatorChar();
     public static final char FILE_SEPARATOR_DEFAULT_CHAR = OSUtil.DEFAULT_HELPER.getFileSeparatorChar();
-    public static final char FILE_SEPARATOR_CURRENT_CHAR = File.separatorChar;
+    public static final char FILE_SEPARATOR_CURRENT_CHAR = OSUtil.CURRENT_OS_HELPER.getFileSeparatorChar();
+    public static final char FILE_SEPARATOR_NOT_CURRENT_CHAR = FILE_SEPARATOR_CURRENT_CHAR == FILE_SEPARATOR_WINDOWS_CHAR ? FILE_SEPARATOR_DEFAULT_CHAR : FILE_SEPARATOR_WINDOWS_CHAR;
     public static final String FILE_SEPARATOR_WINDOWS_REGEX = OSUtil.WINDOWS_HELPER.getFileSeparatorRegex();
     public static final String FILE_SEPARATOR_DEFAULT_REGEX = OSUtil.DEFAULT_HELPER.getFileSeparatorRegex();
     public static final String FILE_SEPARATOR_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR == FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
+    public static final String FILE_SEPARATOR_NOT_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR != FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     
     public static final List<AdvancedProvider> PROVIDERS = new ArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
@@ -83,7 +86,15 @@ public class AdvancedFile {
         final List<String> paths_ = new ArrayList<>();
         for (String p : paths) {
             if (p.contains(separator_string == null ? FILE_SEPARATOR_CURRENT_STRING : separator_string)) {
-                paths_.addAll(Arrays.asList(p.split(separator_regex == null ? FILE_SEPARATOR_CURRENT_REGEX : separator_regex)));
+                separator_string = FILE_SEPARATOR_CURRENT_STRING;
+                separator_char = FILE_SEPARATOR_CURRENT_CHAR;
+                separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
+                paths_.addAll(Arrays.asList(p.split(separator_regex)));
+            } else if (separator_string == null && p.contains(FILE_SEPARATOR_NOT_CURRENT_STRING)) {
+                separator_string = FILE_SEPARATOR_NOT_CURRENT_STRING;
+                separator_char = FILE_SEPARATOR_NOT_CURRENT_CHAR;
+                separator_regex = FILE_SEPARATOR_NOT_CURRENT_REGEX;
+                paths_.addAll(Arrays.asList(p.split(separator_regex)));
             } else {
                 paths_.add(p);
             }
