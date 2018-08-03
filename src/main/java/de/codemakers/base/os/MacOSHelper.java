@@ -25,11 +25,10 @@ import java.util.regex.Pattern;
 
 public class MacOSHelper implements OSHelper {
     
-    AtomicLong LAST_ID = new AtomicLong(-1);
-    Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
-    
     public static final String PATTERN_BATTERY_INFO_MAC_OS_STRING = "Now drawing from '(.+)' (.+) \\(id=(\\d+)\\)\t(\\d{1,3})%; (.+); (\\d+:\\d{1,2})(?: remaining present: (\\w+))?";
     public static final Pattern PATTERN_BATTERY_INFO_MAC_OS = Pattern.compile(PATTERN_BATTERY_INFO_MAC_OS_STRING);
+    AtomicLong LAST_ID = new AtomicLong(-1);
+    Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
     
     @Override
     public boolean isPathAbsolute(String path) {
@@ -42,8 +41,28 @@ public class MacOSHelper implements OSHelper {
     }
     
     @Override
+    public char getFileSeparatorChar() {
+        return OSUtil.LINUX_HELPER.getFileSeparatorChar();
+    }
+    
+    @Override
+    public String getFileSeparatorRegex() {
+        return OSUtil.LINUX_HELPER.getFileSeparatorRegex();
+    }
+    
+    @Override
     public String getPathSeparator() {
         return OSUtil.LINUX_HELPER.getPathSeparator();
+    }
+    
+    @Override
+    public char getPathSeparatorChar() {
+        return OSUtil.LINUX_HELPER.getPathSeparatorChar();
+    }
+    
+    @Override
+    public String getPathSeparatorRegex() {
+        return OSUtil.LINUX_HELPER.getPathSeparatorRegex();
     }
     
     @Override

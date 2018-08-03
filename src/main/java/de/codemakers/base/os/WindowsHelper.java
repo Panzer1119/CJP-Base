@@ -78,7 +78,27 @@ public class WindowsHelper implements OSHelper {
     }
     
     @Override
+    public char getFileSeparatorChar() {
+        return '\\';
+    }
+    
+    @Override
+    public String getFileSeparatorRegex() {
+        return "\\\\";
+    }
+    
+    @Override
     public String getPathSeparator() {
+        return ";";
+    }
+    
+    @Override
+    public char getPathSeparatorChar() {
+        return ';';
+    }
+    
+    @Override
+    public String getPathSeparatorRegex() {
         return ";";
     }
     

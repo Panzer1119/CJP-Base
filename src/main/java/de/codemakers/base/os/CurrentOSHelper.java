@@ -39,8 +39,28 @@ public class CurrentOSHelper implements OSHelper {
     }
     
     @Override
+    public char getFileSeparatorChar() {
+        return File.separatorChar;
+    }
+    
+    @Override
+    public String getFileSeparatorRegex() {
+        return File.separatorChar == '\\' ? File.separator + File.separator : File.separator;
+    }
+    
+    @Override
     public String getPathSeparator() {
         return File.pathSeparator;
+    }
+    
+    @Override
+    public char getPathSeparatorChar() {
+        return File.pathSeparatorChar;
+    }
+    
+    @Override
+    public String getPathSeparatorRegex() {
+        return File.pathSeparatorChar == '\\' ? File.pathSeparator + File.pathSeparator : File.pathSeparator;
     }
     
     @Override
