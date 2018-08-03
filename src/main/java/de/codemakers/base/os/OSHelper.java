@@ -29,10 +29,14 @@ public interface OSHelper {
     String getFileSeparator();
 	
     char getFileSeparatorChar();
+	
+	String getFileSeparatorRegex();
     
     String getPathSeparator();
 	
     char getPathSeparatorChar();
+	
+	String getPathSeparatorRegex();
     
     String getLineSeparator();
     
