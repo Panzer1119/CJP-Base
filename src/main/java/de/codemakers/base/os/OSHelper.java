@@ -27,8 +27,12 @@ public interface OSHelper {
     boolean isPathAbsolute(String path);
     
     String getFileSeparator();
+	
+    char getFileSeparatorChar();
     
     String getPathSeparator();
+	
+    char getPathSeparatorChar();
     
     String getLineSeparator();
     
