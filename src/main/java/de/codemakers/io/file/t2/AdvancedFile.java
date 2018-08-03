@@ -16,6 +16,8 @@
 
 package de.codemakers.io.file.t2;
 
+import de.codemakers.base.os.OSUtil;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -26,15 +28,26 @@ import java.util.stream.Collectors;
 
 public class AdvancedFile {
     
+    public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
+    public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();
+    public static final String FILE_SEPARATOR_CURRENT_STRING = File.separator;
+    public static final char FILE_SEPARATOR_WINDOWS_CHAR = OSUtil.WINDOWS_HELPER.getFileSeparatorChar();
+    public static final char FILE_SEPARATOR_DEFAULT_CHAR = OSUtil.DEFAULT_HELPER.getFileSeparatorChar();
+    public static final char FILE_SEPARATOR_CURRENT_CHAR = File.separatorChar;
+    public static final String FILE_SEPARATOR_WINDOWS_REGEX = OSUtil.WINDOWS_HELPER.getFileSeparatorRegex();
+    public static final String FILE_SEPARATOR_DEFAULT_REGEX = OSUtil.DEFAULT_HELPER.getFileSeparatorRegex();
+    public static final String FILE_SEPARATOR_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR == FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
+    
     public static final List<AdvancedProvider> PROVIDERS = new ArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
-    public static final String FILE_SEPARATOR = File.separator;
     
     static {
         PROVIDERS.add(ZIP_PROVIDER);
     }
     
-    private final String separator = FILE_SEPARATOR; //TODO Change this
+    private String separator_string = null;
+    private char separator_char = 0;
+    private String separator_regex = null;
     private String[] paths = new String[0];
     private AdvancedFile parent = null;
     private AdvancedProvider provider = null;
@@ -69,8 +82,8 @@ public class AdvancedFile {
     private final void init() {
         final List<String> paths_ = new ArrayList<>();
         for (String p : paths) {
-            if (p.contains(separator)) {
-                paths_.addAll(Arrays.asList(p.split(separator)));
+            if (p.contains(separator_string == null ? FILE_SEPARATOR_CURRENT_STRING : separator_string)) {
+                paths_.addAll(Arrays.asList(p.split(separator_regex == null ? FILE_SEPARATOR_CURRENT_REGEX : separator_regex)));
             } else {
                 paths_.add(p);
             }
