@@ -67,7 +67,9 @@ public class AdvancedFile {
     }
     
     public AdvancedFile(AdvancedFile parent, String... paths) {
-        this(parent, null, paths);
+        this.parent = parent;
+        this.provider = null;
+        this.paths = paths;
         init();
     }
     
@@ -75,6 +77,15 @@ public class AdvancedFile {
         this.parent = parent;
         this.provider = provider;
         this.paths = paths;
+        if (parent != null) {
+            separator_string = parent.separator_string;
+            separator_char = parent.separator_char;
+            separator_regex = parent.separator_regex;
+        } else {
+            separator_string = FILE_SEPARATOR_CURRENT_STRING;
+            separator_char = FILE_SEPARATOR_CURRENT_CHAR;
+            separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
+        }
     }
     
     public static final AdvancedProvider getProvider(AdvancedFile parent, String name) {
@@ -86,11 +97,19 @@ public class AdvancedFile {
         final List<String> paths_ = new ArrayList<>();
         for (String p : paths) {
             if (p.contains(separator_string == null ? FILE_SEPARATOR_CURRENT_STRING : separator_string)) {
-                separator_string = FILE_SEPARATOR_CURRENT_STRING;
-                separator_char = FILE_SEPARATOR_CURRENT_CHAR;
-                separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
+                if (p.contains(separator_string == null ? FILE_SEPARATOR_NOT_CURRENT_STRING : (separator_char == FILE_SEPARATOR_CURRENT_CHAR) ? FILE_SEPARATOR_NOT_CURRENT_STRING : FILE_SEPARATOR_CURRENT_STRING)) {
+                    throw new RuntimeException("A path may not contain 2 separate file separators");
+                }
+                if (separator_string == null) {
+                    separator_string = FILE_SEPARATOR_CURRENT_STRING;
+                    separator_char = FILE_SEPARATOR_CURRENT_CHAR;
+                    separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
+                }
                 paths_.addAll(Arrays.asList(p.split(separator_regex)));
-            } else if (separator_string == null && p.contains(FILE_SEPARATOR_NOT_CURRENT_STRING)) {
+            } else if (p.contains(FILE_SEPARATOR_NOT_CURRENT_STRING)) {
+                if (separator_string != null) {
+                    throw new RuntimeException("A path may not contain 2 separate file separators");
+                }
                 separator_string = FILE_SEPARATOR_NOT_CURRENT_STRING;
                 separator_char = FILE_SEPARATOR_NOT_CURRENT_CHAR;
                 separator_regex = FILE_SEPARATOR_NOT_CURRENT_REGEX;
@@ -98,6 +117,11 @@ public class AdvancedFile {
             } else {
                 paths_.add(p);
             }
+        }
+        if (separator_string == null) {
+            separator_string = FILE_SEPARATOR_CURRENT_STRING;
+            separator_char = FILE_SEPARATOR_CURRENT_CHAR;
+            separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
         }
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
