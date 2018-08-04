@@ -48,9 +48,8 @@ public class AdvancedFile {
         PROVIDERS.add(ZIP_PROVIDER);
     }
     
-    private String separator_string = null;
-    private char separator_char = 0;
-    private String separator_regex = null;
+    private boolean init = false;
+    private boolean windowsSeparator = false;
     private String[] paths = new String[0];
     private AdvancedFile parent = null;
     private AdvancedProvider provider = null;
@@ -78,13 +77,8 @@ public class AdvancedFile {
         this.provider = provider;
         this.paths = paths;
         if (parent != null) {
-            separator_string = parent.separator_string;
-            separator_char = parent.separator_char;
-            separator_regex = parent.separator_regex;
-        } else {
-            separator_string = FILE_SEPARATOR_CURRENT_STRING;
-            separator_char = FILE_SEPARATOR_CURRENT_CHAR;
-            separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
+            windowsSeparator = parent.windowsSeparator;
+            init = true;
         }
     }
     
@@ -94,32 +88,51 @@ public class AdvancedFile {
     }
     
     private final void init() {
+        boolean done = false;
         final List<String> paths_ = new ArrayList<>();
         for (String p : paths) {
-            if (separator_string == null) {
-                if (p.contains(FILE_SEPARATOR_CURRENT_STRING)) {
-                    separator_string = FILE_SEPARATOR_CURRENT_STRING;
-                    separator_char = FILE_SEPARATOR_CURRENT_CHAR;
-                    separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
-                    paths_.addAll(Arrays.asList(p.split(separator_regex)));
-                } else if (p.contains(FILE_SEPARATOR_NOT_CURRENT_STRING)) {
-                    separator_string = FILE_SEPARATOR_NOT_CURRENT_STRING;
-                    separator_char = FILE_SEPARATOR_NOT_CURRENT_CHAR;
-                    separator_regex = FILE_SEPARATOR_NOT_CURRENT_REGEX;
-                    paths_.addAll(Arrays.asList(p.split(separator_regex)));
-                } else {
+            done = false;
+            if (!init) {
+                if (p.contains(FILE_SEPARATOR_WINDOWS_STRING)) {
+                    paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_WINDOWS_REGEX)));
+                    windowsSeparator = true;
+                    init = true;
+                    done = true;
+                }
+                if (p.contains(FILE_SEPARATOR_DEFAULT_STRING)) {
+                    if (init) {
+                        throw new RuntimeException(getClass().getSimpleName() + " contains already a Windows file separator");
+                    }
+                    paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_DEFAULT_REGEX)));
+                    windowsSeparator = false;
+                    init = true;
+                    done = true;
+                }
+                if (!done) {
                     paths_.add(p);
                 }
-            } else if (p.contains(separator_string)) {
-                paths_.addAll(Arrays.asList(p.split(separator_regex)));
             } else {
-                paths_.add(p);
+                if (p.contains(FILE_SEPARATOR_WINDOWS_STRING)) {
+                    if (windowsSeparator) {
+                        paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_WINDOWS_REGEX)));
+                    } else {
+                        throw new RuntimeException(getClass().getSimpleName() + " contains already an UNIX file separator");
+                    }
+                    done = true;
+                }
+                if (p.contains(FILE_SEPARATOR_DEFAULT_STRING)) {
+                    if (windowsSeparator) {
+                        throw new RuntimeException(getClass().getSimpleName() + " contains already a Windows file separator");
+                    } else {
+                        paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_DEFAULT_REGEX)));
+                    }
+                    done = true;
+                }
+                if (!done) {
+                    paths_.add(p);
+                }
             }
-        }
-        if (separator_string == null) {
-            separator_string = FILE_SEPARATOR_CURRENT_STRING;
-            separator_char = FILE_SEPARATOR_CURRENT_CHAR;
-            separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
+            init = true;
         }
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
@@ -139,10 +152,10 @@ public class AdvancedFile {
     
     public final String getPathString() {
         if (path == null) {
-            path = Arrays.stream(paths).collect(Collectors.joining(separator_string));
+            path = Arrays.stream(paths).collect(Collectors.joining(windowsSeparator ? FILE_SEPARATOR_WINDOWS_STRING : FILE_SEPARATOR_DEFAULT_STRING));
         }
         if (parent != null) {
-            path = parent.getPathString() + separator_char + path;
+            path = parent.getPathString() + (windowsSeparator ? FILE_SEPARATOR_WINDOWS_CHAR : FILE_SEPARATOR_DEFAULT_CHAR) + path;
         }
         return path;
     }
@@ -202,7 +215,7 @@ public class AdvancedFile {
     
     @Override
     public final String toString() {
-        return "AdvancedFile{" + "paths=" + Arrays.toString(paths) + ", parent=" + parent + ", provider=" + provider + ", path='" + path + '\'' + '}';
+        return "AdvancedFile{" + "init=" + init + ", windowsSeparator=" + windowsSeparator + ", paths=" + Arrays.toString(paths) + ", parent=" + parent + ", provider=" + provider + ", path='" + path + '\'' + '}';
     }
     
 }
