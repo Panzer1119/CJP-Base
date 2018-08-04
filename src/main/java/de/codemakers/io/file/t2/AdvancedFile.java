@@ -115,29 +115,6 @@ public class AdvancedFile {
             } else {
                 paths_.add(p);
             }
-            /*
-            if (p.contains(separator_string == null ? FILE_SEPARATOR_CURRENT_STRING : separator_string)) {
-                if (p.contains(separator_string == null ? FILE_SEPARATOR_NOT_CURRENT_STRING : (separator_char == FILE_SEPARATOR_CURRENT_CHAR) ? FILE_SEPARATOR_NOT_CURRENT_STRING : FILE_SEPARATOR_CURRENT_STRING)) {
-                    throw new RuntimeException("A path may not contain 2 separate file separators");
-                }
-                if (separator_string == null) {
-                    separator_string = FILE_SEPARATOR_CURRENT_STRING;
-                    separator_char = FILE_SEPARATOR_CURRENT_CHAR;
-                    separator_regex = FILE_SEPARATOR_CURRENT_REGEX;
-                }
-                paths_.addAll(Arrays.asList(p.split(separator_regex)));
-            } else if (p.contains(FILE_SEPARATOR_NOT_CURRENT_STRING)) {
-                if (separator_string != null) {
-                    throw new RuntimeException("A path may not contain 2 separate file separators");
-                }
-                separator_string = FILE_SEPARATOR_NOT_CURRENT_STRING;
-                separator_char = FILE_SEPARATOR_NOT_CURRENT_CHAR;
-                separator_regex = FILE_SEPARATOR_NOT_CURRENT_REGEX;
-                paths_.addAll(Arrays.asList(p.split(separator_regex)));
-            } else {
-                paths_.add(p);
-            }
-            */
         }
         if (separator_string == null) {
             separator_string = FILE_SEPARATOR_CURRENT_STRING;
