@@ -46,8 +46,11 @@ public class TestAdvancedFileTest {
         System.out.println("=======================================================================================================================================================");
         advancedFile_2.listFiles(true).stream().map(AdvancedFile::getPathString).forEach(System.out::println);
         final AdvancedFile advancedFile__1 = new AdvancedFile("test/1/2");
+        System.out.println("advancedFile__1 = " + advancedFile__1);
         final AdvancedFile advancedFile__2 = new AdvancedFile("test\\1\\2");
+        System.out.println("advancedFile__2 = " + advancedFile__2);
         final AdvancedFile advancedFile__3 = new AdvancedFile("test/1\\2");
+        System.out.println("advancedFile__3 = " + advancedFile__3);
     }
     
 }
