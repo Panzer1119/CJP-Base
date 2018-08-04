@@ -101,7 +101,7 @@ public class AdvancedFile {
                 }
                 if (p.contains(FILE_SEPARATOR_DEFAULT_STRING)) {
                     if (init) {
-                        throw new RuntimeException(getClass().getSimpleName() + " contains already a Windows file separator");
+                        throw new RuntimeException(getClass().getSimpleName() + " already contains a Windows file separator");
                     }
                     paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_DEFAULT_REGEX)));
                     windowsSeparator = false;
@@ -116,13 +116,13 @@ public class AdvancedFile {
                     if (windowsSeparator) {
                         paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_WINDOWS_REGEX)));
                     } else {
-                        throw new RuntimeException(getClass().getSimpleName() + " contains already an UNIX file separator");
+                        throw new RuntimeException(getClass().getSimpleName() + " already contains an UNIX file separator");
                     }
                     done = true;
                 }
                 if (p.contains(FILE_SEPARATOR_DEFAULT_STRING)) {
                     if (windowsSeparator) {
-                        throw new RuntimeException(getClass().getSimpleName() + " contains already a Windows file separator");
+                        throw new RuntimeException(getClass().getSimpleName() + " already contains a Windows file separator");
                     } else {
                         paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_DEFAULT_REGEX)));
                     }
@@ -144,6 +144,8 @@ public class AdvancedFile {
             }
         }
         paths = temp.toArray(new String[0]);
+        temp.clear();
+        paths_.clear();
     }
     
     public final String[] getPaths() {
