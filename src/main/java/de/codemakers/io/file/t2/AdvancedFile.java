@@ -41,6 +41,9 @@ public class AdvancedFile {
     public static final String FILE_SEPARATOR_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR == FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     public static final String FILE_SEPARATOR_NOT_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR != FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     
+    public static final String PREFIX_INTERN = "intern:";
+    public static final String PREFIX_EXTERN = "extern:";
+    
     public static final List<AdvancedProvider> PROVIDERS = new ArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
     
@@ -50,6 +53,7 @@ public class AdvancedFile {
     
     private boolean init = false;
     private boolean windowsSeparator = false;
+    private boolean extern = true;
     private String[] paths = new String[0];
     private AdvancedFile parent = null;
     private AdvancedProvider provider = null;
@@ -62,6 +66,7 @@ public class AdvancedFile {
     public AdvancedFile(String name, String[] paths) {
         this.paths = Arrays.copyOf(paths, paths.length + 1);
         this.paths[this.paths.length - 1] = name;
+        checkIntern();
         init();
     }
     
@@ -69,6 +74,11 @@ public class AdvancedFile {
         this.parent = parent;
         this.provider = null;
         this.paths = paths;
+        if (parent != null) {
+            extern = parent.extern;
+        } else {
+            checkIntern();
+        }
         init();
     }
     
@@ -78,7 +88,10 @@ public class AdvancedFile {
         this.paths = paths;
         if (parent != null) {
             windowsSeparator = parent.windowsSeparator;
+            extern = parent.extern;
             init = true;
+        } else {
+            checkIntern();
         }
     }
     
@@ -155,11 +168,26 @@ public class AdvancedFile {
     public final String getPathString() {
         if (path == null) {
             path = Arrays.stream(paths).collect(Collectors.joining(windowsSeparator ? FILE_SEPARATOR_WINDOWS_STRING : FILE_SEPARATOR_DEFAULT_STRING));
-        }
-        if (parent != null) {
-            path = parent.getPathString() + (windowsSeparator ? FILE_SEPARATOR_WINDOWS_CHAR : FILE_SEPARATOR_DEFAULT_CHAR) + path;
+            if (parent != null) {
+                path = parent.getPathString() + (windowsSeparator ? FILE_SEPARATOR_WINDOWS_CHAR : FILE_SEPARATOR_DEFAULT_CHAR) + path;
+            }
         }
         return path;
+    }
+    
+    private final void checkIntern() {
+        if (paths != null && paths.length > 0) {
+            if (paths[0].startsWith(PREFIX_INTERN)) {
+                extern = false;
+                paths[0] = paths[0].substring(PREFIX_INTERN.length());
+            } else if (paths[0].startsWith(PREFIX_EXTERN)) {
+                extern = true;
+                paths[0] = paths[0].substring(PREFIX_EXTERN.length());
+            }
+            if (paths[0].isEmpty()) {
+                paths = Arrays.asList(paths).stream().skip(1).toArray(String[]::new);
+            }
+        }
     }
     
     public final byte[] readBytes() throws Exception {
@@ -217,7 +245,7 @@ public class AdvancedFile {
     
     @Override
     public final String toString() {
-        return "AdvancedFile{" + "init=" + init + ", windowsSeparator=" + windowsSeparator + ", paths=" + Arrays.toString(paths) + ", parent=" + parent + ", provider=" + provider + ", path='" + path + '\'' + '}';
+        return "AdvancedFile{" + "windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", paths=" + Arrays.toString(paths) + ", parent=" + parent + ", provider=" + provider + ", path='" + path + '\'' + '}';
     }
     
 }

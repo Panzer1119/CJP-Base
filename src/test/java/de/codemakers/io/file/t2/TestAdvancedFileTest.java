@@ -49,8 +49,12 @@ public class TestAdvancedFileTest {
         System.out.println("advancedFile__1 = " + advancedFile__1);
         final AdvancedFile advancedFile__2 = new AdvancedFile("test\\1\\2");
         System.out.println("advancedFile__2 = " + advancedFile__2);
-        final AdvancedFile advancedFile__3 = new AdvancedFile("test/1\\2");
+        final AdvancedFile advancedFile__3 = new AdvancedFile("extern:test/1/2");
         System.out.println("advancedFile__3 = " + advancedFile__3);
+        final AdvancedFile advancedFile__4 = new AdvancedFile("intern:test/1/2");
+        System.out.println("advancedFile__4 = " + advancedFile__4);
+        final AdvancedFile advancedFile__5 = new AdvancedFile("test/1\\2");
+        System.out.println("advancedFile__5 = " + advancedFile__5);
     }
     
 }
