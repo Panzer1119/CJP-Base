@@ -20,6 +20,7 @@ import de.codemakers.base.logger.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -33,18 +34,21 @@ public class ClosableZipEntry implements Closeable {
     private boolean closed = false;
     
     public ClosableZipEntry(ZipFile zipFile, ZipInputStream zipInputStream, ZipEntry zipEntry) {
+        Objects.requireNonNull(zipEntry);
         this.zipFile = zipFile;
         this.zipInputStream = zipInputStream;
         this.zipEntry = zipEntry;
     }
     
     public ClosableZipEntry(ZipInputStream zipInputStream, ZipEntry zipEntry) {
+        Objects.requireNonNull(zipEntry);
         this.zipFile = null;
         this.zipInputStream = zipInputStream;
         this.zipEntry = zipEntry;
     }
     
     public ClosableZipEntry(ZipFile zipFile, ZipEntry zipEntry) {
+        Objects.requireNonNull(zipEntry);
         this.zipFile = zipFile;
         this.zipInputStream = null;
         this.zipEntry = zipEntry;
@@ -92,10 +96,12 @@ public class ClosableZipEntry implements Closeable {
     
     public final <R> R close(Function<ZipEntry, R> function) {
         R r = null;
-        try {
-            r = function.apply(zipEntry);
-        } catch (Exception ex) {
-            Logger.handleError(ex);
+        if (function != null) {
+            try {
+                r = function.apply(zipEntry);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
         }
         closeWithOutException();
         return r;

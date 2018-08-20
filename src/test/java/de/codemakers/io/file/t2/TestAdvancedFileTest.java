@@ -23,6 +23,8 @@ public class TestAdvancedFileTest {
         //final AdvancedFile advancedFile = new AdvancedFile("test/1/2/win_2.zip/win.txt.zip/win.txt");
         final AdvancedFile advancedFile = new AdvancedFile("test/1/2/3.zip/3/win.txt.zip/win.txt");
         System.out.println(advancedFile);
+        System.out.println("isFile:");
+        System.out.println(advancedFile.isFile());
         System.out.println("=======================================================================================================================================================");
         System.out.println(new String(advancedFile.readBytes()));
         System.out.println("=======================================================================================================================================================");
@@ -34,10 +36,14 @@ public class TestAdvancedFileTest {
         System.out.println("=======================================================================================================================================================");
         System.out.println("Recursive: ");
         advancedFile_1.listFiles(true).stream().map(AdvancedFile::getPathString).forEach(System.out::println);
+        System.out.println("------------------------------");
+        advancedFile_1.listFiles(true).stream().forEach((advancedFile__) -> System.out.println(String.format("%s, isFile: %b", advancedFile__.getPathString(), advancedFile__.isFile())));
         System.out.println("=======================================================================================================================================================");
         System.out.println("=======================================================================================================================================================");
         System.out.println("Not Recursive: ");
         advancedFile_1.listFiles(false).stream().map(AdvancedFile::getPathString).forEach(System.out::println);
+        System.out.println("------------------------------");
+        advancedFile_1.listFiles(false).stream().forEach((advancedFile__) -> System.out.println(String.format("%s, isFile: %b", advancedFile__.getPathString(), advancedFile__.isFile())));
         System.out.println("=======================================================================================================================================================");
         System.out.println("=======================================================================================================================================================");
         System.out.println("=======================================================================================================================================================");

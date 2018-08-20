@@ -284,7 +284,9 @@ public class ZIPProvider extends FileProvider {
                     }
                     zipInputStream.closeEntry();
                 }
-                final byte[] data = IOUtils.toByteArray(zipInputStream);
+                if (zipEntry == null) {
+                    return null;
+                }
                 return new ClosableZipEntry(zipInputStream, zipEntry);
             } catch (Exception ex) {
                 Logger.handleError(ex);
