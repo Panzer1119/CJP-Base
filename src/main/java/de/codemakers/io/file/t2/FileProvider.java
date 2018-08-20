@@ -20,7 +20,7 @@ import java.util.List;
 
 public abstract class FileProvider implements AdvancedFilenameFilter {
     
-    public abstract List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, List<AdvancedFile> advancedFiles, AdvancedFileFilter fileFilter, AdvancedFilenameFilter filenameFilter, boolean recursive, byte... data_parent);
+    public abstract List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, List<AdvancedFile> advancedFiles, AdvancedFileFilter advancedFileFilter, AdvancedFilenameFilter advancedFilenameFilter, boolean recursive, byte... data_parent);
     
     public abstract byte[] readBytes(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent);
     

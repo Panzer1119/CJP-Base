@@ -30,8 +30,19 @@ import java.util.zip.ZipInputStream;
 
 public class ZIPProvider extends FileProvider {
     
+    
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, boolean recursive, byte... data_parent) {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, List<AdvancedFile> advancedFiles, AdvancedFileFilter advancedFileFilter, AdvancedFilenameFilter advancedFilenameFilter, boolean recursive, byte... data_parent) {
+        if (advancedFileFilter != null) {
+            return listFiles(parent, advancedFile, advancedFiles, advancedFileFilter, recursive, data_parent);
+        } else if (advancedFilenameFilter != null) {
+            return listFiles(parent, advancedFile, advancedFiles, advancedFilenameFilter, recursive, data_parent);
+        } else {
+            return listFiles(parent, advancedFile, advancedFiles, recursive, data_parent);
+        }
+    }
+    
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, List<AdvancedFile> advancedFiles, boolean recursive, byte... data_parent) {
         if (data_parent == null || data_parent.length == 0) {
             try {
                 final ZipFile zipFile = new ZipFile(parent.getPathString());
@@ -65,10 +76,9 @@ public class ZIPProvider extends FileProvider {
         }
     }
     
-    @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, AdvancedFileFilter fileFilter, boolean recursive, byte... data_parent) {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, List<AdvancedFile> advancedFiles, AdvancedFileFilter fileFilter, boolean recursive, byte... data_parent) {
         if (fileFilter == null) {
-            return listFiles(parent, advancedFile, subPath, advancedFiles, recursive, data_parent);
+            return listFiles(parent, advancedFile, advancedFiles, recursive, data_parent);
         }
         if (data_parent == null || data_parent.length == 0) {
             try {
@@ -116,10 +126,9 @@ public class ZIPProvider extends FileProvider {
         }
     }
     
-    @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, AdvancedFilenameFilter filenameFilter, boolean recursive, byte... data_parent) {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, List<AdvancedFile> advancedFiles, AdvancedFilenameFilter filenameFilter, boolean recursive, byte... data_parent) {
         if (filenameFilter == null) {
-            return listFiles(parent, advancedFile, subPath, advancedFiles, recursive, data_parent);
+            return listFiles(parent, advancedFile, advancedFiles, recursive, data_parent);
         }
         if (data_parent == null || data_parent.length == 0) {
             try {
@@ -168,11 +177,11 @@ public class ZIPProvider extends FileProvider {
     }
     
     @Override
-    public byte[] readBytes(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, byte... data_parent) {
+    public byte[] readBytes(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
         if (data_parent == null || data_parent.length == 0) {
             try {
                 final ZipFile zipFile = new ZipFile(parent.getPathString());
-                final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(Arrays.stream(subPath).collect(Collectors.joining(File.separator)))));
+                final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(Arrays.stream(advancedFile.paths).collect(Collectors.joining(File.separator)))));
                 zipFile.close();
                 return data;
             } catch (Exception ex) {
@@ -181,7 +190,7 @@ public class ZIPProvider extends FileProvider {
             }
         } else {
             try {
-                final String subPath_ = Arrays.stream(subPath).collect(Collectors.joining(File.separator));
+                final String subPath_ = Arrays.stream(advancedFile.paths).collect(Collectors.joining(File.separator));
                 final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -200,72 +209,28 @@ public class ZIPProvider extends FileProvider {
     }
     
     @Override
-    public boolean writeBytes(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, byte[] data) {
-        throw new UnsupportedOperationException("Coming soon TM");
-    }
-    
-    @Override
-    public boolean createFile(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
-        throw new UnsupportedOperationException("Coming soon TM");
-    }
-    
-    @Override
-    public boolean deleteFile(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
-        throw new UnsupportedOperationException("Coming soon TM");
-    }
-    
-    @Override
-    public boolean mkdir(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
-        throw new UnsupportedOperationException("Coming soon TM");
-    }
-    
-    @Override
-    public boolean mkdirs(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath) {
-        throw new UnsupportedOperationException("Coming soon TM");
-    }
-    
-    @Override
-    public boolean accept(AdvancedFile parent, String name) {
-        if (!name.contains(".")) {
-            return false;
-        }
-        final String name_lower = name.toLowerCase();
-        return name_lower.endsWith(".zip") || name_lower.endsWith(".jar");
-    }
-    
-    @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, List<AdvancedFile> advancedFiles, AdvancedFileFilter fileFilter, AdvancedFilenameFilter filenameFilter, boolean recursive, byte... data_parent) {
-        return null;
-    }
-    
-    @Override
-    public byte[] readBytes(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
-        return new byte[0];
-    }
-    
-    @Override
     public boolean writeBytes(AdvancedFile parent, AdvancedFile advancedFile, byte[] data) {
-        return false;
+        throw new UnsupportedOperationException("Coming soon TM");
     }
     
     @Override
     public boolean createNewFile(AdvancedFile parent, AdvancedFile advancedFile) {
-        return false;
+        throw new UnsupportedOperationException("Coming soon TM");
     }
     
     @Override
     public boolean delete(AdvancedFile parent, AdvancedFile advancedFile) {
-        return false;
+        throw new UnsupportedOperationException("Coming soon TM");
     }
     
     @Override
     public boolean mkdir(AdvancedFile parent, AdvancedFile advancedFile) {
-        return false;
+        throw new UnsupportedOperationException("Coming soon TM");
     }
     
     @Override
     public boolean mkdirs(AdvancedFile parent, AdvancedFile advancedFile) {
-        return false;
+        throw new UnsupportedOperationException("Coming soon TM");
     }
     
     @Override
@@ -276,6 +241,15 @@ public class ZIPProvider extends FileProvider {
     @Override
     public boolean isDirectory(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
         return false;
+    }
+    
+    @Override
+    public boolean accept(AdvancedFile parent, String name) {
+        if (!name.contains(".")) {
+            return false;
+        }
+        final String name_lower = name.toLowerCase();
+        return name_lower.endsWith(".zip") || name_lower.endsWith(".jar");
     }
     
 }
