@@ -28,7 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-public class ZIPProvider extends AdvancedProvider {
+public class ZIPProvider extends FileProvider {
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, String[] subPath, List<AdvancedFile> advancedFiles, boolean recursive, byte... data_parent) {
@@ -231,6 +231,51 @@ public class ZIPProvider extends AdvancedProvider {
         }
         final String name_lower = name.toLowerCase();
         return name_lower.endsWith(".zip") || name_lower.endsWith(".jar");
+    }
+    
+    @Override
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile advancedFile, List<AdvancedFile> advancedFiles, AdvancedFileFilter fileFilter, AdvancedFilenameFilter filenameFilter, boolean recursive, byte... data_parent) {
+        return null;
+    }
+    
+    @Override
+    public byte[] readBytes(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
+        return new byte[0];
+    }
+    
+    @Override
+    public boolean writeBytes(AdvancedFile parent, AdvancedFile advancedFile, byte[] data) {
+        return false;
+    }
+    
+    @Override
+    public boolean createNewFile(AdvancedFile parent, AdvancedFile advancedFile) {
+        return false;
+    }
+    
+    @Override
+    public boolean delete(AdvancedFile parent, AdvancedFile advancedFile) {
+        return false;
+    }
+    
+    @Override
+    public boolean mkdir(AdvancedFile parent, AdvancedFile advancedFile) {
+        return false;
+    }
+    
+    @Override
+    public boolean mkdirs(AdvancedFile parent, AdvancedFile advancedFile) {
+        return false;
+    }
+    
+    @Override
+    public boolean isFile(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
+        return false;
+    }
+    
+    @Override
+    public boolean isDirectory(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
+        return false;
     }
     
 }

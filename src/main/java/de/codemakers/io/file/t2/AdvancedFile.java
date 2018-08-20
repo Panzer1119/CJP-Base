@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file.t2;
 
+import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 
 import java.io.File;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class AdvancedFile {
+public class AdvancedFile implements IFile {
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();
@@ -44,19 +45,19 @@ public class AdvancedFile {
     public static final String PREFIX_INTERN = "intern:";
     public static final String PREFIX_EXTERN = "extern:";
     
-    public static final List<AdvancedProvider> PROVIDERS = new ArrayList<>();
+    public static final List<FileProvider> FILE_PROVIDERS = new ArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
     
     static {
-        PROVIDERS.add(ZIP_PROVIDER);
+        FILE_PROVIDERS.add(ZIP_PROVIDER);
     }
     
     private boolean init = false;
     private boolean windowsSeparator = false;
     private boolean extern = true;
-    private String[] paths = new String[0];
+    protected String[] paths = new String[0];
     private AdvancedFile parent = null;
-    private AdvancedProvider provider = null;
+    private FileProvider provider = null;
     private String path = null;
     
     public AdvancedFile(String... paths) {
@@ -82,7 +83,7 @@ public class AdvancedFile {
         init();
     }
     
-    public AdvancedFile(AdvancedFile parent, AdvancedProvider provider, String... paths) {
+    public AdvancedFile(AdvancedFile parent, FileProvider provider, String... paths) {
         this.parent = parent;
         this.provider = provider;
         this.paths = paths;
@@ -95,9 +96,9 @@ public class AdvancedFile {
         }
     }
     
-    public static final AdvancedProvider getProvider(AdvancedFile parent, String name) {
+    public static final FileProvider getProvider(AdvancedFile parent, String name) {
         Objects.requireNonNull(name);
-        return PROVIDERS.stream().filter((advancedProvider) -> advancedProvider.accept(parent, name)).findFirst().orElse(null);
+        return FILE_PROVIDERS.stream().filter((provider) -> provider.accept(parent, name)).findFirst().orElse(null);
     }
     
     private final void init() {
@@ -150,9 +151,9 @@ public class AdvancedFile {
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
             temp.add(p);
-            final AdvancedProvider advancedProvider = getProvider(parent, p);
-            if (advancedProvider != null) {
-                parent = new AdvancedFile(parent, advancedProvider, temp.toArray(new String[0]));
+            final FileProvider provider = getProvider(parent, p);
+            if (provider != null) {
+                parent = new AdvancedFile(parent, provider, temp.toArray(new String[0]));
                 temp.clear();
             }
         }
@@ -190,62 +191,250 @@ public class AdvancedFile {
         }
     }
     
-    public final byte[] readBytes() throws Exception {
+    public final File toFile() {
+        if (!extern) {
+            throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+        }
+        return new File(getPathString());
+    }
+    
+    @Override
+    public byte[] readBytes() {
         if (parent != null) {
             return parent.readBytes(this);
         } else {
-            return Files.readAllBytes(new File(getPathString()).toPath());
+            try {
+                return Files.readAllBytes(new File(getPathString()).toPath());
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return null;
+            }
         }
     }
     
-    public final byte[] readBytes(AdvancedFile advancedFile) throws Exception {
-        Objects.requireNonNull(provider);
-        Objects.requireNonNull(advancedFile);
+    byte[] readBytes(AdvancedFile advancedFile) {
         if (parent != null) {
-            return provider.readBytes(this, advancedFile, advancedFile.paths, readBytes());
+            return provider.readBytes(this, advancedFile, readBytes());
         } else {
-            return provider.readBytes(this, advancedFile, advancedFile.paths);
+            return provider.readBytes(this, advancedFile);
         }
     }
     
-    public final List<AdvancedFile> listFiles() throws Exception {
-        return listFiles(false);
-    }
-    
-    public final List<AdvancedFile> listFiles(boolean recursive) throws Exception {
-        return listFiles(new ArrayList<>(), recursive);
-    }
-    
-    public final List<AdvancedFile> listFiles(List<AdvancedFile> advancedFiles, boolean recursive) throws Exception {
+    @Override
+    public boolean writeBytes(byte[] data) {
         if (parent != null) {
-            return parent.listFiles(advancedFiles, recursive, this);
+            return parent.writeBytes(this, data);
         } else {
+            if (!extern) {
+                throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+            }
+            try {
+                Files.write(toFile().toPath(), data);
+                return true;
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return false;
+            }
+        }
+    }
+    
+    boolean writeBytes(AdvancedFile advancedFile, byte[] data) {
+        if (parent != null) {
+            //return provider.writeBytes(this, advancedFile, advancedFile.paths, data, readBytes());
+            throw new UnsupportedOperationException("Not yet implemented for files in other files");
+        } else {
+            return provider.writeBytes(this, advancedFile, data);
+        }
+    }
+    
+    @Override
+    public boolean mkdir() {
+        if (parent != null) {
+            return parent.mkdir(this);
+        } else {
+            if (!extern) {
+                throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+            }
+            return toFile().mkdir();
+        }
+    }
+    
+    boolean mkdir(AdvancedFile advancedFile) {
+        if (parent != null) {
+            //return provider.mkdir(this, advancedFile, readBytes());
+            throw new UnsupportedOperationException("Not yet implemented for files in other files");
+        } else {
+            return provider.mkdir(this, advancedFile);
+        }
+    }
+    
+    @Override
+    public boolean mkdirs() {
+        if (parent != null) {
+            return parent.mkdirs(this);
+        } else {
+            if (!extern) {
+                throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+            }
+            return toFile().mkdirs();
+        }
+    }
+    
+    boolean mkdirs(AdvancedFile advancedFile) {
+        if (parent != null) {
+            //return provider.mkdirs(this, advancedFile, readBytes());
+            throw new UnsupportedOperationException("Not yet implemented for files in other files");
+        } else {
+            return provider.mkdirs(this, advancedFile);
+        }
+    }
+    
+    @Override
+    public boolean createNewFile() {
+        if (parent != null) {
+            return parent.createNewFile(this);
+        } else {
+            if (!extern) {
+                throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+            }
+            try {
+                return toFile().createNewFile();
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return false;
+            }
+        }
+    }
+    
+    boolean createNewFile(AdvancedFile advancedFile) {
+        if (parent != null) {
+            //return provider.createNewFile(this, advancedFile, readBytes());
+            throw new UnsupportedOperationException("Not yet implemented for files in other files");
+        } else {
+            return provider.createNewFile(this, advancedFile);
+        }
+    }
+    
+    @Override
+    public boolean delete() {
+        if (parent != null) {
+            return parent.delete(this);
+        } else {
+            if (!extern) {
+                throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+            }
+            return toFile().delete();
+        }
+    }
+    
+    boolean delete(AdvancedFile advancedFile) {
+        if (parent != null) {
+            //return provider.delete(this, advancedFile, readBytes());
+            throw new UnsupportedOperationException("Not yet implemented for files in other files");
+        } else {
+            return provider.delete(this, advancedFile);
+        }
+    }
+    
+    @Override
+    public boolean isFile() {
+        if (parent != null) {
+            return parent.isFile(this);
+        } else {
+            if (!extern) {
+                throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+            }
+            return toFile().isFile();
+        }
+    }
+    
+    boolean isFile(AdvancedFile advancedFile) {
+        if (parent != null) {
+            return provider.isFile(this, advancedFile, readBytes());
+        } else {
+            return provider.isFile(this, advancedFile);
+        }
+    }
+    
+    @Override
+    public boolean isDirectory() {
+        if (parent != null) {
+            return parent.isDirectory(this);
+        } else {
+            if (!extern) {
+                throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+            }
+            return toFile().isDirectory();
+        }
+    }
+    
+    boolean isDirectory(AdvancedFile advancedFile) {
+        if (parent != null) {
+            return provider.isDirectory(this, advancedFile, readBytes());
+        } else {
+            return provider.isDirectory(this, advancedFile);
+        }
+    }
+    
+    @Override
+    public final List<AdvancedFile> listFiles(boolean recursive) {
+        return listFiles(new ArrayList<>(), null, null, recursive);
+    }
+    
+    @Override
+    public List<AdvancedFile> listFiles(AdvancedFileFilter advancedFileFilter, boolean recursive) {
+        return listFiles(new ArrayList<>(), advancedFileFilter, null, recursive);
+    }
+    
+    @Override
+    public List<AdvancedFile> listFiles(AdvancedFilenameFilter advancedFilenameFilter, boolean recursive) {
+        return listFiles(new ArrayList<>(), null, advancedFilenameFilter, recursive);
+    }
+    
+    final List<AdvancedFile> listFiles(List<AdvancedFile> advancedFiles, AdvancedFileFilter advancedFileFilter, AdvancedFilenameFilter advancedFilenameFilter, boolean recursive) {
+        if (parent != null) {
+            return parent.listFiles(advancedFiles, advancedFileFilter, advancedFilenameFilter, recursive, this);
+        } else {
+            if (!extern) {
+                throw new UnsupportedOperationException("Not yet implemented for jar intern files");
+            }
             final File directory = new File(getPathString());
             for (File file : directory.listFiles()) {
+                if (advancedFilenameFilter != null) {
+                    if (!advancedFilenameFilter.accept(this, file.getName())) {
+                        continue;
+                    }
+                }
                 final AdvancedFile advancedFile = new AdvancedFile(file.getName(), paths);
+                if (advancedFileFilter != null) {
+                    if (!advancedFileFilter.accept(advancedFile)) {
+                        continue;
+                    }
+                }
                 advancedFiles.add(advancedFile);
                 if (recursive && file.isDirectory()) {
-                    advancedFile.listFiles(advancedFiles, recursive);
+                    advancedFile.listFiles(advancedFiles, advancedFileFilter, advancedFilenameFilter, recursive);
                 }
             }
             return advancedFiles;
         }
     }
     
-    public final List<AdvancedFile> listFiles(List<AdvancedFile> advancedFiles, boolean recursive, AdvancedFile advancedFile) throws Exception {
+    /* When "this" is a parent file, then this functions lists all files for a given file under "this" file*/
+    final List<AdvancedFile> listFiles(List<AdvancedFile> advancedFiles, AdvancedFileFilter advancedFileFilter, AdvancedFilenameFilter advancedFilenameFilter, boolean recursive, AdvancedFile advancedFile) {
         Objects.requireNonNull(advancedFiles);
         Objects.requireNonNull(provider);
         Objects.requireNonNull(advancedFile);
         if (parent != null) {
-            return provider.listFiles(this, advancedFile, advancedFile.paths, advancedFiles, recursive, readBytes());
+            return provider.listFiles(this, advancedFile, advancedFiles, advancedFileFilter, advancedFilenameFilter, recursive, readBytes());
         } else {
-            return provider.listFiles(this, advancedFile, advancedFile.paths, advancedFiles, recursive);
+            return provider.listFiles(this, advancedFile, advancedFiles, advancedFileFilter, advancedFilenameFilter, recursive);
         }
     }
     
     @Override
     public final String toString() {
-        return "AdvancedFile{" + "windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", paths=" + Arrays.toString(paths) + ", parent=" + parent + ", provider=" + provider + ", path='" + path + '\'' + '}';
+        return getClass().getSimpleName() + "{" + "windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", paths=" + Arrays.toString(paths) + ", parent=" + parent + ", provider=" + provider + ", path='" + path + '\'' + '}';
     }
     
 }
