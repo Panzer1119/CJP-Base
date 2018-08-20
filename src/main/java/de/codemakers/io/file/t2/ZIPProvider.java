@@ -63,9 +63,11 @@ public class ZIPProvider extends FileProvider {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                     if (!recursive && zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)) {
+                        zipInputStream.closeEntry();
                         continue;
                     }
                     advancedFiles.add(new AdvancedFile(parent, zipEntry.getName()));
+                    zipInputStream.closeEntry();
                 }
                 zipInputStream.close();
                 return advancedFiles;
@@ -110,12 +112,14 @@ public class ZIPProvider extends FileProvider {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                     if (!recursive && zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)) {
+                        zipInputStream.closeEntry();
                         continue;
                     }
                     final AdvancedFile advancedFile_ = new AdvancedFile(parent, zipEntry.getName());
                     if (fileFilter.accept(advancedFile_)) {
                         advancedFiles.add(advancedFile_);
                     }
+                    zipInputStream.closeEntry();
                 }
                 zipInputStream.close();
                 return advancedFiles;
@@ -160,12 +164,14 @@ public class ZIPProvider extends FileProvider {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                     if (!recursive && zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)) {
+                        zipInputStream.closeEntry();
                         continue;
                     }
                     final AdvancedFile advancedFile_ = new AdvancedFile(parent, zipEntry.getName());
                     if (filenameFilter.accept(parent, zipEntry.getName())) {
                         advancedFiles.add(advancedFile_);
                     }
+                    zipInputStream.closeEntry();
                 }
                 zipInputStream.close();
                 return advancedFiles;
@@ -197,8 +203,10 @@ public class ZIPProvider extends FileProvider {
                     if (zipEntry.getName().equals(subPath_)) {
                         break;
                     }
+                    zipInputStream.closeEntry();
                 }
                 final byte[] data = IOUtils.toByteArray(zipInputStream);
+                zipInputStream.closeEntry();
                 zipInputStream.close();
                 return data;
             } catch (Exception ex) {
@@ -235,12 +243,16 @@ public class ZIPProvider extends FileProvider {
     
     @Override
     public boolean isFile(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
-        return false;
+        return !isDirectory(parent, advancedFile, data_parent);
     }
     
     @Override
     public boolean isDirectory(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
-        return false;
+        final ClosableZipEntry closableZipEntry = getZipEntry(parent, advancedFile, data_parent);
+        if (closableZipEntry == null) {
+            return false;
+        }
+        return closableZipEntry.close(ZipEntry::isDirectory);
     }
     
     @Override
@@ -250,6 +262,35 @@ public class ZIPProvider extends FileProvider {
         }
         final String name_lower = name.toLowerCase();
         return name_lower.endsWith(".zip") || name_lower.endsWith(".jar");
+    }
+    
+    public ClosableZipEntry getZipEntry(AdvancedFile parent, AdvancedFile advancedFile, byte... data_parent) {
+        if (data_parent == null || data_parent.length == 0) {
+            try {
+                final ZipFile zipFile = new ZipFile(parent.getPathString());
+                return new ClosableZipEntry(zipFile, zipFile.getEntry(Arrays.stream(advancedFile.paths).collect(Collectors.joining(File.separator))));
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return null;
+            }
+        } else {
+            try {
+                final String subPath_ = Arrays.stream(advancedFile.paths).collect(Collectors.joining(File.separator));
+                final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(data_parent));
+                ZipEntry zipEntry = null;
+                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    if (zipEntry.getName().equals(subPath_)) {
+                        break;
+                    }
+                    zipInputStream.closeEntry();
+                }
+                final byte[] data = IOUtils.toByteArray(zipInputStream);
+                return new ClosableZipEntry(zipInputStream, zipEntry);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return null;
+            }
+        }
     }
     
 }
