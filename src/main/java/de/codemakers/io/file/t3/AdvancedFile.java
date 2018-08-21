@@ -17,6 +17,7 @@
 package de.codemakers.io.file.t3;
 
 import de.codemakers.base.os.OSUtil;
+import de.codemakers.base.util.Copyable;
 import de.codemakers.io.file.t3.exceptions.FileException;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AdvancedFile implements IFile {
+public class AdvancedFile implements Copyable, IFile {
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();
@@ -86,17 +87,23 @@ public class AdvancedFile implements IFile {
     
     @Override
     public String getAbsolutePath() {
+        if (isAbsolute()) {
+            return getPath();
+        }
         return null;
     }
     
     @Override
     public AdvancedFile getAbsoluteFile() {
+        if (isAbsolute()) {
+            return copy();
+        }
         return null;
     }
     
     @Override
     public AdvancedFile getParentFile() {
-        return null;
+        return parent;
     }
     
     @Override
@@ -367,6 +374,11 @@ public class AdvancedFile implements IFile {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         return null;
+    }
+    
+    @Override
+    public AdvancedFile copy() {
+        return new AdvancedFile(parent, fileProvider, paths);
     }
     
 }
