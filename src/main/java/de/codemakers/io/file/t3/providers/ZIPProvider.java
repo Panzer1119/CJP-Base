@@ -17,71 +17,59 @@
 package de.codemakers.io.file.t3.providers;
 
 import de.codemakers.io.file.t3.AdvancedFile;
-import de.codemakers.io.file.t3.exceptions.is.FileIsInternException;
 
 import java.util.List;
 
-public class InternProvider implements FileProvider<AdvancedFile> {
+public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Implement this
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, parentBytes);
+        return null;
     }
     
     @Override
     public boolean isFile(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        return AdvancedFile.ZIP_PROVIDER.isFile(parent, file, parentBytes);
+        return false;
     }
     
     @Override
     public boolean isDirectory(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        return AdvancedFile.ZIP_PROVIDER.isDirectory(parent, file, parentBytes);
+        return false;
     }
     
     @Override
     public byte[] readBytes(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        return AdvancedFile.ZIP_PROVIDER.readBytes(parent, file, parentBytes);
+        return new byte[0];
     }
     
     @Override
     public boolean writeBytes(AdvancedFile parent, AdvancedFile file, byte[] data) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        return false;
     }
     
     @Override
     public boolean createNewFile(AdvancedFile parent, AdvancedFile file) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        return false;
     }
     
     @Override
     public boolean delete(AdvancedFile parent, AdvancedFile file) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        return false;
     }
     
     @Override
     public boolean mkdir(AdvancedFile parent, AdvancedFile file) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        return false;
     }
     
     @Override
     public boolean mkdirs(AdvancedFile parent, AdvancedFile file) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        return false;
     }
     
     @Override
     public boolean accept(AdvancedFile parent, String name) {
-        if (parent == null) {
-            return false;
-        }
-        return parent.isIntern();
-    }
-    
-    @Override
-    public boolean accept(AdvancedFile file) {
-        if (file == null) {
-            return false;
-        }
-        return file.isIntern();
+        return false;
     }
     
 }

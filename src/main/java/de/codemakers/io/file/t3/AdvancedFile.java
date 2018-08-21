@@ -22,12 +22,15 @@ import de.codemakers.io.file.t3.exceptions.FileException;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
 import de.codemakers.io.file.t3.providers.FileProvider;
+import de.codemakers.io.file.t3.providers.InternProvider;
+import de.codemakers.io.file.t3.providers.ZIPProvider;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +48,15 @@ public class AdvancedFile implements Copyable, IFile {
     public static final String FILE_SEPARATOR_DEFAULT_REGEX = OSUtil.DEFAULT_HELPER.getFileSeparatorRegex();
     public static final String FILE_SEPARATOR_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR == FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     public static final String FILE_SEPARATOR_NOT_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR != FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
+    
+    public static final List<FileProvider<AdvancedFile>> FILE_PROVIDERS = new CopyOnWriteArrayList<>();
+    public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
+    public static final InternProvider INTERN_PROVIDER = new InternProvider();
+    
+    static {
+        FILE_PROVIDERS.add(ZIP_PROVIDER);
+        FILE_PROVIDERS.add(INTERN_PROVIDER);
+    }
     
     protected String[] paths;
     private boolean windowsSeparator = true;
