@@ -362,22 +362,26 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean mkdir() throws FileIsNotException {
+        checkAndErrorIfIntern(true);
         return false; //TODO Implement
     }
     
     @Override
     public boolean mkdirs() throws FileIsNotException {
+        checkAndErrorIfIntern(true);
         return false; //TODO Implement
     }
     
     @Override
     public boolean delete() throws FileException {
+        checkAndErrorIfIntern(true);
         //checkAndErrorIfNotExisting();
         return false; //TODO Implement
     }
     
     @Override
     public boolean createNewFile() throws FileIsNotException {
+        checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         return false; //TODO Implement
     }
@@ -391,6 +395,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean writeBytes(byte[] data) throws FileException {
+        checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         return false; //TODO Implement
     }

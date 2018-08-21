@@ -19,57 +19,83 @@ package de.codemakers.io.file.t3.providers;
 import de.codemakers.io.file.t3.AdvancedFile;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Implement this
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return null;
     }
     
     @Override
     public boolean isFile(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return false;
     }
     
     @Override
     public boolean isDirectory(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return false;
     }
     
     @Override
     public byte[] readBytes(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return new byte[0];
     }
     
     @Override
     public boolean writeBytes(AdvancedFile parent, AdvancedFile file, byte[] data) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
+        if (data == null) {
+            data = new byte[0];
+        }
         return false;
     }
     
     @Override
     public boolean createNewFile(AdvancedFile parent, AdvancedFile file) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return false;
     }
     
     @Override
     public boolean delete(AdvancedFile parent, AdvancedFile file) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return false;
     }
     
     @Override
     public boolean mkdir(AdvancedFile parent, AdvancedFile file) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return false;
     }
     
     @Override
     public boolean mkdirs(AdvancedFile parent, AdvancedFile file) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return false;
     }
     
     @Override
     public boolean accept(AdvancedFile parent, String name) {
-        return false;
+        if (parent == null || name == null || name.isEmpty() || !name.contains(".")) {
+            return false;
+        }
+        final String name_lower = name.toLowerCase();
+        return name_lower.endsWith(".zip") || name_lower.endsWith(".jar"); //TODO is a ".tar" also "unzipable"? Or do i have to create another FileProvider "TARProvider"?
     }
     
 }
