@@ -16,24 +16,24 @@
 
 package de.codemakers.io.file.t3.exceptions.is;
 
-public class FileIsADirectoryException extends FileIsException {
+public class FileIsDirectoryException extends FileIsException {
     
-    public FileIsADirectoryException() {
+    public FileIsDirectoryException() {
     }
     
-    public FileIsADirectoryException(String message) {
+    public FileIsDirectoryException(String message) {
         super(message);
     }
     
-    public FileIsADirectoryException(String message, Throwable cause) {
+    public FileIsDirectoryException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileIsADirectoryException(Throwable cause) {
+    public FileIsDirectoryException(Throwable cause) {
         super(cause);
     }
     
-    public FileIsADirectoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileIsDirectoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     

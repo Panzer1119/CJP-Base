@@ -16,24 +16,24 @@
 
 package de.codemakers.io.file.t3.exceptions.is;
 
-public class FileIsAFileException extends FileIsException {
+public class FileIsFileException extends FileIsException {
     
-    public FileIsAFileException() {
+    public FileIsFileException() {
     }
     
-    public FileIsAFileException(String message) {
+    public FileIsFileException(String message) {
         super(message);
     }
     
-    public FileIsAFileException(String message, Throwable cause) {
+    public FileIsFileException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileIsAFileException(Throwable cause) {
+    public FileIsFileException(Throwable cause) {
         super(cause);
     }
     
-    public FileIsAFileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileIsFileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     

@@ -16,24 +16,24 @@
 
 package de.codemakers.io.file.t3.exceptions.isnot;
 
-public class FileIsNotADirectoryException extends FileIsNotException {
+public class FileIsNotFileException extends FileIsNotException {
     
-    public FileIsNotADirectoryException() {
+    public FileIsNotFileException() {
     }
     
-    public FileIsNotADirectoryException(String message) {
+    public FileIsNotFileException(String message) {
         super(message);
     }
     
-    public FileIsNotADirectoryException(String message, Throwable cause) {
+    public FileIsNotFileException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileIsNotADirectoryException(Throwable cause) {
+    public FileIsNotFileException(Throwable cause) {
         super(cause);
     }
     
-    public FileIsNotADirectoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileIsNotFileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     
