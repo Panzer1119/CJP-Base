@@ -21,6 +21,7 @@ import de.codemakers.base.util.Copyable;
 import de.codemakers.io.file.t3.exceptions.FileException;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
+import de.codemakers.io.file.t3.providers.FileProvider;
 
 import java.io.File;
 import java.net.URI;
@@ -44,6 +45,7 @@ public class AdvancedFile implements Copyable, IFile {
     public static final String FILE_SEPARATOR_DEFAULT_REGEX = OSUtil.DEFAULT_HELPER.getFileSeparatorRegex();
     public static final String FILE_SEPARATOR_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR == FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     public static final String FILE_SEPARATOR_NOT_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR != FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
+    
     protected String[] paths;
     private boolean windowsSeparator = true;
     private boolean extern = true;
@@ -52,7 +54,7 @@ public class AdvancedFile implements Copyable, IFile {
     private FileProvider fileProvider;
     private String path;
     
-    public AdvancedFile(String... paths) {
+    public AdvancedFile(String... paths) { //TODO Implement init method, that looks if some fileProviders are needed
         this.paths = paths;
     }
     
@@ -108,6 +110,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public AdvancedFile getParentFile() {
+        //TODO Implement it better, because this parent object is not always the DIRECT parent of this file
         return parent;
     }
     
@@ -390,6 +393,11 @@ public class AdvancedFile implements Copyable, IFile {
     @Override
     public AdvancedFile copy() {
         return new AdvancedFile(parent, fileProvider, paths);
+    }
+    
+    @Override
+    public String toString() {
+        return getPath();
     }
     
 }

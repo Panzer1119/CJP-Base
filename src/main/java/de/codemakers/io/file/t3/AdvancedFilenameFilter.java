@@ -16,8 +16,16 @@
 
 package de.codemakers.io.file.t3;
 
-public interface AdvancedFilenameFilter {
+public interface AdvancedFilenameFilter extends AdvancedFileFilter {
     
     boolean accept(AdvancedFile parent, String name);
+    
+    @Override
+    default boolean accept(AdvancedFile file) {
+        if (file == null) {
+            return false;
+        }
+        return accept(file.getParentFile(), file.getName());
+    }
     
 }
