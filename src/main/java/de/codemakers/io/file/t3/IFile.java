@@ -18,8 +18,8 @@ package de.codemakers.io.file.t3;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.t3.exceptions.FileException;
-import de.codemakers.io.file.t3.exceptions.isnot.FileIsNotException;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
@@ -64,7 +64,9 @@ public interface IFile extends Serializable {
     
     URL toURL() throws Exception;
     
-    boolean mkdir() throws FileIsNotException;
+    File toFile() throws FileException;
+    
+    boolean mkdir() throws FileException;
     
     default boolean mkdir(Consumer<Throwable> failure) {
         try {
@@ -83,7 +85,7 @@ public interface IFile extends Serializable {
         return mkdir(null);
     }
     
-    boolean mkdirs() throws FileIsNotException;
+    boolean mkdirs() throws FileException;
     
     default boolean mkdirs(Consumer<Throwable> failure) {
         try {
@@ -121,7 +123,7 @@ public interface IFile extends Serializable {
         return delete(null);
     }
     
-    boolean createNewFile() throws FileIsNotException;
+    boolean createNewFile() throws FileException;
     
     default boolean createNewFile(Consumer<Throwable> failure) {
         try {

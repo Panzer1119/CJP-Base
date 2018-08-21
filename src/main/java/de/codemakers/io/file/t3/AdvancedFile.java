@@ -22,6 +22,7 @@ import de.codemakers.io.file.t3.exceptions.FileException;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -85,12 +86,16 @@ public class AdvancedFile implements Copyable, IFile {
         return path;
     }
     
+    private final void resetPath() {
+        path = null;
+    }
+    
     @Override
     public String getAbsolutePath() {
         if (isAbsolute()) {
             return getPath();
         }
-        return null;
+        return null; //TODO Implement
     }
     
     @Override
@@ -98,7 +103,7 @@ public class AdvancedFile implements Copyable, IFile {
         if (isAbsolute()) {
             return copy();
         }
-        return null;
+        return null; //TODO Implement
     }
     
     @Override
@@ -118,7 +123,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isFile() {
-        return false;
+        return false; //TODO Implement
     }
     
     private boolean checkAndErrorIfFile(boolean throwException) {
@@ -147,7 +152,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isDirectory() {
-        return false;
+        return false; //TODO Implement
     }
     
     private boolean checkAndErrorIfDirectory(boolean throwException) {
@@ -176,7 +181,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean exists() {
-        return false;
+        return false; //TODO Implement
     }
     
     private boolean checkAndErrorIfExisting(boolean throwException) {
@@ -205,7 +210,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isAbsolute() {
-        return absolute;
+        return absolute; //TODO Implement, but at Construction
     }
     
     private boolean checkAndErrorIfAbsolute(boolean throwException) {
@@ -234,7 +239,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isRelative() {
-        return !absolute;
+        return !absolute; //TODO Implement, but at Construction
     }
     
     private boolean checkAndErrorIfRelative(boolean throwException) {
@@ -263,7 +268,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isIntern() {
-        return !extern;
+        return !extern; //TODO Implement, but at Construction
     }
     
     private boolean checkAndErrorIfIntern(boolean throwException) {
@@ -292,7 +297,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isExtern() {
-        return extern;
+        return extern; //TODO Implement, but at Construction
     }
     
     private boolean checkAndErrorIfExtern(boolean throwException) {
@@ -321,59 +326,65 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public Path toPath() throws Exception {
-        return null;
+        return null; //TODO Implement
     }
     
     @Override
     public URI toURI() throws Exception {
-        return null;
+        return null; //TODO Implement
     }
     
     @Override
     public URL toURL() throws Exception {
-        return null;
+        return null; //TODO Implement
+    }
+    
+    @Override
+    public File toFile() throws FileException {
+        checkAndErrorIfIntern(true);
+        return new File(getPath());
     }
     
     @Override
     public boolean mkdir() throws FileIsNotException {
-        return false;
+        return false; //TODO Implement
     }
     
     @Override
     public boolean mkdirs() throws FileIsNotException {
-        return false;
+        return false; //TODO Implement
     }
     
     @Override
     public boolean delete() throws FileException {
         //checkAndErrorIfNotExisting();
-        return false;
+        return false; //TODO Implement
     }
     
     @Override
     public boolean createNewFile() throws FileIsNotException {
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
-        return false;
+        return false; //TODO Implement
     }
     
     @Override
     public byte[] readBytes() throws FileException {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
-        return new byte[0];
+        return new byte[0]; //TODO Implement
     }
     
     @Override
     public boolean writeBytes(byte[] data) throws FileException {
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
-        return false;
+        return false; //TODO Implement
     }
     
     @Override
     public List<IFile> listFiles(boolean recursive) throws FileException {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
-        return null;
+        return null; //TODO Implement
     }
     
     @Override
