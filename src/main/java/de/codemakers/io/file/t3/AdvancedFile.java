@@ -114,15 +114,27 @@ public class AdvancedFile implements IFile {
         return false;
     }
     
-    private void checkForIsFile() {
-        if (!isFile()) {
-            throw new FileIsNotFileException(getPath() + " is not a file");
+    private boolean checkAndErrorIfFile(boolean throwException) {
+        if (isFile()) {
+            if (throwException) {
+                throw new FileIsFileException(getPath() + " is a file");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
-    private void checkForIsNotFile() {
+    private boolean checkAndErrorIfNotFile(boolean throwException) {
         if (!isFile()) {
-            throw new FileIsFileException(getPath() + " is a file");
+            if (throwException) {
+                throw new FileIsNotFileException(getPath() + " is not a file");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
@@ -131,15 +143,27 @@ public class AdvancedFile implements IFile {
         return false;
     }
     
-    private void checkForIsDirectory() {
-        if (!isDirectory()) {
-            throw new FileIsNotDirectoryException(getPath() + " is not a directory");
+    private boolean checkAndErrorIfDirectory(boolean throwException) {
+        if (isDirectory()) {
+            if (throwException) {
+                throw new FileIsDirectoryException(getPath() + " is a directory");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
-    private void checkForIsNotDirectory() {
+    private boolean checkAndErrorIfNotDirectory(boolean throwException) {
         if (!isDirectory()) {
-            throw new FileIsDirectoryException(getPath() + " is a directory");
+            if (throwException) {
+                throw new FileIsNotDirectoryException(getPath() + " is not a directory");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
@@ -148,15 +172,27 @@ public class AdvancedFile implements IFile {
         return false;
     }
     
-    private void checkForIsExisting() {
-        if (!exists()) {
-            throw new FileIsNotExistingException(getPath() + " does not exist");
+    private boolean checkAndErrorIfExisting(boolean throwException) {
+        if (exists()) {
+            if (throwException) {
+                throw new FileIsExistingException(getPath() + " does exist");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
-    private void checkForIsNotExisting() {
+    private boolean checkAndErrorIfNotExisting(boolean throwException) {
         if (!exists()) {
-            throw new FileIsExistingException(getPath() + " does exist");
+            if (throwException) {
+                throw new FileIsNotExistingException(getPath() + " does not exist");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
@@ -165,15 +201,27 @@ public class AdvancedFile implements IFile {
         return absolute;
     }
     
-    private void checkForIsAbsolute() {
-        if (!isAbsolute()) {
-            throw new FileIsNotAbsoluteException(getPath() + " is not absolute");
+    private boolean checkAndErrorIfAbsolute(boolean throwException) {
+        if (isAbsolute()) {
+            if (throwException) {
+                throw new FileIsAbsoluteException(getPath() + " is absolute");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
-    private void checkForIsNotAbsolute() {
+    private boolean checkAndErrorIfNotAbsolute(boolean throwException) {
         if (!isAbsolute()) {
-            throw new FileIsAbsoluteException(getPath() + " is absolute");
+            if (throwException) {
+                throw new FileIsNotAbsoluteException(getPath() + " is not absolute");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
@@ -182,15 +230,27 @@ public class AdvancedFile implements IFile {
         return !absolute;
     }
     
-    private void checkForIsRelative() {
-        if (!isRelative()) {
-            throw new FileIsNotRelativeException(getPath() + " is not relative");
+    private boolean checkAndErrorIfRelative(boolean throwException) {
+        if (isRelative()) {
+            if (throwException) {
+                throw new FileIsRelativeException(getPath() + " is relative");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
-    private void checkForIsNotRelative() {
+    private boolean checkAndErrorIfNotRelative(boolean throwException) {
         if (!isRelative()) {
-            throw new FileIsRelativeException(getPath() + " is relative");
+            if (throwException) {
+                throw new FileIsNotRelativeException(getPath() + " is not relative");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
@@ -199,15 +259,27 @@ public class AdvancedFile implements IFile {
         return !extern;
     }
     
-    private void checkForIsIntern() {
-        if (!isIntern()) {
-            throw new FileIsNotInternException(getPath() + " is not intern");
+    private boolean checkAndErrorIfIntern(boolean throwException) {
+        if (isIntern()) {
+            if (throwException) {
+                throw new FileIsInternException(getPath() + " is intern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
-    private void checkForIsNotIntern() {
+    private boolean checkAndErrorIfNotIntern(boolean throwException) {
         if (!isIntern()) {
-            throw new FileIsInternException(getPath() + " is intern");
+            if (throwException) {
+                throw new FileIsNotInternException(getPath() + " is not intern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
@@ -216,15 +288,27 @@ public class AdvancedFile implements IFile {
         return extern;
     }
     
-    private void checkForIsExtern() {
-        if (!isExtern()) {
-            throw new FileIsNotExternException(getPath() + " is not extern");
+    private boolean checkAndErrorIfExtern(boolean throwException) {
+        if (isExtern()) {
+            if (throwException) {
+                throw new FileIsExternException(getPath() + " is extern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
-    private void checkForIsNotExtern() {
+    private boolean checkAndErrorIfNotExtern(boolean throwException) {
         if (!isExtern()) {
-            throw new FileIsExternException(getPath() + " is extern");
+            if (throwException) {
+                throw new FileIsNotExternException(getPath() + " is not extern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
     
@@ -255,37 +339,33 @@ public class AdvancedFile implements IFile {
     
     @Override
     public boolean delete() throws FileException {
-        //checkForIsNotExisting();
+        //checkAndErrorIfNotExisting();
         return false;
     }
     
     @Override
     public boolean createNewFile() throws FileIsNotException {
-        if (exists() && isDirectory()) {
-            checkForIsNotDirectory();
-        }
+        checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         return false;
     }
     
     @Override
     public byte[] readBytes() throws FileException {
-        checkForIsExisting();
-        checkForIsFile();
+        checkAndErrorIfNotExisting(true);
+        checkAndErrorIfNotFile(true);
         return new byte[0];
     }
     
     @Override
     public boolean writeBytes(byte[] data) throws FileException {
-        if (exists() && isDirectory()) {
-            checkForIsNotDirectory();
-        }
+        checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         return false;
     }
     
     @Override
     public List<IFile> listFiles(boolean recursive) throws FileException {
-        checkForIsExisting();
-        checkForIsDirectory();
+        checkAndErrorIfNotExisting(true);
+        checkAndErrorIfNotDirectory(true);
         return null;
     }
     
