@@ -17,7 +17,8 @@
 package de.codemakers.io.file.t3;
 
 import de.codemakers.base.os.OSUtil;
-import de.codemakers.io.file.t3.exceptions.*;
+import de.codemakers.io.file.t3.exceptions.FileException;
+import de.codemakers.io.file.t3.exceptions.isnot.*;
 
 import java.net.URI;
 import java.net.URL;
@@ -94,21 +95,6 @@ public class AdvancedFile implements IFile {
     
     @Override
     public AdvancedFile getParentFile() {
-        return null;
-    }
-    
-    @Override
-    public Path toPath() throws Exception {
-        return null;
-    }
-    
-    @Override
-    public URI toURI() throws Exception {
-        return null;
-    }
-    
-    @Override
-    public URL toURL() throws Exception {
         return null;
     }
     
@@ -200,37 +186,56 @@ public class AdvancedFile implements IFile {
     }
     
     @Override
-    public byte[] readBytes() {
+    public Path toPath() throws Exception {
+        return null;
+    }
+    
+    @Override
+    public URI toURI() throws Exception {
+        return null;
+    }
+    
+    @Override
+    public URL toURL() throws Exception {
+        return null;
+    }
+    
+    @Override
+    public boolean mkdir() throws FileIsNotException {
+        return false;
+    }
+    
+    @Override
+    public boolean mkdirs() throws FileIsNotException {
+        return false;
+    }
+    
+    @Override
+    public boolean delete() throws FileException {
+        return false;
+    }
+    
+    @Override
+    public boolean createNewFile() throws FileIsNotException {
+        return false;
+    }
+    
+    @Override
+    public byte[] readBytes() throws FileException {
+        checkForExistance();
+        checkForFile();
         return new byte[0];
     }
     
     @Override
-    public boolean writeBytes(byte[] data) {
+    public boolean writeBytes(byte[] data) throws FileException {
         return false;
     }
     
     @Override
-    public boolean mkdir() {
-        return false;
-    }
-    
-    @Override
-    public boolean mkdirs() {
-        return false;
-    }
-    
-    @Override
-    public boolean delete() {
-        return false;
-    }
-    
-    @Override
-    public boolean createNewFile() {
-        return false;
-    }
-    
-    @Override
-    public List<IFile> listFiles(boolean recursive) {
+    public List<IFile> listFiles(boolean recursive) throws FileException {
+        checkForExistance();
+        checkForDirectory();
         return null;
     }
     

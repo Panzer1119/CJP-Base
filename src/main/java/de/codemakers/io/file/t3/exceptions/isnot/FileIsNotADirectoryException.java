@@ -14,26 +14,26 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3.exceptions;
+package de.codemakers.io.file.t3.exceptions.isnot;
 
-public class FileIsNotInternException extends FileIsNotException {
+public class FileIsNotADirectoryException extends FileIsNotException {
     
-    public FileIsNotInternException() {
+    public FileIsNotADirectoryException() {
     }
     
-    public FileIsNotInternException(String message) {
+    public FileIsNotADirectoryException(String message) {
         super(message);
     }
     
-    public FileIsNotInternException(String message, Throwable cause) {
+    public FileIsNotADirectoryException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileIsNotInternException(Throwable cause) {
+    public FileIsNotADirectoryException(Throwable cause) {
         super(cause);
     }
     
-    public FileIsNotInternException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileIsNotADirectoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     

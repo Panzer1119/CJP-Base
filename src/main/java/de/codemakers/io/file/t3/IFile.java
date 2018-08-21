@@ -18,7 +18,7 @@ package de.codemakers.io.file.t3;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.t3.exceptions.FileException;
-import de.codemakers.io.file.t3.exceptions.FileIsNotException;
+import de.codemakers.io.file.t3.exceptions.isnot.FileIsNotException;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -202,11 +202,36 @@ public interface IFile extends Serializable {
         return use(function, null);
     }
     
-    default List<IFile> listFiles() {
+    default List<IFile> listFiles() throws FileException {
         return listFiles(false);
     }
     
-    List<IFile> listFiles(boolean recursive);
+    List<IFile> listFiles(boolean recursive) throws FileException;
+    
+    default List<IFile> listFiles(Consumer<Throwable> failure) {
+        return listFiles(false, failure);
+    }
+    
+    default List<IFile> listFiles(boolean recursive, Consumer<Throwable> failure) {
+        try {
+            return listFiles();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default List<IFile> listFilesWithoutException() {
+        return listFilesWithoutException(false);
+    }
+    
+    default List<IFile> listFilesWithoutException(boolean recursive) {
+        return listFiles(recursive, null);
+    }
     
     default boolean forChildren(Consumer<IFile> consumer) throws Exception {
         return forChildren(consumer, false);

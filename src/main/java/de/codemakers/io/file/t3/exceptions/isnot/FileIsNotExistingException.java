@@ -14,26 +14,26 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3.exceptions;
+package de.codemakers.io.file.t3.exceptions.isnot;
 
-public class FileIsNotADirectoryException extends FileIsNotException {
+public class FileIsNotExistingException extends FileIsNotException {
     
-    public FileIsNotADirectoryException() {
+    public FileIsNotExistingException() {
     }
     
-    public FileIsNotADirectoryException(String message) {
+    public FileIsNotExistingException(String message) {
         super(message);
     }
     
-    public FileIsNotADirectoryException(String message, Throwable cause) {
+    public FileIsNotExistingException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileIsNotADirectoryException(Throwable cause) {
+    public FileIsNotExistingException(Throwable cause) {
         super(cause);
     }
     
-    public FileIsNotADirectoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileIsNotExistingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     

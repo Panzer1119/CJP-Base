@@ -14,26 +14,26 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3.exceptions;
+package de.codemakers.io.file.t3.exceptions.isnot;
 
-public class FileIsNotExistingException extends FileIsNotException {
+public class FileIsNotRelativeException extends FileIsNotException {
     
-    public FileIsNotExistingException() {
+    public FileIsNotRelativeException() {
     }
     
-    public FileIsNotExistingException(String message) {
+    public FileIsNotRelativeException(String message) {
         super(message);
     }
     
-    public FileIsNotExistingException(String message, Throwable cause) {
+    public FileIsNotRelativeException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileIsNotExistingException(Throwable cause) {
+    public FileIsNotRelativeException(Throwable cause) {
         super(cause);
     }
     
-    public FileIsNotExistingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileIsNotRelativeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     

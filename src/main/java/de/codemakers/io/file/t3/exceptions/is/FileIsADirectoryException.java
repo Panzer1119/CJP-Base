@@ -14,26 +14,26 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3.exceptions;
+package de.codemakers.io.file.t3.exceptions.is;
 
-public class FileIsNotAbsoluteException extends FileIsNotException {
+public class FileIsADirectoryException extends FileIsException {
     
-    public FileIsNotAbsoluteException() {
+    public FileIsADirectoryException() {
     }
     
-    public FileIsNotAbsoluteException(String message) {
+    public FileIsADirectoryException(String message) {
         super(message);
     }
     
-    public FileIsNotAbsoluteException(String message, Throwable cause) {
+    public FileIsADirectoryException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileIsNotAbsoluteException(Throwable cause) {
+    public FileIsADirectoryException(Throwable cause) {
         super(cause);
     }
     
-    public FileIsNotAbsoluteException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileIsADirectoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     

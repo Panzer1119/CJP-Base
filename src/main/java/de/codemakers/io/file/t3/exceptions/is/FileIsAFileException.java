@@ -14,26 +14,26 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3.exceptions;
+package de.codemakers.io.file.t3.exceptions.is;
 
-public class FileIsNotAFileException extends FileIsNotException {
+public class FileIsAFileException extends FileIsException {
     
-    public FileIsNotAFileException() {
+    public FileIsAFileException() {
     }
     
-    public FileIsNotAFileException(String message) {
+    public FileIsAFileException(String message) {
         super(message);
     }
     
-    public FileIsNotAFileException(String message, Throwable cause) {
+    public FileIsAFileException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileIsNotAFileException(Throwable cause) {
+    public FileIsAFileException(Throwable cause) {
         super(cause);
     }
     
-    public FileIsNotAFileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileIsAFileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     
