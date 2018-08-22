@@ -104,7 +104,7 @@ public interface IFile extends Serializable {
         return mkdirs(null);
     }
     
-    boolean delete() throws FileRuntimeException;
+    boolean delete() throws Exception;
     
     default boolean delete(Consumer<Throwable> failure) {
         try {
@@ -123,7 +123,7 @@ public interface IFile extends Serializable {
         return delete(null);
     }
     
-    boolean createNewFile() throws FileRuntimeException;
+    boolean createNewFile() throws Exception;
     
     default boolean createNewFile(Consumer<Throwable> failure) {
         try {
@@ -142,7 +142,7 @@ public interface IFile extends Serializable {
         return createNewFile(null);
     }
     
-    byte[] readBytes() throws FileRuntimeException;
+    byte[] readBytes() throws Exception;
     
     default byte[] readBytes(Consumer<Throwable> failure) {
         try {
@@ -161,7 +161,7 @@ public interface IFile extends Serializable {
         return readBytes(null);
     }
     
-    boolean writeBytes(byte[] data) throws FileRuntimeException;
+    boolean writeBytes(byte[] data) throws Exception;
     
     default boolean writeBytes(byte[] data, Consumer<Throwable> failure) {
         try {

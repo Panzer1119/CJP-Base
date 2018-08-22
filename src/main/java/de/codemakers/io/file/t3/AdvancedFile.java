@@ -29,6 +29,7 @@ import de.codemakers.io.file.t3.providers.ZIPProvider;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,9 +58,14 @@ public class AdvancedFile implements Copyable, IFile {
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
     public static final InternProvider INTERN_PROVIDER = new InternProvider();
     
+    public static boolean DEBUG_TO_STRING = false;
+    public static boolean DEBUG_TO_STRING_BIG = false;
+    
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
         FILE_PROVIDERS.add(INTERN_PROVIDER);
+        System.out.println("FILE_PROVIDERS = " + FILE_PROVIDERS); //TODO Remove this debug line
+        System.out.println("####################################################################################################################"); //TODO Remove this debug line
     }
     
     private String[] paths;
@@ -85,6 +91,7 @@ public class AdvancedFile implements Copyable, IFile {
     public AdvancedFile(String name, String[] paths) {
         this.paths = Arrays.copyOf(paths, paths.length + 1);
         this.paths[paths.length] = name;
+        this.absolute = checkAbsolute(this.paths);
         init();
     }
     
@@ -92,9 +99,11 @@ public class AdvancedFile implements Copyable, IFile {
         this.parent = parent;
         this.paths = paths;
         if (parent != null) {
-            windowsSeparator = parent.windowsSeparator;
-            extern = parent.extern;
-            absolute = parent.absolute;
+            this.windowsSeparator = parent.windowsSeparator;
+            this.extern = parent.extern;
+            this.absolute = parent.absolute;
+        } else {
+            this.absolute = checkAbsolute(paths);
         }
         init();
     }
@@ -104,9 +113,11 @@ public class AdvancedFile implements Copyable, IFile {
         this.fileProvider = fileProvider;
         this.paths = paths;
         if (parent != null) {
-            windowsSeparator = parent.windowsSeparator;
-            extern = parent.extern;
-            absolute = parent.absolute;
+            this.windowsSeparator = parent.windowsSeparator;
+            this.extern = parent.extern;
+            this.absolute = parent.absolute;
+        } else {
+            this.absolute = checkAbsolute(paths);
         }
         init();
     }
@@ -125,6 +136,14 @@ public class AdvancedFile implements Copyable, IFile {
     public static final FileProvider<AdvancedFile> getProvider(AdvancedFile parent, String name) {
         Objects.requireNonNull(name);
         return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.accept(parent, name)).findFirst().orElse(null);
+    }
+    
+    public static final boolean checkAbsolute(String... paths) {
+        if (paths == null || paths.length == 0) {
+            return false;
+        }
+        final String temp = paths[0];
+        return temp.startsWith(FILE_SEPARATOR_DEFAULT_STRING) || (temp.length() >= 2 && temp.charAt(1) == ':');
     }
     
     public String[] getPaths() {
@@ -200,8 +219,11 @@ public class AdvancedFile implements Copyable, IFile {
             final FileProvider<AdvancedFile> fileProvider = getProvider(parent, p);
             if (fileProvider != null) {
                 parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
-                this.clazz = null;
+                clazz = null;
                 temp.clear();
+                System.out.println("FOUND A  FILE PROVIDER FOR: \"" + p + "\"");
+            } else {
+                System.out.println("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
             }
         }
         paths = temp.toArray(new String[0]);
@@ -262,9 +284,9 @@ public class AdvancedFile implements Copyable, IFile {
             final String[] paths_ = new String[paths_prefixes.length + paths.length];
             System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
             System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
-            return new AdvancedFile(paths_, windowsSeparator, extern, absolute, parent, fileProvider, clazz);
+            return new AdvancedFile(paths_, windowsSeparator, extern, true, parent, fileProvider, clazz);
         } else { // Relative extern file
-            return new AdvancedFile(toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
+            return new AdvancedFile(toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()), windowsSeparator, extern, true, parent, fileProvider, clazz);
             
         }
     }
@@ -310,7 +332,10 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public boolean isFile() {
+    public boolean isFile() { //TODO when parent is not null add a method which asks the parent if this child exists
+        if (isExtern()) {
+            return toFile().isFile();
+        }
         return false; //TODO Implement
     }
     
@@ -339,7 +364,10 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public boolean isDirectory() {
+    public boolean isDirectory() { //TODO when parent is not null add a method which asks the parent if this child exists
+        if (isExtern()) {
+            return toFile().isDirectory();
+        }
         return false; //TODO Implement
     }
     
@@ -368,7 +396,10 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public boolean exists() {
+    public boolean exists() { //TODO when parent is not null add a method which asks the parent if this child exists
+        if (isExtern()) {
+            return toFile().exists();
+        }
         return false; //TODO Implement
     }
     
@@ -587,47 +618,50 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public boolean mkdir() throws FileIsNotRuntimeException {
+    public boolean mkdir() throws FileIsNotRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
         checkAndErrorIfIntern(true);
         return false; //TODO Implement
     }
     
     @Override
-    public boolean mkdirs() throws FileIsNotRuntimeException {
+    public boolean mkdirs() throws FileIsNotRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
         checkAndErrorIfIntern(true);
         return false; //TODO Implement
     }
     
     @Override
-    public boolean delete() throws FileRuntimeException {
+    public boolean delete() throws FileRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
         checkAndErrorIfIntern(true);
         //checkAndErrorIfNotExisting();
         return false; //TODO Implement
     }
     
     @Override
-    public boolean createNewFile() throws FileIsNotRuntimeException {
+    public boolean createNewFile() throws FileIsNotRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         return false; //TODO Implement
     }
     
     @Override
-    public byte[] readBytes() throws FileRuntimeException {
+    public byte[] readBytes() throws Exception { //TODO when parent is not null add a method which asks the parent if this child exists
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
+        if (isExtern()) {
+            return Files.readAllBytes(toPath());
+        }
         return new byte[0]; //TODO Implement
     }
     
     @Override
-    public boolean writeBytes(byte[] data) throws FileRuntimeException {
+    public boolean writeBytes(byte[] data) throws FileRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         return false; //TODO Implement
     }
     
     @Override
-    public List<IFile> listFiles(boolean recursive) throws FileRuntimeException {
+    public List<IFile> listFiles(boolean recursive) throws FileRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         return null; //TODO Implement
@@ -640,6 +674,13 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public String toString() {
+        if (DEBUG_TO_STRING) {
+            if (DEBUG_TO_STRING_BIG) {
+                return getClass().getSimpleName() + "{" + "paths=" + Arrays.toString(paths) + ", init=" + init + ", windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", absolute=" + absolute + ", fileProvider=" + fileProvider + ", clazz=" + clazz + ", path='" + path + '\'' + ", path_=" + path_ + ", uri=" + uri + ", url=" + url + ", file=" + file + ", parent=" + parent + '}';
+            } else {
+                return getClass().getSimpleName() + "{" + "paths=" + Arrays.toString(paths) + ", windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", absolute=" + absolute + ", fileProvider=" + fileProvider + ", clazz=" + clazz + ", parent=" + parent + '}';
+            }
+        }
         return getPath();
     }
     

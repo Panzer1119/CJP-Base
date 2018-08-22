@@ -308,7 +308,7 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
     
     @Override
     public boolean accept(AdvancedFile parent, String name) {
-        if (parent == null || name == null || name.isEmpty() || !name.contains(".")) {
+        if (name == null || name.isEmpty() || !name.contains(".")) {
             return false;
         }
         final String name_lower = name.toLowerCase();
