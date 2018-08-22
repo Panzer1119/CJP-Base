@@ -77,6 +77,15 @@ public class AdvancedFile implements Copyable, IFile {
         this.paths = paths;
     }
     
+    public AdvancedFile(String name, String... paths) { //TODO Implement init method, that looks if some fileProviders are needed
+        this.paths = paths;
+    }
+    
+    public AdvancedFile(AdvancedFile parent, String... paths) { //TODO Implement init method, that looks if some fileProviders are needed
+        this.parent = parent;
+        this.paths = paths;
+    }
+    
     protected AdvancedFile(AdvancedFile parent, FileProvider fileProvider, String[] paths) {
         this.parent = parent;
         this.fileProvider = fileProvider;

@@ -24,15 +24,16 @@ import de.codemakers.io.file.t3.exceptions.is.FileIsExternRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.FileIsInternRuntimeException;
 import org.apache.commons.io.IOUtils;
 
+import java.io.InputStream;
 import java.util.List;
 
 public class InternProvider implements FileProvider<AdvancedFile> {
     
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, InputStream inputStream) throws Exception {
         if (Standard.RUNNING_JAR_IS_JAR) {
             parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, parentBytes);
+            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, recursive, inputStream);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
             throw new FileIsExternRuntimeException(file + " is extern");
@@ -40,10 +41,10 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFileFilter advancedFileFilter, byte... parentBytes) throws Exception {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFileFilter advancedFileFilter, boolean recursive, InputStream inputStream) throws Exception {
         if (Standard.RUNNING_JAR_IS_JAR) {
             parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFileFilter, parentBytes);
+            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFileFilter, recursive, inputStream);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
             throw new FileIsExternRuntimeException(file + " is extern");
@@ -51,10 +52,10 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFilenameFilter advancedFilenameFilter, byte... parentBytes) throws Exception {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFilenameFilter advancedFilenameFilter, boolean recursive, InputStream inputStream) throws Exception {
         if (Standard.RUNNING_JAR_IS_JAR) {
             parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFilenameFilter, parentBytes);
+            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFilenameFilter, recursive, inputStream);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
             throw new FileIsExternRuntimeException(file + " is extern");
@@ -62,10 +63,10 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public boolean isFile(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+    public boolean isFile(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         if (Standard.RUNNING_JAR_IS_JAR) {
             parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.isFile(parent, file, parentBytes);
+            return AdvancedFile.ZIP_PROVIDER.isFile(parent, file, inputStream);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
             throw new FileIsExternRuntimeException(file + " is extern");
@@ -73,10 +74,10 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public boolean isDirectory(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+    public boolean isDirectory(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         if (Standard.RUNNING_JAR_IS_JAR) {
             parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.isDirectory(parent, file, parentBytes);
+            return AdvancedFile.ZIP_PROVIDER.isDirectory(parent, file, inputStream);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
             throw new FileIsExternRuntimeException(file + " is extern");
@@ -84,7 +85,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public byte[] readBytes(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+    public byte[] readBytes(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         return IOUtils.toByteArray(file.getNonNullClazz().getResourceAsStream(file.getPath()));
     }
     
