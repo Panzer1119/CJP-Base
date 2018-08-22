@@ -23,7 +23,7 @@ import de.codemakers.io.file.t3.IFile;
 import java.io.InputStream;
 import java.util.List;
 
-public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetects WinRaR installations for optionally writing/editing .rar files
+public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetect WinRaR installations for optionally writing/editing .rar files (Make some OS function for that, so that this framework has some useful features (finding WinRaR installations platform independent))
     
     List<T> listFiles(T parent, T file, boolean recursive, InputStream inputStream) throws Exception;
     
