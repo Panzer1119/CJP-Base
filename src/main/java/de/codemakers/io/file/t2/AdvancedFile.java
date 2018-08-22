@@ -146,8 +146,8 @@ public class AdvancedFile implements IFile {
                     paths_.add(p);
                 }
             }
-            init = true;
         }
+        init = true;
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
             temp.add(p);

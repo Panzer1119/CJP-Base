@@ -18,6 +18,7 @@ package de.codemakers.io.file.t3;
 
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.Copyable;
+import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
 import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
@@ -29,8 +30,10 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,6 +63,7 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     private String[] paths;
+    private boolean init = false;
     private boolean windowsSeparator = true;
     private boolean extern = true;
     private boolean absolute = true;
@@ -115,6 +119,12 @@ public class AdvancedFile implements Copyable, IFile {
         this.parent = parent;
         this.fileProvider = fileProvider;
         this.clazz = clazz;
+        this.init = true;
+    }
+    
+    public static final FileProvider<AdvancedFile> getProvider(AdvancedFile parent, String name) {
+        Objects.requireNonNull(name);
+        return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.accept(parent, name)).findFirst().orElse(null);
     }
     
     public String[] getPaths() {
@@ -137,8 +147,66 @@ public class AdvancedFile implements Copyable, IFile {
         resetFile();
     }
     
-    private final void init() { //TODO Implement init method, that looks if some FileProvider<AdvancedFile>s are needed
-    
+    private final void init() { //TODO Test this
+        boolean done = false;
+        final List<String> paths_ = new ArrayList<>();
+        for (String p : paths) {
+            done = false;
+            if (!init) {
+                if (p.contains(FILE_SEPARATOR_WINDOWS_STRING)) {
+                    paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_WINDOWS_REGEX)));
+                    windowsSeparator = true;
+                    init = true;
+                    done = true;
+                }
+                if (p.contains(FILE_SEPARATOR_DEFAULT_STRING)) {
+                    if (init) {
+                        throw new FileNotUniqueSeparatorRuntimeException(getPath() + " already contains a Windows file separator");
+                    }
+                    paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_DEFAULT_REGEX)));
+                    windowsSeparator = false;
+                    init = true;
+                    done = true;
+                }
+                if (!done) {
+                    paths_.add(p);
+                }
+            } else {
+                if (p.contains(FILE_SEPARATOR_WINDOWS_STRING)) {
+                    if (windowsSeparator) {
+                        paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_WINDOWS_REGEX)));
+                    } else {
+                        throw new FileNotUniqueSeparatorRuntimeException(getPath() + " already contains an UNIX file separator");
+                    }
+                    done = true;
+                }
+                if (p.contains(FILE_SEPARATOR_DEFAULT_STRING)) {
+                    if (windowsSeparator) {
+                        throw new FileNotUniqueSeparatorRuntimeException(getPath() + " already contains a Windows file separator");
+                    } else {
+                        paths_.addAll(Arrays.asList(p.split(FILE_SEPARATOR_DEFAULT_REGEX)));
+                    }
+                    done = true;
+                }
+                if (!done) {
+                    paths_.add(p);
+                }
+            }
+        }
+        init = true;
+        final List<String> temp = new ArrayList<>();
+        for (String p : paths_) {
+            temp.add(p);
+            final FileProvider<AdvancedFile> fileProvider = getProvider(parent, p);
+            if (fileProvider != null) {
+                parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
+                this.clazz = null;
+                temp.clear();
+            }
+        }
+        paths = temp.toArray(new String[0]);
+        temp.clear();
+        paths_.clear();
     }
     
     @Override
