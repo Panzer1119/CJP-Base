@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t2;
+package de.codemakers.io.file.t3;
 
 import de.codemakers.base.exceptions.CJPRuntimeException;
 import de.codemakers.base.logger.Logger;
@@ -22,6 +22,7 @@ import de.codemakers.base.logger.Logger;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -80,32 +81,59 @@ public class ClosableZipEntry implements Closeable {
             zipFile.close();
         }
         if (zipInputStream != null) {
-            zipInputStream.closeEntry();
+            if (zipEntry != null) {
+                zipInputStream.closeEntry();
+            }
             zipInputStream.close();
         }
         closed = true;
     }
     
-    public final boolean closeWithOutException() {
+    public final void close(Consumer<Throwable> failure) {
         try {
             close();
         } catch (Exception ex) {
-            Logger.handleError(ex);
-        }
-        return closed;
-    }
-    
-    public final <R> R close(Function<ZipEntry, R> function) {
-        R r = null;
-        if (function != null) {
-            try {
-                r = function.apply(zipEntry);
-            } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
                 Logger.handleError(ex);
             }
         }
-        closeWithOutException();
+    }
+    
+    public final void closeWithoutException() {
+        close(null);
+    }
+    
+    public final <R> R close(Function<ZipEntry, R> function, Consumer<Throwable> failureClosing) throws Exception {
+        R r = null;
+        if (function != null) {
+            r = function.apply(zipEntry);
+        }
+        close(failureClosing);
         return r;
+    }
+    
+    public final <R> R close(Function<ZipEntry, R> function, Consumer<Throwable> failureFunction, Consumer<Throwable> failureClosing) {
+        try {
+            return close(function, failureClosing);
+        } catch (Exception ex) {
+            if (failureFunction != null) {
+                failureFunction.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            close(failureClosing);
+            return null;
+        }
+    }
+    
+    public final <R> R closeWithoutException(Function<ZipEntry, R> function, Consumer<Throwable> failureFunction) {
+        return close(function, failureFunction, null);
+    }
+    
+    public final <R> R closeWithoutException(Function<ZipEntry, R> function) {
+        return closeWithoutException(function, null);
     }
     
 }

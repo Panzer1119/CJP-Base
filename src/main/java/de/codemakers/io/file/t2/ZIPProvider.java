@@ -285,6 +285,7 @@ public class ZIPProvider extends FileProvider {
                     zipInputStream.closeEntry();
                 }
                 if (zipEntry == null) {
+                    zipInputStream.close();
                     return null;
                 }
                 return new ClosableZipEntry(zipInputStream, zipEntry);

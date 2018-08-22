@@ -16,12 +16,20 @@
 
 package de.codemakers.io.file.t3.providers;
 
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.io.file.t3.AdvancedFile;
 import de.codemakers.io.file.t3.AdvancedFileFilter;
 import de.codemakers.io.file.t3.AdvancedFilenameFilter;
+import de.codemakers.io.file.t3.ClosableZipEntry;
+import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Implement this
     
@@ -29,42 +37,90 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Implemen
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return null;
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFileFilter advancedFileFilter, byte... parentBytes) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return null;
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFilenameFilter advancedFilenameFilter, byte... parentBytes) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return null;
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override
     public boolean isFile(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        Objects.requireNonNull(parent);
-        Objects.requireNonNull(file);
-        return false;
+        return !isDirectory(parent, file, parentBytes);
     }
     
     @Override
     public boolean isDirectory(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return false;
+        final ClosableZipEntry closableZipEntry = getClosableZipEntry(parent, file, parentBytes);
+        if (closableZipEntry == null) {
+            return false;
+        }
+        return closableZipEntry.closeWithoutException(ZipEntry::isDirectory);
     }
     
     @Override
     public byte[] readBytes(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return new byte[0];
+        if (parentBytes == null || parentBytes.length == 0) {
+            final ZipFile zipFile = new ZipFile(parent.getPath());
+            final byte[] data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(file.getPathsCollected(File.separator))));
+            zipFile.close();
+            return data;
+        } else {
+            final String path = file.getPathsCollected(File.separator);
+            final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(parentBytes));
+            ZipEntry zipEntry = null;
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                if (zipEntry.getName().equals(path)) {
+                    break;
+                }
+                zipInputStream.closeEntry();
+            }
+            final byte[] data = IOUtils.toByteArray(zipInputStream);
+            if (zipEntry != null) {
+                zipInputStream.closeEntry();
+            }
+            zipInputStream.close();
+            return data;
+        }
+    }
+    
+    public ClosableZipEntry getClosableZipEntry(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+        if (parentBytes == null || parentBytes.length == 0) {
+            final ZipFile zipFile = new ZipFile(parent.getPath());
+            return new ClosableZipEntry(zipFile, zipFile.getEntry(file.getPathsCollected(File.separator)));
+        } else {
+            final String path = file.getPathsCollected(File.separator);
+            final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(parentBytes));
+            ZipEntry zipEntry = null;
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                if (zipEntry.getName().equals(path)) {
+                    break;
+                }
+                zipInputStream.closeEntry();
+            }
+            if (zipEntry == null) {
+                zipInputStream.close();
+                return null;
+            }
+            return new ClosableZipEntry(zipInputStream, zipEntry);
+        }
     }
     
     @Override
@@ -74,35 +130,35 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Implemen
         if (data == null) {
             data = new byte[0];
         }
-        return false;
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override
     public boolean createNewFile(AdvancedFile parent, AdvancedFile file) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return false;
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override
     public boolean delete(AdvancedFile parent, AdvancedFile file) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return false;
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override
     public boolean mkdir(AdvancedFile parent, AdvancedFile file) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return false;
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override
     public boolean mkdirs(AdvancedFile parent, AdvancedFile file) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        return false;
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override

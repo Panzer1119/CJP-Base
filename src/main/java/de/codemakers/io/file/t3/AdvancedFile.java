@@ -58,7 +58,7 @@ public class AdvancedFile implements Copyable, IFile {
         FILE_PROVIDERS.add(INTERN_PROVIDER);
     }
     
-    protected String[] paths;
+    private String[] paths;
     private boolean windowsSeparator = true;
     private boolean extern = true;
     private boolean absolute = true;
@@ -81,6 +81,18 @@ public class AdvancedFile implements Copyable, IFile {
         this.parent = parent;
         this.fileProvider = fileProvider;
         this.paths = paths;
+    }
+    
+    public String[] getPaths() {
+        return paths;
+    }
+    
+    public String getPathsCollected(String delimiter) {
+        return Stream.of(paths).collect(Collectors.joining(delimiter));
+    }
+    
+    public String getPathsCollected(String delimiter, String prefix, String suffix) {
+        return Stream.of(paths).collect(Collectors.joining(delimiter, prefix, suffix));
     }
     
     final void reset() {
