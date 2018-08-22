@@ -20,13 +20,12 @@ import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.io.file.t3.AdvancedFile;
 import de.codemakers.io.file.t3.AdvancedFileFilter;
 import de.codemakers.io.file.t3.AdvancedFilenameFilter;
-import de.codemakers.io.file.t3.closeable.*;
+import de.codemakers.io.file.t3.closeable.CloseableZipEntry;
+import de.codemakers.io.file.t3.closeable.CloseableZipFileEntry;
+import de.codemakers.io.file.t3.closeable.CloseableZipInputStreamEntry;
 import org.apache.commons.io.IOUtils;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -200,20 +199,33 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
     }
     
     @Override
-    public AdvancedCloseableInputStream createInputStream(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+    public InputStream createInputStream(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
-                return new AdvancedCloseableInputStream(zipFile, zipFile.getInputStream(zipFile.getEntry(file.getPathsCollected(File.separator))));
+                //return new AdvancedCloseableInputStream(zipFile, zipFile.getInputStream(zipFile.getEntry(file.getPathsCollected(File.separator))));
+                return new BufferedInputStream(zipFile.getInputStream(zipFile.getEntry(file.getPathsCollected(File.separator)))) {
+                    @Override
+                    public void close() throws IOException {
+                        zipFile.close();
+                        super.close();
+                    }
+                };
             } catch (Exception ex) {
                 zipFile.close();
                 throw ex;
             }
         } else {
             final String path = file.getPathsCollected(File.separator);
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+            final ZipInputStream zipInputStream = new ZipInputStream(inputStream) {
+                @Override
+                public void close() throws IOException {
+                    super.closeEntry();
+                    super.close();
+                }
+            };
             try {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -222,6 +234,7 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
                     }
                     zipInputStream.closeEntry();
                 }
+                /*
                 return new AdvancedCloseableInputStream(inputStream, zipInputStream) {
                     @Override
                     public void preClose(Closeable closeable, InputStream data) throws IOException {
@@ -231,6 +244,8 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
                         super.preClose(closeable, data);
                     }
                 };
+                */
+                return zipInputStream;
             } catch (Exception ex) {
                 zipInputStream.close();
                 throw ex;
@@ -311,7 +326,7 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
     }
     
     @Override
-    public AdvancedCloseableOutputStream createOutputStream(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         throw new NotYetImplementedRuntimeException();

@@ -20,13 +20,12 @@ import de.codemakers.base.Standard;
 import de.codemakers.io.file.t3.AdvancedFile;
 import de.codemakers.io.file.t3.AdvancedFileFilter;
 import de.codemakers.io.file.t3.AdvancedFilenameFilter;
-import de.codemakers.io.file.t3.closeable.AdvancedCloseableInputStream;
-import de.codemakers.io.file.t3.closeable.AdvancedCloseableOutputStream;
 import de.codemakers.io.file.t3.exceptions.is.FileIsExternRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.FileIsInternRuntimeException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public class InternProvider implements FileProvider<AdvancedFile> {
@@ -87,7 +86,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public AdvancedCloseableInputStream createInputStream(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+    public InputStream createInputStream(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         if (Standard.RUNNING_JAR_IS_JAR) {
             parent = Standard.RUNNING_JAR_ADVANCED_FILE;
             return AdvancedFile.ZIP_PROVIDER.createInputStream(parent, file, inputStream);
@@ -103,7 +102,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public AdvancedCloseableOutputStream createOutputStream(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file) throws Exception {
         throw new FileIsInternRuntimeException(file + " is intern");
     }
     

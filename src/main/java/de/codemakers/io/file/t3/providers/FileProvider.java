@@ -19,10 +19,9 @@ package de.codemakers.io.file.t3.providers;
 import de.codemakers.io.file.t3.AdvancedFileFilter;
 import de.codemakers.io.file.t3.AdvancedFilenameFilter;
 import de.codemakers.io.file.t3.IFile;
-import de.codemakers.io.file.t3.closeable.AdvancedCloseableInputStream;
-import de.codemakers.io.file.t3.closeable.AdvancedCloseableOutputStream;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetect WinRaR installations for optionally writing/editing .rar files (Make some OS function for that, so that this framework has some useful features (finding WinRaR installations platform independent))
@@ -37,11 +36,11 @@ public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { 
     
     boolean isDirectory(T parent, T file, InputStream inputStream) throws Exception;
     
-    AdvancedCloseableInputStream createInputStream(T parent, T file, InputStream inputStream) throws Exception;
+    InputStream createInputStream(T parent, T file, InputStream inputStream) throws Exception;
     
     byte[] readBytes(T parent, T file, InputStream inputStream) throws Exception;
     
-    AdvancedCloseableOutputStream createOutputStream(T parent, T file) throws Exception;
+    OutputStream createOutputStream(T parent, T file) throws Exception;
     
     boolean writeBytes(T parent, T file, byte[] data) throws Exception;
     
