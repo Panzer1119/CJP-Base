@@ -20,6 +20,8 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
@@ -142,6 +144,25 @@ public interface IFile extends Serializable {
         return createNewFile(null);
     }
     
+    InputStream createInputStream() throws Exception;
+    
+    default InputStream createInputStream(Consumer<Throwable> failure) {
+        try {
+            return createInputStream();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default InputStream createInputStreamWithoutException() {
+        return createInputStream(null);
+    }
+    
     byte[] readBytes() throws Exception;
     
     default byte[] readBytes(Consumer<Throwable> failure) {
@@ -159,6 +180,25 @@ public interface IFile extends Serializable {
     
     default byte[] readBytesWithoutException() {
         return readBytes(null);
+    }
+    
+    OutputStream createOutputStream() throws Exception;
+    
+    default OutputStream createOutputStream(Consumer<Throwable> failure) {
+        try {
+            return createOutputStream();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default OutputStream createOutputStreamWithoutException() {
+        return createOutputStream(null);
     }
     
     boolean writeBytes(byte[] data) throws Exception;
