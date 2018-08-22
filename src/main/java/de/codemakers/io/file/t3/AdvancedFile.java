@@ -158,8 +158,12 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public AdvancedFile getParentFile() {
-        //TODO Implement it better, because this parent object is not always the DIRECT parent of this file
-        return parent;
+        if (paths.length <= 1) { //TODO What happened, when the paths.length == 0?
+            return parent;
+        }
+        final String[] paths_ = new String[paths.length - 1];
+        System.arraycopy(paths, 0, paths_, 0, paths_.length);
+        return new AdvancedFile(parent, null, paths_);
     }
     
     @Override
