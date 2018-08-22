@@ -145,22 +145,17 @@ public class AdvancedFile implements Copyable, IFile {
     public String getAbsolutePath() {
         if (isAbsolute()) { // Absolute path
             return getPath();
+        } else if (parent != null) {
+            //TODO Hier muesste man alle parents bis nach oben durch gehen
+            throw new NotYetImplementedRuntimeException();
         } else if (isIntern()) { // Relative intern path
             checkAndErrorIfRelativeClassIsNull(true);
-            if (parent != null) {
-                throw new NotYetImplementedRuntimeException();
-            } else {
-                String path_absolute = path;
-                
-                throw new NotYetImplementedRuntimeException();
-            }
+            String path_absolute = path;
+            //TODO Implement
+            throw new NotYetImplementedRuntimeException();
         } else { // Relative extern path
-            if (parent != null) {
-                //TODO Hier muesste man alle parents bis nach oben durch gehen
-                throw new NotYetImplementedRuntimeException();
-            } else {
-                throw new NotYetImplementedRuntimeException();
-            }
+            //TODO Implement
+            throw new NotYetImplementedRuntimeException();
         }
     }
     
@@ -168,27 +163,22 @@ public class AdvancedFile implements Copyable, IFile {
     public AdvancedFile getAbsoluteFile() {
         if (isAbsolute()) { // Absolute file
             return copy();
+        } else if (parent != null) {
+            final AdvancedFile file_absolute = copy();
+            final AdvancedFile parent_root = file_absolute.getRootParent();
+            final AdvancedFile parent_penultimate = file_absolute.getPenultimateParent();
+            parent_penultimate.parent = parent_root.getAbsoluteFile(); //TODO Maybe add some update/reset methods, so all children will update their "absolute/relative" state [DONE: or just change the methods "isAbsolute/isRelative", so they check their parent status if they have a parent]
+            return file_absolute;
         } else if (isIntern()) { // Relative intern file
             checkAndErrorIfRelativeClassIsNull(true);
-            if (parent != null) {
-                throw new NotYetImplementedRuntimeException();
-            } else {
-                final String[] paths_prefixes = clazz.getPackage().getName().split("\\.");
-                final String[] paths_ = new String[paths_prefixes.length + paths.length];
-                System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
-                System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
-                return new AdvancedFile(parent, fileProvider, paths_);
-            }
+            final String[] paths_prefixes = clazz.getPackage().getName().split("\\.");
+            final String[] paths_ = new String[paths_prefixes.length + paths.length];
+            System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
+            System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
+            return new AdvancedFile(parent, fileProvider, paths_);
         } else { // Relative extern file
-            if (parent != null) { //TODO Test this
-                final AdvancedFile file_absolute = copy();
-                final AdvancedFile parent_root = file_absolute.getRootParent();
-                final AdvancedFile parent_penultimate = file_absolute.getPenultimateParent();
-                parent_penultimate.parent = parent_root.getAbsoluteFile(); //TODO Maybe add some update/reset methods, so all children will update their "absolute/relative" state [DONE: or just change the methods "isAbsolute/isRelative", so they check their parent status if they have a parent]
-                return file_absolute;
-            } else {
-                return new AdvancedFile(parent, fileProvider, toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()));
-            }
+            return new AdvancedFile(parent, fileProvider, toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()));
+            
         }
     }
     
