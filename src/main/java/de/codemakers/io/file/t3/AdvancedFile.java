@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file.t3;
 
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.Copyable;
 import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
@@ -77,7 +78,7 @@ public class AdvancedFile implements Copyable, IFile {
         this.paths = paths;
     }
     
-    public AdvancedFile(String name, String... paths) { //TODO Implement init method, that looks if some fileProviders are needed
+    public AdvancedFile(String name, String[] paths) { //TODO Implement init method, that looks if some fileProviders are needed
         this.paths = paths;
     }
     
@@ -142,16 +143,48 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public String getAbsolutePath() {
-        if (isAbsolute()) {
+        if (isAbsolute()) { // Absolute path
             return getPath();
+        } else if (isIntern()) { // Relative intern path
+            checkAndErrorIfRelativeClassIsNull(true);
+            if (parent != null) {
+                throw new NotYetImplementedRuntimeException();
+            } else {
+                String path_absolute = path;
+                
+                return path_absolute;
+            }
+        } else { // Relative extern path
+            if (parent != null) {
+                //TODO Hier muesste man alle parents bis nach oben durch gehen
+            } else {
+            
+            }
         }
         return null; //TODO Implement
     }
     
     @Override
     public AdvancedFile getAbsoluteFile() {
-        if (isAbsolute()) {
+        if (isAbsolute()) { // Absolute file
             return copy();
+        } else if (isIntern()) { // Relative intern file
+            checkAndErrorIfRelativeClassIsNull(true);
+            if (parent != null) {
+                throw new NotYetImplementedRuntimeException();
+            } else {
+                final String[] paths_prefixes = clazz.getPackage().getName().split("\\.");
+                final String[] paths_ = new String[paths_prefixes.length + paths.length];
+                System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
+                System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
+                return new AdvancedFile(parent, fileProvider, paths_);
+            }
+        } else { // Relative extern file
+            if (parent != null) {
+                //TODO Hier muesste man alle parents bis nach oben durch gehen
+            } else {
+                return new AdvancedFile(parent, fileProvider, toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()));
+            }
         }
         return null; //TODO Implement
     }
@@ -512,6 +545,30 @@ public class AdvancedFile implements Copyable, IFile {
             return getClass();
         }
         return clazz;
+    }
+    
+    private boolean checkAndErrorIfRelativeClassIsNull(boolean throwException) {
+        if (clazz == null) {
+            if (throwException) {
+                throw new RelativeClassIsNullException(getPath() + " has no relative class");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    private boolean checkAndErrorIfRelativeClassIsNotNull(boolean throwException) {
+        if (clazz != null) {
+            if (throwException) {
+                throw new RelativeClassIsNotNullException(getPath() + " has an relative class");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
     
 }
