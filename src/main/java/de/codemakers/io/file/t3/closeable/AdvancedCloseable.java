@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3;
+package de.codemakers.io.file.t3.closeable;
 
 import de.codemakers.base.exceptions.CJPRuntimeException;
 import de.codemakers.base.logger.Logger;
@@ -24,52 +24,35 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
-public class ClosableZipEntry implements Closeable {
+public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
     
-    private final ZipFile zipFile;
-    private final ZipInputStream zipInputStream;
-    private final ZipEntry zipEntry;
+    private final T closeable;
+    private final D data;
     private boolean closed = false;
     
-    public ClosableZipEntry(ZipFile zipFile, ZipInputStream zipInputStream, ZipEntry zipEntry) {
-        Objects.requireNonNull(zipEntry);
-        this.zipFile = zipFile;
-        this.zipInputStream = zipInputStream;
-        this.zipEntry = zipEntry;
+    public AdvancedCloseable(T closeable, D data) {
+        Objects.requireNonNull(closeable);
+        this.closeable = closeable;
+        this.data = data;
     }
     
-    public ClosableZipEntry(ZipInputStream zipInputStream, ZipEntry zipEntry) {
-        Objects.requireNonNull(zipEntry);
-        this.zipFile = null;
-        this.zipInputStream = zipInputStream;
-        this.zipEntry = zipEntry;
+    public final T getCloseable() {
+        return closeable;
     }
     
-    public ClosableZipEntry(ZipFile zipFile, ZipEntry zipEntry) {
-        Objects.requireNonNull(zipEntry);
-        this.zipFile = zipFile;
-        this.zipInputStream = null;
-        this.zipEntry = zipEntry;
-    }
-    
-    public final ZipFile getZipFile() {
-        return zipFile;
-    }
-    
-    public final ZipInputStream getZipInputStream() {
-        return zipInputStream;
-    }
-    
-    public final ZipEntry getZipEntry() {
-        return zipEntry;
+    public final D getData() {
+        return data;
     }
     
     public final boolean isClosed() {
         return closed;
+    }
+    
+    public void preClose(T closeable, D data) throws IOException {
+    }
+    
+    public void postClose(T closeable, D data) throws IOException {
     }
     
     @Override
@@ -77,15 +60,9 @@ public class ClosableZipEntry implements Closeable {
         if (closed) {
             throw new CJPRuntimeException(getClass().getSimpleName() + " already closed");
         }
-        if (zipFile != null) {
-            zipFile.close();
-        }
-        if (zipInputStream != null) {
-            if (zipEntry != null) {
-                zipInputStream.closeEntry();
-            }
-            zipInputStream.close();
-        }
+        preClose(closeable, data);
+        closeable.close();
+        postClose(closeable, data);
         closed = true;
     }
     
@@ -105,16 +82,16 @@ public class ClosableZipEntry implements Closeable {
         close(null);
     }
     
-    public final <R> R close(Function<ZipEntry, R> function, Consumer<Throwable> failureClosing) throws Exception {
+    public <R> R close(Function<D, R> function, Consumer<Throwable> failureClosing) throws Exception {
         R r = null;
         if (function != null) {
-            r = function.apply(zipEntry);
+            r = function.apply(data);
         }
         close(failureClosing);
         return r;
     }
     
-    public final <R> R close(Function<ZipEntry, R> function, Consumer<Throwable> failureFunction, Consumer<Throwable> failureClosing) {
+    public <R> R close(Function<D, R> function, Consumer<Throwable> failureFunction, Consumer<Throwable> failureClosing) {
         try {
             return close(function, failureClosing);
         } catch (Exception ex) {
@@ -128,11 +105,11 @@ public class ClosableZipEntry implements Closeable {
         }
     }
     
-    public final <R> R closeWithoutException(Function<ZipEntry, R> function, Consumer<Throwable> failureFunction) {
+    public <R> R closeWithoutException(Function<D, R> function, Consumer<Throwable> failureFunction) {
         return close(function, failureFunction, null);
     }
     
-    public final <R> R closeWithoutException(Function<ZipEntry, R> function) {
+    public <R> R closeWithoutException(Function<D, R> function) {
         return closeWithoutException(function, null);
     }
     
