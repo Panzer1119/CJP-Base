@@ -14,28 +14,26 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3.exceptions;
+package de.codemakers.base.exceptions;
 
-import de.codemakers.base.exceptions.CJPException;
-
-public class FileException extends CJPException implements IFileException {
+public class CJPException extends Exception implements ICJPException {
     
-    public FileException() {
+    public CJPException() {
     }
     
-    public FileException(String message) {
+    public CJPException(String message) {
         super(message);
     }
     
-    public FileException(String message, Throwable cause) {
+    public CJPException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileException(Throwable cause) {
+    public CJPException(Throwable cause) {
         super(cause);
     }
     
-    public FileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public CJPException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     

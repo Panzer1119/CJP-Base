@@ -16,26 +16,26 @@
 
 package de.codemakers.io.file.t3.exceptions;
 
-import de.codemakers.base.exceptions.CJPException;
+import de.codemakers.base.exceptions.CJPRuntimeException;
 
-public class FileException extends CJPException implements IFileException {
+public class FileRuntimeException extends CJPRuntimeException implements IFileException {
     
-    public FileException() {
+    public FileRuntimeException() {
     }
     
-    public FileException(String message) {
+    public FileRuntimeException(String message) {
         super(message);
     }
     
-    public FileException(String message, Throwable cause) {
+    public FileRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public FileException(Throwable cause) {
+    public FileRuntimeException(Throwable cause) {
         super(cause);
     }
     
-    public FileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public FileRuntimeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
     

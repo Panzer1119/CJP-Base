@@ -16,27 +16,7 @@
 
 package de.codemakers.io.file.t3.exceptions;
 
-import de.codemakers.base.exceptions.CJPException;
+import de.codemakers.base.exceptions.ICJPException;
 
-public class FileException extends CJPException implements IFileException {
-    
-    public FileException() {
-    }
-    
-    public FileException(String message) {
-        super(message);
-    }
-    
-    public FileException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    
-    public FileException(Throwable cause) {
-        super(cause);
-    }
-    
-    public FileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-    
+public interface IFileException extends ICJPException {
 }
