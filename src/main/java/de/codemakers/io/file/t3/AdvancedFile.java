@@ -646,7 +646,7 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public InputStream createInputStream() throws Exception {
+    public InputStream createInputStream() throws Exception { //TODO Test this
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
         if (parent != null) {
@@ -668,7 +668,7 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public byte[] readBytes() throws Exception {
+    public byte[] readBytes() throws Exception { //TODO Test this
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
         if (parent != null) {
@@ -690,7 +690,7 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public OutputStream createOutputStream() throws Exception {
+    public OutputStream createOutputStream() throws Exception { //TODO Test this
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {
@@ -711,7 +711,7 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public boolean writeBytes(byte[] data) throws Exception {
+    public boolean writeBytes(byte[] data) throws Exception { //TODO Test this
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {
