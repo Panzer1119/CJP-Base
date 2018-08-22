@@ -29,6 +29,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -63,7 +64,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean extern = true;
     private boolean absolute = true;
     private AdvancedFile parent;
-    private FileProvider fileProvider;
+    private FileProvider<AdvancedFile> fileProvider = null;
     //Only for relative intern files
     private Class<?> clazz; //TODO this is for the reference of a relative internal file
     //Temp
@@ -73,23 +74,47 @@ public class AdvancedFile implements Copyable, IFile {
     private transient URL url;
     private transient File file;
     
-    public AdvancedFile(String... paths) { //TODO Implement init method, that looks if some fileProviders are needed
-        this.paths = paths;
+    public AdvancedFile(String... paths) {
+        this((AdvancedFile) null, paths);
     }
     
-    public AdvancedFile(String name, String[] paths) { //TODO Implement init method, that looks if some fileProviders are needed
-        this.paths = paths;
+    public AdvancedFile(String name, String[] paths) {
+        this.paths = Arrays.copyOf(paths, paths.length + 1);
+        this.paths[paths.length] = name;
+        init();
     }
     
-    public AdvancedFile(AdvancedFile parent, String... paths) { //TODO Implement init method, that looks if some fileProviders are needed
+    public AdvancedFile(AdvancedFile parent, String... paths) {
         this.parent = parent;
         this.paths = paths;
+        if (parent != null) {
+            windowsSeparator = parent.windowsSeparator;
+            extern = parent.extern;
+            absolute = parent.absolute;
+        }
+        init();
     }
     
-    protected AdvancedFile(AdvancedFile parent, FileProvider fileProvider, String[] paths) {
+    public AdvancedFile(AdvancedFile parent, FileProvider<AdvancedFile> fileProvider, String... paths) {
         this.parent = parent;
         this.fileProvider = fileProvider;
         this.paths = paths;
+        if (parent != null) {
+            windowsSeparator = parent.windowsSeparator;
+            extern = parent.extern;
+            absolute = parent.absolute;
+        }
+        init();
+    }
+    
+    private AdvancedFile(String[] paths, boolean windowsSeparator, boolean extern, boolean absolute, AdvancedFile parent, FileProvider<AdvancedFile> fileProvider, Class<?> clazz) {
+        this.paths = paths;
+        this.windowsSeparator = windowsSeparator;
+        this.extern = extern;
+        this.absolute = absolute;
+        this.parent = parent;
+        this.fileProvider = fileProvider;
+        this.clazz = clazz;
     }
     
     public String[] getPaths() {
@@ -110,6 +135,10 @@ public class AdvancedFile implements Copyable, IFile {
         resetURI();
         resetURL();
         resetFile();
+    }
+    
+    private final void init() { //TODO Implement init method, that looks if some FileProvider<AdvancedFile>s are needed
+    
     }
     
     @Override
@@ -165,9 +194,9 @@ public class AdvancedFile implements Copyable, IFile {
             final String[] paths_ = new String[paths_prefixes.length + paths.length];
             System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
             System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
-            return new AdvancedFile(parent, fileProvider, paths_);
+            return new AdvancedFile(paths_, windowsSeparator, extern, absolute, parent, fileProvider, clazz);
         } else { // Relative extern file
-            return new AdvancedFile(parent, fileProvider, toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()));
+            return new AdvancedFile(toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
             
         }
     }
@@ -179,7 +208,7 @@ public class AdvancedFile implements Copyable, IFile {
         }
         final String[] paths_ = new String[paths.length - 1];
         System.arraycopy(paths, 0, paths_, 0, paths_.length);
-        return new AdvancedFile(parent, null, paths_);
+        return new AdvancedFile(paths_, windowsSeparator, extern, absolute, parent, fileProvider, clazz);
     }
     
     protected AdvancedFile getParent() {
@@ -538,7 +567,7 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public AdvancedFile copy() {
-        return new AdvancedFile(parent, fileProvider, paths);
+        return new AdvancedFile(paths, windowsSeparator, extern, absolute, parent, fileProvider, clazz);
     }
     
     @Override
