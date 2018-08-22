@@ -16,7 +16,6 @@
 
 package de.codemakers.io.file.t3;
 
-import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.Copyable;
 import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
@@ -145,17 +144,8 @@ public class AdvancedFile implements Copyable, IFile {
     public String getAbsolutePath() {
         if (isAbsolute()) { // Absolute path
             return getPath();
-        } else if (parent != null) {
-            //TODO Hier muesste man alle parents bis nach oben durch gehen
-            throw new NotYetImplementedRuntimeException();
-        } else if (isIntern()) { // Relative intern path
-            checkAndErrorIfRelativeClassIsNull(true);
-            String path_absolute = path;
-            //TODO Implement
-            throw new NotYetImplementedRuntimeException();
-        } else { // Relative extern path
-            //TODO Implement
-            throw new NotYetImplementedRuntimeException();
+        } else {
+            return getAbsoluteFile().getPath();
         }
     }
     
