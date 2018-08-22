@@ -17,6 +17,8 @@
 package de.codemakers.io.file.t3.providers;
 
 import de.codemakers.io.file.t3.AdvancedFile;
+import de.codemakers.io.file.t3.AdvancedFileFilter;
+import de.codemakers.io.file.t3.AdvancedFilenameFilter;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +27,20 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Implemen
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
+        return null;
+    }
+    
+    @Override
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFileFilter advancedFileFilter, byte... parentBytes) throws Exception {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
+        return null;
+    }
+    
+    @Override
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFilenameFilter advancedFilenameFilter, byte... parentBytes) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         return null;

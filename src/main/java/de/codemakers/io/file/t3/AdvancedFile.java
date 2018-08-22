@@ -64,7 +64,13 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean absolute = true;
     private AdvancedFile parent;
     private FileProvider fileProvider;
+    //Temp
+    private Class<?> clazz; //TODO this is for the reference of a relative internal file
     private String path;
+    private Path path_;
+    private URI uri;
+    private URL url;
+    private File file;
     
     public AdvancedFile(String... paths) { //TODO Implement init method, that looks if some fileProviders are needed
         this.paths = paths;
@@ -74,6 +80,14 @@ public class AdvancedFile implements Copyable, IFile {
         this.parent = parent;
         this.fileProvider = fileProvider;
         this.paths = paths;
+    }
+    
+    final void reset() {
+        resetPathString();
+        resetPath();
+        resetURI();
+        resetURL();
+        resetFile();
     }
     
     @Override
@@ -100,7 +114,7 @@ public class AdvancedFile implements Copyable, IFile {
         return path;
     }
     
-    private final void resetPath() {
+    final void resetPathString() {
         path = null;
     }
     
@@ -341,23 +355,64 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public Path toPath() throws Exception {
-        return null; //TODO Implement
+        if (path_ == null) {
+            path_ = toFile().toPath();
+        }
+        return path_;
+    }
+    
+    final void resetPath() {
+        path_ = null;
     }
     
     @Override
     public URI toURI() throws Exception {
-        return null; //TODO Implement
+        if (uri == null) {
+            if (isIntern()) {
+                uri = getNonNullClazz().getResource(getPath()).toURI();
+            } else {
+                uri = toFile().toURI();
+            }
+        }
+        return uri;
+    }
+    
+    final void resetURI() {
+        uri = null;
     }
     
     @Override
     public URL toURL() throws Exception {
-        return null; //TODO Implement
+        if (url == null) {
+            if (isIntern()) {
+                url = getNonNullClazz().getResource(getPath());
+            } else {
+                url = toURI().toURL();
+            }
+        }
+        return url;
+    }
+    
+    final void resetURL() {
+        url = null;
     }
     
     @Override
     public File toFile() throws FileException {
         checkAndErrorIfIntern(true);
-        return new File(getPath());
+        if (file == null) {
+            file = new File(getPath());
+        }
+        return file;
+    }
+    
+    final void resetFile() {
+        file = null;
+        resetPath();
+        if (isExtern()) {
+            resetURI();
+            resetURL();
+        }
     }
     
     @Override
@@ -415,6 +470,22 @@ public class AdvancedFile implements Copyable, IFile {
     @Override
     public String toString() {
         return getPath();
+    }
+    
+    public final Class<?> getClazz() {
+        return clazz;
+    }
+    
+    public final AdvancedFile setClazz(Class<?> clazz) {
+        this.clazz = clazz;
+        return this;
+    }
+    
+    public final Class<?> getNonNullClazz() {
+        if (clazz == null) {
+            return getClass();
+        }
+        return clazz;
     }
     
 }

@@ -16,8 +16,13 @@
 
 package de.codemakers.io.file.t3.providers;
 
+import de.codemakers.base.Standard;
 import de.codemakers.io.file.t3.AdvancedFile;
+import de.codemakers.io.file.t3.AdvancedFileFilter;
+import de.codemakers.io.file.t3.AdvancedFilenameFilter;
+import de.codemakers.io.file.t3.exceptions.is.FileIsExternException;
 import de.codemakers.io.file.t3.exceptions.is.FileIsInternException;
+import org.apache.commons.io.IOUtils;
 
 import java.util.List;
 
@@ -25,22 +30,62 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, parentBytes);
+        if (Standard.RUNNING_JAR_IS_JAR) {
+            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
+            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, parentBytes);
+        } else {
+            //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
+            throw new FileIsExternException(file + " is extern");
+        }
+    }
+    
+    @Override
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFileFilter advancedFileFilter, byte... parentBytes) throws Exception {
+        if (Standard.RUNNING_JAR_IS_JAR) {
+            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
+            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFileFilter, parentBytes);
+        } else {
+            //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
+            throw new FileIsExternException(file + " is extern");
+        }
+    }
+    
+    @Override
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFilenameFilter advancedFilenameFilter, byte... parentBytes) throws Exception {
+        if (Standard.RUNNING_JAR_IS_JAR) {
+            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
+            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFilenameFilter, parentBytes);
+        } else {
+            //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
+            throw new FileIsExternException(file + " is extern");
+        }
     }
     
     @Override
     public boolean isFile(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        return AdvancedFile.ZIP_PROVIDER.isFile(parent, file, parentBytes);
+        if (Standard.RUNNING_JAR_IS_JAR) {
+            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
+            return AdvancedFile.ZIP_PROVIDER.isFile(parent, file, parentBytes);
+        } else {
+            //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
+            throw new FileIsExternException(file + " is extern");
+        }
     }
     
     @Override
     public boolean isDirectory(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        return AdvancedFile.ZIP_PROVIDER.isDirectory(parent, file, parentBytes);
+        if (Standard.RUNNING_JAR_IS_JAR) {
+            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
+            return AdvancedFile.ZIP_PROVIDER.isDirectory(parent, file, parentBytes);
+        } else {
+            //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
+            throw new FileIsExternException(file + " is extern");
+        }
     }
     
     @Override
     public byte[] readBytes(AdvancedFile parent, AdvancedFile file, byte... parentBytes) throws Exception {
-        return AdvancedFile.ZIP_PROVIDER.readBytes(parent, file, parentBytes);
+        return IOUtils.toByteArray(file.getNonNullClazz().getResourceAsStream(file.getPath()));
     }
     
     @Override

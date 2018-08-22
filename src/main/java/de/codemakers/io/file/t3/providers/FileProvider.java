@@ -16,14 +16,19 @@
 
 package de.codemakers.io.file.t3.providers;
 
+import de.codemakers.io.file.t3.AdvancedFileFilter;
 import de.codemakers.io.file.t3.AdvancedFilenameFilter;
 import de.codemakers.io.file.t3.IFile;
 
 import java.util.List;
 
-public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter {
+public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetects WinRaR installations for optionally writing/editing .rar files
     
     List<T> listFiles(T parent, T file, byte... parentBytes) throws Exception;
+    
+    List<T> listFiles(T parent, T file, AdvancedFileFilter advancedFileFilter, byte... parentBytes) throws Exception;
+    
+    List<T> listFiles(T parent, T file, AdvancedFilenameFilter advancedFilenameFilter, byte... parentBytes) throws Exception;
     
     boolean isFile(T parent, T file, byte... parentBytes) throws Exception;
     
