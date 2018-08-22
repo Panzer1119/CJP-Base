@@ -64,13 +64,14 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean absolute = true;
     private AdvancedFile parent;
     private FileProvider fileProvider;
-    //Temp
+    //Only for relative intern files
     private Class<?> clazz; //TODO this is for the reference of a relative internal file
-    private String path;
-    private Path path_;
-    private URI uri;
-    private URL url;
-    private File file;
+    //Temp
+    private transient String path;
+    private transient Path path_;
+    private transient URI uri;
+    private transient URL url;
+    private transient File file;
     
     public AdvancedFile(String... paths) { //TODO Implement init method, that looks if some fileProviders are needed
         this.paths = paths;
