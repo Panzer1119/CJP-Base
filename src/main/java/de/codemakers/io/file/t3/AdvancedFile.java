@@ -152,16 +152,16 @@ public class AdvancedFile implements Copyable, IFile {
             } else {
                 String path_absolute = path;
                 
-                return path_absolute;
+                throw new NotYetImplementedRuntimeException();
             }
         } else { // Relative extern path
             if (parent != null) {
                 //TODO Hier muesste man alle parents bis nach oben durch gehen
+                throw new NotYetImplementedRuntimeException();
             } else {
-            
+                throw new NotYetImplementedRuntimeException();
             }
         }
-        return null; //TODO Implement
     }
     
     @Override
@@ -182,11 +182,11 @@ public class AdvancedFile implements Copyable, IFile {
         } else { // Relative extern file
             if (parent != null) {
                 //TODO Hier muesste man alle parents bis nach oben durch gehen
+                throw new NotYetImplementedRuntimeException();
             } else {
                 return new AdvancedFile(parent, fileProvider, toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()));
             }
         }
-        return null; //TODO Implement
     }
     
     @Override
