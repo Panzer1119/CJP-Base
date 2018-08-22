@@ -184,7 +184,7 @@ public class AdvancedFile implements Copyable, IFile {
                 final AdvancedFile file_absolute = copy();
                 final AdvancedFile parent_root = file_absolute.getRootParent();
                 final AdvancedFile parent_penultimate = file_absolute.getPenultimateParent();
-                parent_penultimate.parent = parent_root.getAbsoluteFile(); //TODO Maybe add some update/reset methods, so all children will update their "absolute/relative" state, or just change the methods "isAbsolute/isRelative", so they check their parent status if they have a parent
+                parent_penultimate.parent = parent_root.getAbsoluteFile(); //TODO Maybe add some update/reset methods, so all children will update their "absolute/relative" state [DONE: or just change the methods "isAbsolute/isRelative", so they check their parent status if they have a parent]
                 return file_absolute;
             } else {
                 return new AdvancedFile(parent, fileProvider, toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()));
@@ -321,6 +321,9 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isAbsolute() {
+        if (parent != null) {
+            return parent.isAbsolute();
+        }
         return absolute; //TODO Implement, but at Construction
     }
     
@@ -350,6 +353,9 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isRelative() {
+        if (parent != null) {
+            return parent.isRelative();
+        }
         return !absolute; //TODO Implement, but at Construction
     }
     
@@ -379,6 +385,9 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isIntern() {
+        if (parent != null) {
+            return parent.isIntern();
+        }
         return !extern; //TODO Implement, but at Construction
     }
     
@@ -408,6 +417,9 @@ public class AdvancedFile implements Copyable, IFile {
     
     @Override
     public boolean isExtern() {
+        if (parent != null) {
+            return parent.isExtern();
+        }
         return extern; //TODO Implement, but at Construction
     }
     
