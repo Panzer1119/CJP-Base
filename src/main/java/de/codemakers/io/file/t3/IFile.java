@@ -17,7 +17,7 @@
 package de.codemakers.io.file.t3;
 
 import de.codemakers.base.logger.Logger;
-import de.codemakers.io.file.t3.exceptions.FileException;
+import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 
 import java.io.File;
 import java.io.Serializable;
@@ -64,9 +64,9 @@ public interface IFile extends Serializable {
     
     URL toURL() throws Exception;
     
-    File toFile() throws FileException;
+    File toFile() throws FileRuntimeException;
     
-    boolean mkdir() throws FileException;
+    boolean mkdir() throws FileRuntimeException;
     
     default boolean mkdir(Consumer<Throwable> failure) {
         try {
@@ -85,7 +85,7 @@ public interface IFile extends Serializable {
         return mkdir(null);
     }
     
-    boolean mkdirs() throws FileException;
+    boolean mkdirs() throws FileRuntimeException;
     
     default boolean mkdirs(Consumer<Throwable> failure) {
         try {
@@ -104,7 +104,7 @@ public interface IFile extends Serializable {
         return mkdirs(null);
     }
     
-    boolean delete() throws FileException;
+    boolean delete() throws FileRuntimeException;
     
     default boolean delete(Consumer<Throwable> failure) {
         try {
@@ -123,7 +123,7 @@ public interface IFile extends Serializable {
         return delete(null);
     }
     
-    boolean createNewFile() throws FileException;
+    boolean createNewFile() throws FileRuntimeException;
     
     default boolean createNewFile(Consumer<Throwable> failure) {
         try {
@@ -142,7 +142,7 @@ public interface IFile extends Serializable {
         return createNewFile(null);
     }
     
-    byte[] readBytes() throws FileException;
+    byte[] readBytes() throws FileRuntimeException;
     
     default byte[] readBytes(Consumer<Throwable> failure) {
         try {
@@ -161,7 +161,7 @@ public interface IFile extends Serializable {
         return readBytes(null);
     }
     
-    boolean writeBytes(byte[] data) throws FileException;
+    boolean writeBytes(byte[] data) throws FileRuntimeException;
     
     default boolean writeBytes(byte[] data, Consumer<Throwable> failure) {
         try {
@@ -204,11 +204,11 @@ public interface IFile extends Serializable {
         return use(function, null);
     }
     
-    default List<IFile> listFiles() throws FileException {
+    default List<IFile> listFiles() throws FileRuntimeException {
         return listFiles(false);
     }
     
-    List<IFile> listFiles(boolean recursive) throws FileException;
+    List<IFile> listFiles(boolean recursive) throws FileRuntimeException;
     
     default List<IFile> listFiles(Consumer<Throwable> failure) {
         return listFiles(false, failure);

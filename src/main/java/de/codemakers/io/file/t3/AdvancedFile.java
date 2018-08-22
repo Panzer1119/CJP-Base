@@ -18,7 +18,7 @@ package de.codemakers.io.file.t3;
 
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.Copyable;
-import de.codemakers.io.file.t3.exceptions.FileException;
+import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
 import de.codemakers.io.file.t3.providers.FileProvider;
@@ -159,7 +159,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfFile(boolean throwException) {
         if (isFile()) {
             if (throwException) {
-                throw new FileIsFileException(getPath() + " is a file");
+                throw new FileIsFileRuntimeException(getPath() + " is a file");
             } else {
                 return true;
             }
@@ -171,7 +171,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfNotFile(boolean throwException) {
         if (!isFile()) {
             if (throwException) {
-                throw new FileIsNotFileException(getPath() + " is not a file");
+                throw new FileIsNotFileRuntimeException(getPath() + " is not a file");
             } else {
                 return true;
             }
@@ -188,7 +188,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfDirectory(boolean throwException) {
         if (isDirectory()) {
             if (throwException) {
-                throw new FileIsDirectoryException(getPath() + " is a directory");
+                throw new FileIsDirectoryRuntimeException(getPath() + " is a directory");
             } else {
                 return true;
             }
@@ -200,7 +200,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfNotDirectory(boolean throwException) {
         if (!isDirectory()) {
             if (throwException) {
-                throw new FileIsNotDirectoryException(getPath() + " is not a directory");
+                throw new FileIsNotDirectoryRuntimeException(getPath() + " is not a directory");
             } else {
                 return true;
             }
@@ -217,7 +217,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfExisting(boolean throwException) {
         if (exists()) {
             if (throwException) {
-                throw new FileIsExistingException(getPath() + " does exist");
+                throw new FileIsExistingRuntimeException(getPath() + " does exist");
             } else {
                 return true;
             }
@@ -229,7 +229,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfNotExisting(boolean throwException) {
         if (!exists()) {
             if (throwException) {
-                throw new FileIsNotExistingException(getPath() + " does not exist");
+                throw new FileIsNotExistingRuntimeException(getPath() + " does not exist");
             } else {
                 return true;
             }
@@ -246,7 +246,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfAbsolute(boolean throwException) {
         if (isAbsolute()) {
             if (throwException) {
-                throw new FileIsAbsoluteException(getPath() + " is absolute");
+                throw new FileIsAbsoluteRuntimeException(getPath() + " is absolute");
             } else {
                 return true;
             }
@@ -258,7 +258,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfNotAbsolute(boolean throwException) {
         if (!isAbsolute()) {
             if (throwException) {
-                throw new FileIsNotAbsoluteException(getPath() + " is not absolute");
+                throw new FileIsNotAbsoluteRuntimeException(getPath() + " is not absolute");
             } else {
                 return true;
             }
@@ -275,7 +275,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfRelative(boolean throwException) {
         if (isRelative()) {
             if (throwException) {
-                throw new FileIsRelativeException(getPath() + " is relative");
+                throw new FileIsRelativeRuntimeException(getPath() + " is relative");
             } else {
                 return true;
             }
@@ -287,7 +287,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfNotRelative(boolean throwException) {
         if (!isRelative()) {
             if (throwException) {
-                throw new FileIsNotRelativeException(getPath() + " is not relative");
+                throw new FileIsNotRelativeRuntimeException(getPath() + " is not relative");
             } else {
                 return true;
             }
@@ -304,7 +304,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfIntern(boolean throwException) {
         if (isIntern()) {
             if (throwException) {
-                throw new FileIsInternException(getPath() + " is intern");
+                throw new FileIsInternRuntimeException(getPath() + " is intern");
             } else {
                 return true;
             }
@@ -316,7 +316,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfNotIntern(boolean throwException) {
         if (!isIntern()) {
             if (throwException) {
-                throw new FileIsNotInternException(getPath() + " is not intern");
+                throw new FileIsNotInternRuntimeException(getPath() + " is not intern");
             } else {
                 return true;
             }
@@ -333,7 +333,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfExtern(boolean throwException) {
         if (isExtern()) {
             if (throwException) {
-                throw new FileIsExternException(getPath() + " is extern");
+                throw new FileIsExternRuntimeException(getPath() + " is extern");
             } else {
                 return true;
             }
@@ -345,7 +345,7 @@ public class AdvancedFile implements Copyable, IFile {
     private boolean checkAndErrorIfNotExtern(boolean throwException) {
         if (!isExtern()) {
             if (throwException) {
-                throw new FileIsNotExternException(getPath() + " is not extern");
+                throw new FileIsNotExternRuntimeException(getPath() + " is not extern");
             } else {
                 return true;
             }
@@ -399,7 +399,7 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public File toFile() throws FileException {
+    public File toFile() throws FileRuntimeException {
         checkAndErrorIfIntern(true);
         if (file == null) {
             file = new File(getPath());
@@ -417,47 +417,47 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public boolean mkdir() throws FileIsNotException {
+    public boolean mkdir() throws FileIsNotRuntimeException {
         checkAndErrorIfIntern(true);
         return false; //TODO Implement
     }
     
     @Override
-    public boolean mkdirs() throws FileIsNotException {
+    public boolean mkdirs() throws FileIsNotRuntimeException {
         checkAndErrorIfIntern(true);
         return false; //TODO Implement
     }
     
     @Override
-    public boolean delete() throws FileException {
+    public boolean delete() throws FileRuntimeException {
         checkAndErrorIfIntern(true);
         //checkAndErrorIfNotExisting();
         return false; //TODO Implement
     }
     
     @Override
-    public boolean createNewFile() throws FileIsNotException {
+    public boolean createNewFile() throws FileIsNotRuntimeException {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         return false; //TODO Implement
     }
     
     @Override
-    public byte[] readBytes() throws FileException {
+    public byte[] readBytes() throws FileRuntimeException {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
         return new byte[0]; //TODO Implement
     }
     
     @Override
-    public boolean writeBytes(byte[] data) throws FileException {
+    public boolean writeBytes(byte[] data) throws FileRuntimeException {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         return false; //TODO Implement
     }
     
     @Override
-    public List<IFile> listFiles(boolean recursive) throws FileException {
+    public List<IFile> listFiles(boolean recursive) throws FileRuntimeException {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         return null; //TODO Implement

@@ -20,8 +20,8 @@ import de.codemakers.base.Standard;
 import de.codemakers.io.file.t3.AdvancedFile;
 import de.codemakers.io.file.t3.AdvancedFileFilter;
 import de.codemakers.io.file.t3.AdvancedFilenameFilter;
-import de.codemakers.io.file.t3.exceptions.is.FileIsExternException;
-import de.codemakers.io.file.t3.exceptions.is.FileIsInternException;
+import de.codemakers.io.file.t3.exceptions.is.FileIsExternRuntimeException;
+import de.codemakers.io.file.t3.exceptions.is.FileIsInternRuntimeException;
 import org.apache.commons.io.IOUtils;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
             return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, parentBytes);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
-            throw new FileIsExternException(file + " is extern");
+            throw new FileIsExternRuntimeException(file + " is extern");
         }
     }
     
@@ -46,7 +46,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
             return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFileFilter, parentBytes);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
-            throw new FileIsExternException(file + " is extern");
+            throw new FileIsExternRuntimeException(file + " is extern");
         }
     }
     
@@ -57,7 +57,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
             return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFilenameFilter, parentBytes);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
-            throw new FileIsExternException(file + " is extern");
+            throw new FileIsExternRuntimeException(file + " is extern");
         }
     }
     
@@ -68,7 +68,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
             return AdvancedFile.ZIP_PROVIDER.isFile(parent, file, parentBytes);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
-            throw new FileIsExternException(file + " is extern");
+            throw new FileIsExternRuntimeException(file + " is extern");
         }
     }
     
@@ -79,7 +79,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
             return AdvancedFile.ZIP_PROVIDER.isDirectory(parent, file, parentBytes);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
-            throw new FileIsExternException(file + " is extern");
+            throw new FileIsExternRuntimeException(file + " is extern");
         }
     }
     
@@ -90,27 +90,27 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     
     @Override
     public boolean writeBytes(AdvancedFile parent, AdvancedFile file, byte[] data) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
     public boolean createNewFile(AdvancedFile parent, AdvancedFile file) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
     public boolean delete(AdvancedFile parent, AdvancedFile file) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
     public boolean mkdir(AdvancedFile parent, AdvancedFile file) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
     public boolean mkdirs(AdvancedFile parent, AdvancedFile file) throws Exception {
-        throw new FileIsInternException(file + " is intern");
+        throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
