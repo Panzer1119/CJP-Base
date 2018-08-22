@@ -16,17 +16,19 @@
 
 package de.codemakers.io.file.t3;
 
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.Copyable;
 import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
 import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
+import de.codemakers.io.file.t3.exceptions.has.FileHasParentRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
 import de.codemakers.io.file.t3.providers.FileProvider;
 import de.codemakers.io.file.t3.providers.InternProvider;
 import de.codemakers.io.file.t3.providers.ZIPProvider;
 
-import java.io.File;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
@@ -644,20 +646,90 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public byte[] readBytes() throws Exception { //TODO when parent is not null add a method which asks the parent if this child exists
+    public InputStream createInputStream() throws Exception {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
-        if (isExtern()) {
-            return Files.readAllBytes(toPath());
+        if (parent != null) {
+            return parent.createInputStream(this);
         }
-        return new byte[0]; //TODO Implement
+        if (isExtern()) {
+            return new FileInputStream(toFile());
+        }
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    InputStream createInputStream(AdvancedFile file) throws Exception {
+        if (parent != null) {
+            return fileProvider.createInputStream(this, file, createInputStream());
+        } else {
+            return fileProvider.createInputStream(this, file, null);
+        }
     }
     
     @Override
-    public boolean writeBytes(byte[] data) throws FileRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
+    public byte[] readBytes() throws Exception {
+        checkAndErrorIfNotExisting(true);
+        checkAndErrorIfNotFile(true);
+        if (parent != null) {
+            return parent.readBytes(this);
+        }
+        if (isExtern()) {
+            return Files.readAllBytes(toPath());
+        }
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    byte[] readBytes(AdvancedFile file) throws Exception {
+        if (parent != null) {
+            return fileProvider.readBytes(this, file, createInputStream());
+        } else {
+            return fileProvider.readBytes(this, file, null);
+        }
+    }
+    
+    @Override
+    public OutputStream createOutputStream() throws Exception {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
-        return false; //TODO Implement
+        if (parent != null) {
+            return parent.createOutputStream(this);
+        }
+        if (isExtern()) {
+            return new FileOutputStream(toFile());
+        }
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    OutputStream createOutputStream(AdvancedFile file) throws Exception {
+        if (parent != null) {
+            throw new FileHasParentRuntimeException(getPath() + " has a parent");
+        }
+        return fileProvider.createOutputStream(this, file);
+    }
+    
+    @Override
+    public boolean writeBytes(byte[] data) throws Exception {
+        checkAndErrorIfIntern(true);
+        checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
+        if (parent != null) {
+            return parent.writeBytes(this, data);
+        }
+        if (isExtern()) {
+            Files.write(toPath(), data);
+            return true;
+        }
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    boolean writeBytes(AdvancedFile file, byte[] data) throws Exception {
+        if (parent != null) {
+            throw new FileHasParentRuntimeException(getPath() + " has a parent");
+        }
+        return fileProvider.writeBytes(this, file, data);
     }
     
     @Override
