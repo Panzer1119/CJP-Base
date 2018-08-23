@@ -19,5 +19,7 @@ package de.codemakers.base.util;
 public interface Copyable {
 
     Copyable copy();
+    
+    void set(Copyable copyable);
 
 }
