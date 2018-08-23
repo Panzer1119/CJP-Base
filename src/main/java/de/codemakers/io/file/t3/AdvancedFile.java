@@ -101,7 +101,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     public AdvancedFile(AdvancedFile parent, String... paths) {
         this.parent = parent;
         this.paths = paths;
-        if (parent != null) {
+        if (parent != null) { //FIXME This should only be used internally, but also someone should can use this, but then the parent != this.parent; So maybe make THIS constructor to a private/protected static function? And make the same Constructor again, but dealing the parent object right and make one AdvancedFile of the parent + paths if needed
             this.windowsSeparator = parent.windowsSeparator;
             this.extern = parent.extern;
             this.absolute = parent.absolute;
@@ -152,6 +152,12 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         }
         final String temp = paths[0];
         return temp.startsWith(FILE_SEPARATOR_DEFAULT_STRING) || (temp.length() >= 2 && temp.charAt(1) == ':');
+    }
+    
+    public static final AdvancedFile intern(String... paths) {
+        final AdvancedFile advancedFile = new AdvancedFile(paths);
+        advancedFile.extern = false;
+        return advancedFile;
     }
     
     public String[] getPaths() {
