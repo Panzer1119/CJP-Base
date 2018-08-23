@@ -131,7 +131,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public boolean accept(AdvancedFile parent, String name) {
+    public boolean test(AdvancedFile parent, String name) {
         if (parent == null) {
             return false;
         }
@@ -139,7 +139,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public boolean accept(AdvancedFile file) {
+    public boolean test(AdvancedFile file) {
         if (file == null) {
             return false;
         }

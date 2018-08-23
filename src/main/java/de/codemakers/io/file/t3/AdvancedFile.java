@@ -221,14 +221,18 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
             }
         }
         init = true;
+        String name = "";
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
             temp.add(p);
-            final FileProvider<AdvancedFile> fileProvider = getProvider(parent, p);
+            name += FILE_SEPARATOR_DEFAULT_STRING;
+            name += p;
+            final FileProvider<AdvancedFile> fileProvider = getProvider(parent, name.substring(1));
             if (fileProvider != null) {
                 parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
                 clazz = null;
                 temp.clear();
+                name = "";
                 System.out.println("FOUND A  FILE PROVIDER FOR: \"" + p + "\"");
             } else {
                 System.out.println("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
@@ -239,6 +243,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         } else {
             paths = temp.toArray(new String[0]);
             temp.clear();
+            name = "";
         }
         paths_.clear();
     }
