@@ -220,14 +220,14 @@ public interface IFile<T extends IFile> extends Serializable {
         return writeBytes(data, null);
     }
     
-    default <R> R use(Function<IFile, R> function) throws Exception {
+    default <R> R use(Function<T, R> function) throws Exception {
         if (function == null) {
             return null;
         }
-        return function.apply(this);
+        return function.apply((T) this);
     }
     
-    default <R> R use(Function<IFile, R> function, Consumer<Throwable> failure) {
+    default <R> R use(Function<T, R> function, Consumer<Throwable> failure) {
         try {
             return use(function);
         } catch (Exception ex) {
@@ -240,23 +240,23 @@ public interface IFile<T extends IFile> extends Serializable {
         }
     }
     
-    default <R> R useWithoutException(Function<IFile, R> function) {
+    default <R> R useWithoutException(Function<T, R> function) {
         return use(function, null);
     }
     
     // listFiles BEGIN =================================================================================================
     
-    default List<IFile> listFiles() throws FileRuntimeException {
+    default List<T> listFiles() throws FileRuntimeException {
         return listFiles(false);
     }
     
-    List<IFile> listFiles(boolean recursive) throws FileRuntimeException;
+    List<T> listFiles(boolean recursive) throws FileRuntimeException;
     
-    default List<IFile> listFiles(Consumer<Throwable> failure) {
+    default List<T> listFiles(Consumer<Throwable> failure) {
         return listFiles(false, failure);
     }
     
-    default List<IFile> listFiles(boolean recursive, Consumer<Throwable> failure) {
+    default List<T> listFiles(boolean recursive, Consumer<Throwable> failure) {
         try {
             return listFiles(recursive);
         } catch (Exception ex) {
@@ -269,27 +269,27 @@ public interface IFile<T extends IFile> extends Serializable {
         }
     }
     
-    default List<IFile> listFilesWithoutException() {
+    default List<T> listFilesWithoutException() {
         return listFilesWithoutException(false);
     }
     
-    default List<IFile> listFilesWithoutException(boolean recursive) {
+    default List<T> listFilesWithoutException(boolean recursive) {
         return listFiles(recursive, (Consumer<Throwable>) null);
     }
     
-    // listFiles MID ===================================================================================================
+    // listFiles MID ============================================================
     
-    default List<IFile> listFiles(AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
+    default List<T> listFiles(AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
         return listFiles(false, advancedFileFilter);
     }
     
-    List<IFile> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException;
+    List<T> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException;
     
-    default List<IFile> listFiles(AdvancedFileFilter advancedFileFilter, Consumer<Throwable> failure) {
+    default List<T> listFiles(AdvancedFileFilter advancedFileFilter, Consumer<Throwable> failure) {
         return listFiles(false, advancedFileFilter, failure);
     }
     
-    default List<IFile> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter, Consumer<Throwable> failure) {
+    default List<T> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter, Consumer<Throwable> failure) {
         try {
             return listFiles(recursive, advancedFileFilter);
         } catch (Exception ex) {
@@ -302,21 +302,21 @@ public interface IFile<T extends IFile> extends Serializable {
         }
     }
     
-    default List<IFile> listFilesWithoutException(AdvancedFileFilter advancedFileFilter) {
+    default List<T> listFilesWithoutException(AdvancedFileFilter advancedFileFilter) {
         return listFilesWithoutException(false, advancedFileFilter);
     }
     
-    default List<IFile> listFilesWithoutException(boolean recursive, AdvancedFileFilter advancedFileFilter) {
+    default List<T> listFilesWithoutException(boolean recursive, AdvancedFileFilter advancedFileFilter) {
         return listFiles(recursive, advancedFileFilter, null);
     }
     
     // listFiles END ===================================================================================================
     
-    default boolean forChildren(Consumer<IFile> consumer) throws Exception {
+    default boolean forChildren(Consumer<T> consumer) throws Exception {
         return forChildren(consumer, false);
     }
     
-    default boolean forChildren(Consumer<IFile> consumer, boolean recursive) throws Exception {
+    default boolean forChildren(Consumer<T> consumer, boolean recursive) throws Exception {
         if (consumer == null) {
             return false;
         }
@@ -324,11 +324,11 @@ public interface IFile<T extends IFile> extends Serializable {
         return true;
     }
     
-    default boolean forChildren(Consumer<IFile> consumer, Consumer<Throwable> failure) {
+    default boolean forChildren(Consumer<T> consumer, Consumer<Throwable> failure) {
         return forChildren(consumer, false, failure);
     }
     
-    default boolean forChildren(Consumer<IFile> consumer, boolean recursive, Consumer<Throwable> failure) {
+    default boolean forChildren(Consumer<T> consumer, boolean recursive, Consumer<Throwable> failure) {
         try {
             return forChildren(consumer, recursive);
         } catch (Exception ex) {
@@ -341,19 +341,19 @@ public interface IFile<T extends IFile> extends Serializable {
         }
     }
     
-    default boolean forChildrenWithoutException(Consumer<IFile> consumer) {
+    default boolean forChildrenWithoutException(Consumer<T> consumer) {
         return forChildren(consumer, null);
     }
     
-    default boolean forChildrenWithoutException(Consumer<IFile> consumer, boolean recursive) {
+    default boolean forChildrenWithoutException(Consumer<T> consumer, boolean recursive) {
         return forChildren(consumer, recursive, null);
     }
     
-    default boolean forChildrenParallel(Consumer<IFile> consumer) throws Exception {
+    default boolean forChildrenParallel(Consumer<T> consumer) throws Exception {
         return forChildrenParallel(consumer, false);
     }
     
-    default boolean forChildrenParallel(Consumer<IFile> consumer, boolean recursive) throws Exception {
+    default boolean forChildrenParallel(Consumer<T> consumer, boolean recursive) throws Exception {
         if (consumer == null) {
             return false;
         }
@@ -361,11 +361,11 @@ public interface IFile<T extends IFile> extends Serializable {
         return true;
     }
     
-    default boolean forChildrenParallel(Consumer<IFile> consumer, Consumer<Throwable> failure) {
+    default boolean forChildrenParallel(Consumer<T> consumer, Consumer<Throwable> failure) {
         return forChildrenParallel(consumer, false, failure);
     }
     
-    default boolean forChildrenParallel(Consumer<IFile> consumer, boolean recursive, Consumer<Throwable> failure) {
+    default boolean forChildrenParallel(Consumer<T> consumer, boolean recursive, Consumer<Throwable> failure) {
         try {
             return forChildrenParallel(consumer, recursive);
         } catch (Exception ex) {
@@ -378,11 +378,11 @@ public interface IFile<T extends IFile> extends Serializable {
         }
     }
     
-    default boolean forChildrenParallelWithoutException(Consumer<IFile> consumer) {
+    default boolean forChildrenParallelWithoutException(Consumer<T> consumer) {
         return forChildrenParallelWithoutException(consumer, false);
     }
     
-    default boolean forChildrenParallelWithoutException(Consumer<IFile> consumer, boolean recursive) {
+    default boolean forChildrenParallelWithoutException(Consumer<T> consumer, boolean recursive) {
         return forChildrenParallel(consumer, recursive, null);
     }
     
