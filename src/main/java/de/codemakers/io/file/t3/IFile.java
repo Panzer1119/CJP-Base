@@ -68,7 +68,7 @@ public interface IFile<T extends IFile> extends Serializable {
     
     File toFile() throws FileRuntimeException;
     
-    boolean mkdir() throws FileRuntimeException;
+    boolean mkdir() throws Exception;
     
     default boolean mkdir(Consumer<Throwable> failure) {
         try {
@@ -87,7 +87,7 @@ public interface IFile<T extends IFile> extends Serializable {
         return mkdir(null);
     }
     
-    boolean mkdirs() throws FileRuntimeException;
+    boolean mkdirs() throws Exception;
     
     default boolean mkdirs(Consumer<Throwable> failure) {
         try {

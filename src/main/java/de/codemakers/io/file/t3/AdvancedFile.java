@@ -16,10 +16,12 @@
 
 package de.codemakers.io.file.t3;
 
+import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.Copyable;
+import de.codemakers.base.util.Require;
 import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
 import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 import de.codemakers.io.file.t3.exceptions.has.FileHasParentRuntimeException;
@@ -123,6 +125,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         init();
     }
     
+    public AdvancedFile(File file) {
+        this(file.getPath());
+        this.file = file;
+    }
+    
     private AdvancedFile(String[] paths, boolean windowsSeparator, boolean extern, boolean absolute, AdvancedFile parent, FileProvider<AdvancedFile> fileProvider, Class<?> clazz) {
         this.paths = paths;
         this.windowsSeparator = windowsSeparator;
@@ -136,7 +143,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     
     public static final FileProvider<AdvancedFile> getProvider(AdvancedFile parent, String name) {
         Objects.requireNonNull(name);
-        return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.accept(parent, name)).findFirst().orElse(null);
+        return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name)).findFirst().orElse(null);
     }
     
     public static final boolean checkAbsolute(String... paths) {
@@ -216,25 +223,23 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         init = true;
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
-            if (this.fileProvider != null) {
-                parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, this.fileProvider, clazz);
-                this.fileProvider = null;
-                temp.clear();
-            }
+            temp.add(p);
             final FileProvider<AdvancedFile> fileProvider = getProvider(parent, p);
             if (fileProvider != null) {
-                parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, this.fileProvider, clazz);
-                this.fileProvider = fileProvider;
+                parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
                 clazz = null;
                 temp.clear();
                 System.out.println("FOUND A  FILE PROVIDER FOR: \"" + p + "\"");
             } else {
                 System.out.println("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
             }
-            temp.add(p);
         }
-        paths = temp.toArray(new String[0]);
-        temp.clear();
+        if (temp.isEmpty()) {
+            set(parent);
+        } else {
+            paths = temp.toArray(new String[0]);
+            temp.clear();
+        }
         paths_.clear();
     }
     
@@ -329,8 +334,12 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         return parent.getPenultimateParent();
     }
     
-    protected boolean isDirectFile() {
-        return paths.length != 0;
+    protected boolean isFileDirect() {
+        return paths.length == 1;
+    }
+    
+    protected boolean isFileProvided() {
+        return fileProvider != null;
     }
     
     @Override
@@ -346,24 +355,25 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     @Override
     public boolean isFile() {
         if (parent != null) {
-            if (isDirectFile()) {
-                return parent.isFile(this);
-            } else {
-                return parent.isFile();
-            }
+            return parent.isFile(this);
         }
         if (isExtern()) {
             return toFile().isFile();
         }
-        return false; //TODO Implement
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
     }
     
     boolean isFile(AdvancedFile file) {
-        try {
-            return fileProvider.isFile(this, file, parent != null ? createInputStream() : null);
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-            return false;
+        if (isFileProvided()) {
+            try {
+                return fileProvider.isFile(this, file, parent != null ? createInputStream() : null);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return false;
+            }
+        } else {
+            throw new NotImplementedRuntimeException();
         }
     }
     
@@ -394,24 +404,25 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     @Override
     public boolean isDirectory() {
         if (parent != null) {
-            if (isDirectFile()) {
-                return parent.isDirectory(this);
-            } else {
-                return parent.isDirectory();
-            }
+            return parent.isDirectory(this);
         }
         if (isExtern()) {
             return toFile().isDirectory();
         }
-        return false; //TODO Implement
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
     }
     
     boolean isDirectory(AdvancedFile file) {
-        try {
-            return fileProvider.isDirectory(parent, file, parent != null ? createInputStream() : null);
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-            return false;
+        if (isFileProvided()) {
+            try {
+                return fileProvider.isDirectory(parent, file, parent != null ? createInputStream() : null);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return false;
+            }
+        } else {
+            throw new NotImplementedRuntimeException();
         }
     }
     
@@ -440,45 +451,27 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     }
     
     @Override
-    public boolean exists() { //TODO when parent is not null add a method which asks the parent if this child exists
-        Logger.log("EXISTING: 1      : " + this);
-        System.out.println();
+    public boolean exists() {
         if (parent != null) {
             return parent.exists(this);
-            /*
-            Logger.log("EXISTING: 1.1    : " + this);
-            System.out.println();
-            if (isDirectFile()) {
-                Logger.log("EXISTING: 1.1.1  : " + this);
-                System.out.println();
-                return parent.exists(this);
-            } else {
-                Logger.log("EXISTING: 1.1.2  : " + this);
-                System.out.println();
-                return parent.exists();
-            }
-            */
         }
-        Logger.log("EXISTING: 2      : " + this);
-        System.out.println();
         if (isExtern()) {
-            Logger.log("EXISTING: 2.1    : " + this);
-            System.out.println();
             return toFile().exists();
         }
-        Logger.log("EXISTING: 3      : " + this);
-        System.out.println();
-        return false; //TODO Implement
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
     }
     
     boolean exists(AdvancedFile file) {
-        try {
-            Logger.log("EXISTING: 1.1.1.1: " + this);
-            System.out.println();
-            return fileProvider.exists(this, file, parent != null ? createInputStream() : null);
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-            return false;
+        if (isFileProvided()) {
+            try {
+                return fileProvider.exists(this, file, createInputStream());
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return false;
+            }
+        } else {
+            throw new NotImplementedRuntimeException();
         }
     }
     
@@ -711,41 +704,97 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     }
     
     @Override
-    public boolean mkdir() throws FileIsNotRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
+    public boolean mkdir() throws Exception {
         checkAndErrorIfIntern(true);
-        return false; //TODO Implement
+        if (parent != null) {
+            return mkdir(this);
+        }
+        if (isExtern()) {
+            return toFile().mkdir();
+        }
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    boolean mkdir(AdvancedFile file) throws Exception {
+        if (isFileProvided()) {
+            return fileProvider.mkdir(this, file);
+        } else {
+            throw new NotImplementedRuntimeException();
+        }
     }
     
     @Override
-    public boolean mkdirs() throws FileIsNotRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
+    public boolean mkdirs() throws Exception {
         checkAndErrorIfIntern(true);
-        return false; //TODO Implement
+        if (parent != null) {
+            return mkdirs(this);
+        }
+        if (isExtern()) {
+            return toFile().mkdirs();
+        }
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    boolean mkdirs(AdvancedFile file) throws Exception {
+        if (isFileProvided()) {
+            return fileProvider.mkdirs(this, file);
+        } else {
+            throw new NotImplementedRuntimeException();
+        }
     }
     
     @Override
-    public boolean delete() throws FileRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
+    public boolean delete() throws Exception {
         checkAndErrorIfIntern(true);
         //checkAndErrorIfNotExisting();
-        return false; //TODO Implement
+        if (parent != null) {
+            return delete(this);
+        }
+        if (isExtern()) {
+            return toFile().delete();
+        }
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    boolean delete(AdvancedFile file) throws Exception {
+        if (isFileProvided()) {
+            return fileProvider.delete(this, file);
+        } else {
+            throw new NotImplementedRuntimeException();
+        }
     }
     
     @Override
-    public boolean createNewFile() throws FileIsNotRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
+    public boolean createNewFile() throws Exception {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
-        return false; //TODO Implement
+        if (parent != null) {
+            return createNewFile(this);
+        }
+        if (isExtern()) {
+            return toFile().createNewFile();
+        }
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    boolean createNewFile(AdvancedFile file) throws Exception {
+        if (isFileProvided()) {
+            return fileProvider.createNewFile(this, file);
+        } else {
+            throw new NotImplementedRuntimeException();
+        }
     }
     
     @Override
     public InputStream createInputStream() throws Exception { //TODO Test this
-        checkAndErrorIfNotExisting(true);
-        checkAndErrorIfNotFile(true);
+        //checkAndErrorIfNotExisting(true); //FIXME
+        //checkAndErrorIfNotFile(true); //FIXME
         if (parent != null) {
-            if (isDirectFile()) {
-                return parent.createInputStream(this);
-            } else {
-                return parent.createInputStream();
-            }
+            return parent.createInputStream(this);
         }
         if (isExtern()) {
             return new FileInputStream(toFile());
@@ -755,7 +804,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     }
     
     InputStream createInputStream(AdvancedFile file) throws Exception {
-        return fileProvider.createInputStream(this, file, parent != null ? createInputStream() : null);
+        if (isFileProvided()) {
+            return fileProvider.createInputStream(this, file, parent != null ? createInputStream() : null);
+        } else {
+            throw new NotImplementedRuntimeException();
+        }
     }
     
     @Override
@@ -763,11 +816,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
         if (parent != null) {
-            if (isDirectFile()) {
-                return parent.readBytes(this);
-            } else {
-                return parent.readBytes();
-            }
+            return parent.readBytes(this);
         }
         if (isExtern()) {
             return Files.readAllBytes(toPath());
@@ -785,11 +834,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {
-            if (isDirectFile()) {
-                return parent.createOutputStream(this);
-            } else {
-                return parent.createOutputStream();
-            }
+            return parent.createOutputStream(this);
         }
         if (isExtern()) {
             return new FileOutputStream(toFile());
@@ -810,11 +855,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {
-            if (isDirectFile()) {
-                return parent.writeBytes(this, data);
-            } else {
-                return parent.writeBytes(data);
-            }
+            return parent.writeBytes(this, data);
         }
         if (isExtern()) {
             Files.write(toPath(), data);
@@ -836,13 +877,19 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         if (parent != null) {
-            if (isDirectFile()) {
-                return parent.listFiles(this, recursive);
+            return parent.listFiles(this, recursive);
+        }
+        if (isExtern()) {
+            if (recursive) {
+                final List<AdvancedFile> advancedFiles = new ArrayList<>();
+                listExternFilesRecursive(toFile(), null, advancedFiles);
+                return advancedFiles;
             } else {
-                return parent.listFiles(recursive);
+                return Stream.of(toFile().listFiles()).map(AdvancedFile::new).collect(Collectors.toList());
             }
         }
-        return null; //TODO Implement
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
     }
     
     List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive) throws FileRuntimeException {
@@ -856,16 +903,43 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     
     @Override
     public List<AdvancedFile> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
+        if (advancedFileFilter == null) {
+            return listFiles(recursive);
+        }
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         if (parent != null) {
-            if (isDirectFile()) {
-                return parent.listFiles(this, recursive, advancedFileFilter);
+            return parent.listFiles(this, recursive, advancedFileFilter);
+        }
+        if (isExtern()) {
+            if (recursive) {
+                final List<AdvancedFile> advancedFiles = new ArrayList<>();
+                listExternFilesRecursive(toFile(), advancedFileFilter, advancedFiles);
+                return advancedFiles;
             } else {
-                return parent.listFiles(recursive, advancedFileFilter);
+                return Stream.of(toFile().listFiles()).map(AdvancedFile::new).filter(advancedFileFilter).collect(Collectors.toList());
             }
         }
-        return null; //TODO Implement
+        //TODO Implement
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    static void listExternFilesRecursive(File folder, AdvancedFileFilter advancedFileFilter, List<AdvancedFile> advancedFiles) {
+        if (advancedFileFilter != null) {
+            Stream.of(folder.listFiles()).map((file) -> {
+                if (file.isDirectory()) {
+                    listExternFilesRecursive(file, advancedFileFilter, advancedFiles);
+                }
+                return file;
+            }).map(AdvancedFile::new).filter(advancedFileFilter).forEach(advancedFiles::add);
+        } else {
+            Stream.of(folder.listFiles()).map((file) -> {
+                if (file.isDirectory()) {
+                    listExternFilesRecursive(file, advancedFileFilter, advancedFiles);
+                }
+                return file;
+            }).map(AdvancedFile::new).forEach(advancedFiles::add);
+        }
     }
     
     List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
@@ -880,6 +954,19 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     @Override
     public AdvancedFile copy() {
         return new AdvancedFile(paths, windowsSeparator, extern, absolute, parent, fileProvider, clazz);
+    }
+    
+    @Override
+    public void set(Copyable copyable) {
+        Objects.requireNonNull(copyable);
+        final AdvancedFile advancedFile = Require.clazz(copyable, AdvancedFile.class);
+        this.paths = advancedFile.paths;
+        this.windowsSeparator = advancedFile.windowsSeparator;
+        this.extern = advancedFile.extern;
+        this.absolute = advancedFile.absolute;
+        this.parent = advancedFile.parent;
+        this.fileProvider = advancedFile.fileProvider;
+        this.clazz = advancedFile.clazz;
     }
     
     @Override

@@ -16,8 +16,7 @@
 
 package de.codemakers.io.file.t3;
 
-public interface AdvancedFileFilter {
-    
-    boolean accept(AdvancedFile file);
-    
+import java.util.function.Predicate;
+
+public interface AdvancedFileFilter extends Predicate<AdvancedFile> {
 }
