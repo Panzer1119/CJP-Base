@@ -19,7 +19,6 @@ package de.codemakers.io.file.t3.providers;
 import de.codemakers.base.Standard;
 import de.codemakers.io.file.t3.AdvancedFile;
 import de.codemakers.io.file.t3.AdvancedFileFilter;
-import de.codemakers.io.file.t3.AdvancedFilenameFilter;
 import de.codemakers.io.file.t3.exceptions.is.FileIsExternRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.FileIsInternRuntimeException;
 import org.apache.commons.io.IOUtils;
@@ -46,17 +45,6 @@ public class InternProvider implements FileProvider<AdvancedFile> {
         if (Standard.RUNNING_JAR_IS_JAR) {
             parent = Standard.RUNNING_JAR_ADVANCED_FILE;
             return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFileFilter, recursive, inputStream);
-        } else {
-            //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
-            throw new FileIsExternRuntimeException(file + " is extern");
-        }
-    }
-    
-    @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFilenameFilter advancedFilenameFilter, boolean recursive, InputStream inputStream) throws Exception {
-        if (Standard.RUNNING_JAR_IS_JAR) {
-            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFilenameFilter, recursive, inputStream);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
             throw new FileIsExternRuntimeException(file + " is extern");

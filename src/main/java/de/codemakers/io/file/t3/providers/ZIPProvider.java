@@ -77,6 +77,8 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFileFilter advancedFileFilter, boolean recursive, InputStream inputStream) throws Exception {
         if (advancedFileFilter == null) {
             return listFiles(parent, file, recursive, inputStream);
+        } else if (advancedFileFilter instanceof AdvancedFilenameFilter) {
+            return listFiles(parent, file, (AdvancedFilenameFilter) advancedFileFilter, recursive, inputStream);
         }
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
@@ -127,7 +129,6 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
         return advancedFiles;
     }
     
-    @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFilenameFilter advancedFilenameFilter, boolean recursive, InputStream inputStream) throws Exception {
         if (advancedFilenameFilter == null) {
             return listFiles(parent, file, recursive, inputStream);

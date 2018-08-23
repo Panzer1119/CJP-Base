@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public interface IFile extends Serializable {
+public interface IFile<T extends IFile> extends Serializable {
     
     String getName();
     
@@ -244,6 +244,8 @@ public interface IFile extends Serializable {
         return use(function, null);
     }
     
+    // listFiles BEGIN =================================================================================================
+    
     default List<IFile> listFiles() throws FileRuntimeException {
         return listFiles(false);
     }
@@ -256,7 +258,7 @@ public interface IFile extends Serializable {
     
     default List<IFile> listFiles(boolean recursive, Consumer<Throwable> failure) {
         try {
-            return listFiles();
+            return listFiles(recursive);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
@@ -272,8 +274,43 @@ public interface IFile extends Serializable {
     }
     
     default List<IFile> listFilesWithoutException(boolean recursive) {
-        return listFiles(recursive, null);
+        return listFiles(recursive, (Consumer<Throwable>) null);
     }
+    
+    // listFiles MID ===================================================================================================
+    
+    default List<IFile> listFiles(AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
+        return listFiles(false, advancedFileFilter);
+    }
+    
+    List<IFile> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException;
+    
+    default List<IFile> listFiles(AdvancedFileFilter advancedFileFilter, Consumer<Throwable> failure) {
+        return listFiles(false, advancedFileFilter, failure);
+    }
+    
+    default List<IFile> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter, Consumer<Throwable> failure) {
+        try {
+            return listFiles(recursive, advancedFileFilter);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default List<IFile> listFilesWithoutException(AdvancedFileFilter advancedFileFilter) {
+        return listFilesWithoutException(false, advancedFileFilter);
+    }
+    
+    default List<IFile> listFilesWithoutException(boolean recursive, AdvancedFileFilter advancedFileFilter) {
+        return listFiles(recursive, advancedFileFilter, null);
+    }
+    
+    // listFiles END ===================================================================================================
     
     default boolean forChildren(Consumer<IFile> consumer) throws Exception {
         return forChildren(consumer, false);
