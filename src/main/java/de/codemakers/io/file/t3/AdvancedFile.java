@@ -216,16 +216,22 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         init = true;
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
-            temp.add(p);
+            if (this.fileProvider != null) {
+                parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, this.fileProvider, clazz);
+                this.fileProvider = null;
+                temp.clear();
+            }
             final FileProvider<AdvancedFile> fileProvider = getProvider(parent, p);
             if (fileProvider != null) {
-                parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
+                parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, this.fileProvider, clazz);
+                this.fileProvider = fileProvider;
                 clazz = null;
                 temp.clear();
                 System.out.println("FOUND A  FILE PROVIDER FOR: \"" + p + "\"");
             } else {
                 System.out.println("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
             }
+            temp.add(p);
         }
         paths = temp.toArray(new String[0]);
         temp.clear();
@@ -435,21 +441,40 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     
     @Override
     public boolean exists() { //TODO when parent is not null add a method which asks the parent if this child exists
+        Logger.log("EXISTING: 1      : " + this);
+        System.out.println();
         if (parent != null) {
+            return parent.exists(this);
+            /*
+            Logger.log("EXISTING: 1.1    : " + this);
+            System.out.println();
             if (isDirectFile()) {
+                Logger.log("EXISTING: 1.1.1  : " + this);
+                System.out.println();
                 return parent.exists(this);
             } else {
+                Logger.log("EXISTING: 1.1.2  : " + this);
+                System.out.println();
                 return parent.exists();
             }
+            */
         }
+        Logger.log("EXISTING: 2      : " + this);
+        System.out.println();
         if (isExtern()) {
+            Logger.log("EXISTING: 2.1    : " + this);
+            System.out.println();
             return toFile().exists();
         }
+        Logger.log("EXISTING: 3      : " + this);
+        System.out.println();
         return false; //TODO Implement
     }
     
     boolean exists(AdvancedFile file) {
         try {
+            Logger.log("EXISTING: 1.1.1.1: " + this);
+            System.out.println();
             return fileProvider.exists(this, file, parent != null ? createInputStream() : null);
         } catch (Exception ex) {
             Logger.handleError(ex);

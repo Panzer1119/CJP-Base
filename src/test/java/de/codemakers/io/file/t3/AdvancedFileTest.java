@@ -16,11 +16,15 @@
 
 package de.codemakers.io.file.t3;
 
+import de.codemakers.base.logger.Logger;
+
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 public class AdvancedFileTest {
     
     public static final void main(String[] args) throws Exception {
+        Logger.DEFAULT_ADVANCED_LOGGER.setDateTimeFormatter(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
         AdvancedFile.DEBUG_TO_STRING = true;
         final AdvancedFile advancedFile_3zip = new AdvancedFile("src/test/resources/1/2/3.zip");
         System.out.println("advancedFile_3zip                           = " + advancedFile_3zip);
