@@ -17,6 +17,7 @@
 package de.codemakers.io.file.t3;
 
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
+import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.Copyable;
 import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
@@ -333,11 +334,23 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public boolean isFile() { //TODO when parent is not null add a method which asks the parent if this child exists
+    public boolean isFile() {
+        if (parent != null) {
+            return parent.isFile(this);
+        }
         if (isExtern()) {
             return toFile().isFile();
         }
         return false; //TODO Implement
+    }
+    
+    boolean isFile(AdvancedFile file) {
+        try {
+            return fileProvider.isFile(this, file, parent != null ? createInputStream() : null);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return false;
+        }
     }
     
     private boolean checkAndErrorIfFile(boolean throwException) {
@@ -365,11 +378,23 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public boolean isDirectory() { //TODO when parent is not null add a method which asks the parent if this child exists
+    public boolean isDirectory() {
+        if (parent != null) {
+            return parent.isDirectory(this);
+        }
         if (isExtern()) {
             return toFile().isDirectory();
         }
         return false; //TODO Implement
+    }
+    
+    boolean isDirectory(AdvancedFile file) {
+        try {
+            return fileProvider.isDirectory(parent, file, parent != null ? createInputStream() : null);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return false;
+        }
     }
     
     private boolean checkAndErrorIfDirectory(boolean throwException) {
@@ -530,6 +555,7 @@ public class AdvancedFile implements Copyable, IFile {
             return false;
         }
     }
+    
     private final void setAllExtern(boolean extern) {
         this.extern = extern;
         if (parent != null) {
@@ -672,11 +698,7 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     InputStream createInputStream(AdvancedFile file) throws Exception {
-        if (parent != null) {
-            return fileProvider.createInputStream(this, file, createInputStream());
-        } else {
-            return fileProvider.createInputStream(this, file, null);
-        }
+        return fileProvider.createInputStream(this, file, parent != null ? createInputStream() : null);
     }
     
     @Override
@@ -694,11 +716,7 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     byte[] readBytes(AdvancedFile file) throws Exception {
-        if (parent != null) {
-            return fileProvider.readBytes(this, file, createInputStream());
-        } else {
-            return fileProvider.readBytes(this, file, null);
-        }
+        return fileProvider.readBytes(this, file, parent != null ? createInputStream() : null);
     }
     
     @Override
