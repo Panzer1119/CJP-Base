@@ -201,8 +201,39 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
     
     @Override
     public boolean exists(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        //TODO Implement!
-        throw new NotYetImplementedRuntimeException();
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
+        if (inputStream == null) {
+            final ZipFile zipFile = new ZipFile(parent.getPath());
+            try {
+                final boolean exists = zipFile.getEntry(file.getPathsCollected(File.separator)) != null;
+                zipFile.close();
+                return exists;
+            } catch (Exception ex) {
+                zipFile.close();
+                throw ex;
+            }
+        } else {
+            final String path = file.getPathsCollected(File.separator);
+            final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+            try {
+                boolean found = false;
+                ZipEntry zipEntry = null;
+                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    if (zipEntry.getName().equals(path)) {
+                        found = true;
+                        zipInputStream.closeEntry();
+                        break;
+                    }
+                    zipInputStream.closeEntry();
+                }
+                zipInputStream.close();
+                return found;
+            } catch (Exception ex) {
+                zipInputStream.close();
+                throw ex;
+            }
+        }
     }
     
     @Override
