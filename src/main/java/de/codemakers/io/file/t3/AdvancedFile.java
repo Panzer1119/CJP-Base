@@ -79,7 +79,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     private AdvancedFile parent;
     private FileProvider<AdvancedFile> fileProvider = null;
     //Only for relative intern files
-    private Class<?> clazz; //TODO this is for the reference of an relative internal file
+    private Class<?> clazz;
     //Temp
     private transient String path;
     private transient Path path_;
@@ -311,7 +311,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     
     @Override
     public AdvancedFile getParentFile() {
-        if (paths.length <= 1) { //TODO What happened, when the paths.length == 0?
+        if (paths.length <= 1) {
             return parent;
         }
         final String[] paths_ = new String[paths.length - 1];
@@ -580,7 +580,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         if (parent != null) {
             return parent.isIntern();
         }
-        return !extern; //TODO Implement, but at Construction
+        return !extern; //TODO Implement, but at Construction, with intern prefix "intern:"
     }
     
     private boolean checkAndErrorIfIntern(boolean throwException) {
