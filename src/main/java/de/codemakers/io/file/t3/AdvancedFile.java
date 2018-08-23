@@ -66,8 +66,6 @@ public class AdvancedFile implements Copyable, IFile {
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
         FILE_PROVIDERS.add(INTERN_PROVIDER);
-        System.out.println("FILE_PROVIDERS = " + FILE_PROVIDERS); //TODO Remove this debug line
-        System.out.println("####################################################################################################################"); //TODO Remove this debug line
     }
     
     private String[] paths;
@@ -78,7 +76,7 @@ public class AdvancedFile implements Copyable, IFile {
     private AdvancedFile parent;
     private FileProvider<AdvancedFile> fileProvider = null;
     //Only for relative intern files
-    private Class<?> clazz; //TODO this is for the reference of a relative internal file
+    private Class<?> clazz; //TODO this is for the reference of an relative internal file
     //Temp
     private transient String path;
     private transient Path path_;
@@ -278,7 +276,8 @@ public class AdvancedFile implements Copyable, IFile {
             final AdvancedFile file_absolute = copy();
             final AdvancedFile parent_root = file_absolute.getRootParent();
             final AdvancedFile parent_penultimate = file_absolute.getPenultimateParent();
-            parent_penultimate.parent = parent_root.getAbsoluteFile(); //TODO Maybe add some update/reset methods, so all children will update their "absolute/relative" state [DONE: or just change the methods "isAbsolute/isRelative", so they check their parent status if they have a parent]
+            parent_penultimate.parent = parent_root.getAbsoluteFile();
+            file_absolute.setAllAbsolute(true);
             return file_absolute;
         } else if (isIntern()) { // Relative intern file
             checkAndErrorIfRelativeClassIsNull(true);
@@ -429,12 +428,19 @@ public class AdvancedFile implements Copyable, IFile {
         }
     }
     
+    private final void setAllAbsolute(boolean absolute) {
+        this.absolute = absolute;
+        if (parent != null) {
+            parent.setAllAbsolute(absolute);
+        }
+    }
+    
     @Override
     public boolean isAbsolute() {
         if (parent != null) {
             return parent.isAbsolute();
         }
-        return absolute; //TODO Implement, but at Construction
+        return absolute;
     }
     
     private boolean checkAndErrorIfAbsolute(boolean throwException) {
@@ -466,7 +472,7 @@ public class AdvancedFile implements Copyable, IFile {
         if (parent != null) {
             return parent.isRelative();
         }
-        return !absolute; //TODO Implement, but at Construction
+        return !absolute;
     }
     
     private boolean checkAndErrorIfRelative(boolean throwException) {
@@ -522,6 +528,12 @@ public class AdvancedFile implements Copyable, IFile {
             }
         } else {
             return false;
+        }
+    }
+    private final void setAllExtern(boolean extern) {
+        this.extern = extern;
+        if (parent != null) {
+            parent.setAllExtern(extern);
         }
     }
     
