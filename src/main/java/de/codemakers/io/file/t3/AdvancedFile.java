@@ -832,6 +832,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         if (isExtern()) {
             return Files.readAllBytes(toPath());
         }
+        //TODO if intern than if the Running jar is a jarfile use the Standard.RUNNING_JAR_ADVANCED_FILE.readBytes(this); and do Not forgot to add (but only temporary!) the clazz package name as paths prefix if this is also relative intern
         //TODO Implement
         throw new NotYetImplementedRuntimeException();
     }
