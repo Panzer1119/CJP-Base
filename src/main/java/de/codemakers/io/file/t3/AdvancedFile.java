@@ -42,7 +42,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AdvancedFile implements Copyable, IFile {
+public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();
@@ -763,10 +763,41 @@ public class AdvancedFile implements Copyable, IFile {
     }
     
     @Override
-    public List<IFile> listFiles(boolean recursive) throws FileRuntimeException { //TODO when parent is not null add a method which asks the parent if this child exists
+    public List<AdvancedFile> listFiles(boolean recursive) throws FileRuntimeException {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
+        if (parent != null) {
+            return parent.listFiles(this, recursive);
+        }
         return null; //TODO Implement
+    }
+    
+    List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive) throws FileRuntimeException {
+        try {
+            return fileProvider.listFiles(this, file, recursive, parent != null ? createInputStream() : null);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    @Override
+    public List<AdvancedFile> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
+        checkAndErrorIfNotExisting(true);
+        checkAndErrorIfNotDirectory(true);
+        if (parent != null) {
+            return parent.listFiles(this, recursive, advancedFileFilter);
+        }
+        return null; //TODO Implement
+    }
+    
+    List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
+        try {
+            return fileProvider.listFiles(this, file, recursive, advancedFileFilter, parent != null ? createInputStream() : null);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
     }
     
     @Override

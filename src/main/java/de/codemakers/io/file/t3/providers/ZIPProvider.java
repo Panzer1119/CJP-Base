@@ -74,11 +74,11 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
     }
     
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFileFilter advancedFileFilter, boolean recursive, InputStream inputStream) throws Exception {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter, InputStream inputStream) throws Exception {
         if (advancedFileFilter == null) {
             return listFiles(parent, file, recursive, inputStream);
         } else if (advancedFileFilter instanceof AdvancedFilenameFilter) {
-            return listFiles(parent, file, (AdvancedFilenameFilter) advancedFileFilter, recursive, inputStream);
+            return listFiles(parent, file, recursive, (AdvancedFilenameFilter) advancedFileFilter, inputStream);
         }
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
@@ -129,7 +129,7 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
         return advancedFiles;
     }
     
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFilenameFilter advancedFilenameFilter, boolean recursive, InputStream inputStream) throws Exception {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, AdvancedFilenameFilter advancedFilenameFilter, InputStream inputStream) throws Exception {
         if (advancedFilenameFilter == null) {
             return listFiles(parent, file, recursive, inputStream);
         }

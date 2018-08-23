@@ -28,7 +28,7 @@ public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { 
     
     List<T> listFiles(T parent, T file, boolean recursive, InputStream inputStream) throws Exception;
     
-    List<T> listFiles(T parent, T file, AdvancedFileFilter advancedFileFilter, boolean recursive, InputStream inputStream) throws Exception;
+    List<T> listFiles(T parent, T file, boolean recursive, AdvancedFileFilter advancedFileFilter, InputStream inputStream) throws Exception;
     
     boolean isFile(T parent, T file, InputStream inputStream) throws Exception;
     

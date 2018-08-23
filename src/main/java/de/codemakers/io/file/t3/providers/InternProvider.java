@@ -41,10 +41,10 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, AdvancedFileFilter advancedFileFilter, boolean recursive, InputStream inputStream) throws Exception {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter, InputStream inputStream) throws Exception {
         if (Standard.RUNNING_JAR_IS_JAR) {
             parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, advancedFileFilter, recursive, inputStream);
+            return AdvancedFile.ZIP_PROVIDER.listFiles(parent, file, recursive, advancedFileFilter, inputStream);
         } else {
             //TODO Implement in the AdvancedFile, that intern files get automatically converted to normal files, with adding the running jar directory path as a prefix path to the AdvancedFile? Or at least treat it like an external file, while preserving the internal state and without adding a prefix path!
             throw new FileIsExternRuntimeException(file + " is extern");
