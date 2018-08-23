@@ -34,6 +34,8 @@ public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { 
     
     boolean isDirectory(T parent, T file, InputStream inputStream) throws Exception;
     
+    boolean exists(T parent, T file, InputStream inputStream) throws Exception;
+    
     InputStream createInputStream(T parent, T file, InputStream inputStream) throws Exception;
     
     byte[] readBytes(T parent, T file, InputStream inputStream) throws Exception;

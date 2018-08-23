@@ -200,6 +200,12 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
     }
     
     @Override
+    public boolean exists(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+        //TODO Implement!
+        throw new NotYetImplementedRuntimeException();
+    }
+    
+    @Override
     public InputStream createInputStream(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);

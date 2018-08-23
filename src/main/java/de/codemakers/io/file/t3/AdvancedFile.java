@@ -323,6 +323,10 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         return parent.getPenultimateParent();
     }
     
+    protected boolean isDirectFile() {
+        return paths.length != 0;
+    }
+    
     @Override
     public String getSeparator() {
         return windowsSeparator ? FILE_SEPARATOR_WINDOWS_STRING : FILE_SEPARATOR_DEFAULT_STRING;
@@ -336,7 +340,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     @Override
     public boolean isFile() {
         if (parent != null) {
-            return parent.isFile(this);
+            if (isDirectFile()) {
+                return parent.isFile(this);
+            } else {
+                return parent.isFile();
+            }
         }
         if (isExtern()) {
             return toFile().isFile();
@@ -380,7 +388,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     @Override
     public boolean isDirectory() {
         if (parent != null) {
-            return parent.isDirectory(this);
+            if (isDirectFile()) {
+                return parent.isDirectory(this);
+            } else {
+                return parent.isDirectory();
+            }
         }
         if (isExtern()) {
             return toFile().isDirectory();
@@ -423,10 +435,26 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     
     @Override
     public boolean exists() { //TODO when parent is not null add a method which asks the parent if this child exists
+        if (parent != null) {
+            if (isDirectFile()) {
+                return parent.exists(this);
+            } else {
+                return parent.exists();
+            }
+        }
         if (isExtern()) {
             return toFile().exists();
         }
         return false; //TODO Implement
+    }
+    
+    boolean exists(AdvancedFile file) {
+        try {
+            return fileProvider.exists(this, file, parent != null ? createInputStream() : null);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return false;
+        }
     }
     
     private boolean checkAndErrorIfExisting(boolean throwException) {
@@ -688,7 +716,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
         if (parent != null) {
-            return parent.createInputStream(this);
+            if (isDirectFile()) {
+                return parent.createInputStream(this);
+            } else {
+                return parent.createInputStream();
+            }
         }
         if (isExtern()) {
             return new FileInputStream(toFile());
@@ -706,7 +738,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
         if (parent != null) {
-            return parent.readBytes(this);
+            if (isDirectFile()) {
+                return parent.readBytes(this);
+            } else {
+                return parent.readBytes();
+            }
         }
         if (isExtern()) {
             return Files.readAllBytes(toPath());
@@ -724,7 +760,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {
-            return parent.createOutputStream(this);
+            if (isDirectFile()) {
+                return parent.createOutputStream(this);
+            } else {
+                return parent.createOutputStream();
+            }
         }
         if (isExtern()) {
             return new FileOutputStream(toFile());
@@ -745,7 +785,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {
-            return parent.writeBytes(this, data);
+            if (isDirectFile()) {
+                return parent.writeBytes(this, data);
+            } else {
+                return parent.writeBytes(data);
+            }
         }
         if (isExtern()) {
             Files.write(toPath(), data);
@@ -767,7 +811,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         if (parent != null) {
-            return parent.listFiles(this, recursive);
+            if (isDirectFile()) {
+                return parent.listFiles(this, recursive);
+            } else {
+                return parent.listFiles(recursive);
+            }
         }
         return null; //TODO Implement
     }
@@ -786,7 +834,11 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         if (parent != null) {
-            return parent.listFiles(this, recursive, advancedFileFilter);
+            if (isDirectFile()) {
+                return parent.listFiles(this, recursive, advancedFileFilter);
+            } else {
+                return parent.listFiles(recursive, advancedFileFilter);
+            }
         }
         return null; //TODO Implement
     }
