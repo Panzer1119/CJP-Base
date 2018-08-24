@@ -45,6 +45,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract T getParentFile();
     
+    public abstract T getRoot();
+    
+    public boolean isRoot() {
+        return equals(getRoot());
+    }
+    
     public abstract String getSeparator();
     
     public abstract char getSeparatorChar();

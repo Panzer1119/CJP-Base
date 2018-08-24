@@ -40,6 +40,10 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
         this.file = file;
     }
     
+    public ExternFile(String path) {
+        this(new File(path));
+    }
+    
     @Override
     public String getName() {
         return file.getName();
@@ -63,6 +67,16 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     @Override
     public ExternFile getParentFile() {
         return new ExternFile(file.getParentFile());
+    }
+    
+    @Override
+    public ExternFile getRoot() {
+        String path_root = getAbsolutePath();
+        final int index = path_root.indexOf(getSeparator());
+        if (index >= 0) {
+            path_root = path_root.substring(0, index);
+        }
+        return new ExternFile(path_root);
     }
     
     @Override

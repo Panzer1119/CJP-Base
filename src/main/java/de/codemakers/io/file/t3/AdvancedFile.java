@@ -326,6 +326,16 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return new AdvancedFile(paths_, windowsSeparator, extern, absolute, parent, fileProvider, clazz);
     }
     
+    @Override
+    public AdvancedFile getRoot() {
+        String path_root = getAbsolutePath();
+        final int index = path_root.indexOf(getSeparator());
+        if (index >= 0) {
+            path_root = path_root.substring(0, index);
+        }
+        return new AdvancedFile(path_root);
+    }
+    
     protected AdvancedFile getParent() {
         return parent;
     }
