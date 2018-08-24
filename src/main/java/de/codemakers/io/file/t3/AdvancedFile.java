@@ -45,7 +45,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AdvancedFile implements Convertable<ExternFile>, Copyable, IFile<AdvancedFile, AdvancedFileFilter> {
+public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implements Convertable<ExternFile>, Copyable {
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();

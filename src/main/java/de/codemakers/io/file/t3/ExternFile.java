@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ExternFile implements Convertable<AdvancedFile>, IFile<ExternFile, ExternFileFilter> {
+public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements Convertable<AdvancedFile> {
     
     private File file;
     

@@ -33,47 +33,47 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializable {
+public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Serializable {
     
-    String getName();
+    public abstract String getName();
     
-    String getPath();
+    public abstract String getPath();
     
-    String getAbsolutePath();
+    public abstract String getAbsolutePath();
     
-    T getAbsoluteFile();
+    public abstract T getAbsoluteFile();
     
-    T getParentFile();
+    public abstract T getParentFile();
     
-    String getSeparator();
+    public abstract String getSeparator();
     
-    char getSeparatorChar();
+    public abstract char getSeparatorChar();
     
-    boolean isFile();
+    public abstract boolean isFile();
     
-    boolean isDirectory();
+    public abstract boolean isDirectory();
     
-    boolean exists();
+    public abstract boolean exists();
     
-    boolean isAbsolute();
+    public abstract boolean isAbsolute();
     
-    boolean isRelative();
+    public abstract boolean isRelative();
     
-    boolean isIntern();
+    public abstract boolean isIntern();
     
-    boolean isExtern();
+    public abstract boolean isExtern();
     
-    Path toPath() throws Exception;
+    public abstract Path toPath() throws Exception;
     
-    URI toURI() throws Exception;
+    public abstract URI toURI() throws Exception;
     
-    URL toURL() throws Exception;
+    public abstract URL toURL() throws Exception;
     
-    File toFile() throws FileRuntimeException;
+    public abstract File toFile() throws FileRuntimeException;
     
-    boolean mkdir() throws Exception;
+    public abstract boolean mkdir() throws Exception;
     
-    default boolean mkdir(Consumer<Throwable> failure) {
+    public boolean mkdir(Consumer<Throwable> failure) {
         try {
             return mkdir();
         } catch (Exception ex) {
@@ -86,13 +86,13 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean mkdirWithoutException() {
+    public boolean mkdirWithoutException() {
         return mkdir(null);
     }
     
-    boolean mkdirs() throws Exception;
+    public abstract boolean mkdirs() throws Exception;
     
-    default boolean mkdirs(Consumer<Throwable> failure) {
+    public boolean mkdirs(Consumer<Throwable> failure) {
         try {
             return mkdirs();
         } catch (Exception ex) {
@@ -105,13 +105,13 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean mkdirsWithoutException() {
+    public boolean mkdirsWithoutException() {
         return mkdirs(null);
     }
     
-    boolean delete() throws Exception;
+    public abstract boolean delete() throws Exception;
     
-    default boolean delete(Consumer<Throwable> failure) {
+    public boolean delete(Consumer<Throwable> failure) {
         try {
             return delete();
         } catch (Exception ex) {
@@ -124,13 +124,13 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean deleteWithoutException() {
+    public boolean deleteWithoutException() {
         return delete(null);
     }
     
-    boolean createNewFile() throws Exception;
+    public abstract boolean createNewFile() throws Exception;
     
-    default boolean createNewFile(Consumer<Throwable> failure) {
+    public boolean createNewFile(Consumer<Throwable> failure) {
         try {
             return createNewFile();
         } catch (Exception ex) {
@@ -143,13 +143,13 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean createNewFileWithoutException() {
+    public boolean createNewFileWithoutException() {
         return createNewFile(null);
     }
     
-    InputStream createInputStream() throws Exception;
+    public abstract InputStream createInputStream() throws Exception;
     
-    default InputStream createInputStream(Consumer<Throwable> failure) {
+    public InputStream createInputStream(Consumer<Throwable> failure) {
         try {
             return createInputStream();
         } catch (Exception ex) {
@@ -162,13 +162,13 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default InputStream createInputStreamWithoutException() {
+    public InputStream createInputStreamWithoutException() {
         return createInputStream(null);
     }
     
-    byte[] readBytes() throws Exception;
+    public abstract byte[] readBytes() throws Exception;
     
-    default byte[] readBytes(Consumer<Throwable> failure) {
+    public byte[] readBytes(Consumer<Throwable> failure) {
         try {
             return readBytes();
         } catch (Exception ex) {
@@ -181,13 +181,13 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default byte[] readBytesWithoutException() {
+    public byte[] readBytesWithoutException() {
         return readBytes(null);
     }
     
-    OutputStream createOutputStream() throws Exception;
+    public abstract OutputStream createOutputStream() throws Exception;
     
-    default OutputStream createOutputStream(Consumer<Throwable> failure) {
+    public OutputStream createOutputStream(Consumer<Throwable> failure) {
         try {
             return createOutputStream();
         } catch (Exception ex) {
@@ -200,13 +200,13 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default OutputStream createOutputStreamWithoutException() {
+    public OutputStream createOutputStreamWithoutException() {
         return createOutputStream(null);
     }
     
-    boolean writeBytes(byte[] data) throws Exception;
+    public abstract boolean writeBytes(byte[] data) throws Exception;
     
-    default boolean writeBytes(byte[] data, Consumer<Throwable> failure) {
+    public boolean writeBytes(byte[] data, Consumer<Throwable> failure) {
         try {
             return writeBytes(data);
         } catch (Exception ex) {
@@ -219,18 +219,18 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean writeBytesWithoutException(byte[] data) {
+    public boolean writeBytesWithoutException(byte[] data) {
         return writeBytes(data, null);
     }
     
-    default <R> R use(Function<T, R> function) throws Exception {
+    public <R> R use(Function<T, R> function) throws Exception {
         if (function == null) {
             return null;
         }
         return function.apply((T) this);
     }
     
-    default <R> R use(Function<T, R> function, Consumer<Throwable> failure) {
+    public <R> R use(Function<T, R> function, Consumer<Throwable> failure) {
         try {
             return use(function);
         } catch (Exception ex) {
@@ -243,23 +243,23 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default <R> R useWithoutException(Function<T, R> function) {
+    public <R> R useWithoutException(Function<T, R> function) {
         return use(function, null);
     }
     
     // listFiles BEGIN =================================================================================================
     
-    default List<T> listFiles() throws FileRuntimeException {
+    public List<T> listFiles() throws FileRuntimeException {
         return listFiles(false);
     }
     
-    List<T> listFiles(boolean recursive) throws FileRuntimeException;
+    public abstract List<T> listFiles(boolean recursive) throws FileRuntimeException;
     
-    default List<T> listFiles(Consumer<Throwable> failure) {
+    public List<T> listFiles(Consumer<Throwable> failure) {
         return listFiles(false, failure);
     }
     
-    default List<T> listFiles(boolean recursive, Consumer<Throwable> failure) {
+    public List<T> listFiles(boolean recursive, Consumer<Throwable> failure) {
         try {
             return listFiles(recursive);
         } catch (Exception ex) {
@@ -272,27 +272,27 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default List<T> listFilesWithoutException() {
+    public List<T> listFilesWithoutException() {
         return listFilesWithoutException(false);
     }
     
-    default List<T> listFilesWithoutException(boolean recursive) {
+    public List<T> listFilesWithoutException(boolean recursive) {
         return listFiles(recursive, (Consumer<Throwable>) null);
     }
     
     // listFiles MID ============================================================
     
-    default List<T> listFiles(P fileFilter) throws FileRuntimeException {
+    public List<T> listFiles(P fileFilter) throws FileRuntimeException {
         return listFiles(false, fileFilter);
     }
     
-    List<T> listFiles(boolean recursive, P fileFilter) throws FileRuntimeException;
+    public abstract List<T> listFiles(boolean recursive, P fileFilter) throws FileRuntimeException;
     
-    default List<T> listFiles(P fileFilter, Consumer<Throwable> failure) {
+    public List<T> listFiles(P fileFilter, Consumer<Throwable> failure) {
         return listFiles(false, fileFilter, failure);
     }
     
-    default List<T> listFiles(boolean recursive, P fileFilter, Consumer<Throwable> failure) {
+    public List<T> listFiles(boolean recursive, P fileFilter, Consumer<Throwable> failure) {
         try {
             return listFiles(recursive, fileFilter);
         } catch (Exception ex) {
@@ -305,21 +305,21 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default List<T> listFilesWithoutException(P fileFilter) {
+    public List<T> listFilesWithoutException(P fileFilter) {
         return listFilesWithoutException(false, fileFilter);
     }
     
-    default List<T> listFilesWithoutException(boolean recursive, P fileFilter) {
+    public List<T> listFilesWithoutException(boolean recursive, P fileFilter) {
         return listFiles(recursive, fileFilter, null);
     }
     
     // listFiles END ===================================================================================================
     
-    default boolean forChildren(Consumer<T> consumer) throws Exception {
+    public boolean forChildren(Consumer<T> consumer) throws Exception {
         return forChildren(consumer, false);
     }
     
-    default boolean forChildren(Consumer<T> consumer, boolean recursive) throws Exception {
+    public boolean forChildren(Consumer<T> consumer, boolean recursive) throws Exception {
         if (consumer == null) {
             return false;
         }
@@ -327,11 +327,11 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         return true;
     }
     
-    default boolean forChildren(Consumer<T> consumer, Consumer<Throwable> failure) {
+    public boolean forChildren(Consumer<T> consumer, Consumer<Throwable> failure) {
         return forChildren(consumer, false, failure);
     }
     
-    default boolean forChildren(Consumer<T> consumer, boolean recursive, Consumer<Throwable> failure) {
+    public boolean forChildren(Consumer<T> consumer, boolean recursive, Consumer<Throwable> failure) {
         try {
             return forChildren(consumer, recursive);
         } catch (Exception ex) {
@@ -344,19 +344,19 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean forChildrenWithoutException(Consumer<T> consumer) {
+    public boolean forChildrenWithoutException(Consumer<T> consumer) {
         return forChildren(consumer, null);
     }
     
-    default boolean forChildrenWithoutException(Consumer<T> consumer, boolean recursive) {
+    public boolean forChildrenWithoutException(Consumer<T> consumer, boolean recursive) {
         return forChildren(consumer, recursive, null);
     }
     
-    default boolean forChildrenParallel(Consumer<T> consumer) throws Exception {
+    public boolean forChildrenParallel(Consumer<T> consumer) throws Exception {
         return forChildrenParallel(consumer, false);
     }
     
-    default boolean forChildrenParallel(Consumer<T> consumer, boolean recursive) throws Exception {
+    public boolean forChildrenParallel(Consumer<T> consumer, boolean recursive) throws Exception {
         if (consumer == null) {
             return false;
         }
@@ -364,11 +364,11 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         return true;
     }
     
-    default boolean forChildrenParallel(Consumer<T> consumer, Consumer<Throwable> failure) {
+    public boolean forChildrenParallel(Consumer<T> consumer, Consumer<Throwable> failure) {
         return forChildrenParallel(consumer, false, failure);
     }
     
-    default boolean forChildrenParallel(Consumer<T> consumer, boolean recursive, Consumer<Throwable> failure) {
+    public boolean forChildrenParallel(Consumer<T> consumer, boolean recursive, Consumer<Throwable> failure) {
         try {
             return forChildrenParallel(consumer, recursive);
         } catch (Exception ex) {
@@ -381,15 +381,15 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean forChildrenParallelWithoutException(Consumer<T> consumer) {
+    public boolean forChildrenParallelWithoutException(Consumer<T> consumer) {
         return forChildrenParallelWithoutException(consumer, false);
     }
     
-    default boolean forChildrenParallelWithoutException(Consumer<T> consumer, boolean recursive) {
+    public boolean forChildrenParallelWithoutException(Consumer<T> consumer, boolean recursive) {
         return forChildrenParallel(consumer, recursive, null);
     }
     
-    default boolean checkAndErrorIfFile(boolean throwException) {
+    protected boolean checkAndErrorIfFile(boolean throwException) {
         if (isFile()) {
             if (throwException) {
                 throw new FileIsFileRuntimeException(getPath() + " is a file");
@@ -401,7 +401,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfNotFile(boolean throwException) {
+    protected boolean checkAndErrorIfNotFile(boolean throwException) {
         if (!isFile()) {
             if (throwException) {
                 throw new FileIsNotFileRuntimeException(getPath() + " is not a file");
@@ -413,7 +413,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfDirectory(boolean throwException) {
+    protected boolean checkAndErrorIfDirectory(boolean throwException) {
         if (isDirectory()) {
             if (throwException) {
                 throw new FileIsDirectoryRuntimeException(getPath() + " is a directory");
@@ -425,7 +425,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfNotDirectory(boolean throwException) {
+    protected boolean checkAndErrorIfNotDirectory(boolean throwException) {
         if (!isDirectory()) {
             if (throwException) {
                 throw new FileIsNotDirectoryRuntimeException(getPath() + " is not a directory");
@@ -437,7 +437,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfExisting(boolean throwException) {
+    protected boolean checkAndErrorIfExisting(boolean throwException) {
         if (exists()) {
             if (throwException) {
                 throw new FileIsExistingRuntimeException(getPath() + " does exist");
@@ -449,7 +449,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfNotExisting(boolean throwException) {
+    protected boolean checkAndErrorIfNotExisting(boolean throwException) {
         if (!exists()) {
             if (throwException) {
                 throw new FileIsNotExistingRuntimeException(getPath() + " does not exist");
@@ -461,7 +461,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfAbsolute(boolean throwException) {
+    protected boolean checkAndErrorIfAbsolute(boolean throwException) {
         if (isAbsolute()) {
             if (throwException) {
                 throw new FileIsAbsoluteRuntimeException(getPath() + " is absolute");
@@ -473,7 +473,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfNotAbsolute(boolean throwException) {
+    protected boolean checkAndErrorIfNotAbsolute(boolean throwException) {
         if (!isAbsolute()) {
             if (throwException) {
                 throw new FileIsNotAbsoluteRuntimeException(getPath() + " is not absolute");
@@ -485,7 +485,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfRelative(boolean throwException) {
+    protected boolean checkAndErrorIfRelative(boolean throwException) {
         if (isRelative()) {
             if (throwException) {
                 throw new FileIsRelativeRuntimeException(getPath() + " is relative");
@@ -497,7 +497,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfNotRelative(boolean throwException) {
+    protected boolean checkAndErrorIfNotRelative(boolean throwException) {
         if (!isRelative()) {
             if (throwException) {
                 throw new FileIsNotRelativeRuntimeException(getPath() + " is not relative");
@@ -509,7 +509,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfIntern(boolean throwException) {
+    protected boolean checkAndErrorIfIntern(boolean throwException) {
         if (isIntern()) {
             if (throwException) {
                 throw new FileIsInternRuntimeException(getPath() + " is intern");
@@ -521,7 +521,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfNotIntern(boolean throwException) {
+    protected boolean checkAndErrorIfNotIntern(boolean throwException) {
         if (!isIntern()) {
             if (throwException) {
                 throw new FileIsNotInternRuntimeException(getPath() + " is not intern");
@@ -533,7 +533,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfExtern(boolean throwException) {
+    protected boolean checkAndErrorIfExtern(boolean throwException) {
         if (isExtern()) {
             if (throwException) {
                 throw new FileIsExternRuntimeException(getPath() + " is extern");
@@ -545,7 +545,7 @@ public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializ
         }
     }
     
-    default boolean checkAndErrorIfNotExtern(boolean throwException) {
+    protected boolean checkAndErrorIfNotExtern(boolean throwException) {
         if (!isExtern()) {
             if (throwException) {
                 throw new FileIsNotExternRuntimeException(getPath() + " is not extern");
