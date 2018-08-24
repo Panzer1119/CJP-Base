@@ -17,7 +17,6 @@
 package de.codemakers.io.file.t3;
 
 import de.codemakers.base.logger.Logger;
-import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
 
@@ -75,7 +74,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract URL toURL() throws Exception;
     
-    public abstract File toFile() throws FileRuntimeException;
+    public abstract File toFile();
     
     public abstract boolean mkdir() throws Exception;
     
@@ -267,11 +266,11 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     // listFiles BEGIN =================================================================================================
     
-    public List<T> listFiles() throws FileRuntimeException {
+    public List<T> listFiles() {
         return listFiles(false);
     }
     
-    public abstract List<T> listFiles(boolean recursive) throws FileRuntimeException;
+    public abstract List<T> listFiles(boolean recursive);
     
     public List<T> listFiles(Consumer<Throwable> failure) {
         return listFiles(false, failure);
@@ -300,11 +299,11 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     // listFiles MID ============================================================
     
-    public List<T> listFiles(P fileFilter) throws FileRuntimeException {
+    public List<T> listFiles(P fileFilter) {
         return listFiles(false, fileFilter);
     }
     
-    public abstract List<T> listFiles(boolean recursive, P fileFilter) throws FileRuntimeException;
+    public abstract List<T> listFiles(boolean recursive, P fileFilter);
     
     public List<T> listFiles(P fileFilter, Consumer<Throwable> failure) {
         return listFiles(false, fileFilter, failure);

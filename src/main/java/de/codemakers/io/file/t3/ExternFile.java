@@ -17,7 +17,6 @@
 package de.codemakers.io.file.t3;
 
 import de.codemakers.base.util.Convertable;
-import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 
 import java.io.*;
 import java.net.URI;
@@ -141,7 +140,7 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
-    public File toFile() throws FileRuntimeException {
+    public File toFile() {
         return file;
     }
     
@@ -196,7 +195,7 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
-    public List<ExternFile> listFiles(boolean recursive) throws FileRuntimeException {
+    public List<ExternFile> listFiles(boolean recursive) {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         if (recursive) {
@@ -209,7 +208,7 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
-    public List<ExternFile> listFiles(boolean recursive, ExternFileFilter externFileFilter) throws FileRuntimeException {
+    public List<ExternFile> listFiles(boolean recursive, ExternFileFilter externFileFilter) {
         if (externFileFilter == null) {
             return listFiles(recursive);
         }

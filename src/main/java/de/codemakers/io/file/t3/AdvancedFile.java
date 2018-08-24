@@ -24,7 +24,6 @@ import de.codemakers.base.util.Convertable;
 import de.codemakers.base.util.Copyable;
 import de.codemakers.base.util.Require;
 import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
-import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 import de.codemakers.io.file.t3.exceptions.has.FileHasParentRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.t3.exceptions.isnot.RelativeClassIsNotNullException;
@@ -540,7 +539,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public File toFile() throws FileRuntimeException {
+    public File toFile() {
         checkAndErrorIfIntern(true);
         if (file == null) {
             file = new File(getPath());
@@ -730,7 +729,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public List<AdvancedFile> listFiles(boolean recursive) throws FileRuntimeException {
+    public List<AdvancedFile> listFiles(boolean recursive) {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotDirectory(true);
         if (parent != null) {
@@ -749,7 +748,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         throw new NotYetImplementedRuntimeException();
     }
     
-    List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive) throws FileRuntimeException {
+    List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive) {
         try {
             return fileProvider.listFiles(this, file, recursive, parent != null ? createInputStream() : null);
         } catch (Exception ex) {
@@ -759,7 +758,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public List<AdvancedFile> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
+    public List<AdvancedFile> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter) {
         if (advancedFileFilter == null) {
             return listFiles(recursive);
         }
@@ -799,7 +798,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
     }
     
-    List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
+    List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter) {
         try {
             return fileProvider.listFiles(this, file, recursive, advancedFileFilter, parent != null ? createInputStream() : null);
         } catch (Exception ex) {
