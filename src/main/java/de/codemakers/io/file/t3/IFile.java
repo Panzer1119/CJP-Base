@@ -18,6 +18,8 @@ package de.codemakers.io.file.t3;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
+import de.codemakers.io.file.t3.exceptions.is.*;
+import de.codemakers.io.file.t3.exceptions.isnot.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -29,8 +31,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
-public interface IFile<T extends IFile> extends Serializable {
+public interface IFile<T extends IFile, P extends Predicate<T>> extends Serializable {
     
     String getName();
     
@@ -38,9 +41,9 @@ public interface IFile<T extends IFile> extends Serializable {
     
     String getAbsolutePath();
     
-    IFile getAbsoluteFile();
+    T getAbsoluteFile();
     
-    IFile getParentFile();
+    T getParentFile();
     
     String getSeparator();
     
@@ -279,19 +282,19 @@ public interface IFile<T extends IFile> extends Serializable {
     
     // listFiles MID ============================================================
     
-    default List<T> listFiles(AdvancedFileFilter advancedFileFilter) throws FileRuntimeException {
-        return listFiles(false, advancedFileFilter);
+    default List<T> listFiles(P fileFilter) throws FileRuntimeException {
+        return listFiles(false, fileFilter);
     }
     
-    List<T> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter) throws FileRuntimeException;
+    List<T> listFiles(boolean recursive, P fileFilter) throws FileRuntimeException;
     
-    default List<T> listFiles(AdvancedFileFilter advancedFileFilter, Consumer<Throwable> failure) {
-        return listFiles(false, advancedFileFilter, failure);
+    default List<T> listFiles(P fileFilter, Consumer<Throwable> failure) {
+        return listFiles(false, fileFilter, failure);
     }
     
-    default List<T> listFiles(boolean recursive, AdvancedFileFilter advancedFileFilter, Consumer<Throwable> failure) {
+    default List<T> listFiles(boolean recursive, P fileFilter, Consumer<Throwable> failure) {
         try {
-            return listFiles(recursive, advancedFileFilter);
+            return listFiles(recursive, fileFilter);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
@@ -302,12 +305,12 @@ public interface IFile<T extends IFile> extends Serializable {
         }
     }
     
-    default List<T> listFilesWithoutException(AdvancedFileFilter advancedFileFilter) {
-        return listFilesWithoutException(false, advancedFileFilter);
+    default List<T> listFilesWithoutException(P fileFilter) {
+        return listFilesWithoutException(false, fileFilter);
     }
     
-    default List<T> listFilesWithoutException(boolean recursive, AdvancedFileFilter advancedFileFilter) {
-        return listFiles(recursive, advancedFileFilter, null);
+    default List<T> listFilesWithoutException(boolean recursive, P fileFilter) {
+        return listFiles(recursive, fileFilter, null);
     }
     
     // listFiles END ===================================================================================================
@@ -384,6 +387,174 @@ public interface IFile<T extends IFile> extends Serializable {
     
     default boolean forChildrenParallelWithoutException(Consumer<T> consumer, boolean recursive) {
         return forChildrenParallel(consumer, recursive, null);
+    }
+    
+    default boolean checkAndErrorIfFile(boolean throwException) {
+        if (isFile()) {
+            if (throwException) {
+                throw new FileIsFileRuntimeException(getPath() + " is a file");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfNotFile(boolean throwException) {
+        if (!isFile()) {
+            if (throwException) {
+                throw new FileIsNotFileRuntimeException(getPath() + " is not a file");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfDirectory(boolean throwException) {
+        if (isDirectory()) {
+            if (throwException) {
+                throw new FileIsDirectoryRuntimeException(getPath() + " is a directory");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfNotDirectory(boolean throwException) {
+        if (!isDirectory()) {
+            if (throwException) {
+                throw new FileIsNotDirectoryRuntimeException(getPath() + " is not a directory");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfExisting(boolean throwException) {
+        if (exists()) {
+            if (throwException) {
+                throw new FileIsExistingRuntimeException(getPath() + " does exist");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfNotExisting(boolean throwException) {
+        if (!exists()) {
+            if (throwException) {
+                throw new FileIsNotExistingRuntimeException(getPath() + " does not exist");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfAbsolute(boolean throwException) {
+        if (isAbsolute()) {
+            if (throwException) {
+                throw new FileIsAbsoluteRuntimeException(getPath() + " is absolute");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfNotAbsolute(boolean throwException) {
+        if (!isAbsolute()) {
+            if (throwException) {
+                throw new FileIsNotAbsoluteRuntimeException(getPath() + " is not absolute");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfRelative(boolean throwException) {
+        if (isRelative()) {
+            if (throwException) {
+                throw new FileIsRelativeRuntimeException(getPath() + " is relative");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfNotRelative(boolean throwException) {
+        if (!isRelative()) {
+            if (throwException) {
+                throw new FileIsNotRelativeRuntimeException(getPath() + " is not relative");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfIntern(boolean throwException) {
+        if (isIntern()) {
+            if (throwException) {
+                throw new FileIsInternRuntimeException(getPath() + " is intern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfNotIntern(boolean throwException) {
+        if (!isIntern()) {
+            if (throwException) {
+                throw new FileIsNotInternRuntimeException(getPath() + " is not intern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfExtern(boolean throwException) {
+        if (isExtern()) {
+            if (throwException) {
+                throw new FileIsExternRuntimeException(getPath() + " is extern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    default boolean checkAndErrorIfNotExtern(boolean throwException) {
+        if (!isExtern()) {
+            if (throwException) {
+                throw new FileIsNotExternRuntimeException(getPath() + " is not extern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
     
 }

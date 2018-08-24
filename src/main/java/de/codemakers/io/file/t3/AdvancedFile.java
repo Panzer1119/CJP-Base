@@ -20,13 +20,14 @@ import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
+import de.codemakers.base.util.Convertable;
 import de.codemakers.base.util.Copyable;
 import de.codemakers.base.util.Require;
 import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
 import de.codemakers.io.file.t3.exceptions.FileRuntimeException;
 import de.codemakers.io.file.t3.exceptions.has.FileHasParentRuntimeException;
-import de.codemakers.io.file.t3.exceptions.is.*;
-import de.codemakers.io.file.t3.exceptions.isnot.*;
+import de.codemakers.io.file.t3.exceptions.is.RelativeClassIsNullException;
+import de.codemakers.io.file.t3.exceptions.isnot.RelativeClassIsNotNullException;
 import de.codemakers.io.file.t3.providers.FileProvider;
 import de.codemakers.io.file.t3.providers.InternProvider;
 import de.codemakers.io.file.t3.providers.ZIPProvider;
@@ -44,7 +45,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
+public class AdvancedFile implements Convertable<ExternFile>, Copyable, IFile<AdvancedFile, AdvancedFileFilter> {
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();
@@ -388,30 +389,6 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         }
     }
     
-    private boolean checkAndErrorIfFile(boolean throwException) {
-        if (isFile()) {
-            if (throwException) {
-                throw new FileIsFileRuntimeException(getPath() + " is a file");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean checkAndErrorIfNotFile(boolean throwException) {
-        if (!isFile()) {
-            if (throwException) {
-                throw new FileIsNotFileRuntimeException(getPath() + " is not a file");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
     @Override
     public boolean isDirectory() {
         if (parent != null) {
@@ -434,30 +411,6 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
             }
         } else {
             throw new NotImplementedRuntimeException();
-        }
-    }
-    
-    private boolean checkAndErrorIfDirectory(boolean throwException) {
-        if (isDirectory()) {
-            if (throwException) {
-                throw new FileIsDirectoryRuntimeException(getPath() + " is a directory");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean checkAndErrorIfNotDirectory(boolean throwException) {
-        if (!isDirectory()) {
-            if (throwException) {
-                throw new FileIsNotDirectoryRuntimeException(getPath() + " is not a directory");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
         }
     }
     
@@ -486,30 +439,6 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         }
     }
     
-    private boolean checkAndErrorIfExisting(boolean throwException) {
-        if (exists()) {
-            if (throwException) {
-                throw new FileIsExistingRuntimeException(getPath() + " does exist");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean checkAndErrorIfNotExisting(boolean throwException) {
-        if (!exists()) {
-            if (throwException) {
-                throw new FileIsNotExistingRuntimeException(getPath() + " does not exist");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
     private final void setAllAbsolute(boolean absolute) {
         this.absolute = absolute;
         if (parent != null) {
@@ -525,30 +454,6 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         return absolute;
     }
     
-    private boolean checkAndErrorIfAbsolute(boolean throwException) {
-        if (isAbsolute()) {
-            if (throwException) {
-                throw new FileIsAbsoluteRuntimeException(getPath() + " is absolute");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean checkAndErrorIfNotAbsolute(boolean throwException) {
-        if (!isAbsolute()) {
-            if (throwException) {
-                throw new FileIsNotAbsoluteRuntimeException(getPath() + " is not absolute");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
     @Override
     public boolean isRelative() {
         if (parent != null) {
@@ -557,60 +462,12 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         return !absolute;
     }
     
-    private boolean checkAndErrorIfRelative(boolean throwException) {
-        if (isRelative()) {
-            if (throwException) {
-                throw new FileIsRelativeRuntimeException(getPath() + " is relative");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean checkAndErrorIfNotRelative(boolean throwException) {
-        if (!isRelative()) {
-            if (throwException) {
-                throw new FileIsNotRelativeRuntimeException(getPath() + " is not relative");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
     @Override
     public boolean isIntern() {
         if (parent != null) {
             return parent.isIntern();
         }
         return !extern; //TODO Implement, but at Construction, with intern prefix "intern:"
-    }
-    
-    private boolean checkAndErrorIfIntern(boolean throwException) {
-        if (isIntern()) {
-            if (throwException) {
-                throw new FileIsInternRuntimeException(getPath() + " is intern");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean checkAndErrorIfNotIntern(boolean throwException) {
-        if (!isIntern()) {
-            if (throwException) {
-                throw new FileIsNotInternRuntimeException(getPath() + " is not intern");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
     }
     
     private final void setAllExtern(boolean extern) {
@@ -626,30 +483,6 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
             return parent.isExtern();
         }
         return extern; //TODO Implement, but at Construction
-    }
-    
-    private boolean checkAndErrorIfExtern(boolean throwException) {
-        if (isExtern()) {
-            if (throwException) {
-                throw new FileIsExternRuntimeException(getPath() + " is extern");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean checkAndErrorIfNotExtern(boolean throwException) {
-        if (!isExtern()) {
-            if (throwException) {
-                throw new FileIsNotExternRuntimeException(getPath() + " is not extern");
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
     }
     
     @Override
@@ -717,6 +550,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     @Override
     public boolean mkdir() throws Exception {
         checkAndErrorIfIntern(true);
+        checkAndErrorIfFile(checkAndErrorIfExisting(false));
         if (parent != null) {
             return mkdir(this);
         }
@@ -738,6 +572,7 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
     @Override
     public boolean mkdirs() throws Exception {
         checkAndErrorIfIntern(true);
+        checkAndErrorIfFile(checkAndErrorIfExisting(false));
         if (parent != null) {
             return mkdirs(this);
         }
@@ -1031,6 +866,12 @@ public class AdvancedFile implements Copyable, IFile<AdvancedFile> {
         } else {
             return false;
         }
+    }
+    
+    @Override
+    public ExternFile convert(Class<ExternFile> clazz) {
+        checkAndErrorIfIntern(true);
+        return new ExternFile(toFile());
     }
     
 }
