@@ -101,7 +101,7 @@ public class InternProvider implements FileProvider<AdvancedFile> {
     }
     
     @Override
-    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file, boolean append) throws Exception {
         throw new FileIsInternRuntimeException(file + " is intern");
     }
     

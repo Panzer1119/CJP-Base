@@ -185,11 +185,19 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return readBytes(null);
     }
     
-    public abstract OutputStream createOutputStream() throws Exception;
+    public OutputStream createOutputStream() throws Exception {
+        return createOutputStream(false);
+    }
+    
+    public abstract OutputStream createOutputStream(boolean append) throws Exception;
     
     public OutputStream createOutputStream(Consumer<Throwable> failure) {
+        return createOutputStream(false, failure);
+    }
+    
+    public OutputStream createOutputStream(boolean append, Consumer<Throwable> failure) {
         try {
-            return createOutputStream();
+            return createOutputStream(append);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
@@ -201,7 +209,11 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public OutputStream createOutputStreamWithoutException() {
-        return createOutputStream(null);
+        return createOutputStreamWithoutException(false);
+    }
+    
+    public OutputStream createOutputStreamWithoutException(boolean append) {
+        return createOutputStream(append, null);
     }
     
     public abstract boolean writeBytes(byte[] data) throws Exception;

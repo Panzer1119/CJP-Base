@@ -169,9 +169,9 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
-    public OutputStream createOutputStream() throws Exception {
+    public OutputStream createOutputStream(boolean append) throws Exception {
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
-        return new FileOutputStream(file);
+        return new FileOutputStream(file, append);
     }
     
     @Override

@@ -367,7 +367,7 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
     }
     
     @Override
-    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file, boolean append) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         throw new NotYetImplementedRuntimeException();

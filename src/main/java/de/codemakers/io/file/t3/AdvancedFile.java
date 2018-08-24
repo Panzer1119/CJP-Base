@@ -677,24 +677,24 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public OutputStream createOutputStream() throws Exception { //TODO Test this
+    public OutputStream createOutputStream(boolean append) throws Exception { //TODO Test this
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {
-            return parent.createOutputStream(this);
+            return parent.createOutputStream(this, append);
         }
         if (isExtern()) {
-            return new FileOutputStream(toFile());
+            return new FileOutputStream(toFile(), append);
         }
         //TODO Implement
         throw new NotYetImplementedRuntimeException();
     }
     
-    OutputStream createOutputStream(AdvancedFile file) throws Exception {
+    OutputStream createOutputStream(AdvancedFile file, boolean append) throws Exception {
         if (parent != null) {
             throw new FileHasParentRuntimeException(getPath() + " has a parent");
         }
-        return fileProvider.createOutputStream(this, file);
+        return fileProvider.createOutputStream(this, file, append);
     }
     
     @Override

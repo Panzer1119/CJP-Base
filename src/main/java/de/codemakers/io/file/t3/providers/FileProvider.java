@@ -40,7 +40,7 @@ public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { 
     
     byte[] readBytes(T parent, T file, InputStream inputStream) throws Exception;
     
-    OutputStream createOutputStream(T parent, T file) throws Exception;
+    OutputStream createOutputStream(T parent, T file, boolean append) throws Exception;
     
     boolean writeBytes(T parent, T file, byte[] data) throws Exception;
     
