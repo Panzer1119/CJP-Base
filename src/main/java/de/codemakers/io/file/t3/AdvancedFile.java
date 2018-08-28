@@ -88,7 +88,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     private transient File file;
     
     public AdvancedFile(String... paths) {
-        this((AdvancedFile) null, paths);
+        this((AdvancedFile) null, true, paths);
     }
     
     public AdvancedFile(String name, String[] paths) {
@@ -99,13 +99,23 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     public AdvancedFile(AdvancedFile parent, String... paths) {
-        this.parent = parent;
-        this.paths = paths;
-        if (parent != null) { //FIXME This should only be used internally, but also someone should can use this, but then the parent != this.parent; So maybe make THIS constructor to a private/protected static function? And make the same Constructor again, but dealing the parent object right and make one AdvancedFile of the parent + paths if needed
-            this.windowsSeparator = parent.windowsSeparator;
-            this.extern = parent.extern;
-            this.absolute = parent.absolute;
+        this(parent, false, paths);
+    }
+    
+    public AdvancedFile(AdvancedFile parent, boolean forceParent, String... paths) {
+        if (forceParent) {
+            this.parent = parent;
+            if (parent != null) { //FIXME This should only be used internally, but also someone should can use this, but then the parent != this.parent; So maybe make THIS constructor to a private/protected static function? And make the same Constructor again, but dealing the parent object right and make one AdvancedFile of the parent + paths if needed
+                this.windowsSeparator = parent.windowsSeparator;
+                this.extern = parent.extern;
+                this.absolute = parent.absolute;
+            }
         } else {
+            //TODO Implement
+            throw new NotYetImplementedRuntimeException();
+        }
+        this.paths = paths;
+        if (parent == null) {
             this.absolute = checkAbsolute(paths);
         }
         init();

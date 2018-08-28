@@ -47,9 +47,9 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 if (recursive) {
-                    zipFile.stream().forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, zipEntry.getName())));
+                    zipFile.stream().forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, true, zipEntry.getName())));
                 } else {
-                    zipFile.stream().filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, zipEntry.getName())));
+                    zipFile.stream().filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, true, zipEntry.getName())));
                 }
             } catch (Exception ex) {
                 zipFile.close();
@@ -64,7 +64,7 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
                         zipInputStream.closeEntry();
                         continue;
                     }
-                    advancedFiles.add(new AdvancedFile(parent, zipEntry.getName()));
+                    advancedFiles.add(new AdvancedFile(parent, true, zipEntry.getName()));
                     zipInputStream.closeEntry();
                 }
                 zipInputStream.close();
@@ -91,14 +91,14 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
             try {
                 if (recursive) {
                     zipFile.stream().forEach((zipEntry) -> {
-                        final AdvancedFile advancedFile = new AdvancedFile(parent, zipEntry.getName());
+                        final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                         if (advancedFileFilter.test(advancedFile)) {
                             advancedFiles.add(advancedFile);
                         }
                     });
                 } else {
                     zipFile.stream().filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> {
-                        final AdvancedFile advancedFile = new AdvancedFile(parent, zipEntry.getName());
+                        final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                         if (advancedFileFilter.test(advancedFile)) {
                             advancedFiles.add(advancedFile);
                         }
@@ -117,7 +117,7 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
                         zipInputStream.closeEntry();
                         continue;
                     }
-                    final AdvancedFile advancedFile = new AdvancedFile(parent, zipEntry.getName());
+                    final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                     if (advancedFileFilter.test(advancedFile)) {
                         advancedFiles.add(advancedFile);
                     }
@@ -144,14 +144,14 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
             try {
                 if (recursive) {
                     zipFile.stream().forEach((zipEntry) -> {
-                        final AdvancedFile advancedFile = new AdvancedFile(parent, zipEntry.getName());
+                        final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                         if (advancedFilenameFilter.test(advancedFile.getParentFile(), advancedFile.getName())) {
                             advancedFiles.add(advancedFile);
                         }
                     });
                 } else {
                     zipFile.stream().filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> {
-                        final AdvancedFile advancedFile = new AdvancedFile(parent, zipEntry.getName());
+                        final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                         if (advancedFilenameFilter.test(advancedFile.getParentFile(), advancedFile.getName())) {
                             advancedFiles.add(advancedFile);
                         }
@@ -170,7 +170,7 @@ public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test thi
                         zipInputStream.closeEntry();
                         continue;
                     }
-                    final AdvancedFile advancedFile = new AdvancedFile(parent, zipEntry.getName());
+                    final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                     if (advancedFilenameFilter.test(advancedFile.getParentFile(), advancedFile.getName())) {
                         advancedFiles.add(advancedFile);
                     }
