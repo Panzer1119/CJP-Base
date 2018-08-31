@@ -340,7 +340,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             return file_absolute;
         } else if (isIntern()) { // Relative intern file
             checkAndErrorIfRelativeClassIsNull(true);
-            final String[] paths_prefixes = usePackageIfNotNull((p) -> p.getName().split("\\."), new String[0]);//clazz.getPackage().getName().split("\\.");
+            final String[] paths_prefixes = getPackagePathsFromClass();
             final String[] paths_ = new String[paths_prefixes.length + paths.length];
             if (paths_prefixes.length > 0) { //TODO Test this
                 System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
