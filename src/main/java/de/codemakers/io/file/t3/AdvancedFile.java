@@ -118,11 +118,14 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 init = true;
             }
         } else {
-            //TODO Implement
-            throw new NotYetImplementedRuntimeException();
+            if (parent != null) { //TODO Test this
+                paths = Arrays.copyOf(paths, paths.length + 1);
+                System.arraycopy(paths, 0, paths, 1, paths.length - 1);
+                paths[0] = parent.getPath();
+            }
         }
         this.paths = paths;
-        if (parent == null) {
+        if (!init) {
             this.extern = !checkInternAndCorrect();
             this.absolute = checkAbsolute(this.paths);
         }
