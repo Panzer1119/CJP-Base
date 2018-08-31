@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file.t3;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
@@ -41,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -338,9 +340,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             return file_absolute;
         } else if (isIntern()) { // Relative intern file
             checkAndErrorIfRelativeClassIsNull(true);
-            final String[] paths_prefixes = clazz.getPackage().getName().split("\\.");
+            final String[] paths_prefixes = usePackageIfNotNull((p) -> p.getName().split("\\."), new String[0]);//clazz.getPackage().getName().split("\\.");
             final String[] paths_ = new String[paths_prefixes.length + paths.length];
-            System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
+            if (paths_prefixes.length > 0) { //TODO Test this
+                System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
+            }
             System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
             return new AdvancedFile(paths_, windowsSeparator, extern, true, parent, fileProvider, clazz);
         } else { // Relative extern file
@@ -709,6 +713,12 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return Files.readAllBytes(toPath());
+        } else {
+            if (isRelative()) {
+                //TODO Implement
+            } else {
+                return Standard.RUNNING_JAR_ADVANCED_FILE.readBytes(this);
+            }
         }
         //TODO if intern than if the Running jar is a jarfile use the Standard.RUNNING_JAR_ADVANCED_FILE.readBytes(this); and do Not forgot to add (but only temporary!) the clazz package name as paths prefix if this is also relative intern
         //TODO Implement
@@ -909,6 +919,25 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         } else {
             return false;
         }
+    }
+    
+    private <R> R usePackageIfNotNull(Function<Package, R> function, R defaultValue) {
+        if (function != null && getNonNullClazz().getPackage() != null) {
+            return function.apply(getNonNullClazz().getPackage());
+        }
+        return defaultValue;
+    }
+    
+    private String getPackageNameFromClass() {
+        return usePackageIfNotNull((p) -> p.getName(), "");
+    }
+    
+    private String getPackagePathFromClass() {
+        return usePackageIfNotNull((p) -> p.getName().replaceAll("\\.", FILE_SEPARATOR_DEFAULT_REGEX), "");
+    }
+    
+    private String[] getPackagePathsFromClass() {
+        return usePackageIfNotNull((p) -> p.getName().split("\\."), new String[0]);
     }
     
     @Override
