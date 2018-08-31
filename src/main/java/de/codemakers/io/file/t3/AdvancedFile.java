@@ -510,7 +510,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (parent != null) {
             return parent.isIntern();
         }
-        return !extern; //TODO Implement, but at Construction, with intern prefix "intern:"
+        return !extern;
     }
     
     private final void setAllExtern(boolean extern) {
@@ -525,7 +525,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (parent != null) {
             return parent.isExtern();
         }
-        return extern; //TODO Implement, but at Construction
+        return extern;
     }
     
     @Override
