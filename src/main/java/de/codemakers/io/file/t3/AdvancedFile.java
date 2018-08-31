@@ -59,6 +59,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public static final String FILE_SEPARATOR_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR == FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     public static final String FILE_SEPARATOR_NOT_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR != FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     
+    public static final String PREFIX_INTERN = "intern:";
+    public static final String PREFIX_EXTERN = "extern:";
+    
     public static final List<FileProvider<AdvancedFile>> FILE_PROVIDERS = new CopyOnWriteArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
     public static final InternProvider INTERN_PROVIDER = new InternProvider();
@@ -88,12 +91,15 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     private transient File file;
     
     public AdvancedFile(String... paths) {
-        this((AdvancedFile) null, true, paths);
+        this(null, true, paths);
     }
     
     public AdvancedFile(String name, String[] paths) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(paths);
         this.paths = Arrays.copyOf(paths, paths.length + 1);
         this.paths[paths.length] = name;
+        this.extern = !checkInternAndCorrect();
         this.absolute = checkAbsolute(this.paths);
         init();
     }
@@ -109,6 +115,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 this.windowsSeparator = parent.windowsSeparator;
                 this.extern = parent.extern;
                 this.absolute = parent.absolute;
+                init = true;
             }
         } else {
             //TODO Implement
@@ -116,7 +123,8 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         this.paths = paths;
         if (parent == null) {
-            this.absolute = checkAbsolute(paths);
+            this.extern = !checkInternAndCorrect();
+            this.absolute = checkAbsolute(this.paths);
         }
         init();
     }
@@ -129,7 +137,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             this.windowsSeparator = parent.windowsSeparator;
             this.extern = parent.extern;
             this.absolute = parent.absolute;
+            init = true;
         } else {
+            this.extern = !checkInternAndCorrect();
             this.absolute = checkAbsolute(paths);
         }
         init();
@@ -154,6 +164,17 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public static final FileProvider<AdvancedFile> getProvider(AdvancedFile parent, String name) {
         Objects.requireNonNull(name);
         return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name)).findFirst().orElse(null);
+    }
+    
+    private final boolean checkInternAndCorrect() {
+        if (paths[0].startsWith(PREFIX_INTERN)) {
+            paths[0] = paths[0].substring(PREFIX_INTERN.length());
+            return true;
+        } else if (paths[0].startsWith(PREFIX_EXTERN)) {
+            paths[0] = paths[0].substring(PREFIX_EXTERN.length());
+            return false;
+        }
+        return false;
     }
     
     public static final boolean checkAbsolute(String... paths) {
