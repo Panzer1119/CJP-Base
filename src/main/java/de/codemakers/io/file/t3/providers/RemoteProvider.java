@@ -36,6 +36,7 @@ public class RemoteProvider extends FileProvider<AdvancedFile> {
     public static final Pattern REMOTE_PATTERN = Pattern.compile(REMOTE_REGEX);
     
     //TODO Is this possible? Because just sending an FileProvider Object over the internet does not manage the Input/OutputStreams which would be necessary to send (encrypted!) data between the remote and this client
+    //TODO Maybe move this class into de.codemakers.io.file.providers package, but in the CJP-Net library
     private FileProvider<AdvancedFile> fileFileProvider_remote = null;
     private String remote = null;
     private int port = -1;
