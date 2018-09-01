@@ -16,8 +16,29 @@
 
 package de.codemakers.security.interfaces;
 
+import de.codemakers.base.logger.Logger;
+
+import java.util.function.Consumer;
+
 public interface Signable {
     
-    byte[] sign() throws Exception;
+    byte[] sign(Signer signer) throws Exception;
+    
+    default byte[] sign(Signer signer, Consumer<Throwable> failure) {
+        try {
+            return sign(signer);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default byte[] signWithoutException(Signer signer) {
+        return sign(signer, null);
+    }
     
 }

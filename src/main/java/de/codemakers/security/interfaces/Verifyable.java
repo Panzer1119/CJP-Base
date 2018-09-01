@@ -16,8 +16,29 @@
 
 package de.codemakers.security.interfaces;
 
+import de.codemakers.base.logger.Logger;
+
+import java.util.function.Consumer;
+
 public interface Verifyable {
     
-    boolean verify() throws Exception;
+    boolean verify(Verifyer verifyer) throws Exception;
+    
+    default boolean verify(Verifyer verifyer, Consumer<Throwable> failure) {
+        try {
+            return verify(verifyer);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    default boolean verifyWithoutException(Verifyer verifyer) {
+        return verify(verifyer, null);
+    }
     
 }
