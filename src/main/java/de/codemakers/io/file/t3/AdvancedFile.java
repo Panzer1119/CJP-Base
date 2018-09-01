@@ -964,6 +964,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     @Override
     public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
         Objects.requireNonNull(verifier);
+        Objects.requireNonNull(data_signature);
         return verifier.verify(readBytes(), data_signature);
     }
     

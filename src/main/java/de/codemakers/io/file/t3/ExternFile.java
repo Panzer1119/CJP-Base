@@ -17,6 +17,9 @@
 package de.codemakers.io.file.t3;
 
 import de.codemakers.base.util.Convertable;
+import de.codemakers.security.interfaces.Cryptor;
+import de.codemakers.security.interfaces.Signer;
+import de.codemakers.security.interfaces.Verifier;
 
 import java.io.*;
 import java.net.URI;
@@ -25,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +45,24 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     
     public ExternFile(String path) {
         this(new File(path));
+    }
+    
+    static void listFilesRecursive(File folder, ExternFileFilter externFileFilter, List<ExternFile> externFiles) {
+        if (externFileFilter != null) {
+            Stream.of(folder.listFiles()).map((file) -> {
+                if (file.isDirectory()) {
+                    listFilesRecursive(file, externFileFilter, externFiles);
+                }
+                return file;
+            }).map(ExternFile::new).filter(externFileFilter).forEach(externFiles::add);
+        } else {
+            Stream.of(folder.listFiles()).map((file) -> {
+                if (file.isDirectory()) {
+                    listFilesRecursive(file, externFileFilter, externFiles);
+                }
+                return file;
+            }).map(ExternFile::new).forEach(externFiles::add);
+        }
     }
     
     @Override
@@ -223,27 +245,28 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
         }
     }
     
-    static void listFilesRecursive(File folder, ExternFileFilter externFileFilter, List<ExternFile> externFiles) {
-        if (externFileFilter != null) {
-            Stream.of(folder.listFiles()).map((file) -> {
-                if (file.isDirectory()) {
-                    listFilesRecursive(file, externFileFilter, externFiles);
-                }
-                return file;
-            }).map(ExternFile::new).filter(externFileFilter).forEach(externFiles::add);
-        } else {
-            Stream.of(folder.listFiles()).map((file) -> {
-                if (file.isDirectory()) {
-                    listFilesRecursive(file, externFileFilter, externFiles);
-                }
-                return file;
-            }).map(ExternFile::new).forEach(externFiles::add);
-        }
-    }
-    
     @Override
     public AdvancedFile convert(Class<AdvancedFile> clazz) {
         return new AdvancedFile(file);
+    }
+    
+    @Override
+    public byte[] crypt(Cryptor cryptor) throws Exception {
+        Objects.requireNonNull(cryptor);
+        return cryptor.crypt(readBytes());
+    }
+    
+    @Override
+    public byte[] sign(Signer signer) throws Exception {
+        Objects.requireNonNull(signer);
+        return signer.sign(readBytes());
+    }
+    
+    @Override
+    public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
+        Objects.requireNonNull(verifier);
+        Objects.requireNonNull(data_signature);
+        return verifier.verify(readBytes(), data_signature);
     }
     
 }
