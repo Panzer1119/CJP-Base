@@ -22,11 +22,11 @@ import java.util.function.Consumer;
 
 public interface Verifyer {
     
-    boolean verify(byte[] data) throws Exception;
+    boolean verify(byte[] data, byte[] data_signature) throws Exception;
     
-    default boolean verify(byte[] data, Consumer<Throwable> failure) {
+    default boolean verify(byte[] data, byte[] data_signature, Consumer<Throwable> failure) {
         try {
-            return verify(data);
+            return verify(data, data_signature);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
@@ -37,8 +37,8 @@ public interface Verifyer {
         }
     }
     
-    default boolean verifyWithoutException(byte[] data) {
-        return verify(data, null);
+    default boolean verifyWithoutException(byte[] data, byte[] data_signature) {
+        return verify(data, data_signature, null);
     }
     
 }

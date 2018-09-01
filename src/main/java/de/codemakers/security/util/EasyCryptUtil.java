@@ -16,14 +16,12 @@
 
 package de.codemakers.security.util;
 
-import de.codemakers.security.interfaces.Cryptor;
-import de.codemakers.security.interfaces.Decryptor;
-import de.codemakers.security.interfaces.Encryptor;
+import de.codemakers.security.interfaces.*;
+import de.codemakers.security.interfaces.Signer;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import java.security.InvalidKeyException;
-import java.security.SecureRandom;
+import java.security.*;
 
 public class EasyCryptUtil {
     
@@ -57,6 +55,30 @@ public class EasyCryptUtil {
     public static final Decryptor decryptorOfCipher(Cipher cipher, SecretKey key, SecureRandom secureRandom) throws InvalidKeyException {
         cipher.init(Cipher.DECRYPT_MODE, key, secureRandom);
         return decryptorOfCipher(cipher);
+    }
+    
+    public static final Signer signerOfSignature(Signature signature) {
+        return (data) -> {
+            signature.update(data);
+            return signature.sign();
+        };
+    }
+    
+    public static final Signer signerOfSignature(Signature signature, PrivateKey key) throws InvalidKeyException {
+        signature.initSign(key);
+        return signerOfSignature(signature);
+    }
+    
+    public static final Verifyer verifyerOfSignature(Signature signature) {
+        return (data, data_signature) -> {
+            signature.update(data);
+            return signature.verify(data_signature);
+        };
+    }
+    
+    public static final Verifyer verifyerOfSignature(Signature signature, PublicKey key) throws InvalidKeyException {
+        signature.initVerify(key);
+        return verifyerOfSignature(signature);
     }
     
 }
