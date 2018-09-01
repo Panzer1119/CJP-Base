@@ -174,17 +174,6 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name)).findFirst().orElse(null);
     }
     
-    private final boolean checkInternAndCorrect() {
-        if (paths[0].startsWith(PREFIX_INTERN)) {
-            paths[0] = paths[0].substring(PREFIX_INTERN.length());
-            return true;
-        } else if (paths[0].startsWith(PREFIX_EXTERN)) {
-            paths[0] = paths[0].substring(PREFIX_EXTERN.length());
-            return false;
-        }
-        return false;
-    }
-    
     public static final boolean checkAbsolute(String... paths) {
         if (paths == null || paths.length == 0) {
             return false;
@@ -197,6 +186,35 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         final AdvancedFile advancedFile = new AdvancedFile(paths);
         advancedFile.extern = false;
         return advancedFile;
+    }
+    
+    static void listExternFilesRecursive(File folder, AdvancedFileFilter advancedFileFilter, List<AdvancedFile> advancedFiles) {
+        if (advancedFileFilter != null) {
+            Stream.of(folder.listFiles()).map((file) -> {
+                if (file.isDirectory()) {
+                    listExternFilesRecursive(file, advancedFileFilter, advancedFiles);
+                }
+                return file;
+            }).map(AdvancedFile::new).filter(advancedFileFilter).forEach(advancedFiles::add);
+        } else {
+            Stream.of(folder.listFiles()).map((file) -> {
+                if (file.isDirectory()) {
+                    listExternFilesRecursive(file, advancedFileFilter, advancedFiles);
+                }
+                return file;
+            }).map(AdvancedFile::new).forEach(advancedFiles::add);
+        }
+    }
+    
+    private final boolean checkInternAndCorrect() {
+        if (paths[0].startsWith(PREFIX_INTERN)) {
+            paths[0] = paths[0].substring(PREFIX_INTERN.length());
+            return true;
+        } else if (paths[0].startsWith(PREFIX_EXTERN)) {
+            paths[0] = paths[0].substring(PREFIX_EXTERN.length());
+            return false;
+        }
+        return false;
     }
     
     public String[] getPaths() {
@@ -274,6 +292,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             name += p;
             final FileProvider<AdvancedFile> fileProvider = getProvider(parent, name.substring(1));
             if (fileProvider != null) {
+                fileProvider.processPaths(parent, name.substring(1), temp);
                 parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
                 clazz = null;
                 temp.clear();
@@ -400,8 +419,12 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return paths.length == 1;
     }
     
-    protected boolean isFileProvided() {
+    public boolean isFileProvided() {
         return fileProvider != null;
+    }
+    
+    public FileProvider<AdvancedFile> getFileProvider() {
+        return fileProvider;
     }
     
     @Override
@@ -825,24 +848,6 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         //TODO Implement
         throw new NotYetImplementedRuntimeException();
-    }
-    
-    static void listExternFilesRecursive(File folder, AdvancedFileFilter advancedFileFilter, List<AdvancedFile> advancedFiles) {
-        if (advancedFileFilter != null) {
-            Stream.of(folder.listFiles()).map((file) -> {
-                if (file.isDirectory()) {
-                    listExternFilesRecursive(file, advancedFileFilter, advancedFiles);
-                }
-                return file;
-            }).map(AdvancedFile::new).filter(advancedFileFilter).forEach(advancedFiles::add);
-        } else {
-            Stream.of(folder.listFiles()).map((file) -> {
-                if (file.isDirectory()) {
-                    listExternFilesRecursive(file, advancedFileFilter, advancedFiles);
-                }
-                return file;
-            }).map(AdvancedFile::new).forEach(advancedFiles::add);
-        }
     }
     
     List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter) {
