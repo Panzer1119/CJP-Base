@@ -19,6 +19,7 @@ package de.codemakers.io.file.t3;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
+import de.codemakers.security.interfaces.Cryptable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Serializable {
+public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Cryptable, Serializable {
     
     public abstract String getName();
     

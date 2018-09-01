@@ -31,6 +31,7 @@ import de.codemakers.io.file.t3.exceptions.isnot.RelativeClassIsNotNullException
 import de.codemakers.io.file.t3.providers.FileProvider;
 import de.codemakers.io.file.t3.providers.InternProvider;
 import de.codemakers.io.file.t3.providers.ZIPProvider;
+import de.codemakers.security.interfaces.Cryptor;
 
 import java.io.*;
 import java.net.URI;
@@ -944,6 +945,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public ExternFile convert(Class<ExternFile> clazz) {
         checkAndErrorIfIntern(true);
         return new ExternFile(toFile());
+    }
+    
+    @Override
+    public byte[] crypt(Cryptor cryptor) throws Exception {
+        return cryptor.crypt(readBytes());
     }
     
 }
