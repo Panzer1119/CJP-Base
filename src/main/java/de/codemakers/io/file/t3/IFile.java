@@ -20,6 +20,8 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
 import de.codemakers.security.interfaces.Cryptable;
+import de.codemakers.security.interfaces.Signable;
+import de.codemakers.security.interfaces.Verifiable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -33,7 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Cryptable, Serializable {
+public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Cryptable, Serializable, Signable, Verifiable {
     
     public abstract String getName();
     

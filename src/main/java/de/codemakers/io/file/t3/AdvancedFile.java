@@ -32,6 +32,8 @@ import de.codemakers.io.file.t3.providers.FileProvider;
 import de.codemakers.io.file.t3.providers.InternProvider;
 import de.codemakers.io.file.t3.providers.ZIPProvider;
 import de.codemakers.security.interfaces.Cryptor;
+import de.codemakers.security.interfaces.Signer;
+import de.codemakers.security.interfaces.Verifier;
 
 import java.io.*;
 import java.net.URI;
@@ -949,7 +951,20 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     @Override
     public byte[] crypt(Cryptor cryptor) throws Exception {
+        Objects.requireNonNull(cryptor);
         return cryptor.crypt(readBytes());
+    }
+    
+    @Override
+    public byte[] sign(Signer signer) throws Exception {
+        Objects.requireNonNull(signer);
+        return signer.sign(readBytes());
+    }
+    
+    @Override
+    public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
+        Objects.requireNonNull(verifier);
+        return verifier.verify(readBytes(), data_signature);
     }
     
 }
