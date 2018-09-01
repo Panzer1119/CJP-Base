@@ -22,34 +22,38 @@ import de.codemakers.io.file.t3.IFile;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.List;
 
-public interface FileProvider<T extends IFile> extends AdvancedFilenameFilter { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetect WinRaR installations for optionally writing/editing .rar files (Make some OS function for that, so that this framework has some useful features (finding WinRaR installations platform independent))
+public abstract class FileProvider<T extends IFile> implements AdvancedFilenameFilter, Serializable { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetect WinRaR installations for optionally writing/editing .rar files (Make some OS function for that, so that this framework has some useful features (finding WinRaR installations platform independent))
     
-    List<T> listFiles(T parent, T file, boolean recursive, InputStream inputStream) throws Exception;
+    public abstract List<T> listFiles(T parent, T file, boolean recursive, InputStream inputStream) throws Exception;
     
-    List<T> listFiles(T parent, T file, boolean recursive, AdvancedFileFilter advancedFileFilter, InputStream inputStream) throws Exception;
+    public abstract List<T> listFiles(T parent, T file, boolean recursive, AdvancedFileFilter advancedFileFilter, InputStream inputStream) throws Exception;
     
-    boolean isFile(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract boolean isFile(T parent, T file, InputStream inputStream) throws Exception;
     
-    boolean isDirectory(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract boolean isDirectory(T parent, T file, InputStream inputStream) throws Exception;
     
-    boolean exists(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract boolean exists(T parent, T file, InputStream inputStream) throws Exception;
     
-    InputStream createInputStream(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract InputStream createInputStream(T parent, T file, InputStream inputStream) throws Exception;
     
-    byte[] readBytes(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract byte[] readBytes(T parent, T file, InputStream inputStream) throws Exception;
     
-    OutputStream createOutputStream(T parent, T file, boolean append) throws Exception;
+    public abstract OutputStream createOutputStream(T parent, T file, boolean append) throws Exception;
     
-    boolean writeBytes(T parent, T file, byte[] data) throws Exception;
+    public abstract boolean writeBytes(T parent, T file, byte[] data) throws Exception;
     
-    boolean createNewFile(T parent, T file) throws Exception;
+    public abstract boolean createNewFile(T parent, T file) throws Exception;
     
-    boolean delete(T parent, T file) throws Exception;
+    public abstract boolean delete(T parent, T file) throws Exception;
     
-    boolean mkdir(T parent, T file) throws Exception;
+    public abstract boolean mkdir(T parent, T file) throws Exception;
     
-    boolean mkdirs(T parent, T file) throws Exception;
+    public abstract boolean mkdirs(T parent, T file) throws Exception;
+    
+    public void processPaths(T parent, String path, List<String> paths) {
+    }
     
 }

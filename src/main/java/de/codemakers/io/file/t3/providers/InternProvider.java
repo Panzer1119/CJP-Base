@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-public class InternProvider implements FileProvider<AdvancedFile> {
+public class InternProvider extends FileProvider<AdvancedFile> {
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, InputStream inputStream) throws Exception {

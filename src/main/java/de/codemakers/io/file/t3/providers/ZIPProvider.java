@@ -36,7 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-public class ZIPProvider implements FileProvider<AdvancedFile> { //TODO Test this
+public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
     
     @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, InputStream inputStream) throws Exception {
