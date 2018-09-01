@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'de.codemakers'
-version 'v1.8.0_172-alpha.2'
+version 'v1.8.0_172-alpha.3'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
