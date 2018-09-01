@@ -20,13 +20,13 @@ import de.codemakers.base.logger.Logger;
 
 import java.util.function.Consumer;
 
-public interface Verifyable {
+public interface Verifiable {
     
-    boolean verify(Verifyer verifyer) throws Exception;
+    boolean verify(Verifier verifier) throws Exception;
     
-    default boolean verify(Verifyer verifyer, Consumer<Throwable> failure) {
+    default boolean verify(Verifier verifier, Consumer<Throwable> failure) {
         try {
-            return verify(verifyer);
+            return verify(verifier);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
@@ -37,8 +37,8 @@ public interface Verifyable {
         }
     }
     
-    default boolean verifyWithoutException(Verifyer verifyer) {
-        return verify(verifyer, null);
+    default boolean verifyWithoutException(Verifier verifier) {
+        return verify(verifier, null);
     }
     
 }

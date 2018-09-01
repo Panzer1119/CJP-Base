@@ -20,7 +20,7 @@ import de.codemakers.base.logger.Logger;
 
 import java.util.function.Consumer;
 
-public interface Verifyer {
+public interface Verifier {
     
     boolean verify(byte[] data, byte[] data_signature) throws Exception;
     

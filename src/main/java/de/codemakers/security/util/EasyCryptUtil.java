@@ -69,16 +69,16 @@ public class EasyCryptUtil {
         return signerOfSignature(signature);
     }
     
-    public static final Verifyer verifyerOfSignature(Signature signature) {
+    public static final Verifier verifierOfSignature(Signature signature) {
         return (data, data_signature) -> {
             signature.update(data);
             return signature.verify(data_signature);
         };
     }
     
-    public static final Verifyer verifyerOfSignature(Signature signature, PublicKey key) throws InvalidKeyException {
+    public static final Verifier verifierOfSignature(Signature signature, PublicKey key) throws InvalidKeyException {
         signature.initVerify(key);
-        return verifyerOfSignature(signature);
+        return verifierOfSignature(signature);
     }
     
 }
