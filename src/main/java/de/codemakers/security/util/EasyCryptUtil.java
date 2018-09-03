@@ -77,6 +77,10 @@ public class EasyCryptUtil {
         return decryptorOfCipher(cipher);
     }
     
+    public static final Signer signerOfSHA256withRSA() {
+        return signerOfSignature(SIGNATURE_SHA256withRSA);
+    }
+    
     public static final Signer signerOfSignature(Signature signature) {
         return (data) -> {
             signature.update(data);
@@ -87,6 +91,10 @@ public class EasyCryptUtil {
     public static final Signer signerOfSignature(Signature signature, PrivateKey key) throws InvalidKeyException {
         signature.initSign(key);
         return signerOfSignature(signature);
+    }
+    
+    public static final Verifier verifierOfSHA256withRSA() {
+        return verifierOfSignature(SIGNATURE_SHA256withRSA);
     }
     
     public static final Verifier verifierOfSignature(Signature signature) {
