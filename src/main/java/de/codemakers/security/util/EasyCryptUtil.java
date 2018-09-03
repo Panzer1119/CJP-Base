@@ -102,6 +102,9 @@ public class EasyCryptUtil {
     }
     
     public static final boolean publicKeyCanVerifyDataSignedWithPrivateKeyRSA(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
+        if (privateKey == null || publicKey == null) {
+            return false;
+        }
         assert privateKey.getAlgorithm().equals("RSA");
         assert publicKey.getAlgorithm().equals("RSA");
         final Signer signer = signerOfSignature(SIGNATURE_SHA256withRSA, privateKey);
