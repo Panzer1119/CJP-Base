@@ -20,7 +20,7 @@ import java.util.Objects;
 
 public abstract class Event {
     
-    private final long id;
+    protected final long id;
     
     public Event() {
         this(System.nanoTime());
