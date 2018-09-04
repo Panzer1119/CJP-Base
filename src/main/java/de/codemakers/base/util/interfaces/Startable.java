@@ -23,22 +23,23 @@ import java.util.function.Consumer;
 @FunctionalInterface
 public interface Startable {
     
-    void start() throws Exception;
+    boolean start() throws Exception;
     
-    default void start(Consumer<Throwable> failure) {
+    default boolean start(Consumer<Throwable> failure) {
         try {
-            start();
+            return start();
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
             } else {
                 Logger.handleError(ex);
             }
+            return false;
         }
     }
     
-    default void startWithoutException() {
-        start(null);
+    default boolean startWithoutException() {
+        return start(null);
     }
     
 }

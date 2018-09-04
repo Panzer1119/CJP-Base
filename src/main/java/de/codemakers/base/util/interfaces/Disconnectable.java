@@ -20,14 +20,13 @@ import de.codemakers.base.logger.Logger;
 
 import java.util.function.Consumer;
 
-@FunctionalInterface
-public interface Stoppable {
+public interface Disconnectable {
     
-    boolean stop() throws Exception;
+    boolean disconnect() throws Exception;
     
-    default boolean stop(Consumer<Throwable> failure) {
+    default boolean disconnect(Consumer<Throwable> failure) {
         try {
-            return stop();
+            return disconnect();
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
@@ -38,8 +37,8 @@ public interface Stoppable {
         }
     }
     
-    default boolean stopWithoutException() {
-        return stop(null);
+    default boolean disconnectWithoutException() {
+        return disconnect(null);
     }
     
 }

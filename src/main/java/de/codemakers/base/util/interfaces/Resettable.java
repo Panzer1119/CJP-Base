@@ -23,22 +23,23 @@ import java.util.function.Consumer;
 @FunctionalInterface
 public interface Resettable {
     
-    void reset() throws Exception;
+    boolean reset() throws Exception;
     
-    default void reset(Consumer<Throwable> failure) {
+    default boolean reset(Consumer<Throwable> failure) {
         try {
-            reset();
+            return reset();
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
             } else {
                 Logger.handleError(ex);
             }
+            return false;
         }
     }
     
-    default void resetWithoutException() {
-        reset(null);
+    default boolean resetWithoutException() {
+        return reset(null);
     }
     
 }
