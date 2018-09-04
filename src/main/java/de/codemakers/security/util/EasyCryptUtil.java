@@ -58,7 +58,7 @@ public class EasyCryptUtil {
      * @return never null Random Object
      */
     public static final Random getSecurestRandom() {
-        return getSecurestRandom();
+        return SECUREST_RANDOM;
     }
     
     public static final Cryptor cryptorOfCipher(Cipher cipher) {
