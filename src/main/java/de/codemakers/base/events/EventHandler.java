@@ -17,6 +17,7 @@
 package de.codemakers.base.events;
 
 import de.codemakers.base.CJP;
+import de.codemakers.base.logger.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     
     @Override
     public final List<EventListener<T>> getEventListeners(Class<T> clazz) {
-        return eventListeners.entrySet().stream().filter((entry) -> Objects.equals(entry.getValue(), clazz)).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).collect(Collectors.toList());
+        return eventListeners.entrySet().stream().filter((entry) -> Objects.equals(entry.getValue(), clazz)).map(Map.Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
@@ -74,20 +75,20 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         if (event == null) {
             return;
         }
-        eventListeners.entrySet().stream().filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).forEach((eventListener) -> {
+        eventListeners.entrySet().stream().filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).forEach((eventListener) -> {
             if (executorService != null) {
                 executorService.submit(() -> {
                     try {
                         eventListener.onEvent(event);
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        Logger.handleError(ex);
                     }
                 });
             } else {
                 try {
                     eventListener.onEvent(event);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    Logger.handleError(ex);
                 }
             }
         });
