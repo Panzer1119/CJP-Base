@@ -17,26 +17,39 @@
 package de.codemakers.base.events;
 
 import java.util.Objects;
+import java.util.Random;
 
 public abstract class Event {
     
+    public static final Random RANDOM_ID_GENERATOR = new Random();
+    
     protected final long id;
+    protected final long timestamp;
     
     public Event() {
-        this(System.nanoTime());
+        this(System.currentTimeMillis());
     }
     
-    public Event(long id) {
+    public Event(long timestamp) {
+        this(RANDOM_ID_GENERATOR.nextLong(), timestamp);
+    }
+    
+    public Event(long id, long timestamp) {
         this.id = id;
+        this.timestamp = timestamp;
     }
     
-    public final long getID() {
+    public final long getId() {
         return id;
+    }
+    
+    public final long getTimestamp() {
+        return timestamp;
     }
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": id=" + id;
+        return getClass().getSimpleName() + "{" + "id=" + id + ", timestamp=" + timestamp + '}';
     }
     
     @Override

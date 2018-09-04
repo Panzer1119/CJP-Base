@@ -29,6 +29,7 @@ public class EasyCryptUtil {
     
     public static final Signature SIGNATURE_SHA256withRSA;
     public static final byte[] RANDOM_TEST_BYTES = new byte[32];
+    private static final Random SECUREST_RANDOM;
     
     static {
         Signature signature = null;
@@ -38,11 +39,26 @@ public class EasyCryptUtil {
             Logger.handleError(ex);
         }
         SIGNATURE_SHA256withRSA = signature;
+        Random random = null;
         try {
-            SecureRandom.getInstanceStrong().nextBytes(RANDOM_TEST_BYTES);
+            random = SecureRandom.getInstanceStrong();
         } catch (Exception ex) {
-            new Random().nextBytes(RANDOM_TEST_BYTES);
+            random = new Random();
         }
+        if (random == null) {
+            random = new Random();
+        }
+        SECUREST_RANDOM = random;
+        SECUREST_RANDOM.nextBytes(RANDOM_TEST_BYTES);
+    }
+    
+    /**
+     * Never null
+     *
+     * @return never null Random Object
+     */
+    public static final Random getSecurestRandom() {
+        return getSecurestRandom();
     }
     
     public static final Cryptor cryptorOfCipher(Cipher cipher) {
