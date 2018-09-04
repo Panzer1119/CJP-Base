@@ -16,10 +16,12 @@
 
 package de.codemakers.base.events;
 
+import de.codemakers.base.util.interfaces.Timestamp;
+
 import java.util.Objects;
 import java.util.Random;
 
-public abstract class Event {
+public abstract class Event implements Timestamp {
     
     public static final Random RANDOM_ID_GENERATOR = new Random();
     
@@ -43,6 +45,7 @@ public abstract class Event {
         return id;
     }
     
+    @Override
     public final long getTimestamp() {
         return timestamp;
     }
