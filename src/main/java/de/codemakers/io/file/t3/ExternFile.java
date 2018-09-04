@@ -16,7 +16,7 @@
 
 package de.codemakers.io.file.t3;
 
-import de.codemakers.base.util.Convertable;
+import de.codemakers.base.util.interfaces.Convertable;
 import de.codemakers.security.interfaces.Cryptor;
 import de.codemakers.security.interfaces.Signer;
 import de.codemakers.security.interfaces.Verifier;

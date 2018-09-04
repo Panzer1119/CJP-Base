@@ -14,10 +14,31 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.util;
+package de.codemakers.base.util.interfaces;
 
-public interface Resettable {
+import de.codemakers.base.logger.Logger;
+
+import java.util.function.Consumer;
+
+@FunctionalInterface
+public interface Startable {
     
-    void reset();
+    void start() throws Exception;
+    
+    default void start(Consumer<Throwable> failure) {
+        try {
+            start();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+        }
+    }
+    
+    default void startWithoutException() {
+        start(null);
+    }
     
 }

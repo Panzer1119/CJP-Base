@@ -14,19 +14,31 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3;
+package de.codemakers.base.util.interfaces;
+
+import de.codemakers.base.logger.Logger;
+
+import java.util.function.Consumer;
 
 @FunctionalInterface
-public interface AdvancedFilenameFilter extends AdvancedFileFilter {
+public interface Resettable {
     
-    boolean test(AdvancedFile parent, String name);
+    void reset() throws Exception;
     
-    @Override
-    default boolean test(AdvancedFile file) {
-        if (file == null) {
-            return false;
+    default void reset(Consumer<Throwable> failure) {
+        try {
+            reset();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.accept(ex);
+            } else {
+                Logger.handleError(ex);
+            }
         }
-        return test(file.getParentFile(), file.getName());
+    }
+    
+    default void resetWithoutException() {
+        reset(null);
     }
     
 }

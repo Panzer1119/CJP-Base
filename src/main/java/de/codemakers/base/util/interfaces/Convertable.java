@@ -14,19 +14,15 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.t3;
+package de.codemakers.base.util.interfaces;
 
 @FunctionalInterface
-public interface AdvancedFilenameFilter extends AdvancedFileFilter {
+public interface Convertable<T> {
     
-    boolean test(AdvancedFile parent, String name);
+    T convert(Class<T> clazz);
     
-    @Override
-    default boolean test(AdvancedFile file) {
-        if (file == null) {
-            return false;
-        }
-        return test(file.getParentFile(), file.getName());
+    default T convert() {
+        return convert(null);
     }
     
 }

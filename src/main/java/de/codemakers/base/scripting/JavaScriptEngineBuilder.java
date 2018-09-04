@@ -16,9 +16,9 @@
 
 package de.codemakers.base.scripting;
 
-import de.codemakers.base.util.Copyable;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.StringUtil;
+import de.codemakers.base.util.interfaces.Copyable;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;

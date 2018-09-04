@@ -18,5 +18,6 @@ package de.codemakers.io.file.t3;
 
 import java.util.function.Predicate;
 
+@FunctionalInterface
 public interface ExternFileFilter extends Predicate<ExternFile> {
 }

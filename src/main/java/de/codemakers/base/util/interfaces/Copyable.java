@@ -14,14 +14,12 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.util;
+package de.codemakers.base.util.interfaces;
 
-public interface Convertable<T> {
+public interface Copyable {
+
+    Copyable copy();
     
-    T convert(Class<T> clazz);
-    
-    default T convert() {
-        return convert(null);
-    }
-    
+    void set(Copyable copyable);
+
 }
