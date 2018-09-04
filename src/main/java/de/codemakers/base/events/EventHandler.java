@@ -76,11 +76,11 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     }
     
     @Override
-    public final <E extends T> void onEvent(E event) {
+    public final void onEvent(T event) {
         if (event == null) {
             return;
         }
-        eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<E>) eventListener).forEach((eventListener) -> {
+        eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).forEach((eventListener) -> {
             if (executorService != null) {
                 executorService.submit(() -> {
                     try {
@@ -100,7 +100,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         if (containsNull) {
             eventListeners.entrySet().stream().filter((entry) -> entry.getValue() == null).map(Map.Entry::getKey).map((eventListener) -> {
                 try {
-                    return (EventListener<E>) eventListener;
+                    return (EventListener<T>) eventListener;
                 } catch (Exception ex) {
                     return null;
                 }
