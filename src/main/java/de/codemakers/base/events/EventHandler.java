@@ -25,52 +25,52 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
-public class EventHandler<E extends Event> implements IEventHandler<E> {
-
-    private final Map<EventListener<? extends E>, Class<? extends E>> eventListeners = new ConcurrentHashMap<>();
+public class EventHandler<T extends Event> implements IEventHandler<T> {
+    
+    private final Map<EventListener<T>, Class<T>> eventListeners = new ConcurrentHashMap<>();
     private ExecutorService executorService = null;
-
+    
     public EventHandler() {
         this(CJP.getInstance().getSingleExecutorService());
     }
-
+    
     public EventHandler(ExecutorService executorService) {
         this.executorService = executorService;
     }
-
+    
     public final ExecutorService getEexecutorService() {
         return executorService;
     }
-
-    public final EventHandler setExecutorService(ExecutorService executorService) {
+    
+    public final EventHandler<T> setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
         return this;
     }
-
+    
     @Override
-    public final <T extends E> EventHandler addEventListener(Class<T> clazz, EventListener<T> eventListener) {
+    public final EventHandler<T> addEventListener(Class<T> clazz, EventListener<T> eventListener) {
         eventListeners.put(eventListener, clazz);
         return this;
     }
-
+    
     @Override
-    public final <T extends E> EventHandler removeEventListener(Class<T> clazz, EventListener<T> eventListener) {
+    public final EventHandler<T> removeEventListener(Class<T> clazz, EventListener<T> eventListener) {
         eventListeners.remove(eventListener, clazz);
         return this;
     }
-
+    
     @Override
-    public final EventHandler clearEventListeners() {
+    public final EventHandler<T> clearEventListeners() {
         return this;
     }
-
+    
     @Override
-    public final <T extends E> List<EventListener<T>> getEventListeners(Class<T> clazz) {
+    public final List<EventListener<T>> getEventListeners(Class<T> clazz) {
         return eventListeners.entrySet().stream().filter((entry) -> Objects.equals(entry.getValue(), clazz)).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).collect(Collectors.toList());
     }
-
+    
     @Override
-    public final <T extends E> void onEvent(T event) {
+    public final void onEvent(T event) {
         if (event == null) {
             return;
         }
@@ -92,5 +92,5 @@ public class EventHandler<E extends Event> implements IEventHandler<E> {
             }
         });
     }
-
+    
 }

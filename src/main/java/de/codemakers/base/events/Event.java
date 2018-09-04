@@ -18,7 +18,7 @@ package de.codemakers.base.events;
 
 import java.util.Objects;
 
-public class Event {
+public abstract class Event {
     
     private final long id;
     

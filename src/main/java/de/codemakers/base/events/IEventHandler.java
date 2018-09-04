@@ -20,36 +20,36 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public interface IEventHandler<E extends Event> extends EventListener<E> {
-
-    default <T extends E> IEventHandler addEventListeners(Class<T> clazz, EventListener<T>... eventListeners) {
+public interface IEventHandler<T extends Event> extends EventListener<T> {
+    
+    default IEventHandler<T> addEventListeners(Class<T> clazz, EventListener<T>... eventListeners) {
         return addEventListeners(clazz, Arrays.asList(eventListeners));
     }
-
-    default <T extends E> IEventHandler addEventListeners(Class<T> clazz, Collection<EventListener<T>> eventListeners) {
+    
+    default IEventHandler<T> addEventListeners(Class<T> clazz, Collection<EventListener<T>> eventListeners) {
         if (eventListeners != null && !eventListeners.isEmpty()) {
             eventListeners.forEach((eventListener) -> addEventListener(clazz, eventListener));
         }
         return this;
     }
-
-    <T extends E> IEventHandler addEventListener(Class<T> clazz, EventListener<T> eventListener);
-
-    default <T extends E> IEventHandler removeEventListeners(Class<T> clazz, EventListener<T>... eventListeners) {
+    
+    IEventHandler<T> addEventListener(Class<T> clazz, EventListener<T> eventListener);
+    
+    default IEventHandler<T> removeEventListeners(Class<T> clazz, EventListener<T>... eventListeners) {
         return removeEventListeners(clazz, Arrays.asList(eventListeners));
     }
-
-    default <T extends E> IEventHandler removeEventListeners(Class<T> clazz, Collection<EventListener<T>> eventListeners) {
+    
+    default IEventHandler<T> removeEventListeners(Class<T> clazz, Collection<EventListener<T>> eventListeners) {
         if (eventListeners != null && !eventListeners.isEmpty()) {
             eventListeners.forEach((eventListener) -> removeEventListener(clazz, eventListener));
         }
         return this;
     }
-
-    <T extends E> IEventHandler removeEventListener(Class<T> clazz, EventListener<T> eventListener);
-
-    IEventHandler clearEventListeners();
-
-    <T extends E> List<EventListener<T>> getEventListeners(Class<T> clazz);
-
+    
+    IEventHandler<T> removeEventListener(Class<T> clazz, EventListener<T> eventListener);
+    
+    IEventHandler<T> clearEventListeners();
+    
+    List<EventListener<T>> getEventListeners(Class<T> clazz);
+    
 }
