@@ -28,8 +28,9 @@ import java.util.stream.Collectors;
 
 public class EventHandler<T extends Event> implements IEventHandler<T> {
     
-    private final Map<EventListener<T>, Class<T>> eventListeners = new ConcurrentHashMap<>();
+    private final Map<EventListener<? extends T>, Class<? extends T>> eventListeners = new ConcurrentHashMap<>();
     private ExecutorService executorService = null;
+    private boolean containsNull = false;
     
     public EventHandler() {
         this(CJP.getInstance().getSingleExecutorService());
@@ -49,14 +50,18 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     }
     
     @Override
-    public final EventHandler<T> addEventListener(Class<T> clazz, EventListener<T> eventListener) {
+    public final <E extends T> EventHandler<T> addEventListener(Class<E> clazz, EventListener<E> eventListener) {
         eventListeners.put(eventListener, clazz);
+        if (clazz == null) {
+            containsNull = true;
+        }
         return this;
     }
     
     @Override
-    public final EventHandler<T> removeEventListener(Class<T> clazz, EventListener<T> eventListener) {
+    public final <E extends T> EventHandler<T> removeEventListener(Class<E> clazz, EventListener<E> eventListener) {
         eventListeners.remove(eventListener, clazz);
+        containsNull = eventListeners.values().contains(null);
         return this;
     }
     
@@ -66,16 +71,16 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     }
     
     @Override
-    public final List<EventListener<T>> getEventListeners(Class<T> clazz) {
-        return eventListeners.entrySet().stream().filter((entry) -> Objects.equals(entry.getValue(), clazz)).map(Map.Entry::getKey).collect(Collectors.toList());
+    public final <E extends T> List<EventListener<E>> getEventListeners(Class<E> clazz) {
+        return eventListeners.entrySet().stream().filter((entry) -> Objects.equals(entry.getValue(), clazz)).map(Map.Entry::getKey).map((eventListener) -> (EventListener<E>) eventListener).collect(Collectors.toList());
     }
     
     @Override
-    public final void onEvent(T event) {
+    public final <E extends T> void onEvent(E event) {
         if (event == null) {
             return;
         }
-        eventListeners.entrySet().stream().filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).forEach((eventListener) -> {
+        eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<E>) eventListener).forEach((eventListener) -> {
             if (executorService != null) {
                 executorService.submit(() -> {
                     try {
@@ -92,6 +97,31 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
                 }
             }
         });
+        if (containsNull) {
+            eventListeners.entrySet().stream().filter((entry) -> entry.getValue() == null).map(Map.Entry::getKey).map((eventListener) -> {
+                try {
+                    return (EventListener<E>) eventListener;
+                } catch (Exception ex) {
+                    return null;
+                }
+            }).filter(Objects::nonNull).forEach((eventListener) -> {
+                if (executorService != null) {
+                    executorService.submit(() -> {
+                        try {
+                            eventListener.onEvent(event);
+                        } catch (Exception ex) {
+                            Logger.handleError(ex);
+                        }
+                    });
+                } else {
+                    try {
+                        eventListener.onEvent(event);
+                    } catch (Exception ex) {
+                        Logger.handleError(ex);
+                    }
+                }
+            });
+        }
     }
     
 }

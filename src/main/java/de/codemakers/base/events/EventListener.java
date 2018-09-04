@@ -19,6 +19,6 @@ package de.codemakers.base.events;
 @FunctionalInterface
 public interface EventListener<T extends Event> {
     
-    void onEvent(T event);
+    <E extends T> void onEvent(E event);
     
 }
