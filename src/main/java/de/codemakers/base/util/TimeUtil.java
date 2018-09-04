@@ -18,13 +18,15 @@ package de.codemakers.base.util;
 
 import de.codemakers.security.util.EasyCryptUtil;
 
+import java.time.Instant;
 import java.util.Random;
 
 public class TimeUtil {
     
-    public static final long TIMESTAMP_OFFSET = 22;
-    public static final long RANDOM_OFFSET = 9;
-    public static final long RANDOM_OFFSET_2 = 41;
+    public static final int ID_TIMESTAMP_LENGTH = 48;
+    public static final int ID_RANDOM_LENGTH = Long.SIZE - ID_TIMESTAMP_LENGTH;
+    public static final long TIMESTAMP_MAX = (long) Math.pow(2, ID_TIMESTAMP_LENGTH);
+    public static final Instant TIMESTAMP_MAX_INSTANT = Instant.ofEpochMilli(TIMESTAMP_MAX);
     private static final Random RANDOM = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
     
     public static final long createId() {
@@ -36,19 +38,19 @@ public class TimeUtil {
     }
     
     public static final long createId(long timestamp, int random) {
-        return (timestamp << TIMESTAMP_OFFSET) | random;
+        return (timestamp << ID_RANDOM_LENGTH) | random;
     }
     
     public static final long getTimestamp(long id) {
-        return id >>> TIMESTAMP_OFFSET;
+        return id >>> ID_RANDOM_LENGTH;
     }
     
     public static final int getRandom(long id) {
-        return (int) ((id << RANDOM_OFFSET_2) >>> RANDOM_OFFSET_2);
+        return (int) ((id << ID_TIMESTAMP_LENGTH) >>> ID_TIMESTAMP_LENGTH);
     }
     
     public static final int shortenToRandom(int random) {
-        return random >>> RANDOM_OFFSET;
+        return random >>> ID_RANDOM_LENGTH;
     }
     
     public static final int getShortenedRandom() {
