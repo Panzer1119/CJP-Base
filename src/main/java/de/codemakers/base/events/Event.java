@@ -19,10 +19,11 @@ package de.codemakers.base.events;
 import de.codemakers.base.util.interfaces.Timestamp;
 import de.codemakers.security.util.EasyCryptUtil;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
-public abstract class Event implements Timestamp {
+public abstract class Event implements Timestamp, Serializable {
     
     public static final Random RANDOM_ID_GENERATOR = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
     
@@ -34,12 +35,16 @@ public abstract class Event implements Timestamp {
     }
     
     public Event(long timestamp) {
-        this(RANDOM_ID_GENERATOR.nextLong(), timestamp);
+        this(createRandomId(), timestamp);
     }
     
     public Event(long id, long timestamp) {
         this.id = id;
         this.timestamp = timestamp;
+    }
+    
+    public static final long createRandomId() {
+        return RANDOM_ID_GENERATOR.nextLong();
     }
     
     public final long getId() {
