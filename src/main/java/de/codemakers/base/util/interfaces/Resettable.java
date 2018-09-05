@@ -17,20 +17,19 @@
 package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 @FunctionalInterface
 public interface Resettable {
     
     boolean reset() throws Exception;
     
-    default boolean reset(Consumer<Throwable> failure) {
+    default boolean reset(ToughConsumer<Throwable> failure) {
         try {
             return reset();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

@@ -17,19 +17,18 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Verifiable {
     
     boolean verify(Verifier verifier, byte[] data_signature) throws Exception;
     
-    default boolean verify(Verifier verifier, byte[] data_signature, Consumer<Throwable> failure) {
+    default boolean verify(Verifier verifier, byte[] data_signature, ToughConsumer<Throwable> failure) {
         try {
             return verify(verifier, data_signature);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

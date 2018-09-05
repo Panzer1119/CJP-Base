@@ -17,8 +17,7 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Encryptable extends Cryptable {
     
@@ -29,12 +28,12 @@ public interface Encryptable extends Cryptable {
         return encrypt((Encryptor) cryptor);
     }
     
-    default byte[] encrypt(Encryptor encryptor, Consumer<Throwable> failure) {
+    default byte[] encrypt(Encryptor encryptor, ToughConsumer<Throwable> failure) {
         try {
             return encrypt(encryptor);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

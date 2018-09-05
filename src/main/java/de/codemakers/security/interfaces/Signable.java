@@ -17,19 +17,18 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Signable {
     
     byte[] sign(Signer signer) throws Exception;
     
-    default byte[] sign(Signer signer, Consumer<Throwable> failure) {
+    default byte[] sign(Signer signer, ToughConsumer<Throwable> failure) {
         try {
             return sign(signer);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

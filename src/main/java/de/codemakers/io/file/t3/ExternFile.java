@@ -246,7 +246,7 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
-    public AdvancedFile convert(Class<AdvancedFile> clazz) {
+    public AdvancedFile convert(Class<AdvancedFile> clazz) throws Exception {
         return new AdvancedFile(file);
     }
     

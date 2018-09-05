@@ -18,11 +18,11 @@ package de.codemakers.io.file.t3.closeable;
 
 import de.codemakers.base.exceptions.CJPRuntimeException;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
@@ -66,12 +66,12 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
         closed = true;
     }
     
-    public final void close(Consumer<Throwable> failure) {
+    public final void close(ToughConsumer<Throwable> failure) {
         try {
             close();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -82,7 +82,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
         close(null);
     }
     
-    public <R> R close(Function<D, R> function, Consumer<Throwable> failureClosing) throws Exception {
+    public <R> R close(Function<D, R> function, ToughConsumer<Throwable> failureClosing) throws Exception {
         R r = null;
         if (function != null) {
             r = function.apply(data);
@@ -91,12 +91,12 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
         return r;
     }
     
-    public <R> R close(Function<D, R> function, Consumer<Throwable> failureFunction, Consumer<Throwable> failureClosing) {
+    public <R> R close(Function<D, R> function, ToughConsumer<Throwable> failureFunction, ToughConsumer<Throwable> failureClosing) {
         try {
             return close(function, failureClosing);
         } catch (Exception ex) {
             if (failureFunction != null) {
-                failureFunction.accept(ex);
+                failureFunction.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -105,7 +105,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
         }
     }
     
-    public <R> R closeWithoutException(Function<D, R> function, Consumer<Throwable> failureFunction) {
+    public <R> R closeWithoutException(Function<D, R> function, ToughConsumer<Throwable> failureFunction) {
         return close(function, failureFunction, null);
     }
     

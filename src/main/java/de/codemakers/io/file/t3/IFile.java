@@ -17,6 +17,7 @@
 package de.codemakers.io.file.t3;
 
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.t3.exceptions.is.*;
 import de.codemakers.io.file.t3.exceptions.isnot.*;
 import de.codemakers.security.interfaces.Cryptable;
@@ -81,12 +82,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract boolean mkdir() throws Exception;
     
-    public boolean mkdir(Consumer<Throwable> failure) {
+    public boolean mkdir(ToughConsumer<Throwable> failure) {
         try {
             return mkdir();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -100,12 +101,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract boolean mkdirs() throws Exception;
     
-    public boolean mkdirs(Consumer<Throwable> failure) {
+    public boolean mkdirs(ToughConsumer<Throwable> failure) {
         try {
             return mkdirs();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -119,12 +120,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract boolean delete() throws Exception;
     
-    public boolean delete(Consumer<Throwable> failure) {
+    public boolean delete(ToughConsumer<Throwable> failure) {
         try {
             return delete();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -138,12 +139,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract boolean createNewFile() throws Exception;
     
-    public boolean createNewFile(Consumer<Throwable> failure) {
+    public boolean createNewFile(ToughConsumer<Throwable> failure) {
         try {
             return createNewFile();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -157,12 +158,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract InputStream createInputStream() throws Exception;
     
-    public InputStream createInputStream(Consumer<Throwable> failure) {
+    public InputStream createInputStream(ToughConsumer<Throwable> failure) {
         try {
             return createInputStream();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -176,12 +177,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract byte[] readBytes() throws Exception;
     
-    public byte[] readBytes(Consumer<Throwable> failure) {
+    public byte[] readBytes(ToughConsumer<Throwable> failure) {
         try {
             return readBytes();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -199,16 +200,16 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract OutputStream createOutputStream(boolean append) throws Exception;
     
-    public OutputStream createOutputStream(Consumer<Throwable> failure) {
+    public OutputStream createOutputStream(ToughConsumer<Throwable> failure) {
         return createOutputStream(false, failure);
     }
     
-    public OutputStream createOutputStream(boolean append, Consumer<Throwable> failure) {
+    public OutputStream createOutputStream(boolean append, ToughConsumer<Throwable> failure) {
         try {
             return createOutputStream(append);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -226,12 +227,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract boolean writeBytes(byte[] data) throws Exception;
     
-    public boolean writeBytes(byte[] data, Consumer<Throwable> failure) {
+    public boolean writeBytes(byte[] data, ToughConsumer<Throwable> failure) {
         try {
             return writeBytes(data);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -250,12 +251,12 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return function.apply((T) this);
     }
     
-    public <R> R use(Function<T, R> function, Consumer<Throwable> failure) {
+    public <R> R use(Function<T, R> function, ToughConsumer<Throwable> failure) {
         try {
             return use(function);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -275,16 +276,16 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract List<T> listFiles(boolean recursive);
     
-    public List<T> listFiles(Consumer<Throwable> failure) {
+    public List<T> listFiles(ToughConsumer<Throwable> failure) {
         return listFiles(false, failure);
     }
     
-    public List<T> listFiles(boolean recursive, Consumer<Throwable> failure) {
+    public List<T> listFiles(boolean recursive, ToughConsumer<Throwable> failure) {
         try {
             return listFiles(recursive);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -297,7 +298,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public List<T> listFilesWithoutException(boolean recursive) {
-        return listFiles(recursive, (Consumer<Throwable>) null);
+        return listFiles(recursive, (ToughConsumer<Throwable>) null);
     }
     
     // listFiles MID ============================================================
@@ -308,16 +309,16 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract List<T> listFiles(boolean recursive, P fileFilter);
     
-    public List<T> listFiles(P fileFilter, Consumer<Throwable> failure) {
+    public List<T> listFiles(P fileFilter, ToughConsumer<Throwable> failure) {
         return listFiles(false, fileFilter, failure);
     }
     
-    public List<T> listFiles(boolean recursive, P fileFilter, Consumer<Throwable> failure) {
+    public List<T> listFiles(boolean recursive, P fileFilter, ToughConsumer<Throwable> failure) {
         try {
             return listFiles(recursive, fileFilter);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -347,16 +348,16 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return true;
     }
     
-    public boolean forChildren(Consumer<T> consumer, Consumer<Throwable> failure) {
+    public boolean forChildren(Consumer<T> consumer, ToughConsumer<Throwable> failure) {
         return forChildren(consumer, false, failure);
     }
     
-    public boolean forChildren(Consumer<T> consumer, boolean recursive, Consumer<Throwable> failure) {
+    public boolean forChildren(Consumer<T> consumer, boolean recursive, ToughConsumer<Throwable> failure) {
         try {
             return forChildren(consumer, recursive);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -384,16 +385,16 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return true;
     }
     
-    public boolean forChildrenParallel(Consumer<T> consumer, Consumer<Throwable> failure) {
+    public boolean forChildrenParallel(Consumer<T> consumer, ToughConsumer<Throwable> failure) {
         return forChildrenParallel(consumer, false, failure);
     }
     
-    public boolean forChildrenParallel(Consumer<T> consumer, boolean recursive, Consumer<Throwable> failure) {
+    public boolean forChildrenParallel(Consumer<T> consumer, boolean recursive, ToughConsumer<Throwable> failure) {
         try {
             return forChildrenParallel(consumer, recursive);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

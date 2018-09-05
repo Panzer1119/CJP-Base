@@ -17,11 +17,10 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Encryptor extends Cryptor {
-
+    
     byte[] encrypt(byte[] data) throws Exception;
     
     @Override
@@ -29,12 +28,12 @@ public interface Encryptor extends Cryptor {
         return encrypt(data);
     }
     
-    default byte[] encrypt(byte[] data, Consumer<Throwable> failure) {
+    default byte[] encrypt(byte[] data, ToughConsumer<Throwable> failure) {
         try {
             return encrypt(data);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

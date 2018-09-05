@@ -17,19 +17,18 @@
 package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Disconnectable {
     
     boolean disconnect() throws Exception;
     
-    default boolean disconnect(Consumer<Throwable> failure) {
+    default boolean disconnect(ToughConsumer<Throwable> failure) {
         try {
             return disconnect();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

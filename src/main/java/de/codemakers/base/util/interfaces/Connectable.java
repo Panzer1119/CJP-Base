@@ -16,9 +16,9 @@
 
 package de.codemakers.base.util.interfaces;
 
+import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Connectable {
     
@@ -28,16 +28,16 @@ public interface Connectable {
     
     boolean connect(boolean reconnect) throws Exception;
     
-    default boolean connect(Consumer<Throwable> failure) {
+    default boolean connect(ToughConsumer<Throwable> failure) {
         return connect(false, failure);
     }
     
-    default boolean connect(boolean reconnect, Consumer<Throwable> failure) {
+    default boolean connect(boolean reconnect, ToughConsumer<Throwable> failure) {
         try {
             return connect(reconnect);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
@@ -51,6 +51,14 @@ public interface Connectable {
     
     default boolean connectWithoutException(boolean reconnect) {
         return connect(reconnect, null);
+    }
+    
+    default RunningAction connectAction() {
+        return connectAction(false);
+    }
+    
+    default RunningAction connectAction(boolean reconnect) {
+        return new RunningAction(() -> connect(reconnect));
     }
     
 }

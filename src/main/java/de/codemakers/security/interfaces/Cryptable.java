@@ -17,19 +17,18 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Cryptable {
     
     byte[] crypt(Cryptor cryptor) throws Exception;
     
-    default byte[] crypt(Cryptor cryptor, Consumer<Throwable> failure) {
+    default byte[] crypt(Cryptor cryptor, ToughConsumer<Throwable> failure) {
         try {
             return crypt(cryptor);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

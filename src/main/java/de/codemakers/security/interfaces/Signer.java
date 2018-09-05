@@ -17,8 +17,7 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Signer extends Cryptor {
     
@@ -29,12 +28,12 @@ public interface Signer extends Cryptor {
         return sign(data);
     }
     
-    default byte[] sign(byte[] data, Consumer<Throwable> failure) {
+    default byte[] sign(byte[] data, ToughConsumer<Throwable> failure) {
         try {
             return sign(data);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

@@ -17,8 +17,7 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Decryptor extends Cryptor {
     
@@ -29,12 +28,12 @@ public interface Decryptor extends Cryptor {
         return decrypt(data);
     }
     
-    default byte[] decrypt(byte[] data, Consumer<Throwable> failure) {
+    default byte[] decrypt(byte[] data, ToughConsumer<Throwable> failure) {
         try {
             return decrypt(data);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

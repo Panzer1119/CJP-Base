@@ -16,13 +16,41 @@
 
 package de.codemakers.base.util.interfaces;
 
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
+
 @FunctionalInterface
 public interface Convertable<T> {
     
-    T convert(Class<T> clazz);
+    default T convert() throws Exception {
+        return convert((Class<T>) null);
+    }
     
-    default T convert() {
-        return convert(null);
+    T convert(Class<T> clazz) throws Exception;
+    
+    default T convert(ToughConsumer<Throwable> failure) {
+        return convert(null, failure);
+    }
+    
+    default T convert(Class<T> clazz, ToughConsumer<Throwable> failure) {
+        try {
+            return convert(clazz);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default T convertWithoutException() {
+        return convertWithoutException(null);
+    }
+    
+    default T convertWithoutException(Class<T> clazz) {
+        return convert(clazz, null);
     }
     
 }

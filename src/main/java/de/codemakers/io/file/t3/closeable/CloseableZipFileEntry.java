@@ -16,7 +16,8 @@
 
 package de.codemakers.io.file.t3.closeable;
 
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
+
 import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -32,17 +33,17 @@ public class CloseableZipFileEntry extends CloseableZipEntry<ZipFile> {
     }
     
     @Override
-    public <R> R close(Function<ZipEntry, R> function, Consumer<Throwable> failureClosing) throws Exception {
+    public <R> R close(Function<ZipEntry, R> function, ToughConsumer<Throwable> failureClosing) throws Exception {
         return super.close(function, failureClosing);
     }
     
     @Override
-    public <R> R close(Function<ZipEntry, R> function, Consumer<Throwable> failureFunction, Consumer<Throwable> failureClosing) {
+    public <R> R close(Function<ZipEntry, R> function, ToughConsumer<Throwable> failureFunction, ToughConsumer<Throwable> failureClosing) {
         return super.close(function, failureFunction, failureClosing);
     }
     
     @Override
-    public <R> R closeWithoutException(Function<ZipEntry, R> function, Consumer<Throwable> failureFunction) {
+    public <R> R closeWithoutException(Function<ZipEntry, R> function, ToughConsumer<Throwable> failureFunction) {
         return super.closeWithoutException(function, failureFunction);
     }
     

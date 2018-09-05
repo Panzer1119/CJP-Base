@@ -17,20 +17,19 @@
 package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 @FunctionalInterface
 public interface Stoppable {
     
     boolean stop() throws Exception;
     
-    default boolean stop(Consumer<Throwable> failure) {
+    default boolean stop(ToughConsumer<Throwable> failure) {
         try {
             return stop();
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }

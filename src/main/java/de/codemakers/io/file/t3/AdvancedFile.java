@@ -949,7 +949,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public ExternFile convert(Class<ExternFile> clazz) {
+    public ExternFile convert(Class<ExternFile> clazz) throws Exception {
         checkAndErrorIfIntern(true);
         return new ExternFile(toFile());
     }
