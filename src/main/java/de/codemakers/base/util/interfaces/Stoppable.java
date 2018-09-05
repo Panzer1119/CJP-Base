@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util.interfaces;
 
-import de.codemakers.base.action.RunningAction;
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -42,8 +42,8 @@ public interface Stoppable {
         return stop(null);
     }
     
-    default RunningAction stopAction() {
-        return new RunningAction(() -> stop());
+    default ReturningAction<Boolean> stopAction() {
+        return new ReturningAction<>(() -> stop());
     }
     
 }

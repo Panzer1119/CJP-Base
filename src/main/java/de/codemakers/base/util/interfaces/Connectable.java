@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util.interfaces;
 
-import de.codemakers.base.action.RunningAction;
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -53,12 +53,12 @@ public interface Connectable {
         return connect(reconnect, null);
     }
     
-    default RunningAction connectAction() {
+    default ReturningAction<Boolean> connectAction() {
         return connectAction(false);
     }
     
-    default RunningAction connectAction(boolean reconnect) {
-        return new RunningAction(() -> connect(reconnect));
+    default ReturningAction<Boolean> connectAction(boolean reconnect) {
+        return new ReturningAction<>(() -> connect(reconnect));
     }
     
 }

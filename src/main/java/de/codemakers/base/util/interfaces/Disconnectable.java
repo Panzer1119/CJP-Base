@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util.interfaces;
 
-import de.codemakers.base.action.RunningAction;
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -41,8 +41,8 @@ public interface Disconnectable {
         return disconnect(null);
     }
     
-    default RunningAction disconnectAction() {
-        return new RunningAction(() -> disconnect());
+    default ReturningAction<Boolean> disconnectAction() {
+        return new ReturningAction<>(() -> disconnect());
     }
     
 }
