@@ -16,6 +16,7 @@
 
 package de.codemakers.base.util.interfaces;
 
+import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -39,6 +40,10 @@ public interface Startable {
     
     default boolean startWithoutException() {
         return start(null);
+    }
+    
+    default RunningAction startAction() {
+        return new RunningAction(() -> start());
     }
     
 }

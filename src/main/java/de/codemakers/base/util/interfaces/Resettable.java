@@ -16,6 +16,7 @@
 
 package de.codemakers.base.util.interfaces;
 
+import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -39,6 +40,10 @@ public interface Resettable {
     
     default boolean resetWithoutException() {
         return reset(null);
+    }
+    
+    default RunningAction resetAction() {
+        return new RunningAction(() -> reset());
     }
     
 }

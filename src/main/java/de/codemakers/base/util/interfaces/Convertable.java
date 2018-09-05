@@ -16,6 +16,7 @@
 
 package de.codemakers.base.util.interfaces;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -51,6 +52,14 @@ public interface Convertable<T> {
     
     default T convertWithoutException(Class<T> clazz) {
         return convert(clazz, null);
+    }
+    
+    default ReturningAction<T> convertAction() {
+        return convertAction(null);
+    }
+    
+    default ReturningAction<T> convertAction(Class<T> clazz) {
+        return new ReturningAction<>(() -> convert(clazz));
     }
     
 }
