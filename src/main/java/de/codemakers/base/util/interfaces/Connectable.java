@@ -22,11 +22,19 @@ import java.util.function.Consumer;
 
 public interface Connectable {
     
-    boolean connect() throws Exception;
+    default boolean connect() throws Exception {
+        return connect(false);
+    }
+    
+    boolean connect(boolean reconnect) throws Exception;
     
     default boolean connect(Consumer<Throwable> failure) {
+        return connect(false, failure);
+    }
+    
+    default boolean connect(boolean reconnect, Consumer<Throwable> failure) {
         try {
-            return connect();
+            return connect(reconnect);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.accept(ex);
@@ -38,7 +46,11 @@ public interface Connectable {
     }
     
     default boolean connectWithoutException() {
-        return connect(null);
+        return connectWithoutException(false);
+    }
+    
+    default boolean connectWithoutException(boolean reconnect) {
+        return connect(reconnect, null);
     }
     
 }

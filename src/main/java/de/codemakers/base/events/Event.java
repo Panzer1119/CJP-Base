@@ -17,13 +17,14 @@
 package de.codemakers.base.events;
 
 import de.codemakers.base.util.interfaces.Timestamp;
+import de.codemakers.security.util.EasyCryptUtil;
 
 import java.util.Objects;
 import java.util.Random;
 
 public abstract class Event implements Timestamp {
     
-    public static final Random RANDOM_ID_GENERATOR = new Random();
+    public static final Random RANDOM_ID_GENERATOR = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
     
     protected final long id;
     protected final long timestamp;
