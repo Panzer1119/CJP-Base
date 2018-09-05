@@ -31,4 +31,12 @@ public interface Snowflake extends Timestamp {
         return TimeUtil.getTimestamp(getId());
     }
     
+    default long generateId() {
+        return generateId(System.currentTimeMillis());
+    }
+    
+    default long generateId(long timestamp) {
+        return TimeUtil.createId(timestamp);
+    }
+    
 }
