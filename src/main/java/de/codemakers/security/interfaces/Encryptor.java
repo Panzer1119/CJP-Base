@@ -16,6 +16,7 @@
 
 package de.codemakers.security.interfaces;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -43,6 +44,10 @@ public interface Encryptor extends Cryptor {
     
     default byte[] encryptWithoutException(byte[] data) {
         return encrypt(data, null);
+    }
+    
+    default ReturningAction<byte[]> encryptAction(byte[] data) {
+        return new ReturningAction<>(() -> encrypt(data));
     }
     
 }

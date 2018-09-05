@@ -16,6 +16,7 @@
 
 package de.codemakers.security.interfaces;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -38,6 +39,10 @@ public interface Signable {
     
     default byte[] signWithoutException(Signer signer) {
         return sign(signer, null);
+    }
+    
+    default ReturningAction<byte[]> signAction(Signer signer) {
+        return new ReturningAction<>(() -> sign(signer));
     }
     
 }

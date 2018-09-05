@@ -16,6 +16,7 @@
 
 package de.codemakers.security.interfaces;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -38,6 +39,10 @@ public interface Verifier {
     
     default boolean verifyWithoutException(byte[] data, byte[] data_signature) {
         return verify(data, data_signature, null);
+    }
+    
+    default ReturningAction<Boolean> verifyAction(byte[] data, byte[] data_signature) {
+        return new ReturningAction<>(() -> verify(data, data_signature));
     }
     
 }

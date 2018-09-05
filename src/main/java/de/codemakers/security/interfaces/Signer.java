@@ -16,6 +16,7 @@
 
 package de.codemakers.security.interfaces;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -43,6 +44,10 @@ public interface Signer extends Cryptor {
     
     default byte[] signWithoutException(byte[] data) {
         return sign(data, null);
+    }
+    
+    default ReturningAction<byte[]> signAction(byte[] data) {
+        return new ReturningAction<>(() -> sign(data));
     }
     
 }

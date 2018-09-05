@@ -16,6 +16,7 @@
 
 package de.codemakers.security.interfaces;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -38,6 +39,10 @@ public interface Cryptable {
     
     default byte[] cryptWithoutException(Cryptor cryptor) {
         return crypt(cryptor, null);
+    }
+    
+    default ReturningAction<byte[]> cryptAction(Cryptor cryptor) {
+        return new ReturningAction<>(() -> crypt(cryptor));
     }
     
 }

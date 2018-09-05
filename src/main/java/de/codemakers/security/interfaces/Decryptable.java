@@ -16,6 +16,7 @@
 
 package de.codemakers.security.interfaces;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -43,6 +44,10 @@ public interface Decryptable extends Cryptable {
     
     default byte[] decryptWithoutException(Decryptor decryptor) {
         return decrypt(decryptor, null);
+    }
+    
+    default ReturningAction<byte[]> decryptAction(Decryptor decryptor) {
+        return new ReturningAction<>(() -> decrypt(decryptor));
     }
     
 }
