@@ -99,10 +99,10 @@ public class Waiter {
     public final boolean waitFor() {
         try {
             while (!done.getWithoutException()) {
-                waitStep();
                 if (timeoutMillis >= 0 && (System.currentTimeMillis() - started) >= timeoutMillis) {
                     return false;
                 }
+                waitStep();
             }
             return true;
         } catch (Exception ex) {
