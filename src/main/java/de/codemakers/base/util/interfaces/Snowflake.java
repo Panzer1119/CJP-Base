@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util.interfaces;
 
-import de.codemakers.base.util.TimeUtil;
+import de.codemakers.base.util.IDTimeUtil;
 
 public interface Snowflake extends Timestamp {
     
@@ -28,7 +28,7 @@ public interface Snowflake extends Timestamp {
     
     @Override
     default long getTimestamp() {
-        return TimeUtil.getTimestamp(getId());
+        return IDTimeUtil.getTimestamp(getId());
     }
     
     default long generateId() {
@@ -36,7 +36,7 @@ public interface Snowflake extends Timestamp {
     }
     
     default long generateId(long timestamp) {
-        return TimeUtil.createId(timestamp);
+        return IDTimeUtil.createId(timestamp);
     }
     
 }

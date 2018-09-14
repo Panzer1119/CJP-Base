@@ -24,17 +24,17 @@ import java.time.ZonedDateTime;
 public class TimeUtilTest {
     
     public static final void main(String[] args) throws Exception {
-        System.out.println(Long.toBinaryString(TimeUtil.TIMESTAMP_MAX).length());
-        System.out.println(ZonedDateTime.ofInstant(Instant.ofEpochMilli(TimeUtil.TIMESTAMP_MAX), ZoneId.systemDefault()));
+        System.out.println(Long.toBinaryString(IDTimeUtil.TIMESTAMP_MAX).length());
+        System.out.println(ZonedDateTime.ofInstant(Instant.ofEpochMilli(IDTimeUtil.TIMESTAMP_MAX), ZoneId.systemDefault()));
         final long timestamp = System.currentTimeMillis();
-        final int random = TimeUtil.shortenToRandom(SecureRandom.getInstanceStrong().nextInt());
-        final long id = TimeUtil.createId(timestamp, random);
-        System.out.println(String.format(" timestamp: %s%n    random: %s%n        id: %s", longS(timestamp, TimeUtil.ID_TIMESTAMP_LENGTH), longS(random, TimeUtil.ID_RANDOM_LENGTH), longS(id, Long.SIZE)));
-        final long timestamp_ = TimeUtil.getTimestamp(id);
-        final long random_ = TimeUtil.getRandom(id);
+        final int random = IDTimeUtil.shortenToRandom(SecureRandom.getInstanceStrong().nextInt());
+        final long id = IDTimeUtil.createId(timestamp, random);
+        System.out.println(String.format(" timestamp: %s%n    random: %s%n        id: %s", longS(timestamp, IDTimeUtil.ID_TIMESTAMP_LENGTH), longS(random, IDTimeUtil.ID_RANDOM_LENGTH), longS(id, Long.SIZE)));
+        final long timestamp_ = IDTimeUtil.getTimestamp(id);
+        final long random_ = IDTimeUtil.getRandom(id);
         System.out.println();
-        System.out.println(String.format(" timestamp: %s%ntimestamp_: %s", longS(timestamp, TimeUtil.ID_TIMESTAMP_LENGTH), longS(timestamp_, TimeUtil.ID_TIMESTAMP_LENGTH)));
-        System.out.println(String.format("    random: %s%n   random_: %s", longS(random, TimeUtil.ID_RANDOM_LENGTH), longS(random_, TimeUtil.ID_RANDOM_LENGTH)));
+        System.out.println(String.format(" timestamp: %s%ntimestamp_: %s", longS(timestamp, IDTimeUtil.ID_TIMESTAMP_LENGTH), longS(timestamp_, IDTimeUtil.ID_TIMESTAMP_LENGTH)));
+        System.out.println(String.format("    random: %s%n   random_: %s", longS(random, IDTimeUtil.ID_RANDOM_LENGTH), longS(random_, IDTimeUtil.ID_RANDOM_LENGTH)));
     }
     
     public static final String longS(long l, int len) {

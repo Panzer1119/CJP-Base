@@ -21,7 +21,7 @@ import de.codemakers.security.util.EasyCryptUtil;
 import java.time.Instant;
 import java.util.Random;
 
-public class TimeUtil {
+public class IDTimeUtil {
     
     public static final int ID_TIMESTAMP_LENGTH = 48;
     public static final int ID_RANDOM_LENGTH = Long.SIZE - ID_TIMESTAMP_LENGTH;
