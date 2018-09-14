@@ -17,8 +17,7 @@
 package de.codemakers.base.events;
 
 import de.codemakers.base.logger.Logger;
-
-import java.util.function.Consumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 @FunctionalInterface
 public interface EventListener<T extends Event> {
@@ -34,12 +33,12 @@ public interface EventListener<T extends Event> {
      */
     boolean onEvent(T event) throws Exception;
     
-    default boolean onEvent(T event, Consumer<Throwable> failure) {
+    default boolean onEvent(T event, ToughConsumer<Throwable> failure) {
         try {
             return onEvent(event);
         } catch (Exception ex) {
             if (failure != null) {
-                failure.accept(ex);
+                failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
