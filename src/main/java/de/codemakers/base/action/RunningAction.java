@@ -27,44 +27,57 @@ import java.util.concurrent.Future;
  * Inspired by the RestAction from Austin Keener &amp; Michael Ritter &amp; Florian Spieß
  */
 public class RunningAction extends Action<ToughRunnable, Void> {
-
-    private final ToughRunnable runnable;
-
+    
+    protected final ToughRunnable runnable;
+    
     public RunningAction(ToughRunnable runnable) {
         super();
-        Objects.requireNonNull(runnable, "runnable may not be null!");
+        Objects.requireNonNull(runnable, "ToughRunnable may not be null!");
         this.runnable = runnable;
     }
-
+    
     public RunningAction(CJP cjp, ToughRunnable runnable) {
         super(cjp);
-        Objects.requireNonNull(runnable, "runnable may not be null!");
+        Objects.requireNonNull(runnable, "ToughRunnable may not be null!");
         this.runnable = runnable;
     }
-
+    
+    /**
+     * Returns the internal {@link de.codemakers.base.util.tough.ToughRunnable}
+     *
+     * @return {@link de.codemakers.base.util.tough.ToughRunnable}
+     */
     public final ToughRunnable getRunnable() {
         return runnable;
     }
-
-    public final void direct(ToughConsumer<Throwable> failure) {
+    
+    /**
+     * Runs directly the {@link de.codemakers.base.util.tough.ToughRunnable}
+     *
+     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point.
+     */
+    public void direct(ToughConsumer<Throwable> failure) {
         runnable.run(failure);
     }
-
-    public final void direct() {
+    
+    /**
+     * Runs directly the {@link de.codemakers.base.util.tough.ToughRunnable}
+     */
+    public void direct() {
         runnable.runWithoutException();
     }
-
+    
     @Override
-    public final void queue(ToughRunnable success, ToughConsumer<Throwable> failure) {
+    public void queue(ToughRunnable success, ToughConsumer<Throwable> failure) {
         cjp.getFixedExecutorService().submit(() -> run(success, failure));
     }
-
+    
     @Override
-    public final void queueSingle(ToughRunnable success, ToughConsumer<Throwable> failure) {
+    public void queueSingle(ToughRunnable success, ToughConsumer<Throwable> failure) {
         cjp.getSingleExecutorService().submit(() -> run(success, failure));
     }
-
-    private void run(ToughRunnable success, ToughConsumer<Throwable> failure) {
+    
+    protected void run(ToughRunnable success, ToughConsumer<Throwable> failure) {
         try {
             runnable.run();
             if (success != null) {
@@ -78,21 +91,21 @@ public class RunningAction extends Action<ToughRunnable, Void> {
             }
         }
     }
-
+    
     @Override
-    public final Future<Void> submit() {
+    public Future<Void> submit() {
         return cjp.getFixedExecutorService().submit(() -> {
             runnable.runWithoutException();
             return null;
         });
     }
-
+    
     @Override
-    public final Future<Void> submitSingle() {
+    public Future<Void> submitSingle() {
         return cjp.getSingleExecutorService().submit(() -> {
             runnable.runWithoutException();
             return null;
         });
     }
-
+    
 }

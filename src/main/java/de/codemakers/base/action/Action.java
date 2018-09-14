@@ -116,8 +116,7 @@ public abstract class Action<T extends Tough, R> {
      *
      * <p><b>This method is asynchronous</b>
      *
-     * @param success The success callback that will be called at a convenient time
-     * for the API. (can be null)
+     * @param success The success callback that will be called at a convenient time for the API. (can be null)
      */
     public void queue(T success) {
         queue(success, null);
@@ -128,10 +127,8 @@ public abstract class Action<T extends Tough, R> {
      *
      * <p><b>This method is asynchronous</b>
      *
-     * @param success The success callback that will be called at a convenient time
-     * for the API. (can be null)
-     * @param failure The failure callback that will be called if the Request
-     * encounters an exception at its execution point.
+     * @param success The success callback that will be called at a convenient time for the API. (can be null)
+     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point.
      */
     public abstract void queue(T success, ToughConsumer<Throwable> failure);
     
@@ -153,8 +150,7 @@ public abstract class Action<T extends Tough, R> {
      *
      * <br>The execution is done with an {@link java.util.concurrent.ExecutorService single threaded ExecutorService}, so it is guaranteed, that the order of tasks submitted is correct when executed
      *
-     * @param success The success callback that will be called at a convenient time
-     * for the API. (can be null)
+     * @param success The success callback that will be called at a convenient time for the API. (can be null)
      */
     public void queueSingle(T success) {
         queueSingle(success, null);
@@ -167,10 +163,8 @@ public abstract class Action<T extends Tough, R> {
      *
      * <br>The execution is done with an {@link java.util.concurrent.ExecutorService single threaded ExecutorService}, so it is guaranteed, that the order of tasks submitted is correct when executed
      *
-     * @param success The success callback that will be called at a convenient time
-     * for the API. (can be null)
-     * @param failure The failure callback that will be called if the Request
-     * encounters an exception at its execution point.
+     * @param success The success callback that will be called at a convenient time for the API. (can be null)
+     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point.
      */
     public abstract void queueSingle(T success, ToughConsumer<Throwable> failure);
     
