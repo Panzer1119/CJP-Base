@@ -1359,8 +1359,6 @@ public enum DataUnit {
     private final boolean isByte;
     private final int base;
     private final long exponent;
-    private final long bits;
-    private final long bytes;
     private final String name;
     private final String symbol;
     
@@ -1368,15 +1366,32 @@ public enum DataUnit {
         this.isByte = isByte;
         this.base = base;
         this.exponent = exponent;
-        if (isByte) {
-            this.bytes = (long) Math.pow(base, exponent);
-            this.bits = this.bytes * 8L;
-        } else {
-            this.bits = (long) Math.pow(base, exponent);
-            this.bytes = this.bits / 8L;
-        }
         this.name = name;
         this.symbol = symbol;
+    }
+    
+    public static DataUnit ofSymbol(String symbol) {
+        if (symbol == null || symbol.isEmpty()) {
+            return null;
+        }
+        for (DataUnit dataUnit : values()) {
+            if (symbol.equals(dataUnit.getSymbol())) {
+                return dataUnit;
+            }
+        }
+        return null;
+    }
+    
+    public static DataUnit ofName(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        for (DataUnit dataUnit : values()) {
+            if (name.equals(dataUnit.getName())) {
+                return dataUnit;
+            }
+        }
+        return null;
     }
     
     public final boolean isByte() {
@@ -1391,14 +1406,6 @@ public enum DataUnit {
         return exponent;
     }
     
-    public final long getBits() {
-        return bits;
-    }
-    
-    public final long getBytes() {
-        return bytes;
-    }
-    
     public final String getName() {
         return name;
     }
@@ -1408,7 +1415,7 @@ public enum DataUnit {
     }
     
     public final int getMinByteArrayLength(long amount) {
-        return (int) Math.ceil(getBits() * amount / 8.0);
+        return (int) Math.ceil(toBytes(amount));
     }
     
     public long toBits(long amount) {
@@ -1485,7 +1492,7 @@ public enum DataUnit {
     
     @Override
     public final String toString() {
-        return getClass().getSimpleName() + "{" + "isByte=" + isByte + ", base=" + base + ", exponent=" + exponent + ", bits=" + bits + ", bytes=" + bytes + ", name='" + name + '\'' + ", symbol='" + symbol + '\'' + '}';
+        return getClass().getSimpleName() + "{" + "isByte=" + isByte + ", base=" + base + ", exponent=" + exponent + ", name='" + name + '\'' + ", symbol='" + symbol + '\'' + '}';
     }
     
 }
