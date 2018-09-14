@@ -18,6 +18,7 @@ package de.codemakers.base;
 
 import de.codemakers.base.action.Action;
 import de.codemakers.base.action.RunningAction;
+import de.codemakers.base.logger.Logger;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -27,9 +28,9 @@ import java.util.concurrent.TimeUnit;
 
 public class CJP {
     
-    private static final CJP CJP = new CJP(Runtime.getRuntime().availableProcessors());
     public static final Class<?>[] CJP_LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.SystemLogger.class};
     public static final String[] CJP_LOGGER_CLASS_NAMES = Arrays.asList(CJP_LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
+    private static final CJP CJP = new CJP(Runtime.getRuntime().availableProcessors());
     
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownInstance()));
@@ -69,12 +70,27 @@ public class CJP {
         return fixedExecutorService;
     }
     
+    public final CJP setFixedExecutorService(ExecutorService fixedExecutorService) {
+        this.fixedExecutorService = fixedExecutorService;
+        return this;
+    }
+    
     public final ScheduledExecutorService getScheduledExecutorService() {
         return scheduledExecutorService;
     }
     
+    public final CJP setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+        this.scheduledExecutorService = scheduledExecutorService;
+        return this;
+    }
+    
     public final ExecutorService getSingleExecutorService() {
         return singleExecutorService;
+    }
+    
+    public final CJP setSingleExecutorService(ExecutorService singleExecutorService) {
+        this.singleExecutorService = singleExecutorService;
+        return this;
     }
     
     public final CJP stopExecutorServiceNow() {
@@ -112,7 +128,7 @@ public class CJP {
                 executorService.shutdown();
                 executorService.awaitTermination(timeout, unit);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                Logger.handleError(ex);
             }
         }
         return Math.max(0, timeout - (System.currentTimeMillis() - timestamp));
