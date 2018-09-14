@@ -17,7 +17,6 @@
 package de.codemakers.base.events;
 
 import de.codemakers.base.CJP;
-import de.codemakers.base.logger.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,8 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     private final Map<EventListener<? extends T>, Class<? extends T>> eventListeners = new ConcurrentHashMap<>();
     private ExecutorService executorService = null;
     private boolean containsNull = false;
+    private boolean consumeEvents = true;
+    private boolean forceEvents = false;
     
     public EventHandler() {
         this(CJP.getInstance().getSingleExecutorService());
@@ -76,25 +77,20 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     }
     
     @Override
-    public final void onEvent(T event) {
+    public boolean onEvent(final T event) throws Exception {
         if (event == null) {
-            return;
+            return false;
         }
-        eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).forEach((eventListener) -> {
+        eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).anyMatch((eventListener) -> {
             if (executorService != null) {
-                executorService.submit(() -> {
-                    try {
-                        eventListener.onEvent(event);
-                    } catch (Exception ex) {
-                        Logger.handleError(ex);
-                    }
-                });
+                executorService.submit(() -> eventListener.onEventWithoutException(event));
+                return false;
             } else {
-                try {
-                    eventListener.onEvent(event);
-                } catch (Exception ex) {
-                    Logger.handleError(ex);
+                if (forceEvents) {
+                    eventListener.onEventWithoutException(event);
+                    return false;
                 }
+                return eventListener.onEventWithoutException(event);
             }
         });
         if (containsNull) {
@@ -104,24 +100,60 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
                 } catch (Exception ex) {
                     return null;
                 }
-            }).filter(Objects::nonNull).forEach((eventListener) -> {
+            }).filter(Objects::nonNull).anyMatch((eventListener) -> {
                 if (executorService != null) {
-                    executorService.submit(() -> {
-                        try {
-                            eventListener.onEvent(event);
-                        } catch (Exception ex) {
-                            Logger.handleError(ex);
-                        }
-                    });
+                    executorService.submit(() -> eventListener.onEventWithoutException(event));
+                    return false;
                 } else {
-                    try {
-                        eventListener.onEvent(event);
-                    } catch (Exception ex) {
-                        Logger.handleError(ex);
+                    if (forceEvents) {
+                        eventListener.onEventWithoutException(event);
+                        return false;
                     }
+                    return eventListener.onEventWithoutException(event);
                 }
             });
         }
+        return consumeEvents;
+    }
+    
+    public final boolean isConsumeEvents() {
+        return consumeEvents;
+    }
+    
+    public final EventHandler setConsumeEvents(boolean consumeEvents) {
+        this.consumeEvents = consumeEvents;
+        return this;
+    }
+    
+    public final boolean isForceEvents() {
+        return forceEvents;
+    }
+    
+    public final EventHandler setForceEvents(boolean forceEvents) {
+        this.forceEvents = forceEvents;
+        return this;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final EventHandler<?> that = (EventHandler<?>) o;
+        return containsNull == that.containsNull && consumeEvents == that.consumeEvents && forceEvents == that.forceEvents && Objects.equals(eventListeners, that.eventListeners) && Objects.equals(executorService, that.executorService);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(eventListeners, executorService, containsNull, consumeEvents, forceEvents);
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" + "eventListeners=" + eventListeners + ", executorService=" + executorService + ", containsNull=" + containsNull + ", consumeEvents=" + consumeEvents + ", forceEvents=" + forceEvents + '}';
     }
     
 }

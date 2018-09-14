@@ -25,7 +25,7 @@ import java.util.Random;
 
 public abstract class Event implements Timestamp, Serializable {
     
-    public static final Random RANDOM_ID_GENERATOR = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
+    protected static final Random RANDOM_ID_GENERATOR = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
     
     protected final long id;
     protected final long timestamp;
