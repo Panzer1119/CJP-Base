@@ -1418,6 +1418,10 @@ public enum DataUnit {
         return (int) Math.ceil(toBytes(amount));
     }
     
+    public final byte[] createByteArray(long amount) {
+        return new byte[getMinByteArrayLength(amount)];
+    }
+    
     public long toBits(long amount) {
         throw new AbstractMethodError();
     }
