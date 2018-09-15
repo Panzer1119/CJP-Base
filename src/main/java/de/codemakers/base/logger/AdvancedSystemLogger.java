@@ -20,6 +20,7 @@ import de.codemakers.base.Standard;
 
 import java.io.PrintStream;
 import java.time.Instant;
+import java.util.Arrays;
 
 /**
  * Standard {@link de.codemakers.base.logger.AdvancedLogger}, this implementation uses the original {@link java.lang.System} {@link java.io.PrintStream}s
@@ -35,15 +36,34 @@ public class AdvancedSystemLogger extends AdvancedLogger {
      */
     @Override
     public final void log(Object object, Object... arguments) {
-        if (arguments.length >= 1 && (arguments[0] == null || arguments[0] instanceof Instant)) {
-            if (arguments.length >= 2 && (arguments[1] == null || arguments[1] instanceof Thread)) {
-                if (arguments.length >= 3 && (arguments[2] == null || arguments[2] instanceof StackTraceElement)) {
-                    log(object, (Instant) arguments[0], (Thread) arguments[1], (StackTraceElement) arguments[2]);
+        if (arguments.length >= 1) {
+            if (arguments[0] == null || arguments[0] instanceof Instant) {
+                if (arguments.length >= 2) {
+                    if (arguments[1] == null || arguments[1] instanceof Thread) {
+                        if (arguments.length >= 3) {
+                            if (arguments[2] == null || arguments[2] instanceof StackTraceElement) {
+                                if (arguments.length > 3) {
+                                    System.arraycopy(arguments, 0, arguments, 1, arguments.length - 3);
+                                    log(String.format(object + "", Arrays.copyOf(arguments, arguments.length - 3)), (Instant) arguments[0], (Thread) arguments[1], (StackTraceElement) arguments[2]);
+                                } else {
+                                    log(object, (Instant) arguments[0], (Thread) arguments[1], (StackTraceElement) arguments[2]);
+                                }
+                            } else {
+                                System.arraycopy(arguments, 0, arguments, 1, arguments.length - 2);
+                                log(String.format(object + "", Arrays.copyOf(arguments, arguments.length - 2)), (Instant) arguments[0], (Thread) arguments[1]);
+                            }
+                        } else {
+                            log(object, (Instant) arguments[0], (Thread) arguments[1]);
+                        }
+                    } else {
+                        System.arraycopy(arguments, 0, arguments, 1, arguments.length - 1);
+                        log(String.format(object + "", Arrays.copyOf(arguments, arguments.length - 1)), (Instant) arguments[0]);
+                    }
                 } else {
-                    log(object, (Instant) arguments[0], (Thread) arguments[1]);
+                    log(object, (Instant) arguments[0]);
                 }
             } else {
-                log(object, (Instant) arguments[0]);
+                log(String.format(object + "", arguments));
             }
         } else {
             log(object);
@@ -61,7 +81,11 @@ public class AdvancedSystemLogger extends AdvancedLogger {
      */
     @Override
     public final void logErr(Object object, Throwable throwable, Object... arguments) {
-        Standard.SYSTEM_ERROR_STREAM.println(object);
+        if (arguments != null && arguments.length > 0) {
+            Standard.SYSTEM_ERROR_STREAM.println(String.format(object + "", arguments));
+        } else {
+            Standard.SYSTEM_ERROR_STREAM.println(object);
+        }
         if (throwable != null) {
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
         }
