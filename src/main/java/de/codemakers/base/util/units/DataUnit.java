@@ -22,32 +22,32 @@ public enum DataUnit {
         public long toBits(long amount) {
             return amount;
         }
-    
+        
         @Override
         public long toBytes(long amount) {
             return amount / 8;
         }
-    
+        
         @Override
         public long toKilobits(long amount) {
             return amount / 1_000;
         }
-    
+        
         @Override
         public long toKiloBytes(long amount) {
             return amount / 1_000 / 8;
         }
-    
+        
         @Override
         public long toMegabits(long amount) {
             return amount / 1_000_000;
         }
-    
+        
         @Override
         public long toMegaBytes(long amount) {
             return amount / 1_000_000 / 8;
         }
-    
+        
         @Override
         public long toGigabits(long amount) {
             return amount / 1_000_000_000;
@@ -1747,139 +1747,149 @@ public enum DataUnit {
     }
     
     public long toBits(long amount) {
-        throw new AbstractMethodError();
+        if (isByte()) {
+            return (long) (Math.pow(base, exponent) * amount * 8);
+        } else {
+            return (long) (Math.pow(base, exponent) * amount);
+        }
     }
     
     public long toBytes(long amount) {
-        throw new AbstractMethodError();
+        if (isByte()) {
+            return (long) (Math.pow(base, exponent) * amount);
+        } else {
+            return (long) (Math.pow(base, exponent) * amount / 8);
+        }
     }
     
     public long toKilobits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toKibibits(amount) * 1.024);
     }
     
     public long toKiloBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toKibiBytes(amount) * 1.024);
     }
     
     public long toMegabits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toMebibits(amount) * 1.048576);
     }
     
     public long toMegaBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toMebiBytes(amount) * 1.048576);
     }
     
     public long toGigabits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toGibibits(amount) * 1.073741824);
     }
     
     public long toGigaBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toGibiBytes(amount) * 1.073741824);
     }
     
     public long toTerabits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toTebibits(amount) * 1.099511627776);
     }
     
     public long toTeraBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toTebiBytes(amount) * 1.099511627776);
     }
     
     public long toPetabits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toPebibits(amount) * 1.125899906842624);
     }
     
     public long toPetaBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toPebiBytes(amount) * 1.125899906842624);
     }
     
     public long toExabits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toExbibits(amount) * 1.152921504606846976);
     }
     
     public long toExaBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toExbiBytes(amount) * 1.152921504606846976);
     }
     
     public long toZettabits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toZebibits(amount) * 1.180591620717411303424);
     }
     
     public long toZettaBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toZebiBytes(amount) * 1.180591620717411303424);
     }
     
     public long toYottabits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toYobibits(amount) * 1.208925819614629174706176);
     }
     
     public long toYottaBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toYobiBytes(amount) * 1.208925819614629174706176);
     }
     
+    //
+    
     public long toKibibits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toKilobits(amount) * 0.9765625);
     }
     
     public long toKibiBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toKiloBytes(amount) * 0.9765625);
     }
     
     public long toMebibits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toMegabits(amount) * 0.95367431640625);
     }
     
     public long toMebiBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toMegaBytes(amount) * 0.95367431640625);
     }
     
     public long toGibibits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toGigabits(amount) * 0.931322574615478515625);
     }
     
     public long toGibiBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toGigaBytes(amount) * 0.931322574615478515625);
     }
     
     public long toTebibits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toTerabits(amount) * 0.9094947017729282379150390625);
     }
     
     public long toTebiBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toTeraBytes(amount) * 0.9094947017729282379150390625);
     }
     
     public long toPebibits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toPetabits(amount) * 0.88817841970012523233890533447265625);
     }
     
     public long toPebiBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toPetaBytes(amount) * 0.88817841970012523233890533447265625);
     }
     
     public long toExbibits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toExabits(amount) * 0.867361737988403547205962240695953369140625);
     }
     
     public long toExbiBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toExaBytes(amount) * 0.867361737988403547205962240695953369140625);
     }
     
     public long toZebibits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toZettabits(amount) * 0.8470329472543003390683225006796419620513916015625);
     }
     
     public long toZebiBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toZettaBytes(amount) * 0.8470329472543003390683225006796419620513916015625);
     }
     
     public long toYobibits(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toYottabits(amount) * 0.82718061255302767487140869206996285356581211090087890625);
     }
     
     public long toYobiBytes(long amount) {
-        throw new AbstractMethodError();
+        return (long) (toYottaBytes(amount) * 0.82718061255302767487140869206996285356581211090087890625);
     }
     
     @Override
