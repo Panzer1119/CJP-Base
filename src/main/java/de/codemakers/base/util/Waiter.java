@@ -16,6 +16,8 @@
 
 package de.codemakers.base.util;
 
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 
 import java.util.Objects;
@@ -89,25 +91,35 @@ public class Waiter {
         return this;
     }
     
-    protected final void waitStep() {
+    protected final void waitStep() throws Exception {
+        Thread.sleep(sleepTimeMillis);
+    }
+    
+    public final boolean waitFor() throws Exception {
+        while (!done.getWithoutException()) {
+            if (timeoutMillis >= 0 && (System.currentTimeMillis() - started) >= timeoutMillis) {
+                return false;
+            }
+            waitStep();
+        }
+        return true;
+    }
+    
+    public final boolean waitFor(ToughConsumer<Throwable> failure) {
         try {
-            Thread.sleep(sleepTimeMillis);
+            return waitFor();
         } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
         }
     }
     
-    public final boolean waitFor() {
-        try {
-            while (!done.getWithoutException()) {
-                if (timeoutMillis >= 0 && (System.currentTimeMillis() - started) >= timeoutMillis) {
-                    return false;
-                }
-                waitStep();
-            }
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
+    public final boolean waitForWithoutException() {
+        return waitFor(null);
     }
     
 }
