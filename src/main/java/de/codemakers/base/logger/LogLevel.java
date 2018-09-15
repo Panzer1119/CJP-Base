@@ -19,6 +19,7 @@ package de.codemakers.base.logger;
 import java.awt.*;
 
 public enum LogLevel {
+    
     FINEST(false, 6, Color.WHITE, Color.LIGHT_GRAY),
     FINER(false, 5, Color.WHITE, Color.GRAY),
     FINE(false, 4, Color.WHITE, Color.DARK_GRAY),
@@ -62,6 +63,5 @@ public enum LogLevel {
     public String toText() {
         return name().toUpperCase().substring(0, 1) + name().toLowerCase().substring(1);
     }
-    
     
 }
