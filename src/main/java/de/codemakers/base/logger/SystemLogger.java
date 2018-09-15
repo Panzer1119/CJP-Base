@@ -33,7 +33,11 @@ public class SystemLogger implements ILogger {
      */
     @Override
     public final void log(Object object, Object... arguments) {
-        Standard.SYSTEM_OUTPUT_STREAM.println(object);
+        if (arguments != null && arguments.length > 0) {
+            Standard.SYSTEM_OUTPUT_STREAM.println(String.format(object + "", arguments));
+        } else {
+            Standard.SYSTEM_OUTPUT_STREAM.println(object);
+        }
     }
     
     /**
@@ -46,7 +50,11 @@ public class SystemLogger implements ILogger {
      */
     @Override
     public final void logErr(Object object, Throwable throwable, Object... arguments) {
-        Standard.SYSTEM_ERROR_STREAM.println(object);
+        if (arguments != null && arguments.length > 0) {
+            Standard.SYSTEM_ERROR_STREAM.println(String.format(object + "", arguments));
+        } else {
+            Standard.SYSTEM_ERROR_STREAM.println(object);
+        }
         if (throwable != null) {
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
         }

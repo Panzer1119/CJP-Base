@@ -53,8 +53,4 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         super.log(object, timestamp, thread, stackTraceElement);
     }
     
-    @Override
-    public void logErr(Object object, Throwable throwable, Object... arguments) {
-    
-    }
 }
