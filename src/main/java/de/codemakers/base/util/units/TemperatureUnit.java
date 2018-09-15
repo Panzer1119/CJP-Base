@@ -16,6 +16,8 @@
 
 package de.codemakers.base.util.units;
 
+import de.codemakers.base.util.ArrayUtil;
+
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
@@ -376,6 +378,38 @@ public enum TemperatureUnit {
         } else {
             this.interval = -1;
         }
+    }
+    
+    public static final TemperatureUnit ofName(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        for (TemperatureUnit temperatureUnit : values()) {
+            if (name.equalsIgnoreCase(temperatureUnit.getName())) {
+                return temperatureUnit;
+            }
+        }
+        return null;
+    }
+    
+    public static final TemperatureUnit ofSymbol(String symbol) {
+        if (symbol == null || symbol.isEmpty()) {
+            return null;
+        }
+        for (TemperatureUnit temperatureUnit : values()) {
+            if (temperatureUnit.getSymbol().equalsIgnoreCase(symbol) || temperatureUnit.getSymbol().endsWith(symbol) || temperatureUnit.getSymbol().toLowerCase().endsWith(symbol.toLowerCase())) {
+                return temperatureUnit;
+            }
+        }
+        for (TemperatureUnit temperatureUnit : values()) {
+            if (temperatureUnit.getAlternateSymbols() == null) {
+                continue;
+            }
+            if (ArrayUtil.arrayContains(temperatureUnit.getAlternateSymbols(), symbol)) {
+                return temperatureUnit;
+            }
+        }
+        return null;
     }
     
     public final String getName() {
