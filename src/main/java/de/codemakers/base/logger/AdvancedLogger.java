@@ -274,12 +274,20 @@ public abstract class AdvancedLogger implements ILogger {
     
     @Override
     public void log(Object object, Object... arguments) {
-        logFinal(String.format(object + "", arguments));
+        if (arguments != null && arguments.length > 0) {
+            logFinal(String.format(object + "", arguments));
+        } else {
+            logFinal(object);
+        }
     }
     
     @Override
     public void logErr(Object object, Throwable throwable, Object... arguments) {
-        logErrFinal(String.format(object + "", arguments), throwable);
+        if (arguments != null && arguments.length > 0) {
+            logErrFinal(String.format(object + "", arguments), throwable);
+        } else {
+            logErrFinal(object, throwable);
+        }
     }
     
 }
