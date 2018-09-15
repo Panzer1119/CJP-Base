@@ -115,7 +115,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
                 runnable_2.run();
             }
         }
-        return consumeEvents || (!forceEvents && eventConsumed.get());
+        return consumeEvents || eventConsumed.get();
     }
     
     public final boolean isConsumeEvents() {
