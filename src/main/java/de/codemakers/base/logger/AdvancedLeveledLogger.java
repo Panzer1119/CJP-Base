@@ -54,7 +54,7 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement), logLevel));
+        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)));
     }
     
     @Override
@@ -81,7 +81,14 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logErrFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement), logLevel), throwable);
+        logErrFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)), throwable);
+    }
+    
+    protected String formatLogLevel(LogLevel logLevel) {
+        if (logLevel == null) {
+            return "";
+        }
+        return "[" + logLevel + "]";
     }
     
 }
