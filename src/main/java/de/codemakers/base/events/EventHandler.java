@@ -77,41 +77,41 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     }
     
     @Override
-    public boolean onEvent(final T event) throws Exception {
+    public boolean onEvent(final T event) {
         if (event == null) {
             return false;
         }
-        eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).anyMatch((eventListener) -> {
-            if (executorService != null) {
-                executorService.submit(() -> eventListener.onEventWithoutException(event));
+        final Runnable runnable = () -> eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).anyMatch((eventListener) -> {
+            if (forceEvents) {
+                eventListener.onEventWithoutException(event);
                 return false;
-            } else {
-                if (forceEvents) {
-                    eventListener.onEventWithoutException(event);
-                    return false;
-                }
-                return eventListener.onEventWithoutException(event);
             }
+            return eventListener.onEventWithoutException(event);
         });
+        if (executorService != null) {
+            executorService.submit(runnable);
+        } else {
+            runnable.run();
+        }
         if (containsNull) {
-            eventListeners.entrySet().stream().filter((entry) -> entry.getValue() == null).map(Map.Entry::getKey).map((eventListener) -> {
+            final Runnable runnable_2 = () -> eventListeners.entrySet().stream().filter((entry) -> entry.getValue() == null).map(Map.Entry::getKey).map((eventListener) -> {
                 try {
                     return (EventListener<T>) eventListener;
                 } catch (Exception ex) {
                     return null;
                 }
             }).filter(Objects::nonNull).anyMatch((eventListener) -> {
-                if (executorService != null) {
-                    executorService.submit(() -> eventListener.onEventWithoutException(event));
+                if (forceEvents) {
+                    eventListener.onEventWithoutException(event);
                     return false;
-                } else {
-                    if (forceEvents) {
-                        eventListener.onEventWithoutException(event);
-                        return false;
-                    }
-                    return eventListener.onEventWithoutException(event);
                 }
+                return eventListener.onEventWithoutException(event);
             });
+            if (executorService != null) {
+                executorService.submit(runnable_2);
+            } else {
+                runnable_2.run();
+            }
         }
         return consumeEvents;
     }
