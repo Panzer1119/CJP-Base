@@ -20,11 +20,7 @@ import de.codemakers.base.Standard;
 
 import java.io.PrintStream;
 
-/**
- * Standard {@link de.codemakers.base.logger.AdvancedLogger}, this implementation uses the original {@link java.lang.System} {@link java.io.PrintStream}s
- * to log messages with timestamps and more
- */
-public class AdvancedSystemLogger extends AdvancedLogger {
+public class AdvancedLeveledSystemLogger extends AdvancedLeveledLogger {
     
     /**
      * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.Standard#SYSTEM_OUTPUT_STREAM}
@@ -50,20 +46,7 @@ public class AdvancedSystemLogger extends AdvancedLogger {
         if (throwable != null) {
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
         }
-    }
-    
-    /**
-     * Handles an Error using the {@link de.codemakers.base.Standard#SYSTEM_ERROR_STREAM}
-     * <br>
-     * It uses {@link java.lang.Throwable#printStackTrace(PrintStream)} to print the Error
-     *
-     * @param throwable Error (e.g. an {@link java.lang.Exception})
-     */
-    @Override
-    public void handleError(Throwable throwable) {
-        if (throwable != null) {
-            throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
-        }
+        
     }
     
 }

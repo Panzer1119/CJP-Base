@@ -19,7 +19,14 @@ package de.codemakers.base.logger;
 import java.awt.*;
 
 public enum LogLevel {
-    FINEST(false, 6, Color.WHITE, Color.LIGHT_GRAY), FINER(false, 5, Color.WHITE, Color.GRAY), FINE(false, 4, Color.WHITE, Color.DARK_GRAY), INFO(false, 3, Color.WHITE, Color.BLACK), COMMAND(false, 2, Color.WHITE, Color.MAGENTA), INPUT(false, 1, Color.WHITE, Color.BLUE), WARNING(true, 0, Color.WHITE, Color.ORANGE), ERROR(true, -1, Color.WHITE, Color.RED);
+    FINEST(false, 6, Color.WHITE, Color.LIGHT_GRAY),
+    FINER(false, 5, Color.WHITE, Color.GRAY),
+    FINE(false, 4, Color.WHITE, Color.DARK_GRAY),
+    INFO(false, 3, Color.WHITE, Color.BLACK),
+    COMMAND(false, 2, Color.WHITE, Color.MAGENTA),
+    INPUT(false, 1, Color.WHITE, Color.BLUE),
+    WARNING(true, 0, Color.WHITE, Color.ORANGE),
+    ERROR(true, -1, Color.WHITE, Color.RED);
     
     private final boolean isBad;
     /**

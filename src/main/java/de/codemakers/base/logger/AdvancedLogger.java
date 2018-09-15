@@ -51,7 +51,7 @@ public abstract class AdvancedLogger implements ILogger {
     protected String logFormat = DEFAULT_LOG_FORMAT;
     protected String stackTraceElementFormat = DEFAULT_STACK_TRACE_ELEMENT_FORMAT;
     
-    static final StackTraceElement cutStackTrace(StackTraceElement[] stackTraceElements) {
+    protected static final StackTraceElement cutStackTrace(StackTraceElement[] stackTraceElements) {
         if (stackTraceElements == null || stackTraceElements.length == 0) {
             return null;
         }
@@ -287,6 +287,13 @@ public abstract class AdvancedLogger implements ILogger {
             logErrFinal(String.format(object + "", arguments), throwable);
         } else {
             logErrFinal(object, throwable);
+        }
+    }
+    
+    @Override
+    public void handleError(Throwable throwable) {
+        if (throwable != null) {
+            logErr("An error occurred: " + throwable, throwable);
         }
     }
     

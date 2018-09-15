@@ -29,8 +29,12 @@ public class Logger {
      * Default {@link de.codemakers.base.logger.AdvancedLogger} Instance
      */
     public static final AdvancedLogger DEFAULT_ADVANCED_LOGGER = createDefaultAdvancedLogger();
+    /**
+     * Default {@link de.codemakers.base.logger.AdvancedLeveledSystemLogger} Instance
+     */
+    public static final AdvancedLogger DEFAULT_ADVANCED_LEVELED_LOGGER = createDefaultAdvancedLeveledSystemLogger();
     
-    public static ILogger LOGGER = DEFAULT_ADVANCED_LOGGER;
+    public static ILogger LOGGER = DEFAULT_ADVANCED_LEVELED_LOGGER;
     
     private static final ILogger createDefaultLogger() {
         return new SystemLogger();
@@ -38,6 +42,10 @@ public class Logger {
     
     private static final AdvancedLogger createDefaultAdvancedLogger() {
         return new AdvancedSystemLogger();
+    }
+    
+    private static final AdvancedLeveledSystemLogger createDefaultAdvancedLeveledSystemLogger() {
+        return new AdvancedLeveledSystemLogger();
     }
     
     /**

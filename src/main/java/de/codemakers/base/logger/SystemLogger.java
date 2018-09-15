@@ -28,6 +28,7 @@ public class SystemLogger implements ILogger {
     
     /**
      * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.Standard#SYSTEM_OUTPUT_STREAM}
+     *
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
      * @param arguments Not used here
      */
@@ -44,6 +45,7 @@ public class SystemLogger implements ILogger {
      * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} using the {@link de.codemakers.base.Standard#SYSTEM_ERROR_STREAM}
      * <br>
      * It uses {@link java.lang.Throwable#printStackTrace(PrintStream)} to print the Error
+     *
      * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      * @param arguments Not used here
@@ -64,6 +66,7 @@ public class SystemLogger implements ILogger {
      * Handles an Error using the {@link de.codemakers.base.Standard#SYSTEM_ERROR_STREAM}
      * <br>
      * It uses {@link java.lang.Throwable#printStackTrace(PrintStream)} to print the Error
+     *
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      */
     @Override
