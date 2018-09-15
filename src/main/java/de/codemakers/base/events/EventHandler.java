@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class EventHandler<T extends Event> implements IEventHandler<T> {
@@ -81,20 +82,21 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         if (event == null) {
             return false;
         }
-        final Runnable runnable = () -> eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).anyMatch((eventListener) -> {
+        final AtomicBoolean eventConsumed = new AtomicBoolean(false);
+        final Runnable runnable = () -> eventConsumed.set(eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).anyMatch((eventListener) -> {
             if (forceEvents) {
                 eventListener.onEventWithoutException(event);
                 return false;
             }
             return eventListener.onEventWithoutException(event);
-        });
+        }));
         if (executorService != null) {
             executorService.submit(runnable);
         } else {
             runnable.run();
         }
         if (containsNull) {
-            final Runnable runnable_2 = () -> eventListeners.entrySet().stream().filter((entry) -> entry.getValue() == null).map(Map.Entry::getKey).map((eventListener) -> {
+            final Runnable runnable_2 = () -> eventConsumed.set(eventListeners.entrySet().stream().filter((entry) -> entry.getValue() == null).map(Map.Entry::getKey).map((eventListener) -> {
                 try {
                     return (EventListener<T>) eventListener;
                 } catch (Exception ex) {
@@ -106,14 +108,14 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
                     return false;
                 }
                 return eventListener.onEventWithoutException(event);
-            });
+            }));
             if (executorService != null) {
                 executorService.submit(runnable_2);
             } else {
                 runnable_2.run();
             }
         }
-        return consumeEvents;
+        return consumeEvents || (!forceEvents && eventConsumed.get());
     }
     
     public final boolean isConsumeEvents() {
