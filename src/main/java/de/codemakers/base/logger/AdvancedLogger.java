@@ -51,6 +51,19 @@ public abstract class AdvancedLogger implements ILogger {
     protected String logFormat = DEFAULT_LOG_FORMAT;
     protected String stackTraceElementFormat = DEFAULT_STACK_TRACE_ELEMENT_FORMAT;
     
+    static final StackTraceElement cutStackTrace(StackTraceElement[] stackTraceElements) {
+        if (stackTraceElements == null || stackTraceElements.length == 0) {
+            return null;
+        }
+        for (StackTraceElement stackTraceElement : stackTraceElements) {
+            if (ArrayUtil.arrayContains(CJP.CJP_LOGGER_CLASS_NAMES, stackTraceElement.getClassName())) {
+                continue;
+            }
+            return stackTraceElement;
+        }
+        return null;
+    }
+    
     /**
      * Logs an {@link java.lang.Object} with an default {@link java.time.Instant} derived from {@link Instant#now()}, {@link java.lang.Thread} derived from {@link Thread#currentThread()} and {@link java.lang.StackTraceElement} derived from {@link Exception#getStackTrace()}
      *
@@ -96,16 +109,67 @@ public abstract class AdvancedLogger implements ILogger {
         logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement)));
     }
     
-    abstract void logFinal(Object object);
+    protected abstract void logFinal(Object object);
     
-    String formatThread(Thread thread) {
+    /**
+     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} with an default {@link java.time.Instant} derived from {@link Instant#now()}, {@link java.lang.Thread} derived from {@link Thread#currentThread()} and {@link java.lang.StackTraceElement} derived from {@link Exception#getStackTrace()}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     * @param throwable {@link java.lang.Throwable} to get logged
+     */
+    public void logErr(Object object, Throwable throwable) {
+        logErr(object, throwable, Instant.now(), Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()));
+    }
+    
+    /**
+     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} with an custom {@link java.time.Instant}, default {@link java.lang.Thread} derived from {@link Thread#currentThread()} and default {@link java.lang.StackTraceElement} derived from {@link Exception#getStackTrace()}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     * @param throwable {@link java.lang.Throwable} to get logged
+     * @param timestamp Timestamp
+     */
+    public void logErr(Object object, Throwable throwable, Instant timestamp) {
+        logErr(object, throwable, timestamp, Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()));
+    }
+    
+    /**
+     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} with an custom {@link java.time.Instant}, custom {@link java.lang.Thread} and default {@link java.lang.StackTraceElement} derived from {@link Exception#getStackTrace()}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     * @param throwable {@link java.lang.Throwable} to get logged
+     * @param timestamp Timestamp
+     * @param thread Thread
+     */
+    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread) {
+        logErr(object, throwable, timestamp, thread, cutStackTrace(new Exception().getStackTrace()));
+    }
+    
+    /**
+     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} with an custom {@link java.time.Instant}, {@link java.lang.Thread} and {@link java.lang.StackTraceElement}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     * @param throwable {@link java.lang.Throwable} to get logged
+     * @param timestamp Timestamp
+     * @param thread Thread
+     * @param stackTraceElement StackTraceElement (used to determine the source of the {@link de.codemakers.base.logger.AdvancedLogger#log(Object, Instant, Thread, StackTraceElement)} call)
+     */
+    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
+        if (timestamp == null) {
+            timestamp = Instant.now();
+        }
+        logErrFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement)), throwable);
+    }
+    
+    protected abstract void logErrFinal(Object object, Throwable throwable);
+    
+    protected String formatThread(Thread thread) {
         if (thread == null) {
             return "";
         }
         return "[" + thread.getName() + "]";
     }
     
-    String formatStackTraceElement(StackTraceElement stackTraceElement) {
+    protected String formatStackTraceElement(StackTraceElement stackTraceElement) {
         if (stackTraceElement == null) {
             return "";
         }
@@ -208,17 +272,14 @@ public abstract class AdvancedLogger implements ILogger {
         return this;
     }
     
-    static final StackTraceElement cutStackTrace(StackTraceElement[] stackTraceElements) {
-        if (stackTraceElements == null || stackTraceElements.length == 0) {
-            return null;
-        }
-        for (StackTraceElement stackTraceElement : stackTraceElements) {
-            if (ArrayUtil.arrayContains(CJP.CJP_LOGGER_CLASS_NAMES, stackTraceElement.getClassName())) {
-                continue;
-            }
-            return stackTraceElement;
-        }
-        return null;
+    @Override
+    public void log(Object object, Object... arguments) {
+        logFinal(String.format(object + "", arguments));
+    }
+    
+    @Override
+    public void logErr(Object object, Throwable throwable, Object... arguments) {
+        logErrFinal(String.format(object + "", arguments), throwable);
     }
     
 }
