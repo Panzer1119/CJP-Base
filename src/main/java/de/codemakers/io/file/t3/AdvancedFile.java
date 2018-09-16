@@ -21,6 +21,8 @@ import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
+import de.codemakers.base.reflection.AutoRegister;
+import de.codemakers.base.reflection.ReflectionUtil;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Convertable;
 import de.codemakers.base.util.interfaces.Copyable;
@@ -40,10 +42,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -77,6 +76,22 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
         FILE_PROVIDERS.add(INTERN_PROVIDER);
+        try {
+            final Set<Class<? extends FileProvider>> fileProviders = ReflectionUtil.getSubClasses(FileProvider.class);
+            fileProviders.stream().filter((fileProvider) -> fileProvider.getAnnotation(AutoRegister.class) != null).forEach((fileProvider) -> {
+                try {
+                    final FileProvider fileProvider_ = fileProvider.newInstance();
+                    if (fileProvider_ != null && !FILE_PROVIDERS.contains(fileProvider_)) {
+                        FILE_PROVIDERS.add(fileProvider_);
+                    }
+                    Logger.log("Successfully auto registered FileProvider: " + fileProvider_); //TODO Debug only
+                } catch (Exception ex) {
+                    Logger.handleError(ex);
+                }
+            });
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+        }
     }
     
     private String[] paths;
@@ -559,7 +574,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public Path toPath() throws Exception {
+    public Path toPath() {
         if (path_ == null) {
             path_ = toFile().toPath();
         }
@@ -949,7 +964,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public ExternFile convert(Class<ExternFile> clazz) throws Exception {
+    public ExternFile convert(Class<ExternFile> clazz) {
         checkAndErrorIfIntern(true);
         return new ExternFile(toFile());
     }

@@ -14,15 +14,18 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.util;
+package de.codemakers.base.reflection;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.reflections.Reflections;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class ReflectionUtil {
@@ -253,6 +256,38 @@ public class ReflectionUtil {
     
     public static Class<?>[] objectsToClasses(Object... objects) {
         return Stream.of(objects).map(Object::getClass).toArray(Class<?>[]::new);
+    }
+    
+    public static Reflections reflectionsOfCompleteJar() {
+        return new Reflections();
+    }
+    
+    public static Reflections reflectionsOfPackage(Package package_) {
+        return new Reflections(package_.getName());
+    }
+    
+    public static <T> Set<Class<? extends T>> getSubClasses(Class<T> clazz) {
+        return getSubClasses(clazz, reflectionsOfCompleteJar());
+    }
+    
+    public static <T> Set<Class<? extends T>> getSubClasses(Class<T> clazz, Reflections reflections) {
+        return reflections.getSubTypesOf(clazz);
+    }
+    
+    public static Set<Class<?>> getTypesAnnotatedWith(Class<? extends Annotation> annotation) {
+        return getTypesAnnotatedWith(annotation, reflectionsOfCompleteJar());
+    }
+    
+    public static Set<Class<?>> getTypesAnnotatedWith(Class<? extends Annotation> annotation, Reflections reflections) {
+        return reflections.getTypesAnnotatedWith(annotation);
+    }
+    
+    public static Set<Class<?>> getTypesAnnotatedWith(Annotation annotation) {
+        return getTypesAnnotatedWith(annotation, reflectionsOfCompleteJar());
+    }
+    
+    public static Set<Class<?>> getTypesAnnotatedWith(Annotation annotation, Reflections reflections) {
+        return reflections.getTypesAnnotatedWith(annotation);
     }
     
 }
