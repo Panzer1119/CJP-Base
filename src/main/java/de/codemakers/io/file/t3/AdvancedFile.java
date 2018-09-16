@@ -27,7 +27,6 @@ import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Convertable;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
-import de.codemakers.io.file.t3.exceptions.has.FileHasParentRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.t3.exceptions.isnot.RelativeClassIsNotNullException;
 import de.codemakers.io.file.t3.providers.FileProvider;
@@ -36,12 +35,13 @@ import de.codemakers.io.file.t3.providers.ZIPProvider;
 import de.codemakers.security.interfaces.Cryptor;
 import de.codemakers.security.interfaces.Signer;
 import de.codemakers.security.interfaces.Verifier;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.FileSystem;
+import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
@@ -62,6 +62,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public static final String FILE_SEPARATOR_DEFAULT_REGEX = OSUtil.DEFAULT_HELPER.getFileSeparatorRegex();
     public static final String FILE_SEPARATOR_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR == FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     public static final String FILE_SEPARATOR_NOT_CURRENT_REGEX = (FILE_SEPARATOR_CURRENT_CHAR != FILE_SEPARATOR_WINDOWS_CHAR) ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
+    public static final String PATH_SEPARATOR = "/";
+    public static final char PATH_SEPARATOR_CHAR = '/';
+    public static final String PATH_SEPARATOR_REGEX = "/";
     
     public static final String PREFIX_INTERN = "intern:";
     public static final String PREFIX_EXTERN = "extern:";
@@ -459,9 +462,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return toFile().isFile();
+        } else { //TODO Test this
+            return Files.isRegularFile(toPath());
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
     }
     
     boolean isFile(AdvancedFile file) {
@@ -484,9 +487,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return toFile().isDirectory();
+        } else { //TODO Test this
+            return Files.isDirectory(toPath());
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
     }
     
     boolean isDirectory(AdvancedFile file) {
@@ -509,9 +512,13 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return toFile().exists();
+        } else {
+            if (isAbsolute()) {
+                return AdvancedFile.class.getResource(getPath()) != null; //TODO Test this
+            } else {
+                return clazz.getResource(getPath()) != null; //FIXME Test this
+            }
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
     }
     
     boolean exists(AdvancedFile file) {
@@ -576,13 +583,38 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     @Override
     public Path toPath() {
         if (path_ == null) {
-            path_ = toFile().toPath();
+            path_ = generateRealPath();
         }
         return path_;
     }
     
     final void resetPath() {
         path_ = null;
+    }
+    
+    Path generateRealPath() {
+        if (isExtern()) {
+            return toFile().toPath();
+        } else {
+            try {
+                final URI uri = toURI();
+                FileSystem fileSystem = null;
+                Path myPath = null;
+                if (uri.getScheme().equalsIgnoreCase("jar")) {
+                    fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+                    myPath = fileSystem.getPath(getPath());
+                } else {
+                    myPath = Paths.get(uri);
+                }
+                if (fileSystem != null) {
+                    fileSystem.close();
+                }
+                return myPath;
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+                return null;
+            }
+        }
     }
     
     @Override
@@ -645,8 +677,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().mkdir();
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
+        throw new UnsupportedOperationException();
     }
     
     boolean mkdir(AdvancedFile file) throws Exception {
@@ -667,8 +698,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().mkdirs();
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
+        throw new UnsupportedOperationException();
     }
     
     boolean mkdirs(AdvancedFile file) throws Exception {
@@ -682,15 +712,14 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     @Override
     public boolean delete() throws Exception {
         checkAndErrorIfIntern(true);
-        //checkAndErrorIfNotExisting();
+        //checkAndErrorIfNotExisting(); //This should not throw an error, because maybe you only want to make sure, that a file is truly not existing any more
         if (parent != null) {
             return delete(this);
         }
         if (isExtern()) {
             return toFile().delete();
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
+        throw new UnsupportedOperationException();
     }
     
     boolean delete(AdvancedFile file) throws Exception {
@@ -711,8 +740,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().createNewFile();
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
+        throw new UnsupportedOperationException();
     }
     
     boolean createNewFile(AdvancedFile file) throws Exception {
@@ -732,9 +760,13 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return new FileInputStream(toFile());
+        } else {
+            if (isAbsolute()) {
+                return AdvancedFile.class.getResourceAsStream(getPath()); //TODO Test this
+            } else {
+                return clazz.getResourceAsStream(getPath()); //FIXME Test this
+            }
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
     }
     
     InputStream createInputStream(AdvancedFile file) throws Exception {
@@ -754,16 +786,12 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return Files.readAllBytes(toPath());
-        } else {
-            if (isRelative()) {
-                //TODO Implement
-            } else {
-                return Standard.RUNNING_JAR_ADVANCED_FILE.readBytes(this);
-            }
+        } else { //TODO Why do not use this method below for every case? (Or for every case except if it is extern)
+            final InputStream inputStream = createInputStream();
+            final byte[] data = IOUtils.toByteArray(inputStream);
+            inputStream.close();
+            return data;
         }
-        //TODO if intern than if the Running jar is a jarfile use the Standard.RUNNING_JAR_ADVANCED_FILE.readBytes(this); and do Not forgot to add (but only temporary!) the clazz package name as paths prefix if this is also relative intern
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
     }
     
     byte[] readBytes(AdvancedFile file) throws Exception {
@@ -780,13 +808,12 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return new FileOutputStream(toFile(), append);
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
+        throw new UnsupportedOperationException();
     }
     
     OutputStream createOutputStream(AdvancedFile file, boolean append) throws Exception {
         if (parent != null) {
-            throw new FileHasParentRuntimeException(getPath() + " has a parent");
+            //throw new FileHasParentRuntimeException(getPath() + " has a parent"); //FIXME why? Remote Provider should not prevent you from writing to a file, but is a parent
         }
         return fileProvider.createOutputStream(this, file, append);
     }
@@ -802,13 +829,12 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             Files.write(toPath(), data);
             return true;
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
+        throw new UnsupportedOperationException();
     }
     
     boolean writeBytes(AdvancedFile file, byte[] data) throws Exception {
         if (parent != null) {
-            throw new FileHasParentRuntimeException(getPath() + " has a parent");
+            //throw new FileHasParentRuntimeException(getPath() + " has a parent"); //FIXME why? Remote Provider should not prevent you from writing to a file, but is a parent
         }
         return fileProvider.writeBytes(this, file, data);
     }
@@ -828,9 +854,86 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             } else {
                 return Stream.of(toFile().listFiles()).map(AdvancedFile::new).collect(Collectors.toList());
             }
+        } else {
+            if (Standard.RUNNING_JAR_IS_JAR) {
+                if (isAbsolute()) {
+                    return Standard.RUNNING_JAR_ADVANCED_FILE.listFiles(this, recursive); //TODO Test this
+                } else {
+                    //TODO Implement
+                    throw new NotYetImplementedRuntimeException();
+                }
+            } else {
+                final List<AdvancedFile> advancedFiles = new ArrayList<>();
+                try {
+                    final URI uri = toURI();
+                    FileSystem fileSystem = null;
+                    try {
+                        Path myPath = null;
+                        if (uri.getScheme().equalsIgnoreCase("jar")) {
+                            try {
+                                fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+                                myPath = fileSystem.getPath(getPath());
+                            } catch (Exception ex) {
+                                Logger.handleError(ex);
+                                if (fileSystem != null) {
+                                    fileSystem.close();
+                                }
+                            }
+                        } else {
+                            myPath = Paths.get(uri);
+                        }
+                        if (myPath == null) {
+                            if (fileSystem != null) {
+                                fileSystem.close();
+                            }
+                            return advancedFiles;
+                        }
+                        try { //TODO Test this
+                            if (recursive) {
+                                /*
+                                final List<Map.Entry<Path, AdvancedFile>> depth = new ArrayList<>();
+                                depth.add(new AbstractMap.SimpleEntry<>(myPath, this));
+                                Files.walk(myPath).skip(1).forEach((path_) -> {
+                                    Map.Entry<Path, AdvancedFile> entry = depth.get(depth.size() - 1);
+                                    String temp_1 = entry.getKey().toString();
+                                    if (temp_1.startsWith(PATH_SEPARATOR)) {
+                                        temp_1 = temp_1.substring(PATH_SEPARATOR.length());
+                                    }
+                                    String temp_2 = path_.toString();
+                                    if (temp_2.startsWith(PATH_SEPARATOR)) {
+                                        temp_2 = temp_2.substring(PATH_SEPARATOR.length());
+                                    }
+                                    if (Files.isRegularFile(path_) && !temp_2.startsWith(temp_1)) {
+                                        depth.remove(depth.size() - 1);
+                                    }
+                                    final AdvancedFile temp = new AdvancedFile(this, true, path_.toString());
+                                    if (!advancedFiles.contains(temp)) {
+                                        advancedFiles.add(temp);
+                                    }
+                                    if (Files.isDirectory(path_)) {
+                                        depth.add(new AbstractMap.SimpleEntry<>(path_, temp));
+                                    }
+                                });
+                                */
+                                Files.walk(myPath).skip(1).map((path_) -> new AdvancedFile(this, true, path_.toString())).forEach(advancedFiles::add);
+                            } else {
+                                Files.walk(myPath, 1).skip(1).map((path_) -> new AdvancedFile(this, true, path_.toString())).forEach(advancedFiles::add);
+                            }
+                        } catch (Exception ex) {
+                            Logger.handleError(ex);
+                        }
+                    } catch (Exception ex) {
+                        Logger.handleError(ex);
+                    }
+                    if (fileSystem != null) {
+                        fileSystem.close();
+                    }
+                } catch (Exception ex) {
+                    Logger.handleError(ex);
+                }
+                return advancedFiles; //TODO Test this
+            }
         }
-        //TODO Implement
-        throw new NotYetImplementedRuntimeException();
     }
     
     List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive) {
