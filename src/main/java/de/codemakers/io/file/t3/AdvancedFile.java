@@ -867,7 +867,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 try {
                     final URI uri = toURI();
                     FileSystem fileSystem = null;
-                    try {
+                    try { //TODO Remove some try-catches (as much as possible)
                         Path myPath = null;
                         if (uri.getScheme().equalsIgnoreCase("jar")) {
                             try {
