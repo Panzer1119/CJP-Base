@@ -43,13 +43,14 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         final List<AdvancedFile> advancedFiles = new ArrayList<>();
+        final String file_path = file.getPath().substring(parent.getPath().length() + 1);
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 if (recursive) {
-                    zipFile.stream().forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, true, zipEntry.getName())));
+                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, true, zipEntry.getName())));
                 } else {
-                    zipFile.stream().filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, true, zipEntry.getName())));
+                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, true, zipEntry.getName())));
                 }
             } catch (Exception ex) {
                 zipFile.close();
@@ -60,6 +61,10 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
             try {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    if (!zipEntry.getName().startsWith(file_path)) { //FIXME Test this (and in the above ZipFile streams)
+                        zipInputStream.closeEntry();
+                        continue;
+                    }
                     if (!recursive && zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_CURRENT_STRING)) {
                         zipInputStream.closeEntry();
                         continue;
@@ -86,18 +91,19 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         final List<AdvancedFile> advancedFiles = new ArrayList<>();
+        final String file_path = file.getPath().substring(parent.getPath().length() + 1);
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 if (recursive) {
-                    zipFile.stream().forEach((zipEntry) -> {
+                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).forEach((zipEntry) -> {
                         final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                         if (advancedFileFilter.test(advancedFile)) {
                             advancedFiles.add(advancedFile);
                         }
                     });
                 } else {
-                    zipFile.stream().filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> {
+                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> {
                         final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                         if (advancedFileFilter.test(advancedFile)) {
                             advancedFiles.add(advancedFile);
@@ -113,6 +119,10 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
             try {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    if (!zipEntry.getName().startsWith(file_path)) { //FIXME Test this (and in the above ZipFile streams)
+                        zipInputStream.closeEntry();
+                        continue;
+                    }
                     if (!recursive && zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_CURRENT_STRING)) {
                         zipInputStream.closeEntry();
                         continue;
@@ -139,18 +149,19 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         final List<AdvancedFile> advancedFiles = new ArrayList<>();
+        final String file_path = file.getPath().substring(parent.getPath().length() + 1);
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 if (recursive) {
-                    zipFile.stream().forEach((zipEntry) -> {
+                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).forEach((zipEntry) -> {
                         final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                         if (advancedFilenameFilter.test(advancedFile.getParentFile(), advancedFile.getName())) {
                             advancedFiles.add(advancedFile);
                         }
                     });
                 } else {
-                    zipFile.stream().filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> {
+                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).filter((zipEntry) -> !zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)).forEach((zipEntry) -> {
                         final AdvancedFile advancedFile = new AdvancedFile(parent, true, zipEntry.getName());
                         if (advancedFilenameFilter.test(advancedFile.getParentFile(), advancedFile.getName())) {
                             advancedFiles.add(advancedFile);
@@ -166,6 +177,10 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
             try {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    if (!zipEntry.getName().startsWith(file_path)) { //FIXME Test this (and in the above ZipFile streams)
+                        zipInputStream.closeEntry();
+                        continue;
+                    }
                     if (!recursive && zipEntry.getName().substring(0, zipEntry.getName().length() - 1).contains(AdvancedFile.FILE_SEPARATOR_CURRENT_STRING)) {
                         zipInputStream.closeEntry();
                         continue;
@@ -367,14 +382,14 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
     }
     
     @Override
-    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file, boolean append) throws Exception {
+    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file, boolean append) {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         throw new NotYetImplementedRuntimeException();
     }
     
     @Override
-    public boolean writeBytes(AdvancedFile parent, AdvancedFile file, byte[] data) throws Exception {
+    public boolean writeBytes(AdvancedFile parent, AdvancedFile file, byte[] data) {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         if (data == null) {
@@ -384,28 +399,28 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
     }
     
     @Override
-    public boolean createNewFile(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public boolean createNewFile(AdvancedFile parent, AdvancedFile file) {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         throw new NotYetImplementedRuntimeException();
     }
     
     @Override
-    public boolean delete(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public boolean delete(AdvancedFile parent, AdvancedFile file) {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         throw new NotYetImplementedRuntimeException();
     }
     
     @Override
-    public boolean mkdir(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public boolean mkdir(AdvancedFile parent, AdvancedFile file) {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         throw new NotYetImplementedRuntimeException();
     }
     
     @Override
-    public boolean mkdirs(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public boolean mkdirs(AdvancedFile parent, AdvancedFile file) {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         throw new NotYetImplementedRuntimeException();
