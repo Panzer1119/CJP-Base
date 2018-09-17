@@ -263,7 +263,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             try {
                 final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING));
                 if (zipEntry == null) {
-                    throw new FileIsNotExistingException();
+                    throw new FileIsNotExistingException(file + " does not exist");
                 }
                 return new BufferedInputStream(zipFile.getInputStream(zipEntry)) {
                     @Override
@@ -311,7 +311,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             try {
                 final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING));
                 if (zipEntry == null) {
-                    throw new FileIsNotExistingException();
+                    throw new FileIsNotExistingException(file + " does not exist");
                 }
                 data = IOUtils.toByteArray(zipFile.getInputStream(zipEntry));
             } catch (Exception ex) {
@@ -336,7 +336,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
                 if (zipEntry != null) {
                     zipInputStream.closeEntry();
                 } else {
-                    throw new FileIsNotExistingException();
+                    throw new FileIsNotExistingException(file + " does not exist");
                 }
             } catch (Exception ex) {
                 zipInputStream.close();
@@ -358,7 +358,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             try {
                 final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING));
                 if (zipEntry == null) {
-                    throw new FileIsNotExistingException();
+                    throw new FileIsNotExistingException(file + " does not exist");
                 }
                 return new CloseableZipFileEntry(zipFile, zipEntry);
             } catch (Exception ex) {
