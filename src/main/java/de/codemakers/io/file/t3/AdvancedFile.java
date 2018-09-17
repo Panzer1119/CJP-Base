@@ -48,7 +48,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implements Convertable<ExternFile>, Copyable {
+public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implements Convertable<ExternFile>, Copyable { //TODO Add ".." functionality (for going one directory up)
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();
@@ -139,14 +139,14 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public AdvancedFile(AdvancedFile parent, boolean forceParent, String... paths) {
         if (forceParent) {
             this.parent = parent;
-            if (parent != null) { //FIXME This should only be used internally, but also someone should can use this, but then the parent != this.parent; So maybe make THIS constructor to a private/protected static function? And make the same Constructor again, but dealing the parent object right and make one AdvancedFile of the parent + paths if needed
+            if (parent != null) {
                 this.windowsSeparator = parent.windowsSeparator;
                 this.extern = parent.extern;
                 this.absolute = parent.absolute;
                 init = true;
             }
         } else {
-            if (parent != null) { //TODO Test this
+            if (parent != null) {
                 paths = Arrays.copyOf(paths, paths.length + 1);
                 System.arraycopy(paths, 0, paths, 1, paths.length - 1);
                 paths[0] = parent.getPath();
@@ -410,7 +410,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             checkAndErrorIfRelativeClassIsNull(true);
             final String[] paths_prefixes = getPackagePathsFromClass();
             final String[] paths_ = new String[paths_prefixes.length + paths.length];
-            if (paths_prefixes.length > 0) { //TODO Test this
+            if (paths_prefixes.length > 0) {
                 System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
             }
             System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
@@ -785,8 +785,8 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     @Override
     public InputStream createInputStream() throws Exception {
-        //checkAndErrorIfNotExisting(true); //FIXME Prevent StackOverFlow
-        //checkAndErrorIfNotFile(true); //FIXME Prevent StackOverFlow
+        //checkAndErrorIfNotExisting(true);
+        //checkAndErrorIfNotFile(true);
         if (parent != null) {
             return parent.createInputStream(this);
         }
