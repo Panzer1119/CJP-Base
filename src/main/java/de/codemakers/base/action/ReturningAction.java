@@ -29,44 +29,61 @@ import java.util.concurrent.Future;
  * @param <T> Type input
  */
 public class ReturningAction<T> extends Action<ToughConsumer<T>, T> {
-
-    private final ToughSupplier<T> supplier;
-
+    
+    protected final ToughSupplier<T> supplier;
+    
     public ReturningAction(ToughSupplier<T> supplier) {
         super();
         Objects.requireNonNull(supplier, "supplier may not be null!");
         this.supplier = supplier;
     }
-
+    
     public ReturningAction(CJP cjp, ToughSupplier<T> supplier) {
         super(cjp);
         Objects.requireNonNull(supplier, "supplier may not be null!");
         this.supplier = supplier;
     }
-
+    
+    /**
+     * Returns the internal {@link de.codemakers.base.util.tough.ToughSupplier}
+     *
+     * @return {@link de.codemakers.base.util.tough.ToughSupplier}
+     */
     public final ToughSupplier<T> getSupplier() {
         return supplier;
     }
-
-    public final T direct(ToughConsumer<Throwable> failure) {
+    
+    /**
+     * Runs directly the {@link de.codemakers.base.util.tough.ToughRunnable}
+     *
+     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point.
+     *
+     * @return {@link T}
+     */
+    public T direct(ToughConsumer<Throwable> failure) {
         return supplier.get(failure);
     }
-
-    public final T direct() {
+    
+    /**
+     * Runs directly the {@link de.codemakers.base.util.tough.ToughRunnable}
+     *
+     * @return {@link T}
+     */
+    public T direct() {
         return supplier.getWithoutException();
     }
-
+    
     @Override
-    public final void queue(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
+    public void queue(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
         cjp.getFixedExecutorService().submit(() -> run(success, failure));
     }
-
+    
     @Override
-    public final void queueSingle(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
+    public void queueSingle(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
         cjp.getSingleExecutorService().submit(() -> run(success, failure));
     }
-
-    private final void run(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
+    
+    protected void run(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
         try {
             final T t = supplier.get();
             if (success != null) {
@@ -80,15 +97,15 @@ public class ReturningAction<T> extends Action<ToughConsumer<T>, T> {
             }
         }
     }
-
+    
     @Override
-    public final Future<T> submit() {
+    public Future<T> submit() {
         return cjp.getFixedExecutorService().submit(supplier::getWithoutException);
     }
-
+    
     @Override
-    public final Future<T> submitSingle() {
+    public Future<T> submitSingle() {
         return cjp.getSingleExecutorService().submit(supplier::getWithoutException);
     }
-
+    
 }

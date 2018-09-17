@@ -17,6 +17,7 @@
 package de.codemakers.base.logger;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 
 public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
@@ -31,30 +32,63 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
     @Override
     public void log(Object object) {
-        super.log(object);
+        log(object, Instant.now(), Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()), LogLevel.INFO);
     }
     
     @Override
     public void log(Object object, Instant timestamp) {
-        super.log(object, timestamp);
+        log(object, timestamp, Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()), LogLevel.INFO);
     }
     
     @Override
     public void log(Object object, Instant timestamp, Thread thread) {
-        super.log(object, timestamp, thread);
+        log(object, timestamp, thread, cutStackTrace(new Exception().getStackTrace()), LogLevel.INFO);
     }
     
     @Override
     public void log(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
-        super.log(object, timestamp, thread, stackTraceElement);
+        log(object, timestamp, thread, stackTraceElement, LogLevel.INFO);
     }
     
     public void log(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
-        super.log(object, timestamp, thread, stackTraceElement);
+        if (timestamp == null) {
+            timestamp = Instant.now();
+        }
+        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)));
     }
     
     @Override
-    public void logErr(Object object, Throwable throwable, Object... arguments) {
-    
+    public void logErr(Object object, Throwable throwable) {
+        logErr(object, throwable, Instant.now(), Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
     }
+    
+    @Override
+    public void logErr(Object object, Throwable throwable, Instant timestamp) {
+        logErr(object, throwable, timestamp, Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
+    }
+    
+    @Override
+    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread) {
+        logErr(object, throwable, timestamp, thread, cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
+    }
+    
+    @Override
+    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
+        logErr(object, throwable, timestamp, thread, stackTraceElement, LogLevel.ERROR);
+    }
+    
+    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
+        if (timestamp == null) {
+            timestamp = Instant.now();
+        }
+        logErrFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)), throwable);
+    }
+    
+    protected String formatLogLevel(LogLevel logLevel) {
+        if (logLevel == null) {
+            return "";
+        }
+        return "[" + logLevel + "]";
+    }
+    
 }

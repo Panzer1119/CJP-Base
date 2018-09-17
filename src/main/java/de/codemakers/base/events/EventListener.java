@@ -16,9 +16,38 @@
 
 package de.codemakers.base.events;
 
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
+
 @FunctionalInterface
-public interface EventListener<E extends Event> {
-
-    <T extends E> void onEvent(T event);
-
+public interface EventListener<T extends Event> {
+    
+    /**
+     * Triggered if an Event has occurred
+     *
+     * @param event Event
+     *
+     * @return return <t>true</t> if the event should get consumed
+     *
+     * @throws Exception
+     */
+    boolean onEvent(T event) throws Exception;
+    
+    default boolean onEvent(T event, ToughConsumer<Throwable> failure) {
+        try {
+            return onEvent(event);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    default boolean onEventWithoutException(T event) {
+        return onEvent(event, null);
+    }
+    
 }

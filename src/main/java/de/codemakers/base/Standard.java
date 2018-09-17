@@ -16,8 +16,16 @@
 
 package de.codemakers.base;
 
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.os.OSUtil;
+import de.codemakers.io.file.AdvancedFile;
+
+import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.Objects;
 
 public class Standard {
     
@@ -25,5 +33,33 @@ public class Standard {
     public static final PrintStream SYSTEM_OUTPUT_STREAM = System.out;
     public static final PrintStream SYSTEM_ERROR_STREAM = System.err;
     public static final InputStream SYSTEM_INPUT_STREAM = System.in;
+    
+    public static final URL RUNNING_JAR_URL = Standard.class.getProtectionDomain().getCodeSource().getLocation();
+    public static final URI RUNNING_JAR_URI;
+    public static final String RUNNING_JAR_PATH_STRING = RUNNING_JAR_URL.getPath();
+    public static final boolean RUNNING_JAR_IS_JAR = RUNNING_JAR_URL.getPath().toLowerCase().endsWith(".jar");
+    public static final File RUNNING_JAR_FILE = new File(RUNNING_JAR_URL.getPath());
+    public static final AdvancedFile RUNNING_JAR_ADVANCED_FILE = new AdvancedFile(RUNNING_JAR_URL.getPath());
+    
+    static {
+        URI RUNNING_JAR_URI_ = null;
+        try {
+            RUNNING_JAR_URI_ = RUNNING_JAR_URL.toURI();
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+        }
+        RUNNING_JAR_URI = RUNNING_JAR_URI_;
+    }
+    
+    public static final File getInternFileFromAbsolutePath(String path) {
+        Objects.requireNonNull(path);
+        return new File(RUNNING_JAR_PATH_STRING + path);
+    }
+    
+    public static final File getInternFileFromRelative(Class<?> clazz, String path) {
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(path);
+        return new File(RUNNING_JAR_PATH_STRING + File.separator + clazz.getPackage().getName().replaceAll("\\.", OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()) + File.separator + path);
+    }
     
 }
