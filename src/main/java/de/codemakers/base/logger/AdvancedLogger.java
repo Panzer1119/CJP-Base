@@ -293,7 +293,7 @@ public abstract class AdvancedLogger implements ILogger {
     @Override
     public void handleError(Throwable throwable) {
         if (throwable != null) {
-            logErr("An error occurred: " + throwable, throwable);
+            logErr("Error handling", throwable);
         }
     }
     
