@@ -23,6 +23,7 @@ import de.codemakers.io.file.t3.AdvancedFilenameFilter;
 import de.codemakers.io.file.t3.closeable.CloseableZipEntry;
 import de.codemakers.io.file.t3.closeable.CloseableZipFileEntry;
 import de.codemakers.io.file.t3.closeable.CloseableZipInputStreamEntry;
+import de.codemakers.io.file.t3.exceptions.isnot.FileIsNotExistingException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
@@ -261,7 +262,11 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 //return new AdvancedCloseableInputStream(zipFile, zipFile.getInputStream(zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING))));
-                return new BufferedInputStream(zipFile.getInputStream(zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)))) {
+                final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING));
+                if (zipEntry == null) {
+                    throw new FileIsNotExistingException();
+                }
+                return new BufferedInputStream(zipFile.getInputStream(zipEntry)) {
                     @Override
                     public void close() throws IOException {
                         zipFile.close();
@@ -316,7 +321,11 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             byte[] data = null;
             try {
-                data = IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING))));
+                final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING));
+                if (zipEntry == null) {
+                    throw new FileIsNotExistingException();
+                }
+                data = IOUtils.toByteArray(zipFile.getInputStream(zipEntry));
             } catch (Exception ex) {
                 zipFile.close();
                 throw ex;
@@ -338,6 +347,8 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
                 data = IOUtils.toByteArray(zipInputStream);
                 if (zipEntry != null) {
                     zipInputStream.closeEntry();
+                } else {
+                    throw new FileIsNotExistingException();
                 }
             } catch (Exception ex) {
                 zipInputStream.close();
@@ -357,7 +368,11 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
-                return new CloseableZipFileEntry(zipFile, zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING)));
+                final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING));
+                if (zipEntry == null) {
+                    throw new FileIsNotExistingException();
+                }
+                return new CloseableZipFileEntry(zipFile, zipEntry);
             } catch (Exception ex) {
                 zipFile.close();
                 throw ex;
