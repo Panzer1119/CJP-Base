@@ -16,7 +16,6 @@
 
 package de.codemakers.io.file.t3;
 
-import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
@@ -26,6 +25,7 @@ import de.codemakers.base.reflection.ReflectionUtil;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Convertable;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.io.file.t3.closeable.CloseablePath;
 import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.t3.exceptions.isnot.RelativeClassIsNotNullException;
@@ -73,8 +73,10 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
     public static final InternProvider INTERN_PROVIDER = new InternProvider();
     
+    public static boolean DEBUG = false;
     public static boolean DEBUG_TO_STRING = false;
     public static boolean DEBUG_TO_STRING_BIG = false;
+    public static boolean DEBUG_FILE_PROVIDER = false;
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
@@ -315,9 +317,13 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 clazz = null;
                 temp.clear();
                 name = "";
-                System.out.println("FOUND A  FILE PROVIDER FOR: \"" + p + "\"");
+                if (DEBUG_FILE_PROVIDER) {
+                    System.out.println("FOUND A  FILE PROVIDER FOR: \"" + p + "\": " + fileProvider);
+                }
             } else {
-                System.out.println("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
+                if (DEBUG_FILE_PROVIDER) {
+                    System.out.println("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
+                }
             }
         }
         if (temp.isEmpty()) {
@@ -463,7 +469,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().isFile();
         } else { //TODO Test this
-            return Files.isRegularFile(toPath());
+            return getRealPath().closeWithoutException(Files::isRegularFile);
         }
     }
     
@@ -488,7 +494,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().isDirectory();
         } else { //TODO Test this
-            return Files.isDirectory(toPath());
+            return getRealPath().closeWithoutException(Files::isDirectory);
         }
     }
     
@@ -582,8 +588,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     @Override
     public Path toPath() {
+        if (isIntern()) {
+            throw new UnsupportedOperationException("Use getRealPath() for intern files");
+        }
         if (path_ == null) {
-            path_ = generateRealPath();
+            path_ = toFile().toPath();
         }
         return path_;
     }
@@ -592,9 +601,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         path_ = null;
     }
     
-    Path generateRealPath() {
+    public CloseablePath getRealPath() {
         if (isExtern()) {
-            return toFile().toPath();
+            return new CloseablePath(null, toFile().toPath());
         } else {
             try {
                 final URI uri = toURI();
@@ -610,10 +619,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 } else {
                     myPath = Paths.get(uri);
                 }
-                if (fileSystem != null) {
-                    fileSystem.close();
-                }
-                return myPath;
+                return new CloseablePath(fileSystem, myPath);
             } catch (Exception ex) {
                 Logger.handleError(ex);
                 return null;
@@ -859,57 +865,30 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 return Stream.of(toFile().listFiles()).map(AdvancedFile::new).collect(Collectors.toList());
             }
         } else {
-            if (Standard.RUNNING_JAR_IS_JAR) {
+            /*if (Standard.RUNNING_JAR_IS_JAR) {
                 if (isAbsolute()) {
                     return Standard.RUNNING_JAR_ADVANCED_FILE.listFiles(this, recursive); //TODO Test this
                 } else {
                     //TODO Implement
                     throw new NotYetImplementedRuntimeException();
                 }
-            } else {
+            } else {*/
                 final List<AdvancedFile> advancedFiles = new ArrayList<>();
+                final CloseablePath closeablePath = getRealPath();
                 try {
-                    final URI uri = toURI();
-                    FileSystem fileSystem = null;
-                    try { //TODO Remove some try-catches (as much as possible)
-                        Path myPath = null;
-                        if (uri.getScheme().equalsIgnoreCase("jar")) {
-                            fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
-                            try {
-                                myPath = fileSystem.getPath(getPath());
-                            } catch (Exception ex) {
-                                Logger.handleError(ex);
-                            }
-                        } else {
-                            myPath = Paths.get(uri);
-                        }
-                        if (myPath == null) {
-                            if (fileSystem != null) {
-                                fileSystem.close();
-                            }
-                            return advancedFiles;
-                        }
-                        try { //TODO Test this
-                            final int myPath_length = myPath.toString().length();
-                            if (recursive) {
-                                Files.walk(myPath).skip(1).map((path_) -> new AdvancedFile(this, true, path_.toString().substring(myPath_length))).forEach(advancedFiles::add);
-                            } else {
-                                Files.walk(myPath, 1).skip(1).map((path_) -> new AdvancedFile(this, true, path_.toString().substring(myPath_length))).forEach(advancedFiles::add);
-                            }
-                        } catch (Exception ex) {
-                            Logger.handleError(ex);
-                        }
-                    } catch (Exception ex) {
-                        Logger.handleError(ex);
-                    }
-                    if (fileSystem != null) {
-                        fileSystem.close();
+                    final Path myPath = closeablePath.getData();
+                    final int myPath_length = myPath.toString().length();
+                    if (recursive) {
+                        Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).forEach(advancedFiles::add);
+                    } else {
+                        Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).forEach(advancedFiles::add);
                     }
                 } catch (Exception ex) {
                     Logger.handleError(ex);
                 }
-                return advancedFiles; //TODO Test this
-            }
+                closeablePath.closeWithoutException();
+                return advancedFiles;
+            //}
         }
     }
     

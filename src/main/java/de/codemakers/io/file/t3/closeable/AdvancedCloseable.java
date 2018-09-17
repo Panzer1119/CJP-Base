@@ -22,7 +22,6 @@ import de.codemakers.base.util.tough.ToughConsumer;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.function.Function;
 
 public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
@@ -32,7 +31,6 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
     private boolean closed = false;
     
     public AdvancedCloseable(T closeable, D data) {
-        Objects.requireNonNull(closeable);
         this.closeable = closeable;
         this.data = data;
     }
@@ -52,7 +50,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
     public void preClose(T closeable, D data) throws IOException {
     }
     
-    public void postClose(T closeable, D data) throws IOException {
+    public void postClose(T closeable, D data) {
     }
     
     @Override
@@ -60,9 +58,11 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
         if (closed) {
             throw new CJPRuntimeException(getClass().getSimpleName() + " already closed");
         }
-        preClose(closeable, data);
-        closeable.close();
-        postClose(closeable, data);
+        if (closeable != null) {
+            preClose(closeable, data);
+            closeable.close();
+            postClose(closeable, data);
+        }
         closed = true;
     }
     
