@@ -48,7 +48,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implements Convertable<ExternFile>, Copyable { //TODO Add ".." functionality (for going one directory up)
+public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implements Convertable<ExternFile>, Copyable {
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();

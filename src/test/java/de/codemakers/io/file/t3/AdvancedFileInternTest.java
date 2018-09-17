@@ -41,7 +41,18 @@ public class AdvancedFileInternTest {
         System.out.println("advancedFile_file_2 isFile: " + advancedFile_file_2.isFile());
         System.out.println("advancedFile_file_2 isDirectory: " + advancedFile_file_2.isDirectory());
         final AdvancedFile advancedFile_folder_2 = new AdvancedFile("test/test_1");
+        System.out.println("advancedFile_folder_2: " + advancedFile_folder_2);
         advancedFile_folder_2.mkdirsWithoutException();
+        System.out.println("advancedFile_folder_2 exists: " + advancedFile_folder_2.exists());
+        System.out.println("advancedFile_folder_2 listFiles: " + advancedFile_folder_2.listFiles());
+        advancedFile_folder_2.listFiles().stream().filter(AdvancedFile::isFile).forEach((advancedFile) -> System.out.println(new String(advancedFile.readBytesWithoutException())));
+        System.out.println("########");
+        final AdvancedFile advancedFile_folder_3 = new AdvancedFile("../CJP-Base/test/test_1");
+        System.out.println("advancedFile_folder_3: " + advancedFile_folder_3);
+        System.out.println("advancedFile_folder_3 exists: " + advancedFile_folder_3.exists());
+        System.out.println("advancedFile_folder_3 listFiles: " + advancedFile_folder_3.listFiles());
+        advancedFile_folder_3.listFiles().stream().filter(AdvancedFile::isFile).forEach((advancedFile) -> System.out.println(new String(advancedFile.readBytesWithoutException())));
+        System.out.println("########");
         final AdvancedFile advancedFile_file_3 = new AdvancedFile(advancedFile_folder_2, "test.txt");
         advancedFile_file_3.writeBytesWithoutException(("Test " + Math.random()).getBytes());
     }
