@@ -490,7 +490,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return toFile().isFile();
-        } else { //TODO Test this
+        } else {
             return getRealPath().closeWithoutException(Files::isRegularFile);
         }
     }
@@ -515,7 +515,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return toFile().isDirectory();
-        } else { //TODO Test this
+        } else {
             return getRealPath().closeWithoutException(Files::isDirectory);
         }
     }
@@ -542,9 +542,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             return toFile().exists();
         } else {
             if (isAbsolute()) {
-                return AdvancedFile.class.getResource(getPath()) != null; //TODO Test this
+                return AdvancedFile.class.getResource(getPath()) != null;
             } else {
-                return clazz.getResource(getPath()) != null; //FIXME Test this
+                return clazz.getResource(getPath()) != null;
             }
         }
     }
@@ -784,7 +784,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public InputStream createInputStream() throws Exception { //TODO Test this
+    public InputStream createInputStream() throws Exception {
         //checkAndErrorIfNotExisting(true); //FIXME Prevent StackOverFlow
         //checkAndErrorIfNotFile(true); //FIXME Prevent StackOverFlow
         if (parent != null) {
@@ -794,9 +794,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             return new FileInputStream(toFile());
         } else {
             if (isAbsolute()) {
-                return AdvancedFile.class.getResourceAsStream(getPath()); //TODO Test this
+                return AdvancedFile.class.getResourceAsStream(getPath());
             } else {
-                return clazz.getResourceAsStream(getPath()); //FIXME Test this
+                return clazz.getResourceAsStream(getPath());
             }
         }
     }
@@ -810,7 +810,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public byte[] readBytes() throws Exception { //TODO Test this
+    public byte[] readBytes() throws Exception {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
         if (parent != null) {
@@ -831,7 +831,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public OutputStream createOutputStream(boolean append) throws Exception { //TODO Test this
+    public OutputStream createOutputStream(boolean append) throws Exception {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {
@@ -849,7 +849,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public boolean writeBytes(byte[] data) throws Exception { //TODO Test this
+    public boolean writeBytes(byte[] data) throws Exception {
         checkAndErrorIfIntern(true);
         checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
         if (parent != null) {

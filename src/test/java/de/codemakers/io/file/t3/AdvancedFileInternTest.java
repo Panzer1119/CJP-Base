@@ -37,6 +37,8 @@ public class AdvancedFileInternTest {
         final AdvancedFile advancedFile_file_2 = new AdvancedFile("intern:" + AdvancedFileTest.class.getSimpleName() + ".class");
         System.out.println("advancedFile_file_2: " + advancedFile_file_2);
         System.out.println("advancedFile_file_2 exists: " + advancedFile_file_2.exists());
+        System.out.println("advancedFile_file_2 isFile: " + advancedFile_file_2.isFile());
+        System.out.println("advancedFile_file_2 isDirectory: " + advancedFile_file_2.isDirectory());
     }
     
 }
