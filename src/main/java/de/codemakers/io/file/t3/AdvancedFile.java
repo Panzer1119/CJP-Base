@@ -865,30 +865,21 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 return Stream.of(toFile().listFiles()).map(AdvancedFile::new).collect(Collectors.toList());
             }
         } else {
-            /*if (Standard.RUNNING_JAR_IS_JAR) {
-                if (isAbsolute()) {
-                    return Standard.RUNNING_JAR_ADVANCED_FILE.listFiles(this, recursive); //TODO Test this
+            final List<AdvancedFile> advancedFiles = new ArrayList<>();
+            final CloseablePath closeablePath = getRealPath();
+            try {
+                final Path myPath = closeablePath.getData();
+                final int myPath_length = myPath.toString().length();
+                if (recursive) {
+                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).forEach(advancedFiles::add);
                 } else {
-                    //TODO Implement
-                    throw new NotYetImplementedRuntimeException();
+                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).forEach(advancedFiles::add);
                 }
-            } else {*/
-                final List<AdvancedFile> advancedFiles = new ArrayList<>();
-                final CloseablePath closeablePath = getRealPath();
-                try {
-                    final Path myPath = closeablePath.getData();
-                    final int myPath_length = myPath.toString().length();
-                    if (recursive) {
-                        Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).forEach(advancedFiles::add);
-                    } else {
-                        Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).forEach(advancedFiles::add);
-                    }
-                } catch (Exception ex) {
-                    Logger.handleError(ex);
-                }
-                closeablePath.closeWithoutException();
-                return advancedFiles;
-            //}
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+            closeablePath.closeWithoutException();
+            return advancedFiles;
         }
     }
     
