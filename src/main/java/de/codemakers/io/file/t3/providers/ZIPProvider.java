@@ -91,7 +91,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         final List<AdvancedFile> advancedFiles = new ArrayList<>();
-        final String file_path = file.getPath().substring(parent.getPath().length() + 1);
+        final String file_path = file.getPath().startsWith(parent.getPath()) ? file.getPath().substring(parent.getPath().length() + 1) : (file.getPath().startsWith(AdvancedFile.PATH_SEPARATOR) ? file.getPath().substring(AdvancedFile.PATH_SEPARATOR.length()) : file.getPath());
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
@@ -149,7 +149,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         final List<AdvancedFile> advancedFiles = new ArrayList<>();
-        final String file_path = file.getPath().substring(parent.getPath().length() + 1);
+        final String file_path = file.getPath().startsWith(parent.getPath()) ? file.getPath().substring(parent.getPath().length() + 1) : (file.getPath().startsWith(AdvancedFile.PATH_SEPARATOR) ? file.getPath().substring(AdvancedFile.PATH_SEPARATOR.length()) : file.getPath());
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
@@ -209,12 +209,11 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
     public boolean isDirectory(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        final CloseableZipEntry closableZipEntry = getClosableZipEntry(parent, file, inputStream);
+        final CloseableZipEntry<?> closableZipEntry = getClosableZipEntry(parent, file, inputStream);
         if (closableZipEntry == null) {
             return false;
         }
-        //return closableZipEntry.closeWithoutException(ZipEntry::isDirectory); //FIXME why is this not working?
-        return (boolean) closableZipEntry.closeWithoutException((object) -> ((ZipEntry) object).isDirectory()); //TODO Test this
+        return closableZipEntry.closeWithoutException(ZipEntry::isDirectory);
     }
     
     @Override
