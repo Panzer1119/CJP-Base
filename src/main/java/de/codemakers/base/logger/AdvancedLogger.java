@@ -109,6 +109,15 @@ public abstract class AdvancedLogger implements ILogger {
         logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement)));
     }
     
+    @Override
+    public void log(Object object, Object... arguments) {
+        if (arguments != null && arguments.length > 0) {
+            logFinal(String.format(object + "", arguments));
+        } else {
+            logFinal(object);
+        }
+    }
+    
     protected abstract void logFinal(Object object);
     
     /**
@@ -158,6 +167,15 @@ public abstract class AdvancedLogger implements ILogger {
             timestamp = Instant.now();
         }
         logErrFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement)), throwable);
+    }
+    
+    @Override
+    public void logErr(Object object, Throwable throwable, Object... arguments) {
+        if (arguments != null && arguments.length > 0) {
+            logErrFinal(String.format(object + "", arguments), throwable);
+        } else {
+            logErrFinal(object, throwable);
+        }
     }
     
     protected abstract void logErrFinal(Object object, Throwable throwable);
@@ -270,24 +288,6 @@ public abstract class AdvancedLogger implements ILogger {
     public final AdvancedLogger setStackTraceElementFormat(String stackTraceElementFormat) {
         this.stackTraceElementFormat = stackTraceElementFormat;
         return this;
-    }
-    
-    @Override
-    public void log(Object object, Object... arguments) {
-        if (arguments != null && arguments.length > 0) {
-            logFinal(String.format(object + "", arguments));
-        } else {
-            logFinal(object);
-        }
-    }
-    
-    @Override
-    public void logErr(Object object, Throwable throwable, Object... arguments) {
-        if (arguments != null && arguments.length > 0) {
-            logErrFinal(String.format(object + "", arguments), throwable);
-        } else {
-            logErrFinal(object, throwable);
-        }
     }
     
     @Override
