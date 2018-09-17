@@ -602,7 +602,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 Path myPath = null;
                 if (uri.getScheme().equalsIgnoreCase("jar")) {
                     fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
-                    myPath = fileSystem.getPath(getPath());
+                    try {
+                        myPath = fileSystem.getPath(getPath());
+                    } catch (Exception ex) {
+                        Logger.handleError(ex);
+                    }
                 } else {
                     myPath = Paths.get(uri);
                 }
@@ -870,14 +874,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                     try { //TODO Remove some try-catches (as much as possible)
                         Path myPath = null;
                         if (uri.getScheme().equalsIgnoreCase("jar")) {
+                            fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
                             try {
-                                fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
                                 myPath = fileSystem.getPath(getPath());
                             } catch (Exception ex) {
                                 Logger.handleError(ex);
-                                if (fileSystem != null) {
-                                    fileSystem.close();
-                                }
                             }
                         } else {
                             myPath = Paths.get(uri);
@@ -889,35 +890,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                             return advancedFiles;
                         }
                         try { //TODO Test this
+                            final int myPath_length = myPath.toString().length();
                             if (recursive) {
-                                /*
-                                final List<Map.Entry<Path, AdvancedFile>> depth = new ArrayList<>();
-                                depth.add(new AbstractMap.SimpleEntry<>(myPath, this));
-                                Files.walk(myPath).skip(1).forEach((path_) -> {
-                                    Map.Entry<Path, AdvancedFile> entry = depth.get(depth.size() - 1);
-                                    String temp_1 = entry.getKey().toString();
-                                    if (temp_1.startsWith(PATH_SEPARATOR)) {
-                                        temp_1 = temp_1.substring(PATH_SEPARATOR.length());
-                                    }
-                                    String temp_2 = path_.toString();
-                                    if (temp_2.startsWith(PATH_SEPARATOR)) {
-                                        temp_2 = temp_2.substring(PATH_SEPARATOR.length());
-                                    }
-                                    if (Files.isRegularFile(path_) && !temp_2.startsWith(temp_1)) {
-                                        depth.remove(depth.size() - 1);
-                                    }
-                                    final AdvancedFile temp = new AdvancedFile(this, true, path_.toString());
-                                    if (!advancedFiles.contains(temp)) {
-                                        advancedFiles.add(temp);
-                                    }
-                                    if (Files.isDirectory(path_)) {
-                                        depth.add(new AbstractMap.SimpleEntry<>(path_, temp));
-                                    }
-                                });
-                                */
-                                Files.walk(myPath).skip(1).map((path_) -> new AdvancedFile(this, true, path_.toString())).forEach(advancedFiles::add);
+                                Files.walk(myPath).skip(1).map((path_) -> new AdvancedFile(this, true, path_.toString().substring(myPath_length))).forEach(advancedFiles::add);
                             } else {
-                                Files.walk(myPath, 1).skip(1).map((path_) -> new AdvancedFile(this, true, path_.toString())).forEach(advancedFiles::add);
+                                Files.walk(myPath, 1).skip(1).map((path_) -> new AdvancedFile(this, true, path_.toString().substring(myPath_length))).forEach(advancedFiles::add);
                             }
                         } catch (Exception ex) {
                             Logger.handleError(ex);
