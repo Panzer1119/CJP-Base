@@ -18,7 +18,7 @@ package de.codemakers.base;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
-import de.codemakers.io.file.t3.AdvancedFile;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.io.File;
 import java.io.InputStream;
