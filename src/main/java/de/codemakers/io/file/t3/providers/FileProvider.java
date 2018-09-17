@@ -41,6 +41,8 @@ public abstract class FileProvider<T extends IFile> implements AdvancedFilenameF
     
     public abstract byte[] readBytes(T parent, T file, InputStream inputStream) throws Exception;
     
+    public abstract boolean canWrite(T parent, T file);
+    
     public abstract OutputStream createOutputStream(T parent, T file, boolean append) throws Exception;
     
     public abstract boolean writeBytes(T parent, T file, byte[] data) throws Exception;

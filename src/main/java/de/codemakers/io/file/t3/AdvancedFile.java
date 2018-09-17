@@ -26,6 +26,7 @@ import de.codemakers.base.util.interfaces.Convertable;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.io.file.t3.closeable.CloseablePath;
 import de.codemakers.io.file.t3.exceptions.FileNotUniqueSeparatorRuntimeException;
+import de.codemakers.io.file.t3.exceptions.FileProviderDoesNotSupportWriteOperationsRuntimeException;
 import de.codemakers.io.file.t3.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.t3.exceptions.isnot.RelativeClassIsNotNullException;
 import de.codemakers.io.file.t3.providers.FileProvider;
@@ -88,7 +89,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                     if (fileProvider_ != null && !FILE_PROVIDERS.contains(fileProvider_)) {
                         FILE_PROVIDERS.add(fileProvider_);
                     }
-                    Logger.log("Successfully auto registered FileProvider: " + fileProvider_); //TODO Debug only
+                    if (DEBUG) {
+                        Logger.log("Successfully auto registered FileProvider: " + fileProvider_);
+                    }
                 } catch (Exception ex) {
                     Logger.handleError(ex);
                 }
@@ -762,8 +765,8 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     @Override
     public InputStream createInputStream() throws Exception { //TODO Test this
-        //checkAndErrorIfNotExisting(true); //FIXME
-        //checkAndErrorIfNotFile(true); //FIXME
+        //checkAndErrorIfNotExisting(true); //FIXME Prevent StackOverFlow
+        //checkAndErrorIfNotFile(true); //FIXME Prevent StackOverFlow
         if (parent != null) {
             return parent.createInputStream(this);
         }
@@ -821,9 +824,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     OutputStream createOutputStream(AdvancedFile file, boolean append) throws Exception {
-        if (parent != null) {
-            //throw new FileHasParentRuntimeException(getPath() + " has a parent"); //FIXME why? Remote Provider should not prevent you from writing to a file, but is a parent
-        }
+        checkAndErrorIfFileProviderDoesNotSupportWriteOperations(true, file);
         return fileProvider.createOutputStream(this, file, append);
     }
     
@@ -842,9 +843,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     boolean writeBytes(AdvancedFile file, byte[] data) throws Exception {
-        if (parent != null) {
-            //throw new FileHasParentRuntimeException(getPath() + " has a parent"); //FIXME why? Remote Provider should not prevent you from writing to a file, but is a parent
-        }
+        checkAndErrorIfFileProviderDoesNotSupportWriteOperations(true, file);
         return fileProvider.writeBytes(this, file, data);
     }
     
@@ -999,6 +998,18 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (clazz != null) {
             if (throwException) {
                 throw new RelativeClassIsNotNullException(getPath() + " has an relative class");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    private boolean checkAndErrorIfFileProviderDoesNotSupportWriteOperations(boolean throwException, AdvancedFile advancedFile) {
+        if (parent != null && (fileProvider != null && !fileProvider.canWrite(this, advancedFile))) {
+            if (throwException) {
+                throw new FileProviderDoesNotSupportWriteOperationsRuntimeException(getPath() + " can not be written to");
             } else {
                 return true;
             }
