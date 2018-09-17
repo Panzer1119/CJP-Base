@@ -1,96 +1,581 @@
 /*
- *    Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 Paul Hagedorn (Panzer1119)
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
  */
 
 package de.codemakers.io.file;
 
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.io.file.exceptions.is.*;
+import de.codemakers.io.file.exceptions.isnot.*;
+import de.codemakers.security.interfaces.Cryptable;
+import de.codemakers.security.interfaces.Signable;
+import de.codemakers.security.interfaces.Verifiable;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-public interface IFile {
+public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Cryptable, Serializable, Signable, Verifiable {
     
-    String getName();
+    public abstract String getName();
     
-    IFile getParent();
+    public abstract String getPath();
     
-    String getPath();
+    public abstract String getAbsolutePath();
     
-    FileType getType();
+    public abstract T getAbsoluteFile();
     
-    IFile getAbsoluteFile();
+    public abstract T getParentFile();
     
-    URL toURL();
+    public abstract T getRoot();
     
-    URI toURI();
-    
-    boolean canRead();
-    
-    boolean canWrite();
-    
-    boolean exists();
-    
-    boolean isDirectory();
-    
-    boolean isFile();
-    
-    boolean isHidden();
-    
-    boolean isCustom();
-    
-    long created();
-    
-    long lastModified();
-    
-    long length();
-    
-    boolean delete();
-    
-    boolean deleteOnExit();
-    
-    boolean renameTo(String name);
-    
-    boolean setLastModified(long time);
-    
-    boolean setReadOnly();
-    
-    boolean setWritable(boolean writable, boolean ownerOnly);
-    
-    default boolean setWritable(boolean writable) {
-        return setWritable(writable, true);
+    public boolean isRoot() {
+        return equals(getRoot());
     }
     
-    boolean setReadable(boolean readable, boolean ownerOnly);
+    public abstract String getSeparator();
     
-    default boolean setReadable(boolean readable) {
-        return setReadable(readable, true);
+    public abstract char getSeparatorChar();
+    
+    public abstract boolean isFile();
+    
+    public abstract boolean isDirectory();
+    
+    public abstract boolean exists();
+    
+    public abstract boolean isAbsolute();
+    
+    public abstract boolean isRelative();
+    
+    public abstract boolean isIntern();
+    
+    public abstract boolean isExtern();
+    
+    public abstract Path toPath() throws Exception;
+    
+    public abstract URI toURI() throws Exception;
+    
+    public abstract URL toURL() throws Exception;
+    
+    public abstract File toFile();
+    
+    public abstract boolean mkdir() throws Exception;
+    
+    public boolean mkdir(ToughConsumer<Throwable> failure) {
+        try {
+            return mkdir();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
     }
     
-    boolean setExecutable(boolean executable, boolean ownerOnly);
-    
-    default boolean setExecutable(boolean executable) {
-        return setExecutable(executable, true);
+    public boolean mkdirWithoutException() {
+        return mkdir(null);
     }
     
-    boolean canExecute();
+    public abstract boolean mkdirs() throws Exception;
     
-    boolean copy(IFile destination);
+    public boolean mkdirs(ToughConsumer<Throwable> failure) {
+        try {
+            return mkdirs();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
     
-    boolean copyToDir(IFile destination);
+    public boolean mkdirsWithoutException() {
+        return mkdirs(null);
+    }
     
-    boolean move(IFile destination);
+    public abstract boolean delete() throws Exception;
     
-    boolean moveToDir(IFile destination);
+    public boolean delete(ToughConsumer<Throwable> failure) {
+        try {
+            return delete();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    public boolean deleteWithoutException() {
+        return delete(null);
+    }
+    
+    public abstract boolean createNewFile() throws Exception;
+    
+    public boolean createNewFile(ToughConsumer<Throwable> failure) {
+        try {
+            return createNewFile();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    public boolean createNewFileWithoutException() {
+        return createNewFile(null);
+    }
+    
+    public abstract InputStream createInputStream() throws Exception;
+    
+    public InputStream createInputStream(ToughConsumer<Throwable> failure) {
+        try {
+            return createInputStream();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public InputStream createInputStreamWithoutException() {
+        return createInputStream(null);
+    }
+    
+    public abstract byte[] readBytes() throws Exception;
+    
+    public byte[] readBytes(ToughConsumer<Throwable> failure) {
+        try {
+            return readBytes();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public byte[] readBytesWithoutException() {
+        return readBytes(null);
+    }
+    
+    public OutputStream createOutputStream() throws Exception {
+        return createOutputStream(false);
+    }
+    
+    public abstract OutputStream createOutputStream(boolean append) throws Exception;
+    
+    public OutputStream createOutputStream(ToughConsumer<Throwable> failure) {
+        return createOutputStream(false, failure);
+    }
+    
+    public OutputStream createOutputStream(boolean append, ToughConsumer<Throwable> failure) {
+        try {
+            return createOutputStream(append);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public OutputStream createOutputStreamWithoutException() {
+        return createOutputStreamWithoutException(false);
+    }
+    
+    public OutputStream createOutputStreamWithoutException(boolean append) {
+        return createOutputStream(append, null);
+    }
+    
+    public abstract boolean writeBytes(byte[] data) throws Exception;
+    
+    public boolean writeBytes(byte[] data, ToughConsumer<Throwable> failure) {
+        try {
+            return writeBytes(data);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    public boolean writeBytesWithoutException(byte[] data) {
+        return writeBytes(data, null);
+    }
+    
+    public <R> R use(Function<T, R> function) {
+        if (function == null) {
+            return null;
+        }
+        return function.apply((T) this);
+    }
+    
+    public <R> R use(Function<T, R> function, ToughConsumer<Throwable> failure) {
+        try {
+            return use(function);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public <R> R useWithoutException(Function<T, R> function) {
+        return use(function, null);
+    }
+    
+    // listFiles BEGIN =================================================================================================
+    
+    public List<T> listFiles() {
+        return listFiles(false);
+    }
+    
+    public abstract List<T> listFiles(boolean recursive);
+    
+    public List<T> listFiles(ToughConsumer<Throwable> failure) {
+        return listFiles(false, failure);
+    }
+    
+    public List<T> listFiles(boolean recursive, ToughConsumer<Throwable> failure) {
+        try {
+            return listFiles(recursive);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public List<T> listFilesWithoutException() {
+        return listFilesWithoutException(false);
+    }
+    
+    public List<T> listFilesWithoutException(boolean recursive) {
+        return listFiles(recursive, (ToughConsumer<Throwable>) null);
+    }
+    
+    // listFiles MID ============================================================
+    
+    public List<T> listFiles(P fileFilter) {
+        return listFiles(false, fileFilter);
+    }
+    
+    public abstract List<T> listFiles(boolean recursive, P fileFilter);
+    
+    public List<T> listFiles(P fileFilter, ToughConsumer<Throwable> failure) {
+        return listFiles(false, fileFilter, failure);
+    }
+    
+    public List<T> listFiles(boolean recursive, P fileFilter, ToughConsumer<Throwable> failure) {
+        try {
+            return listFiles(recursive, fileFilter);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public List<T> listFilesWithoutException(P fileFilter) {
+        return listFilesWithoutException(false, fileFilter);
+    }
+    
+    public List<T> listFilesWithoutException(boolean recursive, P fileFilter) {
+        return listFiles(recursive, fileFilter, null);
+    }
+    
+    // listFiles END ===================================================================================================
+    
+    public boolean forChildren(Consumer<T> consumer) throws Exception {
+        return forChildren(consumer, false);
+    }
+    
+    public boolean forChildren(Consumer<T> consumer, boolean recursive) {
+        if (consumer == null) {
+            return false;
+        }
+        listFiles(recursive).forEach(consumer);
+        return true;
+    }
+    
+    public boolean forChildren(Consumer<T> consumer, ToughConsumer<Throwable> failure) {
+        return forChildren(consumer, false, failure);
+    }
+    
+    public boolean forChildren(Consumer<T> consumer, boolean recursive, ToughConsumer<Throwable> failure) {
+        try {
+            return forChildren(consumer, recursive);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    public boolean forChildrenWithoutException(Consumer<T> consumer) {
+        return forChildren(consumer, null);
+    }
+    
+    public boolean forChildrenWithoutException(Consumer<T> consumer, boolean recursive) {
+        return forChildren(consumer, recursive, null);
+    }
+    
+    public boolean forChildrenParallel(Consumer<T> consumer) throws Exception {
+        return forChildrenParallel(consumer, false);
+    }
+    
+    public boolean forChildrenParallel(Consumer<T> consumer, boolean recursive) {
+        if (consumer == null) {
+            return false;
+        }
+        listFiles(recursive).stream().parallel().forEach(consumer);
+        return true;
+    }
+    
+    public boolean forChildrenParallel(Consumer<T> consumer, ToughConsumer<Throwable> failure) {
+        return forChildrenParallel(consumer, false, failure);
+    }
+    
+    public boolean forChildrenParallel(Consumer<T> consumer, boolean recursive, ToughConsumer<Throwable> failure) {
+        try {
+            return forChildrenParallel(consumer, recursive);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    public boolean forChildrenParallelWithoutException(Consumer<T> consumer) {
+        return forChildrenParallelWithoutException(consumer, false);
+    }
+    
+    public boolean forChildrenParallelWithoutException(Consumer<T> consumer, boolean recursive) {
+        return forChildrenParallel(consumer, recursive, null);
+    }
+    
+    protected boolean checkAndErrorIfFile(boolean throwException) {
+        if (isFile()) {
+            if (throwException) {
+                throw new FileIsFileRuntimeException(getPath() + " is a file");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfNotFile(boolean throwException) {
+        if (!isFile()) {
+            if (throwException) {
+                throw new FileIsNotFileRuntimeException(getPath() + " is not a file");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfDirectory(boolean throwException) {
+        if (isDirectory()) {
+            if (throwException) {
+                throw new FileIsDirectoryRuntimeException(getPath() + " is a directory");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfNotDirectory(boolean throwException) {
+        if (!isDirectory()) {
+            if (throwException) {
+                throw new FileIsNotDirectoryRuntimeException(getPath() + " is not a directory");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfExisting(boolean throwException) {
+        if (exists()) {
+            if (throwException) {
+                throw new FileIsExistingRuntimeException(getPath() + " does exist");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfNotExisting(boolean throwException) {
+        if (!exists()) {
+            if (throwException) {
+                throw new FileIsNotExistingRuntimeException(getPath() + " does not exist");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfAbsolute(boolean throwException) {
+        if (isAbsolute()) {
+            if (throwException) {
+                throw new FileIsAbsoluteRuntimeException(getPath() + " is absolute");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfNotAbsolute(boolean throwException) {
+        if (!isAbsolute()) {
+            if (throwException) {
+                throw new FileIsNotAbsoluteRuntimeException(getPath() + " is not absolute");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfRelative(boolean throwException) {
+        if (isRelative()) {
+            if (throwException) {
+                throw new FileIsRelativeRuntimeException(getPath() + " is relative");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfNotRelative(boolean throwException) {
+        if (!isRelative()) {
+            if (throwException) {
+                throw new FileIsNotRelativeRuntimeException(getPath() + " is not relative");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfIntern(boolean throwException) {
+        if (isIntern()) {
+            if (throwException) {
+                throw new FileIsInternRuntimeException(getPath() + " is intern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfNotIntern(boolean throwException) {
+        if (!isIntern()) {
+            if (throwException) {
+                throw new FileIsNotInternRuntimeException(getPath() + " is not intern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfExtern(boolean throwException) {
+        if (isExtern()) {
+            if (throwException) {
+                throw new FileIsExternRuntimeException(getPath() + " is extern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    protected boolean checkAndErrorIfNotExtern(boolean throwException) {
+        if (!isExtern()) {
+            if (throwException) {
+                throw new FileIsNotExternRuntimeException(getPath() + " is not extern");
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
     
 }

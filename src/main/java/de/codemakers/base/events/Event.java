@@ -16,27 +16,49 @@
 
 package de.codemakers.base.events;
 
-import java.util.Objects;
+import de.codemakers.base.util.interfaces.Timestamp;
+import de.codemakers.security.util.EasyCryptUtil;
 
-public class Event {
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.Random;
+
+public abstract class Event implements Timestamp, Serializable {
     
-    private final long id;
+    protected static final Random RANDOM_ID_GENERATOR = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
+    
+    protected final long id;
+    protected final long timestamp;
     
     public Event() {
-        this(System.nanoTime());
+        this(System.currentTimeMillis());
     }
     
-    public Event(long id) {
+    public Event(long timestamp) {
+        this(createRandomId(), timestamp);
+    }
+    
+    public Event(long id, long timestamp) {
         this.id = id;
+        this.timestamp = timestamp;
     }
     
-    public final long getID() {
+    public static final long createRandomId() {
+        return RANDOM_ID_GENERATOR.nextLong();
+    }
+    
+    public final long getId() {
         return id;
     }
     
     @Override
+    public final long getTimestamp() {
+        return timestamp;
+    }
+    
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + ": id=" + id;
+        return getClass().getSimpleName() + "{" + "id=" + id + ", timestamp=" + timestamp + '}';
     }
     
     @Override

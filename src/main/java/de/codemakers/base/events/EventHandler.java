@@ -23,74 +23,139 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class EventHandler<E extends Event> implements IEventHandler<E> {
-
-    private final Map<EventListener<? extends E>, Class<? extends E>> eventListeners = new ConcurrentHashMap<>();
+public class EventHandler<T extends Event> implements IEventHandler<T> {
+    
+    private final Map<EventListener<? extends T>, Class<? extends T>> eventListeners = new ConcurrentHashMap<>();
     private ExecutorService executorService = null;
-
+    private boolean containsNull = false;
+    private boolean consumeEvents = true;
+    private boolean forceEvents = false;
+    
     public EventHandler() {
         this(CJP.getInstance().getSingleExecutorService());
     }
-
+    
     public EventHandler(ExecutorService executorService) {
         this.executorService = executorService;
     }
-
+    
     public final ExecutorService getEexecutorService() {
         return executorService;
     }
-
-    public final EventHandler setExecutorService(ExecutorService executorService) {
+    
+    public final EventHandler<T> setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
         return this;
     }
-
+    
     @Override
-    public final <T extends E> EventHandler addEventListener(Class<T> clazz, EventListener<T> eventListener) {
+    public final <E extends T> EventHandler<T> addEventListener(Class<E> clazz, EventListener<E> eventListener) {
         eventListeners.put(eventListener, clazz);
-        return this;
-    }
-
-    @Override
-    public final <T extends E> EventHandler removeEventListener(Class<T> clazz, EventListener<T> eventListener) {
-        eventListeners.remove(eventListener, clazz);
-        return this;
-    }
-
-    @Override
-    public final EventHandler clearEventListeners() {
-        return this;
-    }
-
-    @Override
-    public final <T extends E> List<EventListener<T>> getEventListeners(Class<T> clazz) {
-        return eventListeners.entrySet().stream().filter((entry) -> Objects.equals(entry.getValue(), clazz)).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).collect(Collectors.toList());
-    }
-
-    @Override
-    public final <T extends E> void onEvent(T event) {
-        if (event == null) {
-            return;
+        if (clazz == null) {
+            containsNull = true;
         }
-        eventListeners.entrySet().stream().filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).forEach((eventListener) -> {
-            if (executorService != null) {
-                executorService.submit(() -> {
-                    try {
-                        eventListener.onEvent(event);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-            } else {
-                try {
-                    eventListener.onEvent(event);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
+        return this;
     }
-
+    
+    @Override
+    public final <E extends T> EventHandler<T> removeEventListener(Class<E> clazz, EventListener<E> eventListener) {
+        eventListeners.remove(eventListener, clazz);
+        containsNull = eventListeners.values().contains(null);
+        return this;
+    }
+    
+    @Override
+    public final EventHandler<T> clearEventListeners() {
+        return this;
+    }
+    
+    @Override
+    public final <E extends T> List<EventListener<E>> getEventListeners(Class<E> clazz) {
+        return eventListeners.entrySet().stream().filter((entry) -> Objects.equals(entry.getValue(), clazz)).map(Map.Entry::getKey).map((eventListener) -> (EventListener<E>) eventListener).collect(Collectors.toList());
+    }
+    
+    @Override
+    public boolean onEvent(final T event) {
+        if (event == null) {
+            return false;
+        }
+        final AtomicBoolean eventConsumed = new AtomicBoolean(false);
+        final Runnable runnable = () -> eventConsumed.set(eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).anyMatch((eventListener) -> {
+            if (forceEvents) {
+                eventListener.onEventWithoutException(event);
+                return false;
+            }
+            return eventListener.onEventWithoutException(event);
+        }));
+        if (executorService != null) {
+            executorService.submit(runnable);
+        } else {
+            runnable.run();
+        }
+        if (containsNull) {
+            final Runnable runnable_2 = () -> eventConsumed.set(eventListeners.entrySet().stream().filter((entry) -> entry.getValue() == null).map(Map.Entry::getKey).map((eventListener) -> {
+                try {
+                    return (EventListener<T>) eventListener;
+                } catch (Exception ex) {
+                    return null;
+                }
+            }).filter(Objects::nonNull).anyMatch((eventListener) -> {
+                if (forceEvents) {
+                    eventListener.onEventWithoutException(event);
+                    return false;
+                }
+                return eventListener.onEventWithoutException(event);
+            }));
+            if (executorService != null) {
+                executorService.submit(runnable_2);
+            } else {
+                runnable_2.run();
+            }
+        }
+        return consumeEvents || eventConsumed.get();
+    }
+    
+    public final boolean isConsumeEvents() {
+        return consumeEvents;
+    }
+    
+    public final EventHandler setConsumeEvents(boolean consumeEvents) {
+        this.consumeEvents = consumeEvents;
+        return this;
+    }
+    
+    public final boolean isForceEvents() {
+        return forceEvents;
+    }
+    
+    public final EventHandler setForceEvents(boolean forceEvents) {
+        this.forceEvents = forceEvents;
+        return this;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final EventHandler<?> that = (EventHandler<?>) o;
+        return containsNull == that.containsNull && consumeEvents == that.consumeEvents && forceEvents == that.forceEvents && Objects.equals(eventListeners, that.eventListeners) && Objects.equals(executorService, that.executorService);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(eventListeners, executorService, containsNull, consumeEvents, forceEvents);
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" + "eventListeners=" + eventListeners + ", executorService=" + executorService + ", containsNull=" + containsNull + ", consumeEvents=" + consumeEvents + ", forceEvents=" + forceEvents + '}';
+    }
+    
 }

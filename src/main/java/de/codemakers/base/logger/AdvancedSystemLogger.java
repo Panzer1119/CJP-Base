@@ -19,7 +19,6 @@ package de.codemakers.base.logger;
 import de.codemakers.base.Standard;
 
 import java.io.PrintStream;
-import java.time.Instant;
 
 /**
  * Standard {@link de.codemakers.base.logger.AdvancedLogger}, this implementation uses the original {@link java.lang.System} {@link java.io.PrintStream}s
@@ -31,23 +30,10 @@ public class AdvancedSystemLogger extends AdvancedLogger {
      * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.Standard#SYSTEM_OUTPUT_STREAM}
      *
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
-     * @param arguments Not used here
      */
     @Override
-    public final void log(Object object, Object... arguments) {
-        if (arguments.length >= 1 && (arguments[0] == null || arguments[0] instanceof Instant)) {
-            if (arguments.length >= 2 && (arguments[1] == null || arguments[1] instanceof Thread)) {
-                if (arguments.length >= 3 && (arguments[2] == null || arguments[2] instanceof StackTraceElement)) {
-                    log(object, (Instant) arguments[0], (Thread) arguments[1], (StackTraceElement) arguments[2]);
-                } else {
-                    log(object, (Instant) arguments[0], (Thread) arguments[1]);
-                }
-            } else {
-                log(object, (Instant) arguments[0]);
-            }
-        } else {
-            log(object);
-        }
+    protected void logFinal(Object object) {
+        Standard.SYSTEM_OUTPUT_STREAM.println(object);
     }
     
     /**
@@ -57,10 +43,9 @@ public class AdvancedSystemLogger extends AdvancedLogger {
      *
      * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
      * @param throwable Error (e.g. an {@link java.lang.Exception})
-     * @param arguments Not used here
      */
     @Override
-    public final void logErr(Object object, Throwable throwable, Object... arguments) {
+    protected void logErrFinal(Object object, Throwable throwable) {
         Standard.SYSTEM_ERROR_STREAM.println(object);
         if (throwable != null) {
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
@@ -75,20 +60,10 @@ public class AdvancedSystemLogger extends AdvancedLogger {
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      */
     @Override
-    public final void handleError(Throwable throwable) {
+    public void handleError(Throwable throwable) {
         if (throwable != null) {
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
         }
-    }
-    
-    /**
-     * Handles the internally generated Log Messages
-     *
-     * @param object Log Message
-     */
-    @Override
-    protected final void logFinal(Object object) {
-        Standard.SYSTEM_OUTPUT_STREAM.println(object);
     }
     
 }
