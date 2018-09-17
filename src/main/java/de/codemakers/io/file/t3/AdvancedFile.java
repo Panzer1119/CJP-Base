@@ -128,6 +128,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         this.paths[paths.length] = name;
         this.extern = !checkInternAndCorrect();
         this.absolute = checkAbsolute(this.paths);
+        checkInternAndRelative();
         init();
     }
     
@@ -156,6 +157,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             this.extern = !checkInternAndCorrect();
             this.absolute = checkAbsolute(this.paths);
         }
+        checkInternAndRelative();
         init();
     }
     
@@ -171,6 +173,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         } else {
             this.extern = !checkInternAndCorrect();
             this.absolute = checkAbsolute(paths);
+            checkInternAndRelative();
         }
         init();
     }
@@ -257,6 +260,23 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         resetURI();
         resetURL();
         resetFile();
+    }
+    
+    private final void checkInternAndRelative() {
+        if (isIntern() && isRelative() && clazz == null) {
+            final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            int i = 1;
+            while ((i < stackTraceElements.length) && AdvancedFile.class.getName().equals(stackTraceElements[i].getClassName())) {
+                i++;
+            }
+            if (i < stackTraceElements.length) {
+                try {
+                    clazz = AdvancedFile.class.getClassLoader().loadClass(stackTraceElements[i].getClassName());
+                } catch (Exception ex) {
+                    Logger.handleError(ex);
+                }
+            }
+        }
     }
     
     private final void init() { //TODO Test this

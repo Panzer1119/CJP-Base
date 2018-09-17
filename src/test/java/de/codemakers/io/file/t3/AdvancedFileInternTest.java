@@ -34,6 +34,9 @@ public class AdvancedFileInternTest {
         System.out.println("advancedFile_folder_1 exists: " + advancedFile_folder_1.exists());
         System.out.println("advancedFile_folder_1 listFiles(false): " + advancedFile_folder_1.listFiles(false));
         System.out.println("advancedFile_folder_1 listFiles(true): " + advancedFile_folder_1.listFiles(true));
+        final AdvancedFile advancedFile_file_2 = new AdvancedFile("intern:" + AdvancedFileTest.class.getSimpleName() + ".class");
+        System.out.println("advancedFile_file_2: " + advancedFile_file_2);
+        System.out.println("advancedFile_file_2 exists: " + advancedFile_file_2.exists());
     }
     
 }
