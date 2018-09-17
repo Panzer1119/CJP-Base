@@ -798,7 +798,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         }
         if (isExtern()) {
             return Files.readAllBytes(toPath());
-        } else { //TODO Why do not use this method below for every case? (Or for every case except if it is extern)
+        } else {
             final InputStream inputStream = createInputStream();
             final byte[] data = IOUtils.toByteArray(inputStream);
             inputStream.close();
