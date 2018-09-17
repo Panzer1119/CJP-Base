@@ -261,7 +261,6 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
-                //return new AdvancedCloseableInputStream(zipFile, zipFile.getInputStream(zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING))));
                 final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(AdvancedFile.FILE_SEPARATOR_DEFAULT_STRING));
                 if (zipEntry == null) {
                     throw new FileIsNotExistingException();
@@ -294,17 +293,6 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
                     }
                     zipInputStream.closeEntry();
                 }
-                /*
-                return new AdvancedCloseableInputStream(inputStream, zipInputStream) {
-                    @Override
-                    public void preClose(Closeable closeable, InputStream data) throws IOException {
-                        if (data != null && data instanceof ZipInputStream) {
-                            ((ZipInputStream) data).closeEntry();
-                        }
-                        super.preClose(closeable, data);
-                    }
-                };
-                */
                 return zipInputStream;
             } catch (Exception ex) {
                 zipInputStream.close();
