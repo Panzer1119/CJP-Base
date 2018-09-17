@@ -349,6 +349,11 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
         }
     }
     
+    @Override
+    public boolean canWrite(AdvancedFile parent, AdvancedFile file) {
+        return false;
+    }
+    
     public CloseableZipEntry getClosableZipEntry(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());

@@ -101,32 +101,37 @@ public class InternProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file, boolean append) throws Exception {
+    public boolean canWrite(AdvancedFile parent, AdvancedFile file) {
+        return false;
+    }
+    
+    @Override
+    public OutputStream createOutputStream(AdvancedFile parent, AdvancedFile file, boolean append) {
         throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
-    public boolean writeBytes(AdvancedFile parent, AdvancedFile file, byte[] data) throws Exception {
+    public boolean writeBytes(AdvancedFile parent, AdvancedFile file, byte[] data) {
         throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
-    public boolean createNewFile(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public boolean createNewFile(AdvancedFile parent, AdvancedFile file) {
         throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
-    public boolean delete(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public boolean delete(AdvancedFile parent, AdvancedFile file) {
         throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
-    public boolean mkdir(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public boolean mkdir(AdvancedFile parent, AdvancedFile file) {
         throw new FileIsInternRuntimeException(file + " is intern");
     }
     
     @Override
-    public boolean mkdirs(AdvancedFile parent, AdvancedFile file) throws Exception {
+    public boolean mkdirs(AdvancedFile parent, AdvancedFile file) {
         throw new FileIsInternRuntimeException(file + " is intern");
     }
     
