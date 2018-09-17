@@ -43,11 +43,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> { //TODO Test this
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         final List<AdvancedFile> advancedFiles = new ArrayList<>();
-        System.out.println("parent.getPath(): " + parent.getPath().length());
-        System.out.println("parent.getPath(): " + parent.getPath());
-        System.out.println("  file.getPath(): " + file.getPath());
-        System.out.println("  file.getPath(): " + file.getPath().length());
-        final String file_path = (file.getPath().length() > parent.getPath().length()) ? file.getPath().substring(parent.getPath().length() + 1) : (file.getPath().startsWith(AdvancedFile.PATH_SEPARATOR) ? file.getPath().substring(AdvancedFile.PATH_SEPARATOR.length()) : file.getPath());
+        final String file_path = file.getPath().startsWith(parent.getPath()) ? file.getPath().substring(parent.getPath().length() + 1) : (file.getPath().startsWith(AdvancedFile.PATH_SEPARATOR) ? file.getPath().substring(AdvancedFile.PATH_SEPARATOR.length()) : file.getPath());
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
