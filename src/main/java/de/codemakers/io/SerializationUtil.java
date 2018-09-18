@@ -16,33 +16,94 @@
 
 package de.codemakers.io;
 
+import de.codemakers.base.action.ReturningAction;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
+
 import java.io.*;
 
 public class SerializationUtil {
-
-    public static final byte[] objectToBytes(Serializable object) {
+    
+    public static byte[] objectToBytes(Serializable serializable) throws Exception {
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(serializable);
+        objectOutputStream.close();
+        return byteArrayOutputStream.toByteArray();
+    }
+    
+    public static byte[] objectToBytes(Serializable serializable, ToughConsumer<Throwable> failure) {
         try {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(object);
-            oos.close();
-            return baos.toByteArray();
+            return objectToBytes(serializable);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
             return null;
         }
     }
-
-    public static final Serializable bytesToObject(byte[] data) {
+    
+    public static byte[] objectToBytesWithoutException(Serializable serializable) {
+        return objectToBytes(serializable, null);
+    }
+    
+    public static ReturningAction<byte[]> objectToBytesAction(Serializable serializable) {
+        return new ReturningAction<>(() -> objectToBytes(serializable));
+    }
+    
+    public static Serializable bytesToObject(byte[] data) throws Exception {
+        final ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
+        final Serializable serializable = (Serializable) objectInputStream.readObject();
+        objectInputStream.close();
+        return serializable;
+    }
+    
+    public static Serializable bytesToObject(byte[] data, ToughConsumer<Throwable> failure) {
         try {
-            final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-            final Serializable object = (Serializable) ois.readObject();
-            ois.close();
-            return object;
+            return bytesToObject(data);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
             return null;
         }
     }
-
+    
+    public static Serializable bytesToObjectWithoutException(byte[] data) {
+        return bytesToObject(data, (ToughConsumer<Throwable>) null);
+    }
+    
+    public static ReturningAction<Serializable> bytesToObjectAction(byte[] data) {
+        return new ReturningAction<>(() -> bytesToObject(data));
+    }
+    
+    public static <T> T bytesToObject(byte[] data, Class<T> clazz) throws Exception {
+        return (T) bytesToObject(data);
+    }
+    
+    public static <T> T bytesToObject(byte[] data, Class<T> clazz, ToughConsumer<Throwable> failure) {
+        try {
+            return bytesToObject(data, clazz);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public static <T> T bytesToObjectWithoutException(byte[] data, Class<T> clazz) {
+        return bytesToObject(data, clazz, null);
+    }
+    
+    public static <T> ReturningAction<T> bytesToObjectAction(byte[] data, Class<T> clazz) {
+        return new ReturningAction<>(() -> bytesToObject(data, clazz));
+    }
+    
 }
