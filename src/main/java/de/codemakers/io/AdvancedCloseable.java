@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.closeable;
+package de.codemakers.io;
 
 import de.codemakers.base.exceptions.CJPRuntimeException;
 import de.codemakers.base.logger.Logger;

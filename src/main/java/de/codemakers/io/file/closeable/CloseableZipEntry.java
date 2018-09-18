@@ -17,6 +17,7 @@
 package de.codemakers.io.file.closeable;
 
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.io.AdvancedCloseable;
 
 import java.io.Closeable;
 import java.util.function.Function;
