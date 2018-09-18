@@ -16,7 +16,7 @@
 
 package de.codemakers.io.file.closeable;
 
-import de.codemakers.io.AdvancedCloseable;
+import de.codemakers.io.closeable.AdvancedCloseable;
 
 import java.io.Closeable;
 import java.util.zip.ZipEntry;

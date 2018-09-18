@@ -14,16 +14,14 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.closeable;
-
-import de.codemakers.io.AdvancedCloseable;
+package de.codemakers.io.closeable;
 
 import java.io.Closeable;
-import java.io.InputStream;
+import java.io.OutputStream;
 
-public class AdvancedCloseableInputStream extends AdvancedCloseable<Closeable, InputStream> {
+public class AdvancedCloseableOutputStream extends AdvancedCloseable<Closeable, OutputStream> {
     
-    public AdvancedCloseableInputStream(Closeable closeable, InputStream data) {
+    public AdvancedCloseableOutputStream(Closeable closeable, OutputStream data) {
         super(closeable, data);
     }
     
