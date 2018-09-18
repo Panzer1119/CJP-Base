@@ -16,6 +16,8 @@
 
 package de.codemakers.io.file.closeable;
 
+import de.codemakers.io.closeable.AdvancedCloseable;
+
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 

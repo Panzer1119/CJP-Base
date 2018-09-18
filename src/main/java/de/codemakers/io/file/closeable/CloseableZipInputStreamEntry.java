@@ -16,10 +16,7 @@
 
 package de.codemakers.io.file.closeable;
 
-import de.codemakers.base.util.tough.ToughConsumer;
-
 import java.io.IOException;
-import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -40,26 +37,6 @@ public class CloseableZipInputStreamEntry extends CloseableZipEntry<ZipInputStre
                 closeable.closeEntry();
             }
         }
-    }
-    
-    @Override
-    public <R> R close(Function<ZipEntry, R> function, ToughConsumer<Throwable> failureClosing) throws Exception {
-        return super.close(function, failureClosing);
-    }
-    
-    @Override
-    public <R> R close(Function<ZipEntry, R> function, ToughConsumer<Throwable> failureFunction, ToughConsumer<Throwable> failureClosing) {
-        return super.close(function, failureFunction, failureClosing);
-    }
-    
-    @Override
-    public <R> R closeWithoutException(Function<ZipEntry, R> function, ToughConsumer<Throwable> failureFunction) {
-        return super.closeWithoutException(function, failureFunction);
-    }
-    
-    @Override
-    public <R> R closeWithoutException(Function<ZipEntry, R> function) {
-        return super.closeWithoutException(function);
     }
     
 }

@@ -14,25 +14,20 @@
  *     limitations under the License.
  */
 
-package de.codemakers.security.interfaces;
+package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
 @FunctionalInterface
-public interface Signer extends Cryptor {
+public interface Openable<T> {
     
-    byte[] sign(byte[] data) throws Exception;
+    T open() throws Exception;
     
-    @Override
-    default byte[] crypt(byte[] data) throws Exception {
-        return sign(data);
-    }
-    
-    default byte[] sign(byte[] data, ToughConsumer<Throwable> failure) {
+    default T open(ToughConsumer<Throwable> failure) {
         try {
-            return sign(data);
+            return open();
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
@@ -43,12 +38,12 @@ public interface Signer extends Cryptor {
         }
     }
     
-    default byte[] signWithoutException(byte[] data) {
-        return sign(data, null);
+    default T openWithoutException() {
+        return open(null);
     }
     
-    default ReturningAction<byte[]> signAction(byte[] data) {
-        return new ReturningAction<>(() -> sign(data));
+    default ReturningAction<T> openAction() {
+        return new ReturningAction<>(() -> open());
     }
     
 }

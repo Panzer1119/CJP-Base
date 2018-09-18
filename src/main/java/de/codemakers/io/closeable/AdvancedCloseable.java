@@ -14,21 +14,23 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file.closeable;
+package de.codemakers.io.closeable;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.exceptions.CJPRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughFunction;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.function.Function;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
     
     private final T closeable;
     private final D data;
-    private boolean closed = false;
+    private final AtomicBoolean closed = new AtomicBoolean(false);
     
     public AdvancedCloseable(T closeable, D data) {
         this.closeable = closeable;
@@ -44,7 +46,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
     }
     
     public final boolean isClosed() {
-        return closed;
+        return closed.get();
     }
     
     public void preClose(T closeable, D data) throws IOException {
@@ -55,7 +57,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
     
     @Override
     public final void close() throws IOException {
-        if (closed) {
+        if (isClosed()) {
             throw new CJPRuntimeException(getClass().getSimpleName() + " already closed");
         }
         if (closeable != null) {
@@ -63,7 +65,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
             closeable.close();
             postClose(closeable, data);
         }
-        closed = true;
+        closed.set(true);
     }
     
     public final void close(ToughConsumer<Throwable> failure) {
@@ -79,10 +81,14 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
     }
     
     public final void closeWithoutException() {
-        close(null);
+        close((ToughConsumer<Throwable>) null);
     }
     
-    public <R> R close(Function<D, R> function, ToughConsumer<Throwable> failureClosing) throws Exception {
+    public <R> R close(ToughFunction<D, R> function) throws Exception {
+        return close(function, null);
+    }
+    
+    public <R> R close(ToughFunction<D, R> function, ToughConsumer<Throwable> failureClosing) throws Exception {
         R r = null;
         if (function != null) {
             r = function.apply(data);
@@ -91,7 +97,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
         return r;
     }
     
-    public <R> R close(Function<D, R> function, ToughConsumer<Throwable> failureFunction, ToughConsumer<Throwable> failureClosing) {
+    public <R> R close(ToughFunction<D, R> function, ToughConsumer<Throwable> failureFunction, ToughConsumer<Throwable> failureClosing) {
         try {
             return close(function, failureClosing);
         } catch (Exception ex) {
@@ -105,12 +111,20 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
         }
     }
     
-    public <R> R closeWithoutException(Function<D, R> function, ToughConsumer<Throwable> failureFunction) {
+    public <R> R closeWithoutException(ToughFunction<D, R> function, ToughConsumer<Throwable> failureFunction) {
         return close(function, failureFunction, null);
     }
     
-    public <R> R closeWithoutException(Function<D, R> function) {
+    public <R> R closeWithoutException(ToughFunction<D, R> function) {
         return closeWithoutException(function, null);
+    }
+    
+    public <R> ReturningAction<R> closeAction(ToughFunction<D, R> function, ToughConsumer<Throwable> failureFunction) {
+        return new ReturningAction<>(() -> close(function, failureFunction));
+    }
+    
+    public <R> ReturningAction<R> closeAction(ToughFunction<D, R> function) {
+        return new ReturningAction<>(() -> close(function));
     }
     
 }

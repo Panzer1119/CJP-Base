@@ -14,30 +14,15 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.util.interfaces;
+package de.codemakers.io.closeable;
 
-import de.codemakers.base.util.IDTimeUtil;
+import java.io.Closeable;
+import java.io.InputStream;
 
-@FunctionalInterface
-public interface Snowflake extends Timestamp {
+public class AdvancedCloseableInputStream extends AdvancedCloseable<Closeable, InputStream> {
     
-    long getId();
-    
-    default String getIdString() {
-        return Long.toUnsignedString(getId());
-    }
-    
-    @Override
-    default long getTimestamp() {
-        return IDTimeUtil.getTimestamp(getId());
-    }
-    
-    default long generateId() {
-        return generateId(System.currentTimeMillis());
-    }
-    
-    default long generateId(long timestamp) {
-        return IDTimeUtil.createId(timestamp);
+    public AdvancedCloseableInputStream(Closeable closeable, InputStream data) {
+        super(closeable, data);
     }
     
 }

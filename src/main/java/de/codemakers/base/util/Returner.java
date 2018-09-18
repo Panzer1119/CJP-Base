@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util;
 
-import java.util.function.Supplier;
+import de.codemakers.base.util.tough.ToughSupplier;
 
 public class Returner<T> {
     
@@ -24,23 +24,6 @@ public class Returner<T> {
     
     public Returner(T value) {
         this.value = value;
-    }
-    
-    public final T getValue() {
-        return value;
-    }
-    
-    public final Returner setValue(T value) {
-        this.value = value;
-        return this;
-    }
-    
-    public final T or(T other) {
-        return (value != null) ? value : other;
-    }
-    
-    public final T or(Supplier<T> supplier) {
-        return (value != null || supplier == null) ? value : supplier.get();
     }
     
     public static final Returner<Integer> of(Integer value) {
@@ -81,6 +64,23 @@ public class Returner<T> {
     
     public static final Returner<Double> of(Double value) {
         return new Returner<>(value);
+    }
+    
+    public final T getValue() {
+        return value;
+    }
+    
+    public final Returner setValue(T value) {
+        this.value = value;
+        return this;
+    }
+    
+    public final T or(T other) {
+        return (value != null) ? value : other;
+    }
+    
+    public final T or(ToughSupplier<T> supplier) {
+        return (value != null || supplier == null) ? value : supplier.getWithoutException();
     }
     
 }

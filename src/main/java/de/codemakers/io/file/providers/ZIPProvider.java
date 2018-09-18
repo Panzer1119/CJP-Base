@@ -210,11 +210,11 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     public boolean isDirectory(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        final CloseableZipEntry<?> closableZipEntry = getClosableZipEntry(parent, file, inputStream);
-        if (closableZipEntry == null) {
+        final CloseableZipEntry<?> closeableZipEntry = getCloseableZipEntry(parent, file, inputStream);
+        if (closeableZipEntry == null) {
             return false;
         }
-        return closableZipEntry.closeWithoutException(ZipEntry::isDirectory);
+        return closeableZipEntry.closeWithoutException(ZipEntry::isDirectory);
     }
     
     @Override
@@ -352,7 +352,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         return false;
     }
     
-    public CloseableZipEntry getClosableZipEntry(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+    public CloseableZipEntry getCloseableZipEntry(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {

@@ -20,6 +20,7 @@ import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
+@FunctionalInterface
 public interface Encryptable extends Cryptable {
     
     byte[] encrypt(Encryptor encryptor) throws Exception;
