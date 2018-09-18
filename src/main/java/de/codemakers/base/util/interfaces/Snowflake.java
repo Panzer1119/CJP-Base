@@ -18,6 +18,7 @@ package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.util.IDTimeUtil;
 
+@FunctionalInterface
 public interface Snowflake extends Timestamp {
     
     long getId();

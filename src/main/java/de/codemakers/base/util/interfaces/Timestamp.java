@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+@FunctionalInterface
 public interface Timestamp {
     
     long getTimestamp();
