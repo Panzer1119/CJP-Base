@@ -702,4 +702,18 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         }
     }
     
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        if (object == this) {
+            return true;
+        }
+        if (object instanceof IFile) {
+            return getPath().equals(((IFile) object).getPath());
+        }
+        return false;
+    }
+    
 }

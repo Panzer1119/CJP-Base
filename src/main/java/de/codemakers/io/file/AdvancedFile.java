@@ -1082,4 +1082,23 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return verifier.verify(readBytes(), data_signature);
     }
     
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final AdvancedFile that = (AdvancedFile) o;
+        return init == that.init && windowsSeparator == that.windowsSeparator && extern == that.extern && absolute == that.absolute && Arrays.equals(paths, that.paths) && Objects.equals(parent, that.parent) && Objects.equals(fileProvider, that.fileProvider) && Objects.equals(clazz, that.clazz);
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(windowsSeparator, extern, absolute, parent, fileProvider, clazz);
+        result = 31 * result + Arrays.hashCode(paths);
+        return result;
+    }
+    
 }
