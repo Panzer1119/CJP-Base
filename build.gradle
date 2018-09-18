@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'de.codemakers'
-version 'v1.8.0_172-alpha.22'
+version 'v1.8.0_172-alpha.23'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -35,5 +35,5 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 artifacts {
     archives sourcesJar
-    archives javadocJar
+    //archives javadocJar
 }
