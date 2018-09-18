@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.exceptions.is.*;
@@ -74,9 +75,60 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract Path toPath() throws Exception;
     
+    public Path toPath(ToughConsumer<Throwable> failure) {
+        try {
+            return toPath();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public Path toPathWithoutException() {
+        return toPath(null);
+    }
+    
     public abstract URI toURI() throws Exception;
     
+    public URI toURI(ToughConsumer<Throwable> failure) {
+        try {
+            return toURI();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public URI toURIWithoutException() {
+        return toURI(null);
+    }
+    
     public abstract URL toURL() throws Exception;
+    
+    public URL toURL(ToughConsumer<Throwable> failure) {
+        try {
+            return toURL();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public URL toURLWithoutException() {
+        return toURL(null);
+    }
     
     public abstract File toFile();
     
@@ -99,6 +151,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return mkdir(null);
     }
     
+    public ReturningAction<Boolean> mkdirAction() {
+        return new ReturningAction<>(() -> mkdir());
+    }
+    
     public abstract boolean mkdirs() throws Exception;
     
     public boolean mkdirs(ToughConsumer<Throwable> failure) {
@@ -116,6 +172,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public boolean mkdirsWithoutException() {
         return mkdirs(null);
+    }
+    
+    public ReturningAction<Boolean> mkdirsAction() {
+        return new ReturningAction<>(() -> mkdirs());
     }
     
     public abstract boolean delete() throws Exception;
@@ -137,6 +197,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return delete(null);
     }
     
+    public ReturningAction<Boolean> deleteAction() {
+        return new ReturningAction<>(() -> delete());
+    }
+    
     public abstract boolean createNewFile() throws Exception;
     
     public boolean createNewFile(ToughConsumer<Throwable> failure) {
@@ -154,6 +218,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public boolean createNewFileWithoutException() {
         return createNewFile(null);
+    }
+    
+    public ReturningAction<Boolean> createNewFileAction() {
+        return new ReturningAction<>(() -> createNewFile());
     }
     
     public abstract InputStream createInputStream() throws Exception;
@@ -175,6 +243,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return createInputStream(null);
     }
     
+    public ReturningAction<InputStream> createInputStreamAction() {
+        return new ReturningAction<>(() -> createInputStream());
+    }
+    
     public abstract byte[] readBytes() throws Exception;
     
     public byte[] readBytes(ToughConsumer<Throwable> failure) {
@@ -192,6 +264,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public byte[] readBytesWithoutException() {
         return readBytes(null);
+    }
+    
+    public ReturningAction<byte[]> readBytesAction() {
+        return new ReturningAction<>(() -> readBytes());
     }
     
     public OutputStream createOutputStream() throws Exception {
@@ -225,6 +301,14 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return createOutputStream(append, null);
     }
     
+    public ReturningAction<OutputStream> createOutputStreamAction() {
+        return new ReturningAction<>(() -> createOutputStream());
+    }
+    
+    public ReturningAction<OutputStream> createOutputStreamAction(boolean append) {
+        return new ReturningAction<>(() -> createOutputStream(append));
+    }
+    
     public abstract boolean writeBytes(byte[] data) throws Exception;
     
     public boolean writeBytes(byte[] data, ToughConsumer<Throwable> failure) {
@@ -242,6 +326,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public boolean writeBytesWithoutException(byte[] data) {
         return writeBytes(data, null);
+    }
+    
+    public ReturningAction<Boolean> writeBytesAction(byte[] data) {
+        return new ReturningAction<>(() -> writeBytes(data));
     }
     
     public <R> R use(Function<T, R> function) {
@@ -266,6 +354,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public <R> R useWithoutException(Function<T, R> function) {
         return use(function, null);
+    }
+    
+    public <R> ReturningAction<R> useAction(Function<T, R> function) {
+        return new ReturningAction<>(() -> use(function));
     }
     
     // listFiles BEGIN =================================================================================================
@@ -301,6 +393,14 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return listFiles(recursive, (ToughConsumer<Throwable>) null);
     }
     
+    public ReturningAction<List<T>> listFilesAction() {
+        return new ReturningAction<>(() -> listFiles());
+    }
+    
+    public ReturningAction<List<T>> listFilesAction(boolean recursive) {
+        return new ReturningAction<>(() -> listFiles(recursive));
+    }
+    
     // listFiles MID ============================================================
     
     public List<T> listFiles(P fileFilter) {
@@ -334,9 +434,17 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return listFiles(recursive, fileFilter, null);
     }
     
+    public ReturningAction<List<T>> listFilesAction(P fileFilter) {
+        return new ReturningAction<>(() -> listFiles(fileFilter));
+    }
+    
+    public ReturningAction<List<T>> listFilesAction(boolean recursive, P fileFilter) {
+        return new ReturningAction<>(() -> listFiles(recursive, fileFilter));
+    }
+    
     // listFiles END ===================================================================================================
     
-    public boolean forChildren(Consumer<T> consumer) throws Exception {
+    public boolean forChildren(Consumer<T> consumer) {
         return forChildren(consumer, false);
     }
     
@@ -373,7 +481,15 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return forChildren(consumer, recursive, null);
     }
     
-    public boolean forChildrenParallel(Consumer<T> consumer) throws Exception {
+    public ReturningAction<Boolean> forChildrenAction(Consumer<T> consumer) {
+        return new ReturningAction<>(() -> forChildren(consumer));
+    }
+    
+    public ReturningAction<Boolean> forChildrenAction(Consumer<T> consumer, boolean recursive) {
+        return new ReturningAction<>(() -> forChildren(consumer, recursive));
+    }
+    
+    public boolean forChildrenParallel(Consumer<T> consumer) {
         return forChildrenParallel(consumer, false);
     }
     
@@ -408,6 +524,14 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public boolean forChildrenParallelWithoutException(Consumer<T> consumer, boolean recursive) {
         return forChildrenParallel(consumer, recursive, null);
+    }
+    
+    public ReturningAction<Boolean> forChildrenParallelAction(Consumer<T> consumer) {
+        return new ReturningAction<>(() -> forChildrenParallel(consumer));
+    }
+    
+    public ReturningAction<Boolean> forChildrenParallelAction(Consumer<T> consumer, boolean recursive) {
+        return new ReturningAction<>(() -> forChildrenParallel(consumer, recursive));
     }
     
     protected boolean checkAndErrorIfFile(boolean throwException) {
