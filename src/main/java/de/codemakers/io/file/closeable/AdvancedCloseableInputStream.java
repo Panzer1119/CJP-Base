@@ -16,37 +16,15 @@
 
 package de.codemakers.io.file.closeable;
 
-import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.AdvancedCloseable;
 
 import java.io.Closeable;
 import java.io.InputStream;
-import java.util.function.Function;
 
 public class AdvancedCloseableInputStream extends AdvancedCloseable<Closeable, InputStream> {
     
     public AdvancedCloseableInputStream(Closeable closeable, InputStream data) {
         super(closeable, data);
-    }
-    
-    @Override
-    public <R> R close(Function<InputStream, R> function, ToughConsumer<Throwable> failureClosing) throws Exception {
-        return super.close(function, failureClosing);
-    }
-    
-    @Override
-    public <R> R close(Function<InputStream, R> function, ToughConsumer<Throwable> failureFunction, ToughConsumer<Throwable> failureClosing) {
-        return super.close(function, failureFunction, failureClosing);
-    }
-    
-    @Override
-    public <R> R closeWithoutException(Function<InputStream, R> function, ToughConsumer<Throwable> failureFunction) {
-        return super.closeWithoutException(function, failureFunction);
-    }
-    
-    @Override
-    public <R> R closeWithoutException(Function<InputStream, R> function) {
-        return super.closeWithoutException(function);
     }
     
 }
