@@ -491,7 +491,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().isFile();
         } else {
-            return getRealPath().closeWithoutException(Files::isRegularFile);
+            return toRealPath().closeWithoutException(Files::isRegularFile);
         }
     }
     
@@ -516,7 +516,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().isDirectory();
         } else {
-            return getRealPath().closeWithoutException(Files::isDirectory);
+            return toRealPath().closeWithoutException(Files::isDirectory);
         }
     }
     
@@ -611,7 +611,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     @Override
     public Path toPath() {
         if (isIntern()) {
-            throw new UnsupportedOperationException("Use getRealPath() for intern files");
+            throw new UnsupportedOperationException("Use toRealPath() for intern files");
         }
         if (path_ == null) {
             path_ = toFile().toPath();
@@ -623,7 +623,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         path_ = null;
     }
     
-    public CloseablePath getRealPath() {
+    public CloseablePath toRealPath() {
         if (isExtern()) {
             return new CloseablePath(null, toFile().toPath());
         } else {
@@ -884,7 +884,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             }
         } else {
             final List<AdvancedFile> advancedFiles = new ArrayList<>();
-            final CloseablePath closeablePath = getRealPath();
+            final CloseablePath closeablePath = toRealPath();
             try {
                 final Path myPath = closeablePath.getData();
                 final int myPath_length = myPath.toString().length();
@@ -930,7 +930,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             }
         } else {
             final List<AdvancedFile> advancedFiles = new ArrayList<>();
-            final CloseablePath closeablePath = getRealPath();
+            final CloseablePath closeablePath = toRealPath();
             try {
                 final Path myPath = closeablePath.getData();
                 final int myPath_length = myPath.toString().length();
