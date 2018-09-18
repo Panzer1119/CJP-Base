@@ -256,9 +256,6 @@ public abstract class Action<T extends Tough, R> {
      * @param delay The delay after which this computation should be executed, negative to execute immediately
      * @param unit The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
      *
-     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
-     * representing the delayed operation
-     *
      * @throws java.lang.IllegalArgumentException If the provided TimeUnit is {@code null}
      */
     public void queueSingleAfter(long delay, TimeUnit unit) {
@@ -281,9 +278,6 @@ public abstract class Action<T extends Tough, R> {
      * @param delay The delay after which this computation should be executed, negative to execute immediately
      * @param unit The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
      * @param success The success callback that will be called at a convenient time for the API. (can be null)
-     *
-     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
-     * representing the delayed operation
      *
      * @throws java.lang.IllegalArgumentException If the provided TimeUnit is {@code null}
      */
@@ -308,9 +302,6 @@ public abstract class Action<T extends Tough, R> {
      * @param unit The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
      * @param success The success callback that will be called at a convenient time for the API. (can be null)
      * @param failure The failure callback that will be called if the Request encounters an exception at its execution point.
-     *
-     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
-     * representing the delayed operation
      *
      * @throws java.lang.IllegalArgumentException If the provided TimeUnit is {@code null}
      */
@@ -426,6 +417,7 @@ public abstract class Action<T extends Tough, R> {
      * @param delay The delay after which to execute a call to {@link #complete()}
      * @param unit The {@link java.util.concurrent.TimeUnit TimeUnit} which should be used
      * (this will use {@link java.util.concurrent.TimeUnit#sleep(long) unit.sleep(delay)})
+     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point.
      *
      * @return The response value
      *
