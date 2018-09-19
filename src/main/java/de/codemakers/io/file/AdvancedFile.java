@@ -484,6 +484,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
+    public String getSeparatorRegEx() {
+        return windowsSeparator ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
+    }
+    
+    @Override
     public boolean isFile() {
         if (parent != null) {
             return parent.isFile(this);

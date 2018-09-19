@@ -111,6 +111,11 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
+    public String getSeparatorRegEx() {
+        return File.separator.equals(AdvancedFile.FILE_SEPARATOR_WINDOWS_STRING) ? AdvancedFile.FILE_SEPARATOR_WINDOWS_REGEX : File.separator;
+    }
+    
+    @Override
     public boolean isFile() {
         return file.isFile();
     }

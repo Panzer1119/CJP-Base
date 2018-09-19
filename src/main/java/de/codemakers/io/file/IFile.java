@@ -59,6 +59,8 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract char getSeparatorChar();
     
+    public abstract String getSeparatorRegEx();
+    
     public abstract boolean isFile();
     
     public abstract boolean isDirectory();
