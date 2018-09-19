@@ -25,7 +25,9 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
 
 public class InternProvider extends FileProvider<AdvancedFile> {
     
@@ -50,48 +52,44 @@ public class InternProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public boolean isFile(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        if (Standard.RUNNING_JAR_IS_JAR) {
-            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.isFile(parent, file, inputStream);
+    public boolean isFile(AdvancedFile parent, AdvancedFile file, InputStream inputStream) {
+        Objects.requireNonNull(inputStream);
+        return file.toRealPath().closeWithoutException(Files::isRegularFile);
+    }
+    
+    @Override
+    public boolean isDirectory(AdvancedFile parent, AdvancedFile file, InputStream inputStream) {
+        Objects.requireNonNull(inputStream);
+        return file.toRealPath().closeWithoutException(Files::isDirectory);
+    }
+    
+    @Override
+    public boolean exists(AdvancedFile parent, AdvancedFile file, InputStream inputStream) {
+        Objects.requireNonNull(inputStream);
+        if (file.isAbsolute()) {
+            return AdvancedFile.class.getResource(file.getPath()) != null;
         } else {
-            throw new FileIsExternRuntimeException(file + " is extern");
+            return file.getClazz().getResource(file.getPath()) != null;
         }
     }
     
     @Override
-    public boolean isDirectory(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        if (Standard.RUNNING_JAR_IS_JAR) {
-            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.isDirectory(parent, file, inputStream);
+    public InputStream createInputStream(AdvancedFile parent, AdvancedFile file, InputStream inputStream) {
+        Objects.requireNonNull(inputStream);
+        if (file.isAbsolute()) {
+            return AdvancedFile.class.getResourceAsStream(file.getPath());
         } else {
-            throw new FileIsExternRuntimeException(file + " is extern");
-        }
-    }
-    
-    @Override
-    public boolean exists(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        if (Standard.RUNNING_JAR_IS_JAR) {
-            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.exists(parent, file, inputStream);
-        } else {
-            throw new FileIsExternRuntimeException(file + " is extern");
-        }
-    }
-    
-    @Override
-    public InputStream createInputStream(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        if (Standard.RUNNING_JAR_IS_JAR) {
-            parent = Standard.RUNNING_JAR_ADVANCED_FILE;
-            return AdvancedFile.ZIP_PROVIDER.createInputStream(parent, file, inputStream);
-        } else {
-            throw new FileIsExternRuntimeException(file + " is extern");
+            return file.getClazz().getResourceAsStream(file.getPath());
         }
     }
     
     @Override
     public byte[] readBytes(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        return IOUtils.toByteArray(file.getNonNullClazz().getResourceAsStream(file.getPath()));
+        Objects.requireNonNull(inputStream);
+        final InputStream inputStream_ = createInputStream(parent, file, inputStream);
+        final byte[] data = IOUtils.toByteArray(inputStream_);
+        inputStream_.close();
+        return data;
     }
     
     @Override
