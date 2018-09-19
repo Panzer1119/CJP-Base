@@ -30,7 +30,6 @@ import de.codemakers.io.file.exceptions.FileProviderDoesNotSupportWriteOperation
 import de.codemakers.io.file.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.exceptions.isnot.RelativeClassIsNotNullException;
 import de.codemakers.io.file.providers.FileProvider;
-import de.codemakers.io.file.providers.InternProvider;
 import de.codemakers.io.file.providers.ZIPProvider;
 import de.codemakers.security.interfaces.Cryptor;
 import de.codemakers.security.interfaces.Signer;
@@ -71,7 +70,6 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     public static final List<FileProvider<AdvancedFile>> FILE_PROVIDERS = new CopyOnWriteArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
-    public static final InternProvider INTERN_PROVIDER = new InternProvider();
     
     public static boolean DEBUG = false;
     public static boolean DEBUG_TO_STRING = false;
@@ -80,7 +78,6 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
-        FILE_PROVIDERS.add(INTERN_PROVIDER);
         try {
             final Set<Class<? extends FileProvider>> fileProviders = ReflectionUtil.getSubClasses(FileProvider.class);
             fileProviders.stream().filter((fileProvider) -> fileProvider.getAnnotation(AutoRegister.class) != null).forEach((fileProvider) -> {

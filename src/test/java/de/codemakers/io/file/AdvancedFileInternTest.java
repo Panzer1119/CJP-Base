@@ -20,10 +20,10 @@ public class AdvancedFileInternTest {
     
     public static final void main(String[] args) {
         AdvancedFile.DEBUG = true;
-        AdvancedFile.DEBUG_FILE_PROVIDER = true;
+        AdvancedFile.DEBUG_FILE_PROVIDER = false;
         AdvancedFile.DEBUG_TO_STRING = true;
         AdvancedFile.DEBUG_TO_STRING_BIG = false;
-        final AdvancedFile advancedFile_file_1 = new AdvancedFile("intern:/de/codemakers/io/file/t3/" + AdvancedFileInternTest.class.getSimpleName() + ".class");
+        final AdvancedFile advancedFile_file_1 = new AdvancedFile("intern:/de/codemakers/io/file/" + AdvancedFileInternTest.class.getSimpleName() + ".class");
         System.out.println("advancedFile_file_1: " + advancedFile_file_1);
         System.out.println("advancedFile_file_1 exists: " + advancedFile_file_1.exists());
         final byte[] data_file_1 = advancedFile_file_1.readBytesWithoutException();
