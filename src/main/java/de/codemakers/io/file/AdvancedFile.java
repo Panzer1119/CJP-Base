@@ -441,18 +441,18 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return new AdvancedFile(path_root);
     }
     
-    protected AdvancedFile getParent() {
+    public AdvancedFile getParent() {
         return parent;
     }
     
-    protected AdvancedFile getRootParent() {
+    public AdvancedFile getRootParent() {
         if (parent == null) {
             return this;
         }
         return parent.getRootParent();
     }
     
-    protected AdvancedFile getPenultimateParent() {
+    public AdvancedFile getPenultimateParent() {
         if (parent == null) {
             return this;
         } else if (parent.getParent() == null) {
