@@ -31,9 +31,6 @@ import de.codemakers.io.file.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.exceptions.isnot.RelativeClassIsNotNullException;
 import de.codemakers.io.file.providers.FileProvider;
 import de.codemakers.io.file.providers.ZIPProvider;
-import de.codemakers.security.interfaces.Cryptor;
-import de.codemakers.security.interfaces.Signer;
-import de.codemakers.security.interfaces.Verifier;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -1063,25 +1060,6 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public ExternFile convert(Class<ExternFile> clazz) {
         checkAndErrorIfIntern(true);
         return new ExternFile(toFile());
-    }
-    
-    @Override
-    public byte[] crypt(Cryptor cryptor) throws Exception {
-        Objects.requireNonNull(cryptor);
-        return cryptor.crypt(readBytes());
-    }
-    
-    @Override
-    public byte[] sign(Signer signer) throws Exception {
-        Objects.requireNonNull(signer);
-        return signer.sign(readBytes());
-    }
-    
-    @Override
-    public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
-        Objects.requireNonNull(verifier);
-        Objects.requireNonNull(data_signature);
-        return verifier.verify(readBytes(), data_signature);
     }
     
     @Override

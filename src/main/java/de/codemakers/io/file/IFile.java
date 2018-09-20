@@ -21,9 +21,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.exceptions.is.*;
 import de.codemakers.io.file.exceptions.isnot.*;
-import de.codemakers.security.interfaces.Cryptable;
-import de.codemakers.security.interfaces.Signable;
-import de.codemakers.security.interfaces.Verifiable;
+import de.codemakers.security.interfaces.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -33,10 +31,11 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Cryptable, Serializable, Signable, Verifiable {
+public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Decryptable, Encryptable, Serializable, Signable, Verifiable {
     
     public abstract String getName();
     
@@ -715,6 +714,37 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
             return getPath().equals(((IFile) object).getPath());
         }
         return false;
+    }
+    
+    @Override
+    public byte[] crypt(Cryptor cryptor) throws Exception {
+        Objects.requireNonNull(cryptor);
+        return cryptor.crypt(readBytes());
+    }
+    
+    @Override
+    public byte[] decrypt(Decryptor decryptor) throws Exception {
+        Objects.requireNonNull(decryptor);
+        return decryptor.decrypt(readBytes());
+    }
+    
+    @Override
+    public byte[] encrypt(Encryptor encryptor) throws Exception {
+        Objects.requireNonNull(encryptor);
+        return encryptor.encrypt(readBytes());
+    }
+    
+    @Override
+    public byte[] sign(Signer signer) throws Exception {
+        Objects.requireNonNull(signer);
+        return signer.sign(readBytes());
+    }
+    
+    @Override
+    public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
+        Objects.requireNonNull(verifier);
+        Objects.requireNonNull(data_signature);
+        return verifier.verify(readBytes(), data_signature);
     }
     
 }
