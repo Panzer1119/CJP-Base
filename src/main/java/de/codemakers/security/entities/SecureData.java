@@ -16,19 +16,29 @@
 
 package de.codemakers.security.entities;
 
+import de.codemakers.base.entities.Data;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.security.interfaces.*;
 
 import java.util.Objects;
 
-public class EncryptedData extends SecuredData implements Decryptable, Encryptable {
+public class SecureData extends Data implements Decryptable, Encryptable {
     
-    public EncryptedData(byte[] data, Encryptor encryptor) {
+    public SecureData(byte[] data, Decryptor decryptor) {
+        this(decryptor.decryptWithoutException(data));
+    }
+    
+    public SecureData(byte[] data, Encryptor encryptor) {
         this(encryptor.encryptWithoutException(data));
     }
     
-    public EncryptedData(byte[] data) {
+    public SecureData(byte[] data) {
         super(data);
+    }
+    
+    @Override
+    public Copyable copy() {
+        return new SecureData(data);
     }
     
     @Override
@@ -47,11 +57,6 @@ public class EncryptedData extends SecuredData implements Decryptable, Encryptab
     public byte[] encrypt(Encryptor encryptor) throws Exception {
         Objects.requireNonNull(encryptor);
         return encryptor.encrypt(getData());
-    }
-    
-    @Override
-    public Copyable copy() {
-        return new EncryptedData(data);
     }
     
 }

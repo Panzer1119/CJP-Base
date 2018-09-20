@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.security.entities;
+package de.codemakers.base.entities;
 
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
@@ -23,11 +23,11 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public abstract class SecuredData implements Serializable, Copyable {
+public abstract class Data implements Serializable, Copyable {
     
     protected byte[] data;
     
-    public SecuredData(byte[] data) {
+    public Data(byte[] data) {
         this.data = data;
     }
     
@@ -35,7 +35,7 @@ public abstract class SecuredData implements Serializable, Copyable {
         return data;
     }
     
-    public SecuredData setData(byte[] data) {
+    public Data setData(byte[] data) {
         this.data = data;
         return this;
     }
@@ -43,9 +43,9 @@ public abstract class SecuredData implements Serializable, Copyable {
     @Override
     public void set(Copyable copyable) {
         Objects.requireNonNull(copyable);
-        final SecuredData securedData = Require.clazz(copyable, SecuredData.class);
-        if (securedData != null) {
-            setData(securedData.getData());
+        final Data data = Require.clazz(copyable, Data.class);
+        if (data != null) {
+            setData(data.getData());
         }
     }
     
@@ -57,7 +57,7 @@ public abstract class SecuredData implements Serializable, Copyable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final SecuredData that = (SecuredData) o;
+        final Data that = (Data) o;
         return Arrays.equals(data, that.data);
     }
     

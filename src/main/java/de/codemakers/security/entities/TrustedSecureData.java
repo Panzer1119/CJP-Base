@@ -16,6 +16,7 @@
 
 package de.codemakers.security.entities;
 
+import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.security.interfaces.Signable;
 import de.codemakers.security.interfaces.Signer;
@@ -25,19 +26,27 @@ import de.codemakers.security.interfaces.Verifier;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class VerifiedEncryptedData extends EncryptedData implements Signable, Verifiable {
+public class TrustedSecureData extends SecureData implements Signable, Verifiable {
     
     protected byte[] signature;
     
-    public VerifiedEncryptedData(byte[] data) {
+    public TrustedSecureData(byte[] data) {
         this(data, (byte[]) null);
     }
     
-    public VerifiedEncryptedData(byte[] data, Signer signer) {
+    public TrustedSecureData(byte[] data, Signer signer) {
         this(data, signer.signWithoutException(data));
     }
     
-    public VerifiedEncryptedData(byte[] data, byte[] signature) {
+    public TrustedSecureData(byte[] data, byte[] signature, Verifier verifier) {
+        this(data, signature);
+        Objects.requireNonNull(verifier);
+        if (!verifier.verifyWithoutException(data, signature)) {
+            throw new SecurityException();
+        }
+    }
+    
+    public TrustedSecureData(byte[] data, byte[] signature) {
         super(data);
         this.signature = signature;
     }
@@ -46,14 +55,24 @@ public class VerifiedEncryptedData extends EncryptedData implements Signable, Ve
         return signature;
     }
     
-    public VerifiedEncryptedData setSignature(byte[] signature) {
+    public TrustedSecureData setSignature(byte[] signature) {
         this.signature = signature;
         return this;
     }
     
     @Override
+    public void set(Copyable copyable) {
+        Objects.requireNonNull(copyable);
+        final TrustedSecureData trustedSecureData = Require.clazz(copyable, TrustedSecureData.class);
+        if (data != null) {
+            setData(trustedSecureData.getData());
+            setSignature(trustedSecureData.getSignature());
+        }
+    }
+    
+    @Override
     public Copyable copy() {
-        return new VerifiedEncryptedData(data, signature);
+        return new TrustedSecureData(data, signature);
     }
     
     @Override
@@ -86,7 +105,7 @@ public class VerifiedEncryptedData extends EncryptedData implements Signable, Ve
         if (!super.equals(o)) {
             return false;
         }
-        final VerifiedEncryptedData that = (VerifiedEncryptedData) o;
+        final TrustedSecureData that = (TrustedSecureData) o;
         return Arrays.equals(signature, that.signature);
     }
     
@@ -99,7 +118,7 @@ public class VerifiedEncryptedData extends EncryptedData implements Signable, Ve
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" + "signature=" + Arrays.toString(signature) + ", data=" + Arrays.toString(data) + '}';
+        return getClass().getSimpleName() + "{" + "data=" + Arrays.toString(data) + ", signature=" + Arrays.toString(signature) + '}';
     }
     
 }
