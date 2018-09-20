@@ -23,6 +23,10 @@ import java.util.Objects;
 
 public class EncryptedData extends SecuredData implements Decryptable, Encryptable {
     
+    public EncryptedData(byte[] data, Encryptor encryptor) {
+        this(encryptor.encryptWithoutException(data));
+    }
+    
     public EncryptedData(byte[] data) {
         super(data);
     }

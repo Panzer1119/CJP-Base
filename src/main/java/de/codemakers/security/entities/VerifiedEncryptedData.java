@@ -17,6 +17,7 @@
 package de.codemakers.security.entities;
 
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.security.interfaces.Signable;
 import de.codemakers.security.interfaces.Signer;
 import de.codemakers.security.interfaces.Verifiable;
 import de.codemakers.security.interfaces.Verifier;
@@ -24,7 +25,7 @@ import de.codemakers.security.interfaces.Verifier;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class VerifiedEncryptedData extends EncryptedData implements Verifiable {
+public class VerifiedEncryptedData extends EncryptedData implements Signable, Verifiable {
     
     protected byte[] signature;
     
@@ -53,6 +54,12 @@ public class VerifiedEncryptedData extends EncryptedData implements Verifiable {
     @Override
     public Copyable copy() {
         return new VerifiedEncryptedData(data, signature);
+    }
+    
+    @Override
+    public byte[] sign(Signer signer) throws Exception {
+        Objects.requireNonNull(signer);
+        return signer.sign(getData());
     }
     
     @Override
