@@ -25,6 +25,12 @@ import java.util.concurrent.TimeUnit;
 public class TimeUtilTest {
     
     public static final void main(String[] args) throws Exception {
+        final long timestamp_1 = System.currentTimeMillis();
+        System.out.println(timestamp_1);
+        final long timestamp_1_f = TimeUtil.getTimeFloored(timestamp_1, 30, TimeUnit.SECONDS);
+        System.out.println(timestamp_1_f);
+        final long timestamp_1_c = TimeUtil.getTimeCeiled(timestamp_1, 30, TimeUnit.SECONDS);
+        System.out.println(timestamp_1_c);
         final Instant instant_now_1 = Instant.now();
         printInstant(instant_now_1);
         final Instant instant_now_1_f = TimeUtil.getTimeFloored(instant_now_1, 30, TimeUnit.SECONDS);
