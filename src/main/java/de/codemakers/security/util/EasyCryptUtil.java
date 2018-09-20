@@ -32,13 +32,7 @@ public class EasyCryptUtil {
     private static final Random SECUREST_RANDOM;
     
     static {
-        Signature signature = null;
-        try {
-            signature = Signature.getInstance("SHA256withRSA");
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-        }
-        SIGNATURE_SHA256withRSA = signature;
+        SIGNATURE_SHA256withRSA = createSignatureSHA256withRSA();
         Random random = null;
         try {
             random = SecureRandom.getInstanceStrong();
@@ -93,8 +87,17 @@ public class EasyCryptUtil {
         return decryptorOfCipher(cipher);
     }
     
-    public static final Signer signerOfSHA256withRSA() {
-        return signerOfSignature(SIGNATURE_SHA256withRSA);
+    public static final Signature createSignatureSHA256withRSA() {
+        try {
+            return Signature.getInstance("SHA256withRSA");
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static final Signer signerOfSHA256withRSA(PrivateKey key) throws InvalidKeyException {
+        return signerOfSignature(createSignatureSHA256withRSA(), key);
     }
     
     public static final Signer signerOfSignature(Signature signature) {
@@ -109,8 +112,8 @@ public class EasyCryptUtil {
         return signerOfSignature(signature);
     }
     
-    public static final Verifier verifierOfSHA256withRSA() {
-        return verifierOfSignature(SIGNATURE_SHA256withRSA);
+    public static final Verifier verifierOfSHA256withRSA(PublicKey key) throws InvalidKeyException {
+        return verifierOfSignature(createSignatureSHA256withRSA(), key);
     }
     
     public static final Verifier verifierOfSignature(Signature signature) {
