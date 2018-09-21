@@ -30,11 +30,7 @@ import de.codemakers.io.file.exceptions.FileProviderDoesNotSupportWriteOperation
 import de.codemakers.io.file.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.exceptions.isnot.RelativeClassIsNotNullException;
 import de.codemakers.io.file.providers.FileProvider;
-import de.codemakers.io.file.providers.InternProvider;
 import de.codemakers.io.file.providers.ZIPProvider;
-import de.codemakers.security.interfaces.Cryptor;
-import de.codemakers.security.interfaces.Signer;
-import de.codemakers.security.interfaces.Verifier;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -71,7 +67,6 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     public static final List<FileProvider<AdvancedFile>> FILE_PROVIDERS = new CopyOnWriteArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
-    public static final InternProvider INTERN_PROVIDER = new InternProvider();
     
     public static boolean DEBUG = false;
     public static boolean DEBUG_TO_STRING = false;
@@ -80,7 +75,6 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
-        FILE_PROVIDERS.add(INTERN_PROVIDER);
         try {
             final Set<Class<? extends FileProvider>> fileProviders = ReflectionUtil.getSubClasses(FileProvider.class);
             fileProviders.stream().filter((fileProvider) -> fileProvider.getAnnotation(AutoRegister.class) != null).forEach((fileProvider) -> {
@@ -441,18 +435,18 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return new AdvancedFile(path_root);
     }
     
-    protected AdvancedFile getParent() {
+    public AdvancedFile getParent() {
         return parent;
     }
     
-    protected AdvancedFile getRootParent() {
+    public AdvancedFile getRootParent() {
         if (parent == null) {
             return this;
         }
         return parent.getRootParent();
     }
     
-    protected AdvancedFile getPenultimateParent() {
+    public AdvancedFile getPenultimateParent() {
         if (parent == null) {
             return this;
         } else if (parent.getParent() == null) {
@@ -481,6 +475,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     @Override
     public char getSeparatorChar() {
         return windowsSeparator ? FILE_SEPARATOR_WINDOWS_CHAR : FILE_SEPARATOR_DEFAULT_CHAR;
+    }
+    
+    @Override
+    public String getSeparatorRegEx() {
+        return windowsSeparator ? FILE_SEPARATOR_WINDOWS_REGEX : FILE_SEPARATOR_DEFAULT_REGEX;
     }
     
     @Override
@@ -1061,25 +1060,6 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public ExternFile convert(Class<ExternFile> clazz) {
         checkAndErrorIfIntern(true);
         return new ExternFile(toFile());
-    }
-    
-    @Override
-    public byte[] crypt(Cryptor cryptor) throws Exception {
-        Objects.requireNonNull(cryptor);
-        return cryptor.crypt(readBytes());
-    }
-    
-    @Override
-    public byte[] sign(Signer signer) throws Exception {
-        Objects.requireNonNull(signer);
-        return signer.sign(readBytes());
-    }
-    
-    @Override
-    public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
-        Objects.requireNonNull(verifier);
-        Objects.requireNonNull(data_signature);
-        return verifier.verify(readBytes(), data_signature);
     }
     
     @Override

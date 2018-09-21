@@ -23,7 +23,15 @@ import de.codemakers.base.util.tough.ToughConsumer;
 @FunctionalInterface
 public interface Verifiable {
     
+    default boolean verify(Verifier verifier) throws Exception {
+        return verify(verifier, (byte[]) null);
+    }
+    
     boolean verify(Verifier verifier, byte[] data_signature) throws Exception;
+    
+    default boolean verify(Verifier verifier, ToughConsumer<Throwable> failure) {
+        return verify(verifier, null, failure);
+    }
     
     default boolean verify(Verifier verifier, byte[] data_signature, ToughConsumer<Throwable> failure) {
         try {
@@ -38,8 +46,16 @@ public interface Verifiable {
         }
     }
     
+    default boolean verifyWithoutException(Verifier verifier) {
+        return verifyWithoutException(verifier, null);
+    }
+    
     default boolean verifyWithoutException(Verifier verifier, byte[] data_signature) {
         return verify(verifier, data_signature, null);
+    }
+    
+    default ReturningAction<Boolean> verifyAction(Verifier verifier) {
+        return verifyAction(verifier, null);
     }
     
     default ReturningAction<Boolean> verifyAction(Verifier verifier, byte[] data_signature) {

@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'de.codemakers'
-version 'v1.8.0_172-alpha.22'
+version 'v1.8.0_172-alpha.28'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -21,19 +21,4 @@ dependencies {
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile "org.reflections:reflections:0.9.11"
     testCompile group: 'junit', name: 'junit', version: '4.12'
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
 }

@@ -19,10 +19,11 @@ package de.codemakers.io.file;
 public class AdvancedFileInternTest {
     
     public static final void main(String[] args) {
-        AdvancedFile.DEBUG_TO_STRING = false;
-        AdvancedFile.DEBUG_FILE_PROVIDER = false;
         AdvancedFile.DEBUG = true;
-        final AdvancedFile advancedFile_file_1 = new AdvancedFile("intern:/de/codemakers/io/file/t3/" + AdvancedFileInternTest.class.getSimpleName() + ".class");
+        AdvancedFile.DEBUG_FILE_PROVIDER = false;
+        AdvancedFile.DEBUG_TO_STRING = true;
+        AdvancedFile.DEBUG_TO_STRING_BIG = false;
+        final AdvancedFile advancedFile_file_1 = new AdvancedFile("intern:/de/codemakers/io/file/" + AdvancedFileInternTest.class.getSimpleName() + ".class");
         System.out.println("advancedFile_file_1: " + advancedFile_file_1);
         System.out.println("advancedFile_file_1 exists: " + advancedFile_file_1.exists());
         final byte[] data_file_1 = advancedFile_file_1.readBytesWithoutException();
@@ -55,6 +56,7 @@ public class AdvancedFileInternTest {
         System.out.println("########");
         final AdvancedFile advancedFile_file_3 = new AdvancedFile(advancedFile_folder_2, "test.txt");
         advancedFile_file_3.writeBytesWithoutException(("Test " + Math.random()).getBytes());
+        System.out.println(advancedFile_file_3);
     }
     
 }

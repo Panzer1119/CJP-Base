@@ -21,9 +21,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.exceptions.is.*;
 import de.codemakers.io.file.exceptions.isnot.*;
-import de.codemakers.security.interfaces.Cryptable;
-import de.codemakers.security.interfaces.Signable;
-import de.codemakers.security.interfaces.Verifiable;
+import de.codemakers.security.interfaces.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -33,11 +31,11 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Cryptable, Serializable, Signable, Verifiable {
+public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Decryptable, Encryptable, Serializable, Signable, Verifiable {
     
     public abstract String getName();
     
@@ -58,6 +56,8 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     public abstract String getSeparator();
     
     public abstract char getSeparatorChar();
+    
+    public abstract String getSeparatorRegEx();
     
     public abstract boolean isFile();
     
@@ -444,23 +444,23 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     // listFiles END ===================================================================================================
     
-    public boolean forChildren(Consumer<T> consumer) {
+    public boolean forChildren(ToughConsumer<T> consumer) {
         return forChildren(consumer, false);
     }
     
-    public boolean forChildren(Consumer<T> consumer, boolean recursive) {
+    public boolean forChildren(ToughConsumer<T> consumer, boolean recursive) {
         if (consumer == null) {
             return false;
         }
-        listFiles(recursive).forEach(consumer);
+        listFiles(recursive).forEach((advancedFile) -> consumer.acceptWithoutException(advancedFile));
         return true;
     }
     
-    public boolean forChildren(Consumer<T> consumer, ToughConsumer<Throwable> failure) {
+    public boolean forChildren(ToughConsumer<T> consumer, ToughConsumer<Throwable> failure) {
         return forChildren(consumer, false, failure);
     }
     
-    public boolean forChildren(Consumer<T> consumer, boolean recursive, ToughConsumer<Throwable> failure) {
+    public boolean forChildren(ToughConsumer<T> consumer, boolean recursive, ToughConsumer<Throwable> failure) {
         try {
             return forChildren(consumer, recursive);
         } catch (Exception ex) {
@@ -473,39 +473,39 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         }
     }
     
-    public boolean forChildrenWithoutException(Consumer<T> consumer) {
+    public boolean forChildrenWithoutException(ToughConsumer<T> consumer) {
         return forChildren(consumer, null);
     }
     
-    public boolean forChildrenWithoutException(Consumer<T> consumer, boolean recursive) {
+    public boolean forChildrenWithoutException(ToughConsumer<T> consumer, boolean recursive) {
         return forChildren(consumer, recursive, null);
     }
     
-    public ReturningAction<Boolean> forChildrenAction(Consumer<T> consumer) {
+    public ReturningAction<Boolean> forChildrenAction(ToughConsumer<T> consumer) {
         return new ReturningAction<>(() -> forChildren(consumer));
     }
     
-    public ReturningAction<Boolean> forChildrenAction(Consumer<T> consumer, boolean recursive) {
+    public ReturningAction<Boolean> forChildrenAction(ToughConsumer<T> consumer, boolean recursive) {
         return new ReturningAction<>(() -> forChildren(consumer, recursive));
     }
     
-    public boolean forChildrenParallel(Consumer<T> consumer) {
+    public boolean forChildrenParallel(ToughConsumer<T> consumer) {
         return forChildrenParallel(consumer, false);
     }
     
-    public boolean forChildrenParallel(Consumer<T> consumer, boolean recursive) {
+    public boolean forChildrenParallel(ToughConsumer<T> consumer, boolean recursive) {
         if (consumer == null) {
             return false;
         }
-        listFiles(recursive).stream().parallel().forEach(consumer);
+        listFiles(recursive).parallelStream().forEach((advancedFile) -> consumer.acceptWithoutException(advancedFile));
         return true;
     }
     
-    public boolean forChildrenParallel(Consumer<T> consumer, ToughConsumer<Throwable> failure) {
+    public boolean forChildrenParallel(ToughConsumer<T> consumer, ToughConsumer<Throwable> failure) {
         return forChildrenParallel(consumer, false, failure);
     }
     
-    public boolean forChildrenParallel(Consumer<T> consumer, boolean recursive, ToughConsumer<Throwable> failure) {
+    public boolean forChildrenParallel(ToughConsumer<T> consumer, boolean recursive, ToughConsumer<Throwable> failure) {
         try {
             return forChildrenParallel(consumer, recursive);
         } catch (Exception ex) {
@@ -518,19 +518,19 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         }
     }
     
-    public boolean forChildrenParallelWithoutException(Consumer<T> consumer) {
+    public boolean forChildrenParallelWithoutException(ToughConsumer<T> consumer) {
         return forChildrenParallelWithoutException(consumer, false);
     }
     
-    public boolean forChildrenParallelWithoutException(Consumer<T> consumer, boolean recursive) {
+    public boolean forChildrenParallelWithoutException(ToughConsumer<T> consumer, boolean recursive) {
         return forChildrenParallel(consumer, recursive, null);
     }
     
-    public ReturningAction<Boolean> forChildrenParallelAction(Consumer<T> consumer) {
+    public ReturningAction<Boolean> forChildrenParallelAction(ToughConsumer<T> consumer) {
         return new ReturningAction<>(() -> forChildrenParallel(consumer));
     }
     
-    public ReturningAction<Boolean> forChildrenParallelAction(Consumer<T> consumer, boolean recursive) {
+    public ReturningAction<Boolean> forChildrenParallelAction(ToughConsumer<T> consumer, boolean recursive) {
         return new ReturningAction<>(() -> forChildrenParallel(consumer, recursive));
     }
     
@@ -714,6 +714,37 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
             return getPath().equals(((IFile) object).getPath());
         }
         return false;
+    }
+    
+    @Override
+    public byte[] crypt(Cryptor cryptor) throws Exception {
+        Objects.requireNonNull(cryptor);
+        return cryptor.crypt(readBytes());
+    }
+    
+    @Override
+    public byte[] decrypt(Decryptor decryptor) throws Exception {
+        Objects.requireNonNull(decryptor);
+        return decryptor.decrypt(readBytes());
+    }
+    
+    @Override
+    public byte[] encrypt(Encryptor encryptor) throws Exception {
+        Objects.requireNonNull(encryptor);
+        return encryptor.encrypt(readBytes());
+    }
+    
+    @Override
+    public byte[] sign(Signer signer) throws Exception {
+        Objects.requireNonNull(signer);
+        return signer.sign(readBytes());
+    }
+    
+    @Override
+    public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
+        Objects.requireNonNull(verifier);
+        Objects.requireNonNull(data_signature);
+        return verifier.verify(readBytes(), data_signature);
     }
     
 }
