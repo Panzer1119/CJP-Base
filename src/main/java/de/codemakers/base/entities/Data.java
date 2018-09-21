@@ -25,7 +25,7 @@ import java.util.Objects;
 
 public abstract class Data implements Serializable, Copyable {
     
-    protected byte[] data;
+    protected byte[] data = null;
     
     public Data(byte[] data) {
         this.data = data;

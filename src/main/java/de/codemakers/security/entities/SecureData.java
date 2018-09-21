@@ -24,12 +24,12 @@ import java.util.Objects;
 
 public class SecureData extends Data implements Decryptable, Encryptable {
     
-    public SecureData(byte[] data, Decryptor decryptor) {
-        this(decryptor.decryptWithoutException(data));
-    }
-    
     public SecureData(byte[] data, Encryptor encryptor) {
         this(encryptor.encryptWithoutException(data));
+    }
+    
+    public SecureData(byte[] data, Decryptor decryptor) {
+        this(decryptor.decryptWithoutException(data));
     }
     
     public SecureData(byte[] data) {
@@ -47,16 +47,44 @@ public class SecureData extends Data implements Decryptable, Encryptable {
         return cryptor.crypt(getData());
     }
     
+    public SecureData cryptThis(Cryptor cryptor) {
+        Objects.requireNonNull(cryptor);
+        setData(cryptor.cryptWithoutException(getData()));
+        return this;
+    }
+    
     @Override
     public byte[] decrypt(Decryptor decryptor) throws Exception {
         Objects.requireNonNull(decryptor);
         return decryptor.decrypt(getData());
     }
     
+    public SecureData decryptThis(Decryptor decryptor) {
+        Objects.requireNonNull(decryptor);
+        setData(decryptor.decryptWithoutException(getData()));
+        return this;
+    }
+    
     @Override
     public byte[] encrypt(Encryptor encryptor) throws Exception {
         Objects.requireNonNull(encryptor);
         return encryptor.encrypt(getData());
+    }
+    
+    public SecureData encryptThis(Encryptor encryptor) {
+        Objects.requireNonNull(encryptor);
+        setData(encryptor.encryptWithoutException(getData()));
+        return this;
+    }
+    
+    public SecureData toSecureData(Encryptor encryptor) {
+        Objects.requireNonNull(encryptor);
+        return new SecureData(getData(), encryptor);
+    }
+    
+    public SecureData toSecureData(Decryptor decryptor) {
+        Objects.requireNonNull(decryptor);
+        return new SecureData(getData(), decryptor);
     }
     
 }

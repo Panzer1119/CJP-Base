@@ -18,20 +18,33 @@ package de.codemakers.security.entities;
 
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
-import de.codemakers.security.interfaces.Signable;
-import de.codemakers.security.interfaces.Signer;
-import de.codemakers.security.interfaces.Verifiable;
-import de.codemakers.security.interfaces.Verifier;
+import de.codemakers.security.interfaces.*;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 public class TrustedSecureData extends SecureData implements Signable, Verifiable {
     
-    protected byte[] signature;
+    protected byte[] signature = null;
     
     public TrustedSecureData(byte[] data) {
         this(data, (byte[]) null);
+    }
+    
+    public TrustedSecureData(byte[] data, Encryptor encryptor) {
+        this(encryptor.encryptWithoutException(data));
+    }
+    
+    public TrustedSecureData(byte[] data, Decryptor decryptor) {
+        this(decryptor.decryptWithoutException(data));
+    }
+    
+    public TrustedSecureData(byte[] data, Encryptor encryptor, Signer signer) {
+        this(encryptor.encryptWithoutException(data), signer);
+    }
+    
+    public TrustedSecureData(byte[] data, Decryptor decryptor, byte[] signature, Verifier verifier) {
+        this(decryptor.decryptWithoutException(data), signature, verifier);
     }
     
     public TrustedSecureData(byte[] data, Signer signer) {
@@ -40,10 +53,7 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
     
     public TrustedSecureData(byte[] data, byte[] signature, Verifier verifier) {
         this(data, signature);
-        Objects.requireNonNull(verifier);
-        if (!verifier.verifyWithoutException(data, signature)) {
-            throw new SecurityException();
-        }
+        verifyThis(verifier);
     }
     
     public TrustedSecureData(byte[] data, byte[] signature) {
@@ -81,6 +91,12 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
         return signer.sign(getData());
     }
     
+    public TrustedSecureData signThis(Signer signer) {
+        Objects.requireNonNull(signer);
+        setSignature(signer.signWithoutException(getData()));
+        return this;
+    }
+    
     @Override
     public boolean verify(Verifier verifier) throws Exception {
         Objects.requireNonNull(verifier);
@@ -92,6 +108,45 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
         Objects.requireNonNull(verifier);
         Objects.requireNonNull(data_signature);
         return verifier.verify(getData(), data_signature);
+    }
+    
+    public TrustedSecureData verifyThis(Verifier verifier) {
+        Objects.requireNonNull(verifier);
+        if (!verifier.verifyWithoutException(getData(), getSignature())) {
+            throw new SecurityException();
+        }
+        return this;
+    }
+    
+    public TrustedSecureData verifyThis(Verifier verifier, byte[] data_signature) {
+        Objects.requireNonNull(verifier);
+        Objects.requireNonNull(data_signature);
+        if (!verifier.verifyWithoutException(getData(), data_signature)) {
+            throw new SecurityException();
+        }
+        return this;
+    }
+    
+    public TrustedSecureData toTrustedSecureData(Encryptor encryptor) {
+        Objects.requireNonNull(encryptor);
+        return new TrustedSecureData(getData(), encryptor).setSignature(getSignature());
+    }
+    
+    public TrustedSecureData toTrustedSecureData(Encryptor encryptor, Signer signer) {
+        Objects.requireNonNull(encryptor);
+        Objects.requireNonNull(signer);
+        return new TrustedSecureData(getData(), encryptor, signer);
+    }
+    
+    public TrustedSecureData toTrustedSecureData(Decryptor decryptor) {
+        Objects.requireNonNull(decryptor);
+        return new TrustedSecureData(getData(), decryptor).setSignature(getSignature());
+    }
+    
+    public TrustedSecureData toTrustedSecureData(Decryptor decryptor, Verifier verifier) {
+        Objects.requireNonNull(decryptor);
+        Objects.requireNonNull(verifier);
+        return new TrustedSecureData(getData(), decryptor, getSignature(), verifier);
     }
     
     @Override
