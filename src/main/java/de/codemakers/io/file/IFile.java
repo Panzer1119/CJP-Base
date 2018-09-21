@@ -17,10 +17,13 @@
 package de.codemakers.io.file;
 
 import de.codemakers.base.action.ReturningAction;
+import de.codemakers.base.entities.Data;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.exceptions.is.*;
 import de.codemakers.io.file.exceptions.isnot.*;
+import de.codemakers.security.entities.SecureData;
+import de.codemakers.security.entities.TrustedSecureData;
 import de.codemakers.security.interfaces.*;
 
 import java.io.File;
@@ -767,6 +770,42 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     public IFile<T, P> verifyThis(Verifier verifier, byte[] signature) throws Exception {
         verify(verifier, signature);
         return this;
+    }
+    
+    public Data toData() {
+        return new Data(readBytesWithoutException());
+    }
+    
+    public SecureData toSecureData() {
+        return new SecureData(readBytesWithoutException());
+    }
+    
+    public SecureData toSecureData(Encryptor encryptor) {
+        return new SecureData(readBytesWithoutException(), encryptor);
+    }
+    
+    public SecureData toSecureData(Decryptor decryptor) {
+        return new SecureData(readBytesWithoutException(), decryptor);
+    }
+    
+    public TrustedSecureData toTrustedSecureData() {
+        return new TrustedSecureData(readBytesWithoutException());
+    }
+    
+    public TrustedSecureData toTrustedSecureData(Encryptor encryptor) {
+        return new TrustedSecureData(readBytesWithoutException(), encryptor);
+    }
+    
+    public TrustedSecureData toTrustedSecureData(Decryptor decryptor) {
+        return new TrustedSecureData(readBytesWithoutException(), decryptor);
+    }
+    
+    public TrustedSecureData toTrustedSecureData(Encryptor encryptor, Signer signer) {
+        return new TrustedSecureData(readBytesWithoutException(), encryptor, signer);
+    }
+    
+    public TrustedSecureData toTrustedSecureData(Decryptor decryptor, Verifier verifier, byte[] signature) {
+        return new TrustedSecureData(readBytesWithoutException(), decryptor, signature, verifier);
     }
     
 }

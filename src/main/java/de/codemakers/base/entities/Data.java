@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public abstract class Data implements Serializable, Copyable {
+public class Data implements Serializable, Copyable {
     
     protected byte[] data = null;
     
@@ -38,6 +38,11 @@ public abstract class Data implements Serializable, Copyable {
     public Data setData(byte[] data) {
         this.data = data;
         return this;
+    }
+    
+    @Override
+    public Copyable copy() {
+        return new Data(getData());
     }
     
     @Override
