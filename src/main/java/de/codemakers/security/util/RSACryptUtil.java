@@ -16,5 +16,87 @@
 
 package de.codemakers.security.util;
 
+import javax.crypto.KeyGenerator;
+import java.security.SecureRandom;
+
 public class RSACryptUtil {
+    
+    public static final String ALGORITHM_RSA = "RSA";
+    
+    public static final int KEYSIZE_RSA_0 = 0;
+    public static final int KEYSIZE_RSA_128 = 128;
+    public static final int KEYSIZE_RSA_256 = 256;
+    public static final int KEYSIZE_RSA_512 = 512;
+    public static final int KEYSIZE_RSA_1024 = 1024;
+    public static final int KEYSIZE_RSA_2048 = 2048;
+    public static final int KEYSIZE_RSA_4096 = 4096;
+    public static final int KEYSIZE_RSA_8192 = 8192;
+    public static final int KEYSIZE_RSA_16384 = 16384;
+    
+    public static KeyGenerator createRSAKeyGenerator() {
+        try {
+            return KeyGenerator.getInstance(ALGORITHM_RSA);
+        } catch (Exception ignore) {
+            return null;
+        }
+    }
+    
+    public static KeyGenerator createRSAKeyGenerator(int keySize) {
+        final KeyGenerator keyGenerator = createRSAKeyGenerator();
+        keyGenerator.init(keySize);
+        return keyGenerator;
+    }
+    
+    public static KeyGenerator createRSAKeyGenerator(int keySize, SecureRandom secureRandom) {
+        final KeyGenerator keyGenerator = createRSAKeyGenerator();
+        keyGenerator.init(keySize, secureRandom);
+        return keyGenerator;
+    }
+    
+    public static KeyGenerator createRSAKeyGenerator(SecureRandom secureRandom) {
+        final KeyGenerator keyGenerator = createRSAKeyGenerator();
+        keyGenerator.init(secureRandom);
+        return keyGenerator;
+    }
+    
+    public static KeyGenerator create1024BitRSAKeyGenerator() {
+        return createRSAKeyGenerator(KEYSIZE_RSA_1024);
+    }
+    
+    public static KeyGenerator create1024BitRSAKeyGenerator(SecureRandom secureRandom) {
+        return createRSAKeyGenerator(KEYSIZE_RSA_1024, secureRandom);
+    }
+    
+    public static KeyGenerator create2048BitRSAKeyGenerator() {
+        return createRSAKeyGenerator(KEYSIZE_RSA_2048);
+    }
+    
+    public static KeyGenerator create2048BitRSAKeyGenerator(SecureRandom secureRandom) {
+        return createRSAKeyGenerator(KEYSIZE_RSA_2048, secureRandom);
+    }
+    
+    public static KeyGenerator create4096BitRSAKeyGenerator() {
+        return createRSAKeyGenerator(KEYSIZE_RSA_4096);
+    }
+    
+    public static KeyGenerator create4096BitRSAKeyGenerator(SecureRandom secureRandom) {
+        return createRSAKeyGenerator(KEYSIZE_RSA_4096, secureRandom);
+    }
+    
+    public static KeyGenerator create8192BitRSAKeyGenerator() {
+        return createRSAKeyGenerator(KEYSIZE_RSA_8192);
+    }
+    
+    public static KeyGenerator create8192BitRSAKeyGenerator(SecureRandom secureRandom) {
+        return createRSAKeyGenerator(KEYSIZE_RSA_8192, secureRandom);
+    }
+    
+    public static KeyGenerator create16384BitRSAKeyGenerator() {
+        return createRSAKeyGenerator(KEYSIZE_RSA_16384);
+    }
+    
+    public static KeyGenerator create16384BitRSAKeyGenerator(SecureRandom secureRandom) {
+        return createRSAKeyGenerator(KEYSIZE_RSA_16384, secureRandom);
+    }
+    
 }
