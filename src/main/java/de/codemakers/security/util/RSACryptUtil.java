@@ -36,8 +36,8 @@ public class RSACryptUtil {
     public static KeyGenerator createRSAKeyGenerator() {
         try {
             return KeyGenerator.getInstance(ALGORITHM_RSA);
-        } catch (Exception ignore) {
-            return null;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
     
