@@ -20,6 +20,7 @@ import de.codemakers.base.entities.Data;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.security.interfaces.*;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class SecureData extends Data implements Decryptable, Encryptable {
@@ -85,6 +86,18 @@ public class SecureData extends Data implements Decryptable, Encryptable {
     public SecureData toSecureData(Decryptor decryptor) {
         Objects.requireNonNull(decryptor);
         return new SecureData(getData(), decryptor);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final SecureData that = (SecureData) o;
+        return Arrays.equals(data, that.data);
     }
     
 }

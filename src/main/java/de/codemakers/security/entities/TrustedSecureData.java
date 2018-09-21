@@ -157,11 +157,8 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
         final TrustedSecureData that = (TrustedSecureData) o;
-        return Arrays.equals(signature, that.signature);
+        return Arrays.equals(data, that.data) && Arrays.equals(signature, that.signature);
     }
     
     @Override
