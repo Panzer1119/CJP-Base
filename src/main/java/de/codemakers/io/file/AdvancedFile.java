@@ -31,6 +31,8 @@ import de.codemakers.io.file.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.exceptions.isnot.RelativeClassIsNotNullException;
 import de.codemakers.io.file.providers.FileProvider;
 import de.codemakers.io.file.providers.ZIPProvider;
+import de.codemakers.security.interfaces.Decryptor;
+import de.codemakers.security.interfaces.Encryptor;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -1079,6 +1081,20 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         int result = Objects.hash(windowsSeparator, extern, absolute, parent, fileProvider, clazz);
         result = 31 * result + Arrays.hashCode(paths);
         return result;
+    }
+    
+    @Override
+    public AdvancedFile encryptThis(Encryptor encryptor) throws Exception {
+        Objects.requireNonNull(encryptor);
+        writeBytes(encryptor.encryptWithoutException(readBytes()));
+        return this;
+    }
+    
+    @Override
+    public AdvancedFile decryptThis(Decryptor decryptor) throws Exception {
+        Objects.requireNonNull(decryptor);
+        writeBytes(decryptor.decryptWithoutException(readBytes()));
+        return this;
     }
     
 }

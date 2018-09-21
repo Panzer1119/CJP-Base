@@ -20,7 +20,6 @@ import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
-@FunctionalInterface
 public interface Signable {
     
     byte[] sign(Signer signer) throws Exception;
@@ -44,6 +43,29 @@ public interface Signable {
     
     default ReturningAction<byte[]> signAction(Signer signer) {
         return new ReturningAction<>(() -> sign(signer));
+    }
+    
+    Signable signThis(Signer signer) throws Exception;
+    
+    default Signable signThis(Signer signer, ToughConsumer<Throwable> failure) {
+        try {
+            return signThis(signer);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return this;
+        }
+    }
+    
+    default Signable signThisWithoutException(Signer signer) {
+        return signThis(signer, null);
+    }
+    
+    default ReturningAction<Signable> signThisAction(Signer signer) {
+        return new ReturningAction<>(() -> signThis(signer));
     }
     
 }

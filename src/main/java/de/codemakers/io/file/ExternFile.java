@@ -17,9 +17,8 @@
 package de.codemakers.io.file;
 
 import de.codemakers.base.util.interfaces.Convertable;
-import de.codemakers.security.interfaces.Cryptor;
-import de.codemakers.security.interfaces.Signer;
-import de.codemakers.security.interfaces.Verifier;
+import de.codemakers.security.interfaces.Decryptor;
+import de.codemakers.security.interfaces.Encryptor;
 
 import java.io.*;
 import java.net.URI;
@@ -256,22 +255,17 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
-    public byte[] crypt(Cryptor cryptor) throws Exception {
-        Objects.requireNonNull(cryptor);
-        return cryptor.crypt(readBytes());
+    public ExternFile encryptThis(Encryptor encryptor) throws Exception {
+        Objects.requireNonNull(encryptor);
+        writeBytes(encryptor.encryptWithoutException(readBytes()));
+        return this;
     }
     
     @Override
-    public byte[] sign(Signer signer) throws Exception {
-        Objects.requireNonNull(signer);
-        return signer.sign(readBytes());
-    }
-    
-    @Override
-    public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
-        Objects.requireNonNull(verifier);
-        Objects.requireNonNull(data_signature);
-        return verifier.verify(readBytes(), data_signature);
+    public ExternFile decryptThis(Decryptor decryptor) throws Exception {
+        Objects.requireNonNull(decryptor);
+        writeBytes(decryptor.decryptWithoutException(readBytes()));
+        return this;
     }
     
 }

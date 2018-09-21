@@ -723,6 +723,18 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     @Override
+    public IFile<T, P> cryptThis(Cryptor cryptor) throws Exception {
+        Objects.requireNonNull(cryptor);
+        if (cryptor instanceof Encryptor) {
+            return (IFile<T, P>) encryptThis((Encryptor) cryptor);
+        } else if (cryptor instanceof Decryptor) {
+            return (IFile<T, P>) decryptThis((Decryptor) cryptor);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+    
+    @Override
     public byte[] decrypt(Decryptor decryptor) throws Exception {
         Objects.requireNonNull(decryptor);
         return decryptor.decrypt(readBytes());
@@ -741,10 +753,20 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     @Override
+    public IFile<T, P> signThis(Signer signer) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
     public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
         Objects.requireNonNull(verifier);
-        Objects.requireNonNull(data_signature);
         return verifier.verify(readBytes(), data_signature);
+    }
+    
+    @Override
+    public IFile<T, P> verifyThis(Verifier verifier, byte[] signature) throws Exception {
+        verify(verifier, signature);
+        return this;
     }
     
 }

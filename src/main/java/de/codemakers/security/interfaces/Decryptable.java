@@ -20,7 +20,6 @@ import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
-@FunctionalInterface
 public interface Decryptable extends Cryptable {
     
     byte[] decrypt(Decryptor decryptor) throws Exception;
@@ -49,6 +48,34 @@ public interface Decryptable extends Cryptable {
     
     default ReturningAction<byte[]> decryptAction(Decryptor decryptor) {
         return new ReturningAction<>(() -> decrypt(decryptor));
+    }
+    
+    Decryptable decryptThis(Decryptor decryptor) throws Exception;
+    
+    @Override
+    default Cryptable cryptThis(Cryptor cryptor) throws Exception {
+        return decryptThis((Decryptor) cryptor);
+    }
+    
+    default Decryptable decryptThis(Decryptor decryptor, ToughConsumer<Throwable> failure) {
+        try {
+            return decryptThis(decryptor);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return this;
+        }
+    }
+    
+    default Decryptable decryptThisWithoutException(Decryptor decryptor) {
+        return decryptThis(decryptor, null);
+    }
+    
+    default ReturningAction<Decryptable> decryptThisAction(Decryptor decryptor) {
+        return new ReturningAction<>(() -> decryptThis(decryptor));
     }
     
 }

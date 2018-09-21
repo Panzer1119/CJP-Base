@@ -91,6 +91,7 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
         return signer.sign(getData());
     }
     
+    @Override
     public TrustedSecureData signThis(Signer signer) {
         Objects.requireNonNull(signer);
         setSignature(signer.signWithoutException(getData()));
@@ -110,6 +111,7 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
         return verifier.verify(getData(), data_signature);
     }
     
+    @Override
     public TrustedSecureData verifyThis(Verifier verifier) {
         Objects.requireNonNull(verifier);
         if (!verifier.verifyWithoutException(getData(), getSignature())) {
@@ -118,6 +120,7 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
         return this;
     }
     
+    @Override
     public TrustedSecureData verifyThis(Verifier verifier, byte[] data_signature) {
         Objects.requireNonNull(verifier);
         Objects.requireNonNull(data_signature);

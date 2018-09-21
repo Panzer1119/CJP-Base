@@ -48,6 +48,7 @@ public class SecureData extends Data implements Decryptable, Encryptable {
         return cryptor.crypt(getData());
     }
     
+    @Override
     public SecureData cryptThis(Cryptor cryptor) {
         Objects.requireNonNull(cryptor);
         setData(cryptor.cryptWithoutException(getData()));
@@ -60,6 +61,7 @@ public class SecureData extends Data implements Decryptable, Encryptable {
         return decryptor.decrypt(getData());
     }
     
+    @Override
     public SecureData decryptThis(Decryptor decryptor) {
         Objects.requireNonNull(decryptor);
         setData(decryptor.decryptWithoutException(getData()));
@@ -72,6 +74,7 @@ public class SecureData extends Data implements Decryptable, Encryptable {
         return encryptor.encrypt(getData());
     }
     
+    @Override
     public SecureData encryptThis(Encryptor encryptor) {
         Objects.requireNonNull(encryptor);
         setData(encryptor.encryptWithoutException(getData()));

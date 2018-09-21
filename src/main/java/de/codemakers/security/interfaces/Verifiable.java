@@ -20,7 +20,6 @@ import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
-@FunctionalInterface
 public interface Verifiable {
     
     default boolean verify(Verifier verifier) throws Exception {
@@ -60,6 +59,45 @@ public interface Verifiable {
     
     default ReturningAction<Boolean> verifyAction(Verifier verifier, byte[] data_signature) {
         return new ReturningAction<>(() -> verify(verifier, data_signature));
+    }
+    
+    default Verifiable verifyThis(Verifier verifier) throws Exception {
+        return verifyThis(verifier, (byte[]) null);
+    }
+    
+    Verifiable verifyThis(Verifier verifier, byte[] signature) throws Exception;
+    
+    default Verifiable verifyThis(Verifier verifier, ToughConsumer<Throwable> failure) {
+        return verifyThis(verifier, null, failure);
+    }
+    
+    default Verifiable verifyThis(Verifier verifier, byte[] signature, ToughConsumer<Throwable> failure) {
+        try {
+            return verifyThis(verifier, signature);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return this;
+        }
+    }
+    
+    default Verifiable verifyThisWithoutException(Verifier verifier) {
+        return verifyThisWithoutException(verifier, null);
+    }
+    
+    default Verifiable verifyThisWithoutException(Verifier verifier, byte[] signature) {
+        return verifyThis(verifier, signature, null);
+    }
+    
+    default ReturningAction<Verifiable> verifyThisAction(Verifier verifier) {
+        return verifyThisAction(verifier, null);
+    }
+    
+    default ReturningAction<Verifiable> verifyThisAction(Verifier verifier, byte[] data_signature) {
+        return new ReturningAction<>(() -> verifyThis(verifier, data_signature));
     }
     
 }

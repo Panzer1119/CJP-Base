@@ -20,7 +20,6 @@ import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
-@FunctionalInterface
 public interface Cryptable {
     
     byte[] crypt(Cryptor cryptor) throws Exception;
@@ -44,6 +43,29 @@ public interface Cryptable {
     
     default ReturningAction<byte[]> cryptAction(Cryptor cryptor) {
         return new ReturningAction<>(() -> crypt(cryptor));
+    }
+    
+    Cryptable cryptThis(Cryptor cryptor) throws Exception;
+    
+    default Cryptable cryptThis(Cryptor cryptor, ToughConsumer<Throwable> failure) {
+        try {
+            return cryptThis(cryptor);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return this;
+        }
+    }
+    
+    default Cryptable cryptThisWithoutException(Cryptor cryptor) {
+        return cryptThis(cryptor, null);
+    }
+    
+    default ReturningAction<Cryptable> cryptThisAction(Cryptor cryptor) {
+        return new ReturningAction<>(() -> cryptThis(cryptor));
     }
     
 }
