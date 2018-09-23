@@ -16,7 +16,6 @@
 
 package de.codemakers.base.entities;
 
-import de.codemakers.base.util.ArrayUtil;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
 
@@ -37,9 +36,9 @@ public class IncrementalData extends Data {
     public IncrementalData incrementData(DataDelta dataDelta) {
         Objects.requireNonNull(dataDelta);
         if (dataDelta.getLength() < 0 || getLength() < 0) {
-            setData(dataDelta.getDelta());
+            setData(null);
         } else {
-            setData(ArrayUtil.xorBytes(dataDelta.getDelta(), getData()));
+            setData(dataDelta.getData(getData()));
         }
         return this;
     }

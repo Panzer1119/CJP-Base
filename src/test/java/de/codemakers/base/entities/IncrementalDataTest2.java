@@ -35,7 +35,7 @@ public class IncrementalDataTest2 {
         final DataDelta dataDelta_1 = incrementalData_1.changeData(test_bytes);
         System.out.println("dataDelta_1=" + dataDelta_1);
         System.out.println("dataDelta_1.getBitSize()=" + dataDelta_1.getBitSize());
-        final DataDelta dataDelta_2 = new PreciseDataDelta("Test".getBytes(), test_bytes);
+        /*final DataDelta dataDelta_2 = new PreciseDataDelta("Test".getBytes(), test_bytes);
         System.out.println("dataDelta_2=" + dataDelta_2);
         System.out.println("dataDelta_2.getBitSize()=" + dataDelta_2.getBitSize());
         System.out.println("Arrays.toString(dataDelta_2.getDelta())=" + Arrays.toString(dataDelta_2.getDelta()));
@@ -48,6 +48,7 @@ public class IncrementalDataTest2 {
         incrementalData_2.incrementData(dataDelta_2);
         System.out.println("incrementalData_2=" + incrementalData_2);
         System.out.println("new String(incrementalData_2.getData())=" + new String(incrementalData_2.getData()));
+        */
     }
     
 }

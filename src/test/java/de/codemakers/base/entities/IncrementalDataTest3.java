@@ -33,22 +33,23 @@ public class IncrementalDataTest3 {
         System.out.println("test_2_bytes=" + Arrays.toString(test_2_bytes));
         final DataDelta dataDelta_1 = incrementalData_1.changeData(test_2_bytes);
         System.out.println("dataDelta_1=" + dataDelta_1);
+        System.out.println("dataDelta_1=" + new String(dataDelta_1.getDataNew()));
         System.out.println("dataDelta_1.getBitSize()=" + dataDelta_1.getBitSize());
-        final DataDelta dataDelta_2 = new PreciseDataDelta(test_1_bytes, test_2_bytes);
-        System.out.println("dataDelta_2=" + dataDelta_2);
-        System.out.println("dataDelta_2.getBitSize()=" + dataDelta_2.getBitSize());
+        //final DataDelta dataDelta_2 = new PreciseDataDelta(test_1_bytes, test_2_bytes);
+        //System.out.println("dataDelta_2=" + dataDelta_2);
+        //System.out.println("dataDelta_2.getBitSize()=" + dataDelta_2.getBitSize());
         final IncrementalData incrementalData_r_1 = new IncrementalData(test_1_bytes);
         System.out.println("incrementalData_r_1=" + incrementalData_r_1);
         System.out.println("incrementalData_r_1=" + new String(incrementalData_r_1.getData()));
         incrementalData_r_1.incrementData(dataDelta_1);
         System.out.println("incrementalData_r_1=" + incrementalData_r_1);
         System.out.println("incrementalData_r_1=" + new String(incrementalData_r_1.getData()));
-        final IncrementalData incrementalData_r_2 = new IncrementalData(test_1_bytes);
-        System.out.println("incrementalData_r_2=" + incrementalData_r_2);
-        System.out.println("incrementalData_r_1=" + new String(incrementalData_r_2.getData()));
-        incrementalData_r_2.incrementData(dataDelta_2);
-        System.out.println("incrementalData_r_2=" + incrementalData_r_2);
-        System.out.println("incrementalData_r_1=" + new String(incrementalData_r_2.getData()));
+        //final IncrementalData incrementalData_r_2 = new IncrementalData(test_1_bytes);
+        //System.out.println("incrementalData_r_2=" + incrementalData_r_2);
+        //System.out.println("incrementalData_r_2=" + new String(incrementalData_r_2.getData()));
+        //incrementalData_r_2.incrementData(dataDelta_2);
+        //System.out.println("incrementalData_r_2=" + incrementalData_r_2);
+        //System.out.println("incrementalData_r_1=" + new String(incrementalData_r_2.getData()));
     }
     
 }
