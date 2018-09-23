@@ -17,7 +17,6 @@
 package de.codemakers.security.entities;
 
 import de.codemakers.base.entities.Data;
-import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.security.interfaces.*;
 
 import java.util.Arrays;
@@ -38,7 +37,13 @@ public class SecureData extends Data implements Decryptable, Encryptable {
     }
     
     @Override
-    public Copyable copy() {
+    public SecureData setData(byte[] data) {
+        super.setData(data);
+        return this;
+    }
+    
+    @Override
+    public SecureData copy() {
         return new SecureData(data);
     }
     

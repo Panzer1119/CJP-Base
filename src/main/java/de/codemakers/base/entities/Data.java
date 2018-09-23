@@ -41,7 +41,7 @@ public class Data implements Serializable, Copyable {
     }
     
     @Override
-    public Copyable copy() {
+    public Data copy() {
         return new Data(getData());
     }
     

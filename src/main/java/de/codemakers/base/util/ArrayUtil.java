@@ -22,9 +22,11 @@ public class ArrayUtil {
     
     /**
      * Searches for an Object
+     *
      * @param array Array to be searched
      * @param t Object to search for
      * @param <T> Type of the Array and Object
+     *
      * @return <tt>true</tt> if the Array contains the Object
      */
     public static final <T> boolean arrayContains(T[] array, T t) {
@@ -37,6 +39,18 @@ public class ArrayUtil {
             }
         }
         return false;
+    }
+    
+    public static byte[] xorBytes(byte[] bytes_1, byte[] bytes_2) {
+        if (bytes_1 == null || bytes_2 == null) {
+            return null;
+        }
+        assert bytes_1.length == bytes_2.length;
+        final byte[] bytes = new byte[bytes_1.length];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) (bytes_1[i] ^ bytes_2[i]);
+        }
+        return bytes;
     }
     
 }

@@ -71,6 +71,12 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
     }
     
     @Override
+    public TrustedSecureData setData(byte[] data) {
+        super.setData(data);
+        return this;
+    }
+    
+    @Override
     public void set(Copyable copyable) {
         Objects.requireNonNull(copyable);
         final TrustedSecureData trustedSecureData = Require.clazz(copyable, TrustedSecureData.class);
@@ -81,7 +87,7 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
     }
     
     @Override
-    public Copyable copy() {
+    public TrustedSecureData copy() {
         return new TrustedSecureData(data, signature);
     }
     
