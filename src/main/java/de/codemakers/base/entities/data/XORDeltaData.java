@@ -22,17 +22,17 @@ import de.codemakers.base.util.interfaces.Copyable;
 
 import java.util.Arrays;
 
-public class XORDataDelta extends DataDelta {
+public class XORDeltaData extends DeltaData {
     
     protected byte[] indices;
     
-    public XORDataDelta(byte[] data_old, byte[] data_new) {
+    public XORDeltaData(byte[] data_old, byte[] data_new) {
         super();
         this.length = data_new == null ? -1 : data_new.length;
         setData(data_old, data_new);
     }
     
-    private XORDataDelta(int length, byte[] data_new, byte[] indices) {
+    private XORDeltaData(int length, byte[] data_new, byte[] indices) {
         super(length, data_new);
         this.indices = indices;
     }
@@ -54,7 +54,7 @@ public class XORDataDelta extends DataDelta {
     }
     
     @Override
-    public XORDataDelta setData(byte[] data_new) {
+    public XORDeltaData setData(byte[] data_new) {
         if (data_new == null) {
             this.data_new = null;
             this.indices = null;
@@ -83,7 +83,7 @@ public class XORDataDelta extends DataDelta {
     }
     
     @Override
-    public XORDataDelta setData(byte[] data_old, byte[] data_new) {
+    public XORDeltaData setData(byte[] data_old, byte[] data_new) {
         if (data_old == null || data_new == null) {
             this.data_new = data_new;
             this.indices = null;
@@ -96,19 +96,19 @@ public class XORDataDelta extends DataDelta {
         return indices;
     }
     
-    public XORDataDelta setIndices(byte[] indices) {
+    public XORDeltaData setIndices(byte[] indices) {
         this.indices = indices;
         return this;
     }
     
     @Override
-    public XORDataDelta copy() {
-        return new XORDataDelta(length, data_new, indices);
+    public XORDeltaData copy() {
+        return new XORDeltaData(length, data_new, indices);
     }
     
     @Override
     public void set(Copyable copyable) {
-        final XORDataDelta dataDelta = Require.clazz(copyable, XORDataDelta.class);
+        final XORDeltaData dataDelta = Require.clazz(copyable, XORDeltaData.class);
         if (dataDelta != null) {
             setLength(dataDelta.length);
             setDataNew(dataDelta.data_new);

@@ -22,36 +22,36 @@ import de.codemakers.base.util.interfaces.Copyable;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public abstract class DataDelta implements Serializable, Copyable {
+public abstract class DeltaData implements Serializable, Copyable {
     
     protected int length;
     protected byte[] data_new;
     
-    public DataDelta() {
+    public DeltaData() {
     }
     
-    public DataDelta(byte[] data_new) {
+    public DeltaData(byte[] data_new) {
         this(data_new == null ? -1 : data_new.length, data_new);
     }
     
-    public DataDelta(int length, byte[] data_new) {
+    public DeltaData(int length, byte[] data_new) {
         this.length = length;
         this.data_new = data_new;
     }
     
     public abstract byte[] getData();
     
-    public abstract DataDelta setData(byte[] data_new);
+    public abstract DeltaData setData(byte[] data_new);
     
     public abstract byte[] getData(byte[] data_old);
     
-    public abstract DataDelta setData(byte[] data_old, byte[] data_new);
+    public abstract DeltaData setData(byte[] data_old, byte[] data_new);
     
     public int getLength() {
         return length;
     }
     
-    public DataDelta setLength(int length) {
+    public DeltaData setLength(int length) {
         this.length = length;
         return this;
     }
@@ -60,17 +60,17 @@ public abstract class DataDelta implements Serializable, Copyable {
         return data_new;
     }
     
-    public DataDelta setDataNew(byte[] data_new) {
+    public DeltaData setDataNew(byte[] data_new) {
         this.data_new = data_new;
         return this;
     }
     
     @Override
     public void set(Copyable copyable) {
-        final DataDelta dataDelta = Require.clazz(copyable, DataDelta.class);
-        if (dataDelta != null) {
-            setLength(dataDelta.length);
-            setDataNew(dataDelta.data_new);
+        final DeltaData deltaData = Require.clazz(copyable, DeltaData.class);
+        if (deltaData != null) {
+            setLength(deltaData.length);
+            setDataNew(deltaData.data_new);
         }
     }
     

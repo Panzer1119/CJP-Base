@@ -16,7 +16,7 @@
 
 package de.codemakers.base.entities;
 
-import de.codemakers.base.entities.data.DataDelta;
+import de.codemakers.base.entities.data.DeltaData;
 import de.codemakers.base.entities.data.IncrementalData;
 
 import java.util.Arrays;
@@ -35,14 +35,14 @@ public class IncrementalDataTest {
         System.out.println("test=" + test);
         test_bytes = test.getBytes();
         System.out.println("Arrays.toString(test_bytes)=" + Arrays.toString(test_bytes));
-        final DataDelta dataDelta_1 = incrementalData_1.changeData(test_bytes);
-        System.out.println("dataDelta_1=" + dataDelta_1);
+        final DeltaData delta_Data_1 = incrementalData_1.changeData(test_bytes);
+        System.out.println("delta_Data_1=" + delta_Data_1);
         System.out.println("incrementalData_1=" + incrementalData_1);
         System.out.println("new String(incrementalData_1.getData())=" + new String(incrementalData_1.getData()));
         final IncrementalData incrementalData_2 = new IncrementalData("Test".getBytes());
         System.out.println("incrementalData_2=" + incrementalData_2);
         System.out.println("new String(incrementalData_2.getData())=" + new String(incrementalData_2.getData()));
-        incrementalData_2.incrementData(dataDelta_1);
+        incrementalData_2.incrementData(delta_Data_1);
         System.out.println("incrementalData_2=" + incrementalData_2);
         System.out.println("new String(incrementalData_2.getData())=" + new String(incrementalData_2.getData()));
     }

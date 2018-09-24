@@ -16,7 +16,7 @@
 
 package de.codemakers.base.entities;
 
-import de.codemakers.base.entities.data.DataDelta;
+import de.codemakers.base.entities.data.DeltaData;
 import de.codemakers.base.entities.data.IncrementalData;
 import de.codemakers.io.SerializationUtil;
 
@@ -35,7 +35,7 @@ public class IncrementalObject<T extends Serializable> extends IncrementalData {
         this.object = object;
     }
     
-    public DataDelta changeObject(T object) {
+    public DeltaData changeObject(T object) {
         return changeData(object == null ? null : SerializationUtil.objectToBytesWithoutException(object));
     }
     
@@ -47,8 +47,8 @@ public class IncrementalObject<T extends Serializable> extends IncrementalData {
     }
     
     @Override
-    public IncrementalObject<T> incrementData(DataDelta dataDelta) {
-        super.incrementData(dataDelta);
+    public IncrementalObject<T> incrementData(DeltaData deltaData) {
+        super.incrementData(deltaData);
         object = getData() == null ? null : (T) SerializationUtil.bytesToObjectWithoutException(getData());
         return this;
     }

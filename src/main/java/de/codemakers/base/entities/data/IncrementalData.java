@@ -28,22 +28,22 @@ public class IncrementalData extends Data {
         super(data);
     }
     
-    public DataDelta changeData(byte[] data_new) {
+    public DeltaData changeData(byte[] data_new) {
         final byte[] data_old = getData();
         setData(data_new);
-        return new XORDataDelta(data_old, data_new);
+        return new XORDeltaData(data_old, data_new);
     }
     
-    public ReturningAction<DataDelta> changeDataAction(byte[] data_new) {
+    public ReturningAction<DeltaData> changeDataAction(byte[] data_new) {
         return new ReturningAction<>(() -> changeData(data_new));
     }
     
-    public IncrementalData incrementData(DataDelta dataDelta) {
-        Objects.requireNonNull(dataDelta);
-        if (dataDelta.getLength() < 0 || getLength() < 0) {
-            setData(dataDelta.data_new);
+    public IncrementalData incrementData(DeltaData deltaData) {
+        Objects.requireNonNull(deltaData);
+        if (deltaData.getLength() < 0 || getLength() < 0) {
+            setData(deltaData.data_new);
         } else {
-            setData(dataDelta.getData(getData()));
+            setData(deltaData.getData(getData()));
         }
         return this;
     }

@@ -18,7 +18,7 @@ package de.codemakers.io.streams;
 
 import de.codemakers.base.entities.IncrementalObject;
 import de.codemakers.base.entities.ObjectHolder;
-import de.codemakers.base.entities.data.DataDelta;
+import de.codemakers.base.entities.data.DeltaData;
 
 import java.io.*;
 import java.util.Map;
@@ -43,8 +43,8 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
                 final ObjectHolder<IncrementalObject<T>> objectHolder = (ObjectHolder<IncrementalObject<T>>) object;
                 incrementalObjects.put(objectHolder.getId(), objectHolder.getObject());
                 return objectHolder.getObject().getObject();
-            } else if (((ObjectHolder) object).getObject() instanceof DataDelta) {
-                final ObjectHolder<DataDelta> objectHolder = (ObjectHolder<DataDelta>) object;
+            } else if (((ObjectHolder) object).getObject() instanceof DeltaData) {
+                final ObjectHolder<DeltaData> objectHolder = (ObjectHolder<DeltaData>) object;
                 final IncrementalObject<T> incrementalObject = incrementalObjects.get(objectHolder.getId());
                 return incrementalObject.incrementData(objectHolder.getObject()).getObject();
             }

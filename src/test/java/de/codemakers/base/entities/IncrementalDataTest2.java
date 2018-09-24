@@ -16,7 +16,7 @@
 
 package de.codemakers.base.entities;
 
-import de.codemakers.base.entities.data.DataDelta;
+import de.codemakers.base.entities.data.DeltaData;
 import de.codemakers.base.entities.data.IncrementalData;
 
 import java.util.Arrays;
@@ -35,14 +35,14 @@ public class IncrementalDataTest2 {
         System.out.println("test=" + test);
         test_bytes = test.getBytes();
         System.out.println("Arrays.toString(test_bytes)=" + Arrays.toString(test_bytes));
-        final DataDelta dataDelta_1 = incrementalData_1.changeData(test_bytes);
-        System.out.println("dataDelta_1=" + dataDelta_1);
-        System.out.println("dataDelta_1.getBitSize()=" + dataDelta_1.getBitSize());
-        /*final DirectDataDelta dataDelta_2 = new XORDataDelta("Test".getBytes(), test_bytes);
+        final DeltaData delta_Data_1 = incrementalData_1.changeData(test_bytes);
+        System.out.println("delta_Data_1=" + delta_Data_1);
+        System.out.println("delta_Data_1.getBitSize()=" + delta_Data_1.getBitSize());
+        /*final DirectDeltaData dataDelta_2 = new XORDeltaData("Test".getBytes(), test_bytes);
         System.out.println("dataDelta_2=" + dataDelta_2);
         System.out.println("dataDelta_2.getBitSize()=" + dataDelta_2.getBitSize());
         System.out.println("Arrays.toString(dataDelta_2.getDelta())=" + Arrays.toString(dataDelta_2.getDelta()));
-        System.out.println("Arrays.toString(dataDelta_1.getDelta())=" + Arrays.toString(dataDelta_1.getDelta()));
+        System.out.println("Arrays.toString(delta_Data_1.getDelta())=" + Arrays.toString(delta_Data_1.getDelta()));
         System.out.println("incrementalData_1=" + incrementalData_1);
         System.out.println("new String(incrementalData_1.getData())=" + new String(incrementalData_1.getData()));
         final IncrementalData incrementalData_2 = new IncrementalData("Test".getBytes());

@@ -16,7 +16,7 @@
 
 package de.codemakers.base.entities;
 
-import de.codemakers.base.entities.data.DataDelta;
+import de.codemakers.base.entities.data.DeltaData;
 import de.codemakers.base.entities.data.IncrementalData;
 
 import java.util.Arrays;
@@ -34,33 +34,33 @@ public class IncrementalDataTest3 {
         System.out.println("test_2=" + test_2);
         final byte[] test_2_bytes = test_2.getBytes();
         System.out.println("test_2_bytes=" + Arrays.toString(test_2_bytes));
-        final DataDelta dataDelta_1 = incrementalData_1.changeData(test_2_bytes);
-        System.out.println("dataDelta_1=" + dataDelta_1);
-        System.out.println("dataDelta_1=" + new String(dataDelta_1.getDataNew()));
-        System.out.println("dataDelta_1.getBitSize()=" + dataDelta_1.getBitSize());
+        final DeltaData delta_Data_1 = incrementalData_1.changeData(test_2_bytes);
+        System.out.println("delta_Data_1=" + delta_Data_1);
+        System.out.println("delta_Data_1=" + new String(delta_Data_1.getDataNew()));
+        System.out.println("delta_Data_1.getBitSize()=" + delta_Data_1.getBitSize());
         System.out.println();
         System.out.println();
         System.out.println();
         /*incrementalData_1.setData(test_1_bytes);
-        final XORDataDelta dataDelta_2 = incrementalData_1.changeDataXOR(test_2_bytes);
+        final XORDeltaData dataDelta_2 = incrementalData_1.changeDataXOR(test_2_bytes);
         System.out.println("dataDelta_2=" + dataDelta_2);
         System.out.println("dataDelta_2=" + new String(dataDelta_2.getDataNew()));
         System.out.println("dataDelta_2.getBitSize()=" + dataDelta_2.getBitSize());
         incrementalData_1.setData(test_1_bytes);
-        final DirectDataDelta dataDelta_3 = incrementalData_1.changeDataDIRECT(test_2_bytes);
+        final DirectDeltaData dataDelta_3 = incrementalData_1.changeDataDIRECT(test_2_bytes);
         System.out.println("dataDelta_3=" + dataDelta_3);
         System.out.println("dataDelta_3=" + new String(dataDelta_3.getDataNew()));
         System.out.println("dataDelta_3.getBitSize()=" + dataDelta_3.getBitSize());
         System.out.println();
         System.out.println();
         System.out.println();*/
-        //final DirectDataDelta dataDelta_2 = new XORDataDelta(test_1_bytes, test_2_bytes);
+        //final DirectDeltaData dataDelta_2 = new XORDeltaData(test_1_bytes, test_2_bytes);
         //System.out.println("dataDelta_2=" + dataDelta_2);
         //System.out.println("dataDelta_2.getBitSize()=" + dataDelta_2.getBitSize());
         final IncrementalData incrementalData_r_1 = new IncrementalData(test_1_bytes);
         System.out.println("incrementalData_r_1=" + incrementalData_r_1);
         System.out.println("incrementalData_r_1=" + new String(incrementalData_r_1.getData()));
-        incrementalData_r_1.incrementData(dataDelta_1);
+        incrementalData_r_1.incrementData(delta_Data_1);
         System.out.println("incrementalData_r_1=" + incrementalData_r_1);
         System.out.println("incrementalData_r_1=" + new String(incrementalData_r_1.getData()));
         /*System.out.println();

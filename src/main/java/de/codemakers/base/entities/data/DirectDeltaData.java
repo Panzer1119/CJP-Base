@@ -21,17 +21,17 @@ import de.codemakers.base.util.interfaces.Copyable;
 
 import java.util.Arrays;
 
-public class DirectDataDelta extends DataDelta {
+public class DirectDeltaData extends DeltaData {
     
     protected byte[] indices;
     
-    public DirectDataDelta(byte[] data_old, byte[] data_new) {
+    public DirectDeltaData(byte[] data_old, byte[] data_new) {
         super();
         this.length = data_new == null ? -1 : data_new.length;
         setData(data_old, data_new);
     }
     
-    private DirectDataDelta(int length, byte[] data_new, byte[] indices) {
+    private DirectDeltaData(int length, byte[] data_new, byte[] indices) {
         super(length, data_new);
         this.indices = indices;
     }
@@ -45,7 +45,7 @@ public class DirectDataDelta extends DataDelta {
     }
     
     @Override
-    public DirectDataDelta setData(byte[] data_new) {
+    public DirectDeltaData setData(byte[] data_new) {
         if (data_new == null) {
             this.data_new = null;
             this.indices = null;
@@ -73,7 +73,7 @@ public class DirectDataDelta extends DataDelta {
     }
     
     @Override
-    public DirectDataDelta setData(byte[] data_old, byte[] data_new) {
+    public DirectDeltaData setData(byte[] data_old, byte[] data_new) {
         if (data_old == null || data_new == null) {
             this.data_new = data_new;
             this.indices = null;
@@ -97,19 +97,19 @@ public class DirectDataDelta extends DataDelta {
         return indices;
     }
     
-    public DirectDataDelta setIndices(byte[] indices) {
+    public DirectDeltaData setIndices(byte[] indices) {
         this.indices = indices;
         return this;
     }
     
     @Override
-    public DirectDataDelta copy() {
-        return new DirectDataDelta(length, data_new, indices);
+    public DirectDeltaData copy() {
+        return new DirectDeltaData(length, data_new, indices);
     }
     
     @Override
     public void set(Copyable copyable) {
-        final DirectDataDelta dataDelta = Require.clazz(copyable, DirectDataDelta.class);
+        final DirectDeltaData dataDelta = Require.clazz(copyable, DirectDeltaData.class);
         if (dataDelta != null) {
             setLength(dataDelta.length);
             setDataNew(dataDelta.data_new);
