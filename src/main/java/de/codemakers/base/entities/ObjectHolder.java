@@ -22,17 +22,17 @@ import de.codemakers.base.util.interfaces.Snowflake;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class IdHolder<T> implements Copyable, Serializable, Snowflake {
+public class ObjectHolder<T> implements Copyable, Serializable, Snowflake {
     
     private final long id;
     private final T object;
     
-    public IdHolder(T object) {
+    public ObjectHolder(T object) {
         this.id = generateId();
         this.object = object;
     }
     
-    public IdHolder(long id, T object) {
+    public ObjectHolder(long id, T object) {
         this.id = id;
         this.object = object;
     }
@@ -54,8 +54,8 @@ public class IdHolder<T> implements Copyable, Serializable, Snowflake {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final IdHolder<?> idHolder = (IdHolder<?>) o;
-        return id == idHolder.id && Objects.equals(object, idHolder.object);
+        final ObjectHolder<?> objectHolder = (ObjectHolder<?>) o;
+        return id == objectHolder.id && Objects.equals(object, objectHolder.object);
     }
     
     @Override
@@ -69,8 +69,8 @@ public class IdHolder<T> implements Copyable, Serializable, Snowflake {
     }
     
     @Override
-    public IdHolder<T> copy() {
-        return new IdHolder<>(id, object);
+    public ObjectHolder<T> copy() {
+        return new ObjectHolder<>(id, object);
     }
     
     @Override

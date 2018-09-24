@@ -16,15 +16,22 @@
 
 package de.codemakers.io.streams;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import de.codemakers.base.entities.IncrementalObject;
+import de.codemakers.base.entities.ObjectHolder;
+import de.codemakers.base.util.IDTimeUtil;
 
 import java.io.*;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class IncrementalObjectOutputStream<T extends Serializable> extends ObjectOutputStream {
     
     private final ObjectOutputStream objectOutputStream;
-    private final IncrementalObject<T> incrementalObject = new IncrementalObject(null);
+    private final Map<Long, IncrementalObject<T>> incrementalObjects = new ConcurrentHashMap<>();
+    private final BiMap<Long, T> objects = HashBiMap.create();
     
     public IncrementalObjectOutputStream(OutputStream out) throws IOException {
         super();
@@ -32,9 +39,33 @@ public class IncrementalObjectOutputStream<T extends Serializable> extends Objec
         this.objectOutputStream = new ObjectOutputStream(out);
     }
     
+    public void writeIncrementalObject(Object object) throws IOException {
+        writeIncrementalObject(object, false);
+    }
+    
+    public void writeIncrementalObject(Object object, boolean forceIncrementalSending) throws IOException {
+        if (!forceIncrementalSending && (object instanceof ObjectHolder)) {
+            objectOutputStream.writeObject(object);
+        }
+        long id;
+        if (objects.containsValue(object)) {
+            id = objects.inverse().get(object);
+        } else {
+            id = IDTimeUtil.createId();
+            objects.put(id, (T) object);
+        }
+        if (!incrementalObjects.containsKey(id)) {
+            final IncrementalObject<T> incrementalObject = new IncrementalObject<>((T) object);
+            incrementalObjects.put(id, incrementalObject);
+            objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObject));
+        } else {
+            objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObjects.get(id).changeObject((T) object)));
+        }
+    }
+    
     @Override
     public void writeObjectOverride(Object object) throws IOException {
-        objectOutputStream.writeObject(incrementalObject.changeObject((T) object));
+        writeIncrementalObject(object);
     }
     
     @Override
@@ -184,7 +215,7 @@ public class IncrementalObjectOutputStream<T extends Serializable> extends Objec
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" + "objectOutputStream=" + objectOutputStream + ", incrementalObject=" + incrementalObject + '}';
+        return getClass().getSimpleName() + "{" + "objectOutputStream=" + objectOutputStream + ", incrementalObjects=" + incrementalObjects + ", objects=" + objects + '}';
     }
     
 }

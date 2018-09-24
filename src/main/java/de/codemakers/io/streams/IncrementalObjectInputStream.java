@@ -17,15 +17,18 @@
 package de.codemakers.io.streams;
 
 import de.codemakers.base.entities.IncrementalObject;
+import de.codemakers.base.entities.ObjectHolder;
 import de.codemakers.base.entities.data.DataDelta;
 
 import java.io.*;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class IncrementalObjectInputStream<T extends Serializable> extends ObjectInputStream {
     
     private final ObjectInputStream objectInputStream;
-    private final IncrementalObject<T> incrementalObject = new IncrementalObject(null);
+    private final Map<Long, IncrementalObject<T>> incrementalObjects = new ConcurrentHashMap<>();
     
     public IncrementalObjectInputStream(InputStream in) throws IOException {
         super();
@@ -34,12 +37,25 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
     }
     
     public T readIncrementalObject() throws IOException, ClassNotFoundException {
-        return incrementalObject.incrementData((DataDelta) objectInputStream.readObject()).getObject();
+        final Object object = objectInputStream.readObject();
+        if (object instanceof ObjectHolder) {
+            if (((ObjectHolder) object).getObject() instanceof IncrementalObject) {
+                final ObjectHolder<IncrementalObject<T>> objectHolder = (ObjectHolder<IncrementalObject<T>>) object;
+                incrementalObjects.put(objectHolder.getId(), objectHolder.getObject());
+                return objectHolder.getObject().getObject();
+            } else if (((ObjectHolder) object).getObject() instanceof DataDelta) {
+                final ObjectHolder<DataDelta> objectHolder = (ObjectHolder<DataDelta>) object;
+                final IncrementalObject<T> incrementalObject = incrementalObjects.get(objectHolder.getId());
+                return incrementalObject.incrementData(objectHolder.getObject()).getObject();
+            }
+            return (T) object; //FIXME This is not Exception-Friendly
+        }
+        return (T) object; //FIXME This is not Exception-Friendly
     }
     
     @Override
     protected Object readObjectOverride() throws IOException, ClassNotFoundException {
-        return incrementalObject.incrementData((DataDelta) objectInputStream.readObject()).getObject();
+        return readIncrementalObject();
     }
     
     @Override
@@ -214,7 +230,7 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" + "objectInputStream=" + objectInputStream + ", incrementalObject=" + incrementalObject + '}';
+        return getClass().getSimpleName() + "{" + "objectInputStream=" + objectInputStream + ", incrementalObjects=" + incrementalObjects + '}';
     }
     
 }

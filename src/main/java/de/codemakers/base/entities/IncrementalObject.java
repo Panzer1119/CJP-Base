@@ -40,6 +40,9 @@ public class IncrementalObject<T extends Serializable> extends IncrementalData {
     }
     
     public T getObject() {
+        if (object == null && data != null) {
+            object = (T) SerializationUtil.bytesToObjectWithoutException(data);
+        }
         return object;
     }
     
