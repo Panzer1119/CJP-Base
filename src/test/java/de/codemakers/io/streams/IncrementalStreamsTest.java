@@ -80,6 +80,13 @@ public class IncrementalStreamsTest {
         testObject.newRandomNumber();
         incrementalObjectOutputStream.writeObject(testObject);
         incrementalObjectOutputStream.flush();
+        Thread.sleep(1000);
+        testObject.newRandomNumber();
+        incrementalObjectOutputStream.writeIncrementalObject(testObject, true, true);
+        incrementalObjectOutputStream.flush();
+        Thread.sleep(1000);
+        incrementalObjectOutputStream.writeIncrementalObject(testObject, true, true);
+        incrementalObjectOutputStream.flush();
         Thread.sleep(5000);
         incrementalObjectOutputStream.close();
         //incrementalObjectInputStream.close();

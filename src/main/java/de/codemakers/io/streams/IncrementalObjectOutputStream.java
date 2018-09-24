@@ -21,6 +21,7 @@ import com.google.common.collect.HashBiMap;
 import de.codemakers.base.entities.IncrementalObject;
 import de.codemakers.base.entities.ObjectHolder;
 import de.codemakers.base.util.IDTimeUtil;
+import de.codemakers.io.SerializationUtil;
 
 import java.io.*;
 import java.util.Map;
@@ -65,7 +66,11 @@ public class IncrementalObjectOutputStream<T extends Serializable> extends Objec
         } else if (forceResending) {
             final IncrementalObject<T> incrementalObject = incrementalObjects.get(id);
             incrementalObject.changeObject((T) object);
-            objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObject));
+            System.out.println("FORCE RESEND: " + object);
+            System.out.println("FORCE RESEND: " + incrementalObject);
+            System.out.println("FORCE RESEND: " + SerializationUtil.bytesToObjectWithoutException(incrementalObject.getData()));
+            System.out.println("FORCE RESEND: " + incrementalObject.getObject());
+            objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObject)); //FIXME Why is this not working?!
         } else {
             objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObjects.get(id).changeObject((T) object)));
         }

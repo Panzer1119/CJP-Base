@@ -19,6 +19,7 @@ package de.codemakers.io.streams;
 import de.codemakers.base.entities.IncrementalObject;
 import de.codemakers.base.entities.ObjectHolder;
 import de.codemakers.base.entities.data.DeltaData;
+import de.codemakers.io.SerializationUtil;
 
 import java.io.*;
 import java.util.Map;
@@ -38,11 +39,16 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
     
     public T readIncrementalObject() throws IOException, ClassNotFoundException {
         final Object object = objectInputStream.readObject();
+        System.out.println("RECEIVED DATA 1: " + object);
         if (object instanceof ObjectHolder) {
             if (((ObjectHolder) object).getObject() instanceof IncrementalObject) {
                 final ObjectHolder<IncrementalObject<T>> objectHolder = (ObjectHolder<IncrementalObject<T>>) object;
                 if (incrementalObjects.containsKey(objectHolder.getId())) {
-                    incrementalObjects.get(objectHolder.getId()).set(objectHolder.getObject());
+                    System.out.println("RECEIVED DATA 2: " + objectHolder.getObject());
+                    System.out.println("RECEIVED DATA 3: " + objectHolder.getObject().getObject());
+                    System.out.println("DATA BEFORE: " + incrementalObjects.get(objectHolder.getId()));
+                    incrementalObjects.get(objectHolder.getId()).set(objectHolder.getObject()); //FIXME Why is this not working?! This is receiving the state it had before, even if it was not sent...
+                    System.out.println("DATA AFTER : " + incrementalObjects.get(objectHolder.getId()));
                 } else {
                     incrementalObjects.put(objectHolder.getId(), objectHolder.getObject());
                 }
@@ -50,6 +56,11 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
             } else if (((ObjectHolder) object).getObject() instanceof DeltaData) {
                 final ObjectHolder<DeltaData> objectHolder = (ObjectHolder<DeltaData>) object;
                 final IncrementalObject<T> incrementalObject = incrementalObjects.get(objectHolder.getId());
+                System.out.println("REAL SIZE BIG: " + SerializationUtil.objectToBytesWithoutException(new ObjectHolder<>(incrementalObject)).length * Byte.SIZE);
+                System.out.println("REAL SIZE SMALL: " + SerializationUtil.objectToBytesWithoutException(objectHolder).length * Byte.SIZE);
+                System.out.println("Normal Size: " + incrementalObject.getData().length * Byte.SIZE);
+                System.out.println("RECEIVED DELTA DATA size: " + objectHolder.getObject().getBitSize());
+                System.out.println("RECEIVED DELTA DATA: " + objectHolder.getObject());
                 return incrementalObject.incrementData(objectHolder.getObject()).getObject();
             }
             return (T) object; //FIXME This is not Exception-Friendly
