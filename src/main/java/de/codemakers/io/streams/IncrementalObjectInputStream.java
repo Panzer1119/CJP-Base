@@ -41,7 +41,11 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
         if (object instanceof ObjectHolder) {
             if (((ObjectHolder) object).getObject() instanceof IncrementalObject) {
                 final ObjectHolder<IncrementalObject<T>> objectHolder = (ObjectHolder<IncrementalObject<T>>) object;
-                incrementalObjects.put(objectHolder.getId(), objectHolder.getObject());
+                if (incrementalObjects.containsKey(objectHolder.getId())) {
+                    incrementalObjects.get(objectHolder.getId()).set(objectHolder.getObject());
+                } else {
+                    incrementalObjects.put(objectHolder.getId(), objectHolder.getObject());
+                }
                 return objectHolder.getObject().getObject();
             } else if (((ObjectHolder) object).getObject() instanceof DeltaData) {
                 final ObjectHolder<DeltaData> objectHolder = (ObjectHolder<DeltaData>) object;

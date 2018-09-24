@@ -44,6 +44,10 @@ public class IncrementalObjectOutputStream<T extends Serializable> extends Objec
     }
     
     public void writeIncrementalObject(Object object, boolean forceIncrementalSending) throws IOException {
+        writeIncrementalObject(object, forceIncrementalSending, false);
+    }
+    
+    public void writeIncrementalObject(Object object, boolean forceIncrementalSending, boolean forceResending) throws IOException {
         if (!forceIncrementalSending && (object instanceof ObjectHolder)) {
             objectOutputStream.writeObject(object);
         }
@@ -57,6 +61,10 @@ public class IncrementalObjectOutputStream<T extends Serializable> extends Objec
         if (!incrementalObjects.containsKey(id)) {
             final IncrementalObject<T> incrementalObject = new IncrementalObject<>((T) object);
             incrementalObjects.put(id, incrementalObject);
+            objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObject));
+        } else if (forceResending) {
+            final IncrementalObject<T> incrementalObject = incrementalObjects.get(id);
+            incrementalObject.changeObject((T) object);
             objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObject));
         } else {
             objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObjects.get(id).changeObject((T) object)));
