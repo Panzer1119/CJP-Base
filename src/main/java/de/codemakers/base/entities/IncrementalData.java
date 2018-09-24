@@ -30,7 +30,7 @@ public class IncrementalData extends Data {
     public DataDelta changeData(byte[] data) {
         final byte[] data_old = getData();
         setData(data);
-        return new DataDelta(data_old, data);
+        return new XORDataDelta(data_old, data);
     }
     
     public IncrementalData incrementData(DataDelta dataDelta) {

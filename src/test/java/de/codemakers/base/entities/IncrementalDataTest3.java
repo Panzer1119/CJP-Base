@@ -35,7 +35,23 @@ public class IncrementalDataTest3 {
         System.out.println("dataDelta_1=" + dataDelta_1);
         System.out.println("dataDelta_1=" + new String(dataDelta_1.getDataNew()));
         System.out.println("dataDelta_1.getBitSize()=" + dataDelta_1.getBitSize());
-        //final DataDelta dataDelta_2 = new PreciseDataDelta(test_1_bytes, test_2_bytes);
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        /*incrementalData_1.setData(test_1_bytes);
+        final XORDataDelta dataDelta_2 = incrementalData_1.changeDataXOR(test_2_bytes);
+        System.out.println("dataDelta_2=" + dataDelta_2);
+        System.out.println("dataDelta_2=" + new String(dataDelta_2.getDataNew()));
+        System.out.println("dataDelta_2.getBitSize()=" + dataDelta_2.getBitSize());
+        incrementalData_1.setData(test_1_bytes);
+        final DirectDataDelta dataDelta_3 = incrementalData_1.changeDataDIRECT(test_2_bytes);
+        System.out.println("dataDelta_3=" + dataDelta_3);
+        System.out.println("dataDelta_3=" + new String(dataDelta_3.getDataNew()));
+        System.out.println("dataDelta_3.getBitSize()=" + dataDelta_3.getBitSize());
+        System.out.println();
+        System.out.println();
+        System.out.println();*/
+        //final DirectDataDelta dataDelta_2 = new XORDataDelta(test_1_bytes, test_2_bytes);
         //System.out.println("dataDelta_2=" + dataDelta_2);
         //System.out.println("dataDelta_2.getBitSize()=" + dataDelta_2.getBitSize());
         final IncrementalData incrementalData_r_1 = new IncrementalData(test_1_bytes);
@@ -44,6 +60,21 @@ public class IncrementalDataTest3 {
         incrementalData_r_1.incrementData(dataDelta_1);
         System.out.println("incrementalData_r_1=" + incrementalData_r_1);
         System.out.println("incrementalData_r_1=" + new String(incrementalData_r_1.getData()));
+        /*System.out.println();
+        System.out.println();
+        System.out.println();
+        final IncrementalData incrementalData_r_2 = new IncrementalData(test_1_bytes);
+        System.out.println("incrementalData_r_2=" + incrementalData_r_2);
+        System.out.println("incrementalData_r_2=" + new String(incrementalData_r_2.getData()));
+        incrementalData_r_2.incrementData(dataDelta_2);
+        System.out.println("incrementalData_r_2=" + incrementalData_r_2);
+        System.out.println("incrementalData_r_2=" + new String(incrementalData_r_2.getData()));
+        final IncrementalData incrementalData_r_3 = new IncrementalData(test_1_bytes);
+        System.out.println("incrementalData_r_3=" + incrementalData_r_3);
+        System.out.println("incrementalData_r_3=" + new String(incrementalData_r_3.getData()));
+        incrementalData_r_3.incrementData(dataDelta_3);
+        System.out.println("incrementalData_r_3=" + incrementalData_r_3);
+        System.out.println("incrementalData_r_3=" + new String(incrementalData_r_3.getData()));*/
         //final IncrementalData incrementalData_r_2 = new IncrementalData(test_1_bytes);
         //System.out.println("incrementalData_r_2=" + incrementalData_r_2);
         //System.out.println("incrementalData_r_2=" + new String(incrementalData_r_2.getData()));
