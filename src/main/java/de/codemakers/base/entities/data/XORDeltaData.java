@@ -27,14 +27,28 @@ public class XORDeltaData extends DeltaData {
     protected byte[] indices;
     
     public XORDeltaData(byte[] data_old, byte[] data_new) {
-        super();
+        this(data_old, data_new, Long.MIN_VALUE);
+    }
+    
+    public XORDeltaData(byte[] data_old, byte[] data_new, long version) {
+        super(version);
         this.length = data_new == null ? -1 : data_new.length;
         setData(data_old, data_new);
     }
     
     private XORDeltaData(int length, byte[] data_new, byte[] indices) {
-        super(length, data_new);
+        this(length, data_new, indices, Long.MIN_VALUE);
+    }
+    
+    private XORDeltaData(int length, byte[] data_new, byte[] indices, long version) {
+        super(length, data_new, version);
         this.indices = indices;
+    }
+    
+    @Override
+    public XORDeltaData setVersion(long version) {
+        super.setVersion(version);
+        return this;
     }
     
     @Override

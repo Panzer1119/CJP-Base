@@ -19,10 +19,14 @@ package de.codemakers.base.entities.data;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.interfaces.Version;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class IncrementalData extends Data {
+public class IncrementalData extends Data implements Version {
+    
+    private final AtomicLong version = new AtomicLong(Long.MIN_VALUE);
     
     public IncrementalData(byte[] data) {
         super(data);
@@ -31,7 +35,7 @@ public class IncrementalData extends Data {
     public DeltaData changeData(byte[] data_new) {
         final byte[] data_old = getData();
         setData(data_new);
-        return new XORDeltaData(data_old, data_new);
+        return new XORDeltaData(data_old, data_new, version.incrementAndGet());
     }
     
     public ReturningAction<DeltaData> changeDataAction(byte[] data_new) {
@@ -39,12 +43,24 @@ public class IncrementalData extends Data {
     }
     
     public IncrementalData incrementData(DeltaData deltaData) {
+        return incrementData(deltaData, false);
+    }
+    
+    public IncrementalData incrementData(DeltaData deltaData, boolean forceIncrement) {
         Objects.requireNonNull(deltaData);
+        if (!forceIncrement) {
+            if (deltaData.getVersion() == getVersion()) {
+                throw new IllegalArgumentException(deltaData.getClass().getName() + "'s version is the same as this version \"" + getVersion() + "\"");
+            } else if (Math.abs(deltaData.getVersion() - getVersion()) != 1) {
+                throw new IllegalArgumentException(deltaData.getClass().getName() + "'s version \"" + deltaData.getVersion() + "\" is not 1 offset from this version \"" + getVersion() + "\" (offset is " + Math.abs(deltaData.getVersion() - getVersion()) + ")");
+            }
+        }
         if (deltaData.getLength() < 0 || getLength() < 0) {
             setData(deltaData.data_new);
         } else {
             setData(deltaData.getData(getData()));
         }
+        version.set(deltaData.getVersion());
         return this;
     }
     
@@ -69,6 +85,11 @@ public class IncrementalData extends Data {
         if (incrementalData != null) {
             setData(incrementalData.getData());
         }
+    }
+    
+    @Override
+    public long getVersion() {
+        return version.get();
     }
     
 }

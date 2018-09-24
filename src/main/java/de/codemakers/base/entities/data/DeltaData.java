@@ -18,16 +18,23 @@ package de.codemakers.base.entities.data;
 
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.interfaces.Version;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
-public abstract class DeltaData implements Serializable, Copyable {
+public abstract class DeltaData implements Serializable, Copyable, Version {
     
+    protected long version;
     protected int length;
     protected byte[] data_new;
     
     public DeltaData() {
+        this(Long.MIN_VALUE);
+    }
+    
+    public DeltaData(long version) {
+        this.version = version;
     }
     
     public DeltaData(byte[] data_new) {
@@ -35,6 +42,10 @@ public abstract class DeltaData implements Serializable, Copyable {
     }
     
     public DeltaData(int length, byte[] data_new) {
+        this(length, data_new, Long.MIN_VALUE);
+    }
+    
+    public DeltaData(int length, byte[] data_new, long version) {
         this.length = length;
         this.data_new = data_new;
     }
@@ -46,6 +57,16 @@ public abstract class DeltaData implements Serializable, Copyable {
     public abstract byte[] getData(byte[] data_old);
     
     public abstract DeltaData setData(byte[] data_old, byte[] data_new);
+    
+    @Override
+    public long getVersion() {
+        return version;
+    }
+    
+    public DeltaData setVersion(long version) {
+        this.version = version;
+        return this;
+    }
     
     public int getLength() {
         return length;

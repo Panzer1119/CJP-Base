@@ -26,14 +26,28 @@ public class DirectDeltaData extends DeltaData {
     protected byte[] indices;
     
     public DirectDeltaData(byte[] data_old, byte[] data_new) {
-        super();
+        this(data_old, data_new, Long.MIN_VALUE);
+    }
+    
+    public DirectDeltaData(byte[] data_old, byte[] data_new, long version) {
+        super(version);
         this.length = data_new == null ? -1 : data_new.length;
         setData(data_old, data_new);
     }
     
     private DirectDeltaData(int length, byte[] data_new, byte[] indices) {
+        this(length, data_new, indices, Long.MIN_VALUE);
+    }
+    
+    private DirectDeltaData(int length, byte[] data_new, byte[] indices, long version) {
         super(length, data_new);
         this.indices = indices;
+    }
+    
+    @Override
+    public DirectDeltaData setVersion(long version) {
+        super.setVersion(version);
+        return this;
     }
     
     @Override
