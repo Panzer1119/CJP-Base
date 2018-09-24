@@ -59,7 +59,7 @@ public class DirectDataDelta extends DataDelta {
         if (data_old == null || data_new == null) {
             return this.data_new;
         }
-        final byte[] bytes = new byte[length];
+        final byte[] bytes = new byte[this.length];
         int index = 0;
         for (int i = 0; i < bytes.length; i++) {
             if ((this.indices[i / 8] & (1 << (i % 8))) != 0) {
@@ -79,14 +79,11 @@ public class DirectDataDelta extends DataDelta {
             this.indices = null;
             return this;
         }
-        this.data_new = new byte[data_new.length];
-        this.indices = new byte[(data_new.length + 7) / 8];
+        this.data_new = new byte[this.length];
+        this.indices = new byte[(this.length + 7) / 8];
         int index = 0;
         for (int i = 0; i < data_new.length; i++) {
-            if (i >= data_old.length) {
-                break;
-            }
-            if (data_new[i] != data_old[i]) {
+            if ((i >= data_old.length) || (data_new[i] != data_old[i])) {
                 this.data_new[index] = data_new[i];
                 this.indices[i / 8] |= (1 << (i % 8));
                 index++;

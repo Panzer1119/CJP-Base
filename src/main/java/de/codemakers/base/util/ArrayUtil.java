@@ -42,13 +42,22 @@ public class ArrayUtil {
     }
     
     public static byte[] xorBytes(byte[] bytes_1, byte[] bytes_2) {
+        return xorBytes(bytes_1, bytes_2, true);
+    }
+    
+    public static byte[] xorBytes(byte[] bytes_1, byte[] bytes_2, boolean takeLarger) {
         if (bytes_1 == null || bytes_2 == null) {
             return null;
         }
-        assert bytes_1.length == bytes_2.length;
-        final byte[] bytes = new byte[bytes_1.length];
+        final byte[] bytes = new byte[takeLarger ? Math.max(bytes_1.length, bytes_2.length) : Math.min(bytes_1.length, bytes_2.length)];
         for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte) (bytes_1[i] ^ bytes_2[i]);
+            if (i >= bytes_2.length) {
+                bytes[i] = bytes_1[i];
+            } else if (i >= bytes_1.length) {
+                bytes[i] = bytes_2[i];
+            } else {
+                bytes[i] = (byte) (bytes_1[i] ^ bytes_2[i]);
+            }
         }
         return bytes;
     }

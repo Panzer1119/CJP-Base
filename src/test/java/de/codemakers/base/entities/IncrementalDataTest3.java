@@ -19,8 +19,6 @@ package de.codemakers.base.entities;
 import de.codemakers.base.entities.data.DataDelta;
 import de.codemakers.base.entities.data.IncrementalData;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
 public class IncrementalDataTest3 {
@@ -86,13 +84,6 @@ public class IncrementalDataTest3 {
         //incrementalData_r_2.incrementData(dataDelta_2);
         //System.out.println("incrementalData_r_2=" + incrementalData_r_2);
         //System.out.println("incrementalData_r_1=" + new String(incrementalData_r_2.getData()));
-        try {
-            new ObjectOutputStream(null) {
-            
-            };
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
     
 }

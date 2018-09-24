@@ -42,7 +42,7 @@ public class XORDataDelta extends DataDelta {
         if (data_new == null) {
             return null;
         }
-        final byte[] bytes = new byte[length];
+        final byte[] bytes = new byte[this.length];
         int index = 0;
         for (int i = 0; i < bytes.length; i++) {
             if ((this.indices[i / 8] & (1 << (i % 8))) != 0) {
@@ -60,8 +60,8 @@ public class XORDataDelta extends DataDelta {
             this.indices = null;
             return this;
         }
-        this.data_new = new byte[data_new.length];
-        this.indices = new byte[(data_new.length + 7) / 8];
+        this.data_new = new byte[this.length];
+        this.indices = new byte[(this.length + 7) / 8];
         int index = 0;
         for (int i = 0; i < data_new.length; i++) {
             if (data_new[i] != 0) {
@@ -79,7 +79,7 @@ public class XORDataDelta extends DataDelta {
         if (data_old == null || data_new == null) {
             return this.data_new;
         }
-        return ArrayUtil.xorBytes(data_old, getData());
+        return ArrayUtil.xorBytes(data_old, getData(), getLength() > data_old.length);
     }
     
     @Override
@@ -89,7 +89,7 @@ public class XORDataDelta extends DataDelta {
             this.indices = null;
             return this;
         }
-        return setData(ArrayUtil.xorBytes(data_old, data_new));
+        return setData(ArrayUtil.xorBytes(data_old, data_new, data_new.length > data_old.length));
     }
     
     public byte[] getIndices() {
