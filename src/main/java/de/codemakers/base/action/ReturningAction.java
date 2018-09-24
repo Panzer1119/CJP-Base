@@ -108,4 +108,10 @@ public class ReturningAction<T> extends Action<ToughConsumer<T>, T> {
         return cjp.getSingleExecutorService().submit(supplier::getWithoutException);
     }
     
+    @Override
+    public void consume(ToughConsumer<T> consumer) throws Exception {
+        Objects.requireNonNull(consumer);
+        consumer.accept(direct());
+    }
+    
 }

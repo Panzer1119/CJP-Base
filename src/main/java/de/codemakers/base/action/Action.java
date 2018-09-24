@@ -17,6 +17,7 @@
 package de.codemakers.base.action;
 
 import de.codemakers.base.CJP;
+import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.Tough;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughRunnable;
@@ -437,6 +438,40 @@ public abstract class Action<T extends Tough, R> {
                 throw new RuntimeException(ex);
             }
         }
+    }
+    
+    /**
+     * Consumes directly the {@link R}
+     *
+     * @param consumer The consumer callback that will be called at a convenient time for the API.
+     */
+    public abstract void consume(ToughConsumer<R> consumer) throws Exception;
+    
+    /**
+     * Consumes directly the {@link R}
+     *
+     * @param consumer The consumer callback that will be called at a convenient time for the API.
+     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point.
+     */
+    public void consume(ToughConsumer<R> consumer, ToughConsumer<Throwable> failure) {
+        try {
+            consume(consumer);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+        }
+    }
+    
+    /**
+     * Consumes directly the {@link R}, but without throwing an {@link java.lang.Exception}
+     *
+     * @param consumer The consumer callback that will be called at a convenient time for the API.
+     */
+    public void consumeWithoutException(ToughConsumer<R> consumer) {
+        consume(consumer, null);
     }
     
 }

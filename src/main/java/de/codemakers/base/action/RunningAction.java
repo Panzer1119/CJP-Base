@@ -108,4 +108,9 @@ public class RunningAction extends Action<ToughRunnable, Void> {
         });
     }
     
+    @Override
+    public void consume(ToughConsumer<Void> consumer) {
+        direct();
+    }
+    
 }

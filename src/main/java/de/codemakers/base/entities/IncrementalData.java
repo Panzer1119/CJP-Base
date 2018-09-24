@@ -16,6 +16,7 @@
 
 package de.codemakers.base.entities;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
 
@@ -27,10 +28,14 @@ public class IncrementalData extends Data {
         super(data);
     }
     
-    public DataDelta changeData(byte[] data) {
+    public DataDelta changeData(byte[] data_new) {
         final byte[] data_old = getData();
-        setData(data);
-        return new XORDataDelta(data_old, data);
+        setData(data_new);
+        return new XORDataDelta(data_old, data_new);
+    }
+    
+    public ReturningAction<DataDelta> changeDataAction(byte[] data_new) {
+        return new ReturningAction<>(() -> changeData(data_new));
     }
     
     public IncrementalData incrementData(DataDelta dataDelta) {
