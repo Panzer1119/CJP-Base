@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class IncrementalData extends Data implements Version {
     
-    private final AtomicLong version = new AtomicLong(Long.MIN_VALUE);
+    final AtomicLong version = new AtomicLong(Long.MIN_VALUE);
     
     public IncrementalData(byte[] data) {
         super(data);
