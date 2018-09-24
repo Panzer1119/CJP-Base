@@ -16,42 +16,34 @@
 
 package de.codemakers.base.entities;
 
-import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.interfaces.Snowflake;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Objects;
 
-public class Data implements Serializable, Copyable {
+public class IdHolder<T> implements Copyable, Serializable, Snowflake {
     
-    protected byte[] data = null;
+    private final long id;
+    private final T object;
     
-    public Data(byte[] data) {
-        this.data = data;
+    public IdHolder(T object) {
+        this.id = generateId();
+        this.object = object;
     }
     
-    public byte[] getData() {
-        return data;
-    }
-    
-    public Data setData(byte[] data) {
-        this.data = data;
-        return this;
-    }
-    
-    @Override
-    public Data copy() {
-        return new Data(getData());
+    public IdHolder(long id, T object) {
+        this.id = id;
+        this.object = object;
     }
     
     @Override
-    public void set(Copyable copyable) {
-        Objects.requireNonNull(copyable);
-        final Data data = Require.clazz(copyable, Data.class);
-        if (data != null) {
-            setData(data.getData());
-        }
+    public long getId() {
+        return id;
+    }
+    
+    public T getObject() {
+        return object;
     }
     
     @Override
@@ -62,18 +54,28 @@ public class Data implements Serializable, Copyable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Data that = (Data) o;
-        return Arrays.equals(data, that.data);
+        final IdHolder<?> idHolder = (IdHolder<?>) o;
+        return id == idHolder.id && Objects.equals(object, idHolder.object);
     }
     
     @Override
     public int hashCode() {
-        return Arrays.hashCode(data);
+        return Objects.hash(id, object);
     }
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" + "data=" + Arrays.toString(data) + '}';
+        return getClass().getSimpleName() + "{" + "id=" + id + ", object=" + object + '}';
+    }
+    
+    @Override
+    public IdHolder<T> copy() {
+        return new IdHolder<>(id, object);
+    }
+    
+    @Override
+    public void set(Copyable copyable) {
+        throw new UnsupportedOperationException();
     }
     
 }

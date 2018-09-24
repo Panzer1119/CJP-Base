@@ -16,6 +16,9 @@
 
 package de.codemakers.base.entities;
 
+import de.codemakers.base.entities.data.DataDelta;
+import de.codemakers.base.entities.data.IncrementalData;
+
 import java.util.Arrays;
 
 public class IncrementalDataTest {

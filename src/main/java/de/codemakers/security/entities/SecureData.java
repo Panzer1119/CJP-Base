@@ -16,7 +16,7 @@
 
 package de.codemakers.security.entities;
 
-import de.codemakers.base.entities.Data;
+import de.codemakers.base.entities.data.Data;
 import de.codemakers.security.interfaces.*;
 
 import java.util.Arrays;

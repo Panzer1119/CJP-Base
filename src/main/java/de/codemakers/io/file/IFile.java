@@ -17,7 +17,7 @@
 package de.codemakers.io.file;
 
 import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.entities.Data;
+import de.codemakers.base.entities.data.Data;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.exceptions.is.*;

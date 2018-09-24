@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities;
+package de.codemakers.base.entities.data;
 
 import de.codemakers.base.util.ArrayUtil;
 import de.codemakers.base.util.Require;
