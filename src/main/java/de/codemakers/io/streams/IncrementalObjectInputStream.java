@@ -33,6 +33,10 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
         this.objectInputStream = new ObjectInputStream(in);
     }
     
+    public T readIncrementalObject() throws IOException, ClassNotFoundException {
+        return incrementalObject.incrementData((DataDelta) objectInputStream.readObject()).getObject();
+    }
+    
     @Override
     protected Object readObjectOverride() throws IOException, ClassNotFoundException {
         return incrementalObject.incrementData((DataDelta) objectInputStream.readObject()).getObject();

@@ -41,7 +41,7 @@ public class IncrementalData extends Data {
     public IncrementalData incrementData(DataDelta dataDelta) {
         Objects.requireNonNull(dataDelta);
         if (dataDelta.getLength() < 0 || getLength() < 0) {
-            setData(null);
+            setData(dataDelta.data_new);
         } else {
             setData(dataDelta.getData(getData()));
         }
