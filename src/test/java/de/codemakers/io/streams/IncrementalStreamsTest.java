@@ -73,7 +73,12 @@ public class IncrementalStreamsTest {
         bufferedWriter.close();
         //pipedInputStream.close();
         */
-        incrementalObjectOutputStream.writeObject(new TestObject());
+        final TestObject testObject = new TestObject();
+        incrementalObjectOutputStream.writeObject(testObject);
+        incrementalObjectOutputStream.flush();
+        Thread.sleep(1000);
+        testObject.newRandomNumber();
+        incrementalObjectOutputStream.writeObject(testObject);
         incrementalObjectOutputStream.flush();
         Thread.sleep(5000);
         incrementalObjectOutputStream.close();
@@ -83,6 +88,7 @@ public class IncrementalStreamsTest {
     static class TestObject implements Serializable, Snowflake {
         
         private final long id;
+        public double random = Math.random();
         
         public TestObject() {
             this.id = generateId();
@@ -92,9 +98,13 @@ public class IncrementalStreamsTest {
             this.id = id;
         }
         
+        public void newRandomNumber() {
+            random = Math.random();
+        }
+        
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "{" + "id=" + id + '}';
+            return getClass().getSimpleName() + "{" + "id=" + id + ", random=" + random + '}';
         }
         
         @Override
