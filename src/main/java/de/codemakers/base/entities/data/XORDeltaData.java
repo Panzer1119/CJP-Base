@@ -22,7 +22,7 @@ import de.codemakers.base.util.interfaces.Copyable;
 
 import java.util.Arrays;
 
-public class XORDeltaData extends DeltaData {
+public class XORDeltaData extends HashedDeltaData {
     
     protected byte[] indices;
     
@@ -132,12 +132,12 @@ public class XORDeltaData extends DeltaData {
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" + "indices=" + Arrays.toString(indices) + ", length=" + length + ", data_new=" + Arrays.toString(data_new) + '}';
+        return getClass().getSimpleName() + "{" + "indices=" + Arrays.toString(indices) + ", hash=" + Arrays.toString(hash) + ", version=" + version + ", length=" + length + ", data_new=" + Arrays.toString(data_new) + '}';
     }
     
     @Override
     public long getBitSize() {
-        return Integer.SIZE * 2 + Byte.SIZE * data_new.length + Byte.SIZE * indices.length;
+        return super.getBitSize() + (indices == null ? 0 : Byte.SIZE * indices.length);
     }
     
 }

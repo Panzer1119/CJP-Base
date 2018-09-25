@@ -21,6 +21,7 @@ import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.base.util.interfaces.Version;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -35,7 +36,7 @@ public class IncrementalData extends Data implements Version {
     public DeltaData changeData(byte[] data_new) {
         final byte[] data_old = getData();
         setData(data_new);
-        return new XORDeltaData(data_old, data_new, version.incrementAndGet());
+        return new XORDeltaData(data_old, data_new, version.incrementAndGet()).generateHash(data_new);
     }
     
     public ReturningAction<DeltaData> changeDataAction(byte[] data_new) {
@@ -55,11 +56,19 @@ public class IncrementalData extends Data implements Version {
                 throw new IllegalArgumentException(deltaData.getClass().getName() + "'s version \"" + deltaData.getVersion() + "\" is not 1 offset from this version \"" + getVersion() + "\" (offset is " + Math.abs(deltaData.getVersion() - getVersion()) + ")");
             }
         }
+        byte[] data_new;
         if (deltaData.getLength() < 0 || getLength() < 0) {
-            setData(deltaData.data_new);
+            data_new = deltaData.getDataNew();
         } else {
-            setData(deltaData.getData(getData()));
+            data_new = deltaData.getData(getData());
         }
+        if (!forceIncrement && (deltaData instanceof HashedDeltaData)) {
+            final HashedDeltaData hashedDeltaData = (HashedDeltaData) deltaData;
+            if (!Arrays.equals(hashedDeltaData.getHash(), HashedDeltaData.hash(data_new))) {
+                throw new IllegalArgumentException("The hash of the new data is not equal to the given hash");
+            }
+        }
+        setData(data_new);
         version.set(deltaData.getVersion());
         return this;
     }

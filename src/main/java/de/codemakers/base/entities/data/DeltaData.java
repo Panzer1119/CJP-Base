@@ -34,11 +34,15 @@ public abstract class DeltaData implements Serializable, Copyable, Version {
     }
     
     public DeltaData(long version) {
-        this.version = version;
+        this(null, version);
     }
     
     public DeltaData(byte[] data_new) {
-        this(data_new == null ? -1 : data_new.length, data_new);
+        this(data_new, Long.MIN_VALUE);
+    }
+    
+    public DeltaData(byte[] data_new, long version) {
+        this(data_new == null ? -1 : data_new.length, data_new, version);
     }
     
     public DeltaData(int length, byte[] data_new) {
@@ -47,7 +51,18 @@ public abstract class DeltaData implements Serializable, Copyable, Version {
     
     public DeltaData(int length, byte[] data_new, long version) {
         this.length = length;
-        this.data_new = data_new;
+        this.version = version;
+        setData(data_new);
+    }
+    
+    public DeltaData(byte[] data_old, byte[] data_new) {
+        this(data_old, data_new, Long.MIN_VALUE);
+    }
+    
+    public DeltaData(byte[] data_old, byte[] data_new, long version) {
+        this.length = data_new == null ? -1 : data_new.length;
+        this.version = version;
+        setData(data_old, data_new);
     }
     
     public abstract byte[] getData();
@@ -101,7 +116,7 @@ public abstract class DeltaData implements Serializable, Copyable, Version {
     }
     
     public long getBitSize() {
-        return Integer.SIZE * 2 + Byte.SIZE * data_new.length;
+        return Long.SIZE + Integer.SIZE + (data_new == null ? 0 : Byte.SIZE * data_new.length);
     }
     
 }
