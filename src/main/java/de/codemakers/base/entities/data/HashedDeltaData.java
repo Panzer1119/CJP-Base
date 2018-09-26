@@ -16,27 +16,15 @@
 
 package de.codemakers.base.entities.data;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.security.util.HashUtil;
 
-import java.security.MessageDigest;
 import java.util.Arrays;
 
 public abstract class HashedDeltaData extends DeltaData {
     
     public static final int HASH_SIZE_BYTES = 32;
-    public static final MessageDigest SHA_256;
-    
-    static {
-        MessageDigest sha_256 = null;
-        try {
-            sha_256 = MessageDigest.getInstance("SHA-256");
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-        }
-        SHA_256 = sha_256;
-    }
     
     protected byte[] hash = null;
     
@@ -72,13 +60,6 @@ public abstract class HashedDeltaData extends DeltaData {
         super(data_old, data_new, version);
     }
     
-    public static byte[] hash(byte[] data_new) {
-        if (data_new == null) {
-            return null;
-        }
-        return SHA_256.digest(data_new);
-    }
-    
     @Override
     public HashedDeltaData setVersion(long version) {
         super.setVersion(version);
@@ -110,7 +91,7 @@ public abstract class HashedDeltaData extends DeltaData {
     }
     
     public HashedDeltaData generateHash(byte[] data_new) {
-        setHash(hash(data_new));
+        setHash(HashUtil.hashSHA256(data_new));
         return this;
     }
     
