@@ -20,6 +20,7 @@ import de.codemakers.base.util.ArrayUtil;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class XORDeltaData extends HashedDeltaData {
@@ -128,6 +129,55 @@ public class XORDeltaData extends HashedDeltaData {
             setDataNew(dataDelta.data_new);
             setIndices(dataDelta.indices);
         }
+    }
+    
+    @Override
+    public byte[] toBytes() throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE + 1 + (data_new == null ? 0 : data_new.length) + 1 + (hash == null ? 0 : hash.length) + 1 + (indices == null ? 0 : indices.length));
+        byteBuffer.putLong(version);
+        byteBuffer.putInt(length);
+        byteBuffer.putInt(arrayLength(data_new));
+        if (data_new != null) {
+            byteBuffer.put(data_new);
+        }
+        byteBuffer.putInt(arrayLength(hash));
+        if (hash != null) {
+            byteBuffer.put(hash);
+        }
+        byteBuffer.putInt(arrayLength(indices));
+        if (indices != null) {
+            byteBuffer.put(indices);
+        }
+        return byteBuffer.array();
+    }
+    
+    @Override
+    public boolean fromBytes(byte[] bytes) throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        this.version = byteBuffer.getLong();
+        this.length = byteBuffer.getInt();
+        int temp = byteBuffer.getInt();
+        if (temp >= 0) {
+            this.data_new = new byte[temp];
+            byteBuffer.get(this.data_new);
+        } else {
+            this.data_new = null;
+        }
+        temp = byteBuffer.getInt();
+        if (temp >= 0) {
+            this.hash = new byte[temp];
+            byteBuffer.get(this.hash);
+        } else {
+            this.hash = null;
+        }
+        temp = byteBuffer.getInt();
+        if (temp >= 0) {
+            this.indices = new byte[temp];
+            byteBuffer.get(this.indices);
+        } else {
+            this.indices = null;
+        }
+        return true;
     }
     
     @Override

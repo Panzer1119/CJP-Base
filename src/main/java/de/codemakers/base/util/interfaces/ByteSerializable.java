@@ -17,6 +17,7 @@
 package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.Require;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.SerializationUtil;
 
@@ -24,6 +25,9 @@ import java.io.Serializable;
 import java.util.Base64;
 
 public interface ByteSerializable extends Serializable {
+    
+    byte NOT_NULL = 64;
+    byte NULL = -64;
     
     default byte[] toBytes() throws Exception {
         return SerializationUtil.objectToBytes(this);
@@ -51,7 +55,14 @@ public interface ByteSerializable extends Serializable {
         return bytes == null ? null : Base64.getEncoder().encodeToString(bytes);
     }
     
-    default boolean fromBytes(byte[] bytes) {
+    default boolean fromBytes(byte[] bytes) throws Exception {
+        if (bytes != null && this instanceof Copyable) {
+            final Copyable copyable = Require.clazz(SerializationUtil.bytesToObject(bytes), Copyable.class);
+            if (copyable != null) {
+                ((Copyable) this).set(copyable);
+                return true;
+            }
+        }
         return false;
     }
     
@@ -74,6 +85,26 @@ public interface ByteSerializable extends Serializable {
     
     default boolean fromBytesAsBase64String(String bytes) {
         return fromBytesWithoutException(bytes == null ? null : Base64.getDecoder().decode(bytes));
+    }
+    
+    default byte resolveNull(Object object) {
+        return object == null ? NULL : NOT_NULL;
+    }
+    
+    default boolean isNull(byte b) {
+        return b == NULL;
+    }
+    
+    default boolean isNotNull(byte b) {
+        return b == NOT_NULL;
+    }
+    
+    default <T> int arrayLength(T[] array) {
+        return array == null ? -1 : array.length;
+    }
+    
+    default int arrayLength(byte[] array) {
+        return array == null ? -1 : array.length;
     }
     
 }

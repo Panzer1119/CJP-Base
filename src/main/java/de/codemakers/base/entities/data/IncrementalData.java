@@ -22,6 +22,8 @@ import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.base.util.interfaces.Version;
 import de.codemakers.security.util.HashUtil;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -64,7 +66,7 @@ public class IncrementalData extends Data implements Version {
         }
         if (!forceIncrement && (deltaData instanceof HashedDeltaData)) {
             final HashedDeltaData hashedDeltaData = (HashedDeltaData) deltaData;
-            if (!HashUtil.isDataValidSHA256(hashedDeltaData.getHash(), data_new)) {
+            if (!HashUtil.isDataValidSHA256(data_new, hashedDeltaData.getHash())) {
                 throw new IllegalArgumentException("The hash of the new data is not equal to the given hash");
             }
         }
@@ -97,8 +99,38 @@ public class IncrementalData extends Data implements Version {
     }
     
     @Override
+    public byte[] toBytes() throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE + (data == null ? 0 : data.length));
+        byteBuffer.putLong(version.get());
+        byteBuffer.putInt(arrayLength(data));
+        if (data != null) {
+            byteBuffer.put(data);
+        }
+        return byteBuffer.array();
+    }
+    
+    @Override
+    public boolean fromBytes(byte[] bytes) throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        this.version.set(byteBuffer.getLong());
+        final int temp = byteBuffer.getInt();
+        if (temp >= 0) {
+            this.data = new byte[temp];
+            byteBuffer.get(this.data);
+        } else {
+            this.data = null;
+        }
+        return true;
+    }
+    
+    @Override
     public long getVersion() {
         return version.get();
+    }
+    
+    @Override
+    public String toString() {
+        return "IncrementalData{" + "version=" + version + ", data=" + Arrays.toString(data) + '}';
     }
     
 }

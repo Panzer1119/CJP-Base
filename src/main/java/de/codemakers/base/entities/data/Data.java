@@ -17,13 +17,13 @@
 package de.codemakers.base.entities.data;
 
 import de.codemakers.base.util.Require;
+import de.codemakers.base.util.interfaces.ByteSerializable;
 import de.codemakers.base.util.interfaces.Copyable;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class Data implements Serializable, Copyable {
+public class Data implements ByteSerializable, Copyable {
     
     protected byte[] data = null;
     
@@ -52,6 +52,17 @@ public class Data implements Serializable, Copyable {
         if (data != null) {
             setData(data.getData());
         }
+    }
+    
+    @Override
+    public byte[] toBytes() throws Exception {
+        return getData();
+    }
+    
+    @Override
+    public boolean fromBytes(byte[] bytes) throws Exception {
+        setData(bytes);
+        return true;
     }
     
     @Override

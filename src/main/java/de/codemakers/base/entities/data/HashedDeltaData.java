@@ -20,6 +20,7 @@ import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.security.util.HashUtil;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public abstract class HashedDeltaData extends DeltaData {
@@ -103,6 +104,44 @@ public abstract class HashedDeltaData extends DeltaData {
             setDataNew(deltaData.data_new);
             setHash(deltaData.hash);
         }
+    }
+    
+    @Override
+    public byte[] toBytes() throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE + 1 + (data_new == null ? 0 : data_new.length) + 1 + (hash == null ? 0 : hash.length));
+        byteBuffer.putLong(version);
+        byteBuffer.putInt(length);
+        byteBuffer.putInt(arrayLength(data_new));
+        if (data_new != null) {
+            byteBuffer.put(data_new);
+        }
+        byteBuffer.putInt(arrayLength(hash));
+        if (hash != null) {
+            byteBuffer.put(hash);
+        }
+        return byteBuffer.array();
+    }
+    
+    @Override
+    public boolean fromBytes(byte[] bytes) throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        this.version = byteBuffer.getLong();
+        this.length = byteBuffer.getInt();
+        int temp = byteBuffer.getInt();
+        if (temp >= 0) {
+            this.data_new = new byte[temp];
+            byteBuffer.get(this.data_new);
+        } else {
+            this.data_new = null;
+        }
+        temp = byteBuffer.getInt();
+        if (temp >= 0) {
+            this.hash = new byte[temp];
+            byteBuffer.get(this.hash);
+        } else {
+            this.hash = null;
+        }
+        return true;
     }
     
     @Override

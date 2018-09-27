@@ -18,9 +18,15 @@ package de.codemakers.base.entities.data;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.io.SerializationUtil;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
@@ -208,6 +214,67 @@ public class KeepingIncrementalData extends IncrementalData {
             deltaDatas.clear();
             deltaDatas.putAll(keepingIncrementalData.deltaDatas);
         }
+    }
+    
+    @Override
+    public byte[] toBytes() throws Exception {
+        //final ByteBuffer byteBuffer = ByteBuffer.allocate(Long.SIZE / Byte.SIZE + 1 + (data == null ? 0 : data.length));
+        //byteBuffer.putLong(version.get());
+        //byteBuffer.put(resolveNull(data));
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+        dataOutputStream.writeLong(version.get());
+        //dataOutputStream.write(resolveNull(data));
+        dataOutputStream.writeInt(arrayLength(data));
+        if (data != null) {
+            dataOutputStream.write(data);
+        }
+        if (!deltaDatas.isEmpty()) {
+            deltaDatas.values().forEach((deltaData) -> {
+                try {
+                    final byte[] temp = SerializationUtil.objectToBytes(deltaData);
+                    dataOutputStream.writeInt(temp.length);
+                    dataOutputStream.write(temp);
+                } catch (Exception ex) {
+                    Logger.handleError(ex);
+                }
+            });
+        }
+        dataOutputStream.flush();
+        return byteArrayOutputStream.toByteArray();
+    }
+    
+    @Override
+    public boolean fromBytes(byte[] bytes) throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        this.version.set(byteBuffer.getLong());
+        int temp = byteBuffer.getInt();
+        if (temp >= 0) {
+            this.data = new byte[temp];
+            byteBuffer.get(this.data);
+        } else {
+            this.data = null;
+        }
+        deltaDatas.clear();
+        boolean errored = false;
+        while (byteBuffer.remaining() > 0) {
+            try {
+                temp = byteBuffer.getInt();
+                final byte[] bytes_ = new byte[temp];
+                byteBuffer.get(bytes_);
+                final DeltaData deltaData = Require.clazz(SerializationUtil.bytesToObject(bytes_), DeltaData.class);
+                deltaDatas.put(deltaData.getVersion(), deltaData);
+            } catch (Exception ex) {
+                errored = true;
+                Logger.handleError(ex);
+            }
+        }
+        return !errored;
+    }
+    
+    @Override
+    public String toString() {
+        return "KeepingIncrementalData{" + "deltaDatas=" + deltaDatas + ", version=" + version + ", data=" + Arrays.toString(data) + '}';
     }
     
 }

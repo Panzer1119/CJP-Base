@@ -17,13 +17,14 @@
 package de.codemakers.base.entities.data;
 
 import de.codemakers.base.util.Require;
+import de.codemakers.base.util.interfaces.ByteSerializable;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.base.util.interfaces.Version;
 
-import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public abstract class DeltaData implements Serializable, Copyable, Version {
+public abstract class DeltaData implements ByteSerializable, Copyable, Version {
     
     protected long version;
     protected int length;
@@ -108,6 +109,33 @@ public abstract class DeltaData implements Serializable, Copyable, Version {
             setLength(deltaData.length);
             setDataNew(deltaData.data_new);
         }
+    }
+    
+    @Override
+    public byte[] toBytes() throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE + 1 + (data_new == null ? 0 : data_new.length));
+        byteBuffer.putLong(version);
+        byteBuffer.putInt(length);
+        byteBuffer.putInt(arrayLength(data_new));
+        if (data_new != null) {
+            byteBuffer.put(data_new);
+        }
+        return byteBuffer.array();
+    }
+    
+    @Override
+    public boolean fromBytes(byte[] bytes) throws Exception {
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        this.version = byteBuffer.getLong();
+        this.length = byteBuffer.getInt();
+        final int temp = byteBuffer.getInt();
+        if (temp >= 0) {
+            this.data_new = new byte[temp];
+            byteBuffer.get(this.data_new);
+        } else {
+            this.data_new = null;
+        }
+        return true;
     }
     
     @Override
