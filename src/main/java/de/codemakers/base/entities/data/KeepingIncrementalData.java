@@ -218,13 +218,9 @@ public class KeepingIncrementalData extends IncrementalData {
     
     @Override
     public byte[] toBytes() throws Exception {
-        //final ByteBuffer byteBuffer = ByteBuffer.allocate(Long.SIZE / Byte.SIZE + 1 + (data == null ? 0 : data.length));
-        //byteBuffer.putLong(version.get());
-        //byteBuffer.put(resolveNull(data));
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         dataOutputStream.writeLong(version.get());
-        //dataOutputStream.write(resolveNull(data));
         dataOutputStream.writeInt(arrayLength(data));
         if (data != null) {
             dataOutputStream.write(data);
