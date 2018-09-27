@@ -194,6 +194,13 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
+    public BufferedReader createBufferedReader() throws Exception {
+        checkAndErrorIfNotExisting(true);
+        checkAndErrorIfNotFile(true);
+        return new BufferedReader(new FileReader(file));
+    }
+    
+    @Override
     public InputStream createInputStream() throws Exception {
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
@@ -205,6 +212,12 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
         checkAndErrorIfNotExisting(true);
         checkAndErrorIfNotFile(true);
         return Files.readAllBytes(toPath());
+    }
+    
+    @Override
+    public BufferedWriter createBufferedWriter(boolean append) throws Exception {
+        checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
+        return new BufferedWriter(new FileWriter(file, append));
     }
     
     @Override

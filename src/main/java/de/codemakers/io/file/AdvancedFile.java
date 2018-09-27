@@ -785,6 +785,16 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
+    public BufferedReader createBufferedReader() throws Exception {
+        if (isExtern()) {
+            checkAndErrorIfNotExisting(true);
+            checkAndErrorIfNotFile(true);
+            return new BufferedReader(new FileReader(toFile()));
+        }
+        return super.createBufferedReader();
+    }
+    
+    @Override
     public InputStream createInputStream() throws Exception {
         //checkAndErrorIfNotExisting(true);
         //checkAndErrorIfNotFile(true);
@@ -829,6 +839,15 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     byte[] readBytes(AdvancedFile file) throws Exception {
         return fileProvider.readBytes(this, file, parent != null ? createInputStream() : null);
+    }
+    
+    @Override
+    public BufferedWriter createBufferedWriter(boolean append) throws Exception {
+        if (isExtern()) {
+            checkAndErrorIfDirectory(checkAndErrorIfExisting(false));
+            return new BufferedWriter(new FileWriter(toFile(), append));
+        }
+        return super.createBufferedWriter();
     }
     
     @Override
