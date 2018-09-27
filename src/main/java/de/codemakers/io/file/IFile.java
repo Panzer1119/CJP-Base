@@ -26,10 +26,7 @@ import de.codemakers.security.entities.SecureData;
 import de.codemakers.security.entities.TrustedSecureData;
 import de.codemakers.security.interfaces.*;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -227,6 +224,31 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return new ReturningAction<>(() -> createNewFile());
     }
     
+    public BufferedReader createBufferedReader() throws Exception {
+        return new BufferedReader(new InputStreamReader(createInputStream()));
+    }
+    
+    public BufferedReader createBufferedReader(ToughConsumer<Throwable> failure) {
+        try {
+            return createBufferedReader();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public BufferedReader createBufferedReaderWithoutException() {
+        return createBufferedReader(null);
+    }
+    
+    public ReturningAction<BufferedReader> createBufferedReaderAction() {
+        return new ReturningAction<>(() -> createBufferedReader());
+    }
+    
     public abstract InputStream createInputStream() throws Exception;
     
     public InputStream createInputStream(ToughConsumer<Throwable> failure) {
@@ -271,6 +293,47 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public ReturningAction<byte[]> readBytesAction() {
         return new ReturningAction<>(() -> readBytes());
+    }
+    
+    public BufferedWriter createBufferedWriter() throws Exception {
+        return createBufferedWriter(false);
+    }
+    
+    public BufferedWriter createBufferedWriter(boolean append) throws Exception {
+        return new BufferedWriter(new OutputStreamWriter(createOutputStream(append)));
+    }
+    
+    public BufferedWriter createBufferedWriter(ToughConsumer<Throwable> failure) {
+        return createBufferedWriter(false, failure);
+    }
+    
+    public BufferedWriter createBufferedWriter(boolean append, ToughConsumer<Throwable> failure) {
+        try {
+            return createBufferedWriter(append);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public BufferedWriter createBufferedWriterWithoutException() {
+        return createBufferedWriterWithoutException(false);
+    }
+    
+    public BufferedWriter createBufferedWriterWithoutException(boolean append) {
+        return createBufferedWriter(append, null);
+    }
+    
+    public ReturningAction<BufferedWriter> createBufferedWriterAction() {
+        return createBufferedWriterAction(false);
+    }
+    
+    public ReturningAction<BufferedWriter> createBufferedWriterAction(boolean append) {
+        return new ReturningAction<>(() -> createBufferedWriter(append));
     }
     
     public OutputStream createOutputStream() throws Exception {
