@@ -81,6 +81,22 @@ public class Logger {
      * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.logger.Logger#LOGGER}
      *
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     * @param logLevel {@link de.codemakers.base.logger.LogLevel}
+     */
+    public static void log(Object object, LogLevel logLevel) {
+        if (LOGGER != null) {
+            if (LOGGER instanceof AdvancedLeveledLogger) {
+                ((AdvancedLeveledLogger) LOGGER).log(object, Instant.now(), Thread.currentThread(), AdvancedLogger.cutStackTrace(new Exception().getStackTrace()), logLevel);
+            } else {
+                LOGGER.log(object);
+            }
+        }
+    }
+    
+    /**
+     * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.logger.Logger#LOGGER}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
      * @param timestamp Timestamp
      */
     public static void log(Object object, Instant timestamp) {
