@@ -18,6 +18,7 @@ package de.codemakers.io.file;
 
 import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.os.OS;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.reflection.AutoRegister;
 import de.codemakers.base.reflection.ReflectionUtil;
@@ -99,7 +100,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     private String[] paths;
     private boolean init = false;
-    private boolean windowsSeparator = true;
+    private boolean windowsSeparator = OSUtil.OS == OS.WINDOWS;
     private boolean extern = true;
     private boolean absolute = true;
     private AdvancedFile parent;
