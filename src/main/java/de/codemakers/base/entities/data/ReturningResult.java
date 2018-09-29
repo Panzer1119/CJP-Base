@@ -20,6 +20,7 @@ import de.codemakers.base.entities.Result;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.Returner;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.tough.*;
 import de.codemakers.io.SerializationUtil;
 
 import java.io.*;
@@ -28,6 +29,50 @@ import java.util.Objects;
 public class ReturningResult<T> extends Result {
     
     protected T result;
+    
+    public <D> ReturningResult(ToughMultiFunction<D, T> function, D... data) {
+        super(false, null);
+        try {
+            this.result = function.apply(data);
+            this.successful = true;
+        } catch (Exception ex) {
+            this.throwable = ex;
+        }
+    }
+    
+    public <D, E> ReturningResult(ToughBiFunction<D, E, T> function, D data_1, E data_2) {
+        super(false, null);
+        try {
+            this.result = function.apply(data_1, data_2);
+            this.successful = true;
+        } catch (Exception ex) {
+            this.throwable = ex;
+        }
+    }
+    
+    public <D> ReturningResult(ToughFunction<D, T> function, D data) {
+        super(false, null);
+        try {
+            this.result = function.apply(data);
+            this.successful = true;
+        } catch (Exception ex) {
+            this.throwable = ex;
+        }
+    }
+    
+    public ReturningResult(ToughSupplier<T> supplier) {
+        super(false, null);
+        try {
+            this.result = supplier.get();
+            this.successful = true;
+        } catch (Exception ex) {
+            this.throwable = ex;
+        }
+    }
+    
+    public ReturningResult(boolean successful, Throwable throwable, ToughSupplier<T> supplier) {
+        this(successful, throwable, supplier.getWithoutException());
+    }
     
     public ReturningResult(boolean successful, Throwable throwable, T result) {
         super(successful, throwable);
@@ -48,6 +93,26 @@ public class ReturningResult<T> extends Result {
     
     public final Returner<T> returner() {
         return new Returner<>(result);
+    }
+    
+    public final void consume(ToughConsumer<T> consumer) {
+        Objects.requireNonNull(consumer);
+        consumer.acceptWithoutException(result);
+    }
+    
+    public final <R> R apply(ToughFunction<T, R> function) {
+        Objects.requireNonNull(function);
+        return function.applyWithoutException(result);
+    }
+    
+    public final boolean test(ToughPredicate<T> predicate) {
+        Objects.requireNonNull(predicate);
+        return predicate.testWithoutException(result);
+    }
+    
+    public final boolean test(ToughPredicate<T> predicate, boolean onError) {
+        Objects.requireNonNull(predicate);
+        return predicate.testWithoutException(result, onError);
     }
     
     @Override

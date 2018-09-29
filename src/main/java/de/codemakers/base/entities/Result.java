@@ -16,9 +16,11 @@
 
 package de.codemakers.base.entities;
 
+import de.codemakers.base.exceptions.RethrownRuntimeException;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.ByteSerializable;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.SerializationUtil;
 
 import java.io.ByteArrayInputStream;
@@ -31,6 +33,15 @@ public class Result implements ByteSerializable, Copyable {
     
     protected boolean successful;
     protected Throwable throwable;
+    
+    public Result(ToughRunnable runnable) {
+        try {
+            runnable.run();
+            this.successful = true;
+        } catch (Exception ex) {
+            this.throwable = ex;
+        }
+    }
     
     public Result(boolean successful, Throwable throwable) {
         this.successful = successful;
@@ -55,6 +66,12 @@ public class Result implements ByteSerializable, Copyable {
     
     public final boolean hasNoThrowable() {
         return throwable == null;
+    }
+    
+    public final void throwError() {
+        if (throwable != null) {
+            throw new RethrownRuntimeException(throwable);
+        }
     }
     
     @Override
