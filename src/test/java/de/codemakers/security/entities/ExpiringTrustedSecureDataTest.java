@@ -72,7 +72,19 @@ public class ExpiringTrustedSecureDataTest {
         System.out.println("=========================================================================================");
         final ExpiringTrustedSecureData expiringTrustedSecureData_c_2 = expiringTrustedSecureData.copy();
         System.out.println(expiringTrustedSecureData_c_2);
-        //Thread.sleep(6000);
+        /*
+        System.out.println("=========================================================================================");
+        System.out.println("=========================================================================================");
+        System.out.println("=========================================================================================");
+        System.out.println(expiringTrustedSecureDataManager);
+        */
+        Thread.sleep(6000);
+        /*
+        System.out.println(expiringTrustedSecureDataManager);
+        System.out.println("=========================================================================================");
+        System.out.println("=========================================================================================");
+        System.out.println("=========================================================================================");
+        */
         //if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_2, EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic()))) {
         if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_2, EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic()))) {
             System.out.println("ACCEPTED 2");

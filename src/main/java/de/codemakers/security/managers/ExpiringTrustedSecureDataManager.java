@@ -141,7 +141,7 @@ public class ExpiringTrustedSecureDataManager {
     
     protected void update() {
         try {
-            expiringTrustedSecureDatas.keySet().removeIf((timestamp_) -> !timeTester.testWithoutException(timestamp_)); //TODO Test if the removeIf has any effect on the MultiMap
+            expiringTrustedSecureDatas.keySet().removeIf((timestamp_) -> !timeTester.testWithoutException(timestamp_));
         } catch (Exception ex) {
             Logger.handleError(ex);
         }
@@ -173,16 +173,13 @@ public class ExpiringTrustedSecureDataManager {
         }
         final long timestamp = expiringTrustedSecureData.getTimestampAsLong(decryptor);
         if (!timeTester.testWithoutException(timestamp)) {
-            //System.err.println("REJECTED EXPIRED: " + expiringTrustedSecureData);
             return false;
         }
         if (verifierForTimestamp != null && expiringTrustedSecureData.getTimestamp().verifyWithoutException(verifierForTimestamp)) {
-            if (expiringTrustedSecureDatas.containsEntry(timestamp, expiringTrustedSecureData)) { //TODO Test this
-                //System.err.println("REJECTED REPLAY: " + expiringTrustedSecureData);
+            if (expiringTrustedSecureDatas.containsEntry(timestamp, expiringTrustedSecureData)) {
                 return false;
             }
         } else if (verifierForTimestamp != null) {
-            //System.err.println("REJECTED NOT VERIFIED: " + expiringTrustedSecureData);
             return false;
         }
         expiringTrustedSecureDatas.put(timestamp, expiringTrustedSecureData);
