@@ -26,6 +26,7 @@ import java.util.Objects;
 public class TrustedSecureData extends SecureData implements Signable, Verifiable {
     
     //FIXME Create a Class (extending this one) called something like "ExpiringTrustedSecureData" which additionally contains a "long timestamp" to prevent replay attacks, but the timestamp also needs to be signed... either with the same key as the data or another one, and create methods for easy checking if the Object is in an certain (time) limit
+    //TODO Create some Manager Class, which has the certain time set, in which data is trusted, and which saves every Object until it is expired to prevent a replay attack
     
     protected byte[] signature = null;
     
