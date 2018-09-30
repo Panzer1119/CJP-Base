@@ -16,6 +16,7 @@
 
 package de.codemakers.security.entities;
 
+import de.codemakers.base.util.ConvertUtil;
 import de.codemakers.base.util.tough.ToughPredicate;
 import de.codemakers.security.interfaces.Decryptor;
 import de.codemakers.security.interfaces.Encryptor;
@@ -23,6 +24,7 @@ import de.codemakers.security.interfaces.Signer;
 import de.codemakers.security.interfaces.Verifier;
 import de.codemakers.security.util.EasyCryptUtil;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -190,6 +192,32 @@ public class ExpiringTrustedSecureData extends TrustedSecureData {
     
     public boolean isExpired(ToughPredicate<Long> timeTester, Verifier verifier) {
         return EasyCryptUtil.isExpired(timestamp, timeTester, verifier);
+    }
+    
+    public long getTimestampAsLong() {
+        return timestamp == null ? -1 : ConvertUtil.byteArrayToLong(timestamp.getData());
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ExpiringTrustedSecureData that = (ExpiringTrustedSecureData) o;
+        return Arrays.equals(data, that.data) && Arrays.equals(signature, that.signature) && Objects.equals(timestamp, that.timestamp);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), timestamp);
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" + "timestamp=" + timestamp + ", signature=" + Arrays.toString(signature) + ", data=" + Arrays.toString(data) + '}';
     }
     
 }

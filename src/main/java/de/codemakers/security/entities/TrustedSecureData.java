@@ -25,8 +25,6 @@ import java.util.Objects;
 
 public class TrustedSecureData extends SecureData implements Signable, Verifiable {
     
-    //TODO Create some Manager Class, which has the certain time set, in which data is trusted, and which saves every Object until it is expired to prevent a replay attack
-    
     protected byte[] signature = null;
     
     public TrustedSecureData(byte[] data) {
