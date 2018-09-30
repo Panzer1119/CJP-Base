@@ -146,19 +146,35 @@ public class EasyCryptUtil {
     }
     
     public static final TrustedSecureData createTimestampOfSHA256withRSA(PrivateKey key) throws InvalidKeyException {
-        return createTimestamp(System.currentTimeMillis(), signerOfSHA256withRSA(key));
+        return createTimestampOfSHA256withRSA(null, key);
+    }
+    
+    public static final TrustedSecureData createTimestampOfSHA256withRSA(Encryptor encryptor, PrivateKey key) throws InvalidKeyException {
+        return createTimestamp(System.currentTimeMillis(), encryptor, signerOfSHA256withRSA(key));
     }
     
     public static final TrustedSecureData createTimestamp(Signer signer) {
-        return createTimestamp(System.currentTimeMillis(), signer);
+        return createTimestamp(null, signer);
+    }
+    
+    public static final TrustedSecureData createTimestamp(Encryptor encryptor, Signer signer) {
+        return createTimestamp(System.currentTimeMillis(), encryptor, signer);
     }
     
     public static final TrustedSecureData createTimestampOfSHA256withRSA(long timestamp, PrivateKey key) throws InvalidKeyException {
-        return createTimestamp(timestamp, signerOfSHA256withRSA(key));
+        return createTimestampOfSHA256withRSA(timestamp, null, key);
+    }
+    
+    public static final TrustedSecureData createTimestampOfSHA256withRSA(long timestamp, Encryptor encryptor, PrivateKey key) throws InvalidKeyException {
+        return createTimestamp(timestamp, encryptor, signerOfSHA256withRSA(key));
     }
     
     public static final TrustedSecureData createTimestamp(long timestamp, Signer signer) {
-        return new TrustedSecureData(ConvertUtil.longToByteArray(timestamp), signer);
+        return createTimestamp(timestamp, null, signer);
+    }
+    
+    public static final TrustedSecureData createTimestamp(long timestamp, Encryptor encryptor, Signer signer) {
+        return encryptor == null ? new TrustedSecureData(ConvertUtil.longToByteArray(timestamp), signer) : new TrustedSecureData(ConvertUtil.longToByteArray(timestamp), encryptor, signer);
     }
     
     public static final boolean isValidOfSHA256withRSA(TrustedSecureData timestamp, PublicKey key) throws InvalidKeyException {
@@ -174,19 +190,27 @@ public class EasyCryptUtil {
     }
     
     public static final boolean isExpired(TrustedSecureData timestamp, ToughPredicate<Long> timeTester) {
-        return isExpired(timestamp, timeTester, null);
+        return isExpired(timestamp, timeTester, null, null);
     }
     
-    public static final boolean isExpiredOfSHA256withRSA(TrustedSecureData timestamp, ToughPredicate<Long> timeTester, PublicKey key) throws InvalidKeyException {
-        return isExpired(timestamp, timeTester, verifierOfSHA256withRSA(key));
+    public static final boolean isExpiredOfSHA256withRSA(TrustedSecureData timestamp, ToughPredicate<Long> timeTester, PublicKey publicKey) throws InvalidKeyException {
+        return isExpiredOfSHA256withRSA(timestamp, timeTester, null, null, publicKey);
+    }
+    
+    public static final boolean isExpiredOfSHA256withRSA(TrustedSecureData timestamp, ToughPredicate<Long> timeTester, Cipher cipher, SecretKey secretKey, PublicKey publicKey) throws InvalidKeyException {
+        return isExpired(timestamp, timeTester, (cipher == null || secretKey == null) ? null : decryptorOfCipher(cipher, secretKey), publicKey == null ? null : verifierOfSHA256withRSA(publicKey));
     }
     
     public static final boolean isExpired(TrustedSecureData timestamp, ToughPredicate<Long> timeTester, Verifier verifier) {
+        return isExpired(timestamp, timeTester, null, verifier);
+    }
+    
+    public static final boolean isExpired(TrustedSecureData timestamp, ToughPredicate<Long> timeTester, Decryptor decryptor, Verifier verifier) {
         Objects.requireNonNull(timestamp);
         if (!isValid(timestamp, verifier)) {
             return true;
         }
-        return timeTester == null || !timeTester.testWithoutException(ConvertUtil.byteArrayToLong(timestamp.getData()));
+        return timeTester == null || !timeTester.testWithoutException(ConvertUtil.byteArrayToLong(decryptor != null ? timestamp.decryptWithoutException(decryptor) : timestamp.getData()));
     }
     
     public static final ToughPredicate<Long> createTimePredicateOfMaximumErrorAndLockedTimestamp(long max_time_error, TimeUnit unit) {

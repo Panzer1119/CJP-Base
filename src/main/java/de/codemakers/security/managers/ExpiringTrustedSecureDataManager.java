@@ -23,6 +23,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughPredicate;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.security.entities.ExpiringTrustedSecureData;
+import de.codemakers.security.interfaces.Decryptor;
 import de.codemakers.security.interfaces.Verifier;
 import de.codemakers.security.util.EasyCryptUtil;
 
@@ -125,7 +126,16 @@ public class ExpiringTrustedSecureDataManager {
         }
         if (timer != null) {
             timer.cancel();
+            timer = null;
         }
+        return true;
+    }
+    
+    public boolean clear() {
+        if (isRunning()) {
+            return false;
+        }
+        expiringTrustedSecureDatas.clear();
         return true;
     }
     
@@ -138,27 +148,50 @@ public class ExpiringTrustedSecureDataManager {
     }
     
     public boolean acceptExpiringTrustedSecureData(ExpiringTrustedSecureData expiringTrustedSecureData) {
-        return acceptExpiringTrustedSecureData(expiringTrustedSecureData, null);
+        return acceptExpiringTrustedSecureData(expiringTrustedSecureData, null, null, null);
+    }
+    
+    public boolean acceptExpiringTrustedSecureData(ExpiringTrustedSecureData expiringTrustedSecureData, Decryptor decryptor) {
+        return acceptExpiringTrustedSecureData(expiringTrustedSecureData, decryptor, null, null);
     }
     
     public boolean acceptExpiringTrustedSecureData(ExpiringTrustedSecureData expiringTrustedSecureData, Verifier verifier) {
-        return acceptExpiringTrustedSecureData(expiringTrustedSecureData, verifier, verifier);
+        return acceptExpiringTrustedSecureData(expiringTrustedSecureData, null, verifier, verifier);
+    }
+    
+    public boolean acceptExpiringTrustedSecureData(ExpiringTrustedSecureData expiringTrustedSecureData, Decryptor decryptor, Verifier verifier) {
+        return acceptExpiringTrustedSecureData(expiringTrustedSecureData, decryptor, verifier, verifier);
     }
     
     public boolean acceptExpiringTrustedSecureData(ExpiringTrustedSecureData expiringTrustedSecureData, Verifier verifierForData, Verifier verifierForTimestamp) {
+        return acceptExpiringTrustedSecureData(expiringTrustedSecureData, null, verifierForData, verifierForTimestamp);
+    }
+    
+    public boolean acceptExpiringTrustedSecureData(ExpiringTrustedSecureData expiringTrustedSecureData, Decryptor decryptor, Verifier verifierForData, Verifier verifierForTimestamp) {
         if (expiringTrustedSecureData == null || expiringTrustedSecureData.getTimestamp() == null || (verifierForData != null && !expiringTrustedSecureData.verifyWithoutException(verifierForData))) {
             return false;
         }
-        final long timestamp = expiringTrustedSecureData.getTimestampAsLong();
+        final long timestamp = expiringTrustedSecureData.getTimestampAsLong(decryptor);
+        if (!timeTester.testWithoutException(timestamp)) {
+            //System.err.println("REJECTED EXPIRED: " + expiringTrustedSecureData);
+            return false;
+        }
         if (verifierForTimestamp != null && expiringTrustedSecureData.getTimestamp().verifyWithoutException(verifierForTimestamp)) {
             if (expiringTrustedSecureDatas.containsEntry(timestamp, expiringTrustedSecureData)) { //TODO Test this
+                //System.err.println("REJECTED REPLAY: " + expiringTrustedSecureData);
                 return false;
             }
         } else if (verifierForTimestamp != null) {
+            //System.err.println("REJECTED NOT VERIFIED: " + expiringTrustedSecureData);
             return false;
         }
         expiringTrustedSecureDatas.put(timestamp, expiringTrustedSecureData);
-        return !expiringTrustedSecureData.isExpired(timeTester, verifierForTimestamp);
+        return !expiringTrustedSecureData.isExpired(timeTester, decryptor, verifierForTimestamp);
+    }
+    
+    @Override
+    public String toString() {
+        return "ExpiringTrustedSecureDataManager{" + "expiringTrustedSecureDatas=" + expiringTrustedSecureDatas + ", timeSupplier=" + timeSupplier + ", max_time_error=" + max_time_error + ", unit=" + unit + ", timeTester=" + timeTester + ", updatePeriod=" + updatePeriod + ", timer=" + timer + '}';
     }
     
 }

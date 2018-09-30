@@ -171,11 +171,19 @@ public class ExpiringTrustedSecureData extends TrustedSecureData {
     }
     
     public ExpiringTrustedSecureData createTimestamp(Signer signer) {
-        return setTimestamp(EasyCryptUtil.createTimestamp(signer));
+        return createTimestamp(null, signer);
+    }
+    
+    public ExpiringTrustedSecureData createTimestamp(Encryptor encryptor, Signer signer) {
+        return setTimestamp(EasyCryptUtil.createTimestamp(encryptor, signer));
     }
     
     public ExpiringTrustedSecureData createTimestamp(long timestamp, Signer signer) {
-        return setTimestamp(EasyCryptUtil.createTimestamp(timestamp, signer));
+        return createTimestamp(timestamp, null, signer);
+    }
+    
+    public ExpiringTrustedSecureData createTimestamp(long timestamp, Encryptor encryptor, Signer signer) {
+        return setTimestamp(EasyCryptUtil.createTimestamp(timestamp, encryptor, signer));
     }
     
     public boolean isExpired(long max_time_error, TimeUnit unit) {
@@ -187,15 +195,27 @@ public class ExpiringTrustedSecureData extends TrustedSecureData {
     }
     
     public boolean isExpired(long max_time_error, TimeUnit unit, Verifier verifier) {
-        return EasyCryptUtil.isExpired(timestamp, EasyCryptUtil.createTimePredicateOfMaximumError(max_time_error, unit), verifier);
+        return isExpired(max_time_error, unit, null, verifier);
+    }
+    
+    public boolean isExpired(long max_time_error, TimeUnit unit, Decryptor decryptor, Verifier verifier) {
+        return EasyCryptUtil.isExpired(timestamp, EasyCryptUtil.createTimePredicateOfMaximumError(max_time_error, unit), decryptor, verifier);
     }
     
     public boolean isExpired(ToughPredicate<Long> timeTester, Verifier verifier) {
-        return EasyCryptUtil.isExpired(timestamp, timeTester, verifier);
+        return isExpired(timeTester, null, verifier);
+    }
+    
+    public boolean isExpired(ToughPredicate<Long> timeTester, Decryptor decryptor, Verifier verifier) {
+        return EasyCryptUtil.isExpired(timestamp, timeTester, decryptor, verifier);
     }
     
     public long getTimestampAsLong() {
-        return timestamp == null ? -1 : ConvertUtil.byteArrayToLong(timestamp.getData());
+        return getTimestampAsLong(null);
+    }
+    
+    public long getTimestampAsLong(Decryptor decryptor) {
+        return timestamp == null ? -1 : ConvertUtil.byteArrayToLong(decryptor == null ? timestamp.getData() : timestamp.decryptWithoutException(decryptor));
     }
     
     @Override
