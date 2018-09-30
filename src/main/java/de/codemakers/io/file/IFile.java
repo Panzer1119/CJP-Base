@@ -824,9 +824,19 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     @Override
+    public boolean verify(Verifier verifier) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
     public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
         Objects.requireNonNull(verifier);
         return verifier.verify(readBytes(), data_signature);
+    }
+    
+    @Override
+    public IFile<T, P> verifyThis(Verifier verifier) throws Exception {
+        throw new UnsupportedOperationException();
     }
     
     @Override
