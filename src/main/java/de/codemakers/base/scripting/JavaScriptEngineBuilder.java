@@ -30,10 +30,12 @@ public class JavaScriptEngineBuilder implements Copyable {
     private final List<String> imports = new ArrayList<>();
     
     public JavaScriptEngineBuilder(Collection<String> imports) {
+        initStandardImports();
         addImports(imports);
     }
     
     public JavaScriptEngineBuilder(String... imports) {
+        initStandardImports();
         addImports(imports);
     }
     
