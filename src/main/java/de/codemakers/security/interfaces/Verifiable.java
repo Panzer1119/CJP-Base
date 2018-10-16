@@ -22,15 +22,30 @@ import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Verifiable {
     
-    default boolean verify(Verifier verifier) throws Exception {
-        return verify(verifier, (byte[]) null);
+    boolean verify(Verifier verifier) throws Exception;
+    
+    default boolean verify(Verifier verifier, ToughConsumer<Throwable> failure) {
+        try {
+            return verify(verifier);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    default boolean verifyWithoutException(Verifier verifier) {
+        return verify(verifier, (ToughConsumer<Throwable>) null);
+    }
+    
+    default ReturningAction<Boolean> verifyAction(Verifier verifier) {
+        return new ReturningAction<>(() -> verify(verifier));
     }
     
     boolean verify(Verifier verifier, byte[] data_signature) throws Exception;
-    
-    default boolean verify(Verifier verifier, ToughConsumer<Throwable> failure) {
-        return verify(verifier, null, failure);
-    }
     
     default boolean verify(Verifier verifier, byte[] data_signature, ToughConsumer<Throwable> failure) {
         try {
@@ -45,31 +60,38 @@ public interface Verifiable {
         }
     }
     
-    default boolean verifyWithoutException(Verifier verifier) {
-        return verifyWithoutException(verifier, null);
-    }
-    
     default boolean verifyWithoutException(Verifier verifier, byte[] data_signature) {
         return verify(verifier, data_signature, null);
-    }
-    
-    default ReturningAction<Boolean> verifyAction(Verifier verifier) {
-        return verifyAction(verifier, null);
     }
     
     default ReturningAction<Boolean> verifyAction(Verifier verifier, byte[] data_signature) {
         return new ReturningAction<>(() -> verify(verifier, data_signature));
     }
     
-    default Verifiable verifyThis(Verifier verifier) throws Exception {
-        return verifyThis(verifier, (byte[]) null);
+    Verifiable verifyThis(Verifier verifier) throws Exception;
+    
+    default Verifiable verifyThis(Verifier verifier, ToughConsumer<Throwable> failure) {
+        try {
+            return verifyThis(verifier);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return this;
+        }
+    }
+    
+    default Verifiable verifyThisWithoutException(Verifier verifier) {
+        return verifyThis(verifier, (ToughConsumer<Throwable>) null);
+    }
+    
+    default ReturningAction<Verifiable> verifyThisAction(Verifier verifier) {
+        return new ReturningAction<>(() -> verifyThis(verifier));
     }
     
     Verifiable verifyThis(Verifier verifier, byte[] signature) throws Exception;
-    
-    default Verifiable verifyThis(Verifier verifier, ToughConsumer<Throwable> failure) {
-        return verifyThis(verifier, null, failure);
-    }
     
     default Verifiable verifyThis(Verifier verifier, byte[] signature, ToughConsumer<Throwable> failure) {
         try {
@@ -84,16 +106,8 @@ public interface Verifiable {
         }
     }
     
-    default Verifiable verifyThisWithoutException(Verifier verifier) {
-        return verifyThisWithoutException(verifier, null);
-    }
-    
     default Verifiable verifyThisWithoutException(Verifier verifier, byte[] signature) {
         return verifyThis(verifier, signature, null);
-    }
-    
-    default ReturningAction<Verifiable> verifyThisAction(Verifier verifier) {
-        return verifyThisAction(verifier, null);
     }
     
     default ReturningAction<Verifiable> verifyThisAction(Verifier verifier, byte[] data_signature) {
