@@ -16,7 +16,6 @@
 
 package de.codemakers.math.eval_1.value_double.operations;
 
-import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.math.eval_1.Operator;
 import de.codemakers.math.eval_1.Value;
 import de.codemakers.math.eval_1.value_double.DoubleOperationValue;
@@ -28,12 +27,11 @@ public class DoubleFactorialValue extends DoubleOperationValue {
         super(values);
     }
     
-    @Override
-    protected Double apply(Value<Double>[] values) {
-        return factorial(values[0].getValue());
+    public static double factorial(double d) {
+        return factorial(d, false);
     }
     
-    public static double factorial(double d) {
+    public static double factorial(double d, boolean round) {
         if (d % 1 == 0) {
             final long n = (int) d;
             long result = 1;
@@ -42,7 +40,37 @@ public class DoubleFactorialValue extends DoubleOperationValue {
             }
             return result;
         }
-        throw new NotYetImplementedRuntimeException("Needs Gamma Function etc....");
+        final double fact = gamma(d + 1);
+        return round ? Math.round(fact) : fact;
+    }
+    
+    /**
+     * https://introcs.cs.princeton.edu/java/91float/Gamma.java.html
+     *
+     * @param x x
+     *
+     * @return log(gamma(x))
+     */
+    public static double logGamma(double x) {
+        final double temp = (x - 0.5) * Math.log(x + 4.5) - (x + 4.5);
+        final double series = 1.0 + 76.18009173 / (x + 0) - 86.50532033 / (x + 1) + 24.01409822 / (x + 2) - 1.231739516 / (x + 3) + 0.00120858003 / (x + 4) - 0.00000536382 / (x + 5);
+        return temp + Math.log(series * Math.sqrt(2 * Math.PI));
+    }
+    
+    /**
+     * https://introcs.cs.princeton.edu/java/91float/Gamma.java.html
+     *
+     * @param x x
+     *
+     * @return gamma(x)
+     */
+    public static double gamma(double x) {
+        return Math.exp(logGamma(x));
+    }
+    
+    @Override
+    protected Double apply(Value<Double>[] values) {
+        return factorial(values[0].getValue());
     }
     
 }
