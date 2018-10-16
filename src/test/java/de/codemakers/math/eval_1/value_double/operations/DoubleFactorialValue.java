@@ -16,6 +16,7 @@
 
 package de.codemakers.math.eval_1.value_double.operations;
 
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.math.eval_1.Operator;
 import de.codemakers.math.eval_1.Value;
 import de.codemakers.math.eval_1.value_double.DoubleOperationValue;
@@ -33,7 +34,7 @@ public class DoubleFactorialValue extends DoubleOperationValue {
     }
     
     public static double factorial(double d) {
-        if (d % 0 == 0) {
+        if (d % 1 == 0) {
             final long n = (int) d;
             long result = 1;
             for (long l = 2; l <= n; l++) {
@@ -41,7 +42,7 @@ public class DoubleFactorialValue extends DoubleOperationValue {
             }
             return result;
         }
-        throw new UnsupportedOperationException();
+        throw new NotYetImplementedRuntimeException("Needs Gamma Function etc....");
     }
     
 }
