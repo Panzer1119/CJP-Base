@@ -14,25 +14,23 @@
  *     limitations under the License.
  */
 
-package de.codemakers.math.eval_1.value_double.operations;
+package de.codemakers.math.eval_1;
 
-import de.codemakers.math.eval_1.Operator;
-import de.codemakers.math.eval_1.Value;
-import de.codemakers.math.eval_1.value_double.DoubleOperationValue;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.util.stream.Stream;
-
-@Operator(operationSign = "+", parameters = -1)
-public class DoubleAdditionValue extends DoubleOperationValue {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Operator {
     
-    public DoubleAdditionValue(Value<Double>... values) {
-        super(values);
-    }
+    String operationSign();
     
-    @Override
-    protected Double apply(Value<Double>[] values) {
-        double sum = 0.0;
-        return Stream.of(values).map(Value::getValue).reduce(sum, (sum_, value) -> sum_ + value);
-    }
+    int parameters() default 2;
+    
+    boolean unaryOperator() default false;
+    
+    boolean leftToRight() default true;
     
 }

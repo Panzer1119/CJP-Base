@@ -19,11 +19,20 @@ package de.codemakers.math.eval_1.value_double;
 import de.codemakers.math.eval_1.Evaluator;
 import de.codemakers.math.eval_1.Value;
 
+import java.util.Objects;
+
 public class DoubleEvaluator extends Evaluator<Double> {
+    
+    public static final Value<Double> ZERO = new DoubleValue();
+    
     
     @Override
     public Value<Double> eval(String expression) {
-        return null;
+        Objects.requireNonNull(expression);
+        if (expression.isEmpty()) {
+            return ZERO;
+        }
+        return ZERO;
     }
     
 }

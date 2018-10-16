@@ -20,19 +20,28 @@ import de.codemakers.math.eval_1.Operator;
 import de.codemakers.math.eval_1.Value;
 import de.codemakers.math.eval_1.value_double.DoubleOperationValue;
 
-import java.util.stream.Stream;
-
-@Operator(operationSign = "+", parameters = -1)
-public class DoubleAdditionValue extends DoubleOperationValue {
+@Operator(operationSign = "!", parameters = 1, unaryOperator = true)
+public class DoubleFactorialValue extends DoubleOperationValue {
     
-    public DoubleAdditionValue(Value<Double>... values) {
+    public DoubleFactorialValue(Value<Double>... values) {
         super(values);
     }
     
     @Override
     protected Double apply(Value<Double>[] values) {
-        double sum = 0.0;
-        return Stream.of(values).map(Value::getValue).reduce(sum, (sum_, value) -> sum_ + value);
+        return factorial(values[0].getValue());
+    }
+    
+    public static double factorial(double d) {
+        if (d % 0 == 0) {
+            final long n = (int) d;
+            long result = 1;
+            for (long l = 2; l <= n; l++) {
+                result *= l;
+            }
+            return result;
+        }
+        throw new UnsupportedOperationException();
     }
     
 }

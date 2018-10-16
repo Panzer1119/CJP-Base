@@ -16,11 +16,13 @@
 
 package de.codemakers.math.eval_1.value_double.operations;
 
+import de.codemakers.math.eval_1.Operator;
 import de.codemakers.math.eval_1.Value;
 import de.codemakers.math.eval_1.value_double.DoubleOperationValue;
 
 import java.util.stream.Stream;
 
+@Operator(operationSign = "^")
 public class DoubleExponentValue extends DoubleOperationValue {
     
     public DoubleExponentValue(Value<Double>... values) {

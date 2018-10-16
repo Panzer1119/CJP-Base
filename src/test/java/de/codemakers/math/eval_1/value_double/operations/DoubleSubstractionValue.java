@@ -16,11 +16,13 @@
 
 package de.codemakers.math.eval_1.value_double.operations;
 
+import de.codemakers.math.eval_1.Operator;
 import de.codemakers.math.eval_1.Value;
 import de.codemakers.math.eval_1.value_double.DoubleOperationValue;
 
 import java.util.stream.Stream;
 
+@Operator(operationSign = "+", parameters = -1)
 public class DoubleSubstractionValue extends DoubleOperationValue {
     
     public DoubleSubstractionValue(Value<Double>... values) {
