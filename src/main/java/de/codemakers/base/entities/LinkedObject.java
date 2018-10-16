@@ -89,9 +89,7 @@ public class LinkedObject<T> {
     
     @Override
     public String toString() {
-        //return getClass().getSimpleName() + "{" + "object=" + object + ", parent=" + parent + '}';
-        //return getClass().getSimpleName() + "{" + "\nobject=" + object + ",\nparent=" + parent + '}';
-        return toString(0, child == null, parent == null);
+        return toString(0, parent != null, parent == null);
     }
     
     public String toString(int depth, boolean showParents, boolean showChilds) {
@@ -99,7 +97,6 @@ public class LinkedObject<T> {
         for (int i = 0; i < depth; i++) {
             tabs += "\t";
         }
-        //return String.format("%2$s {%n%1$sobject=%3$s%n%1$sparent=%4$s%n%1$s}", tabs, getClass().getSimpleName(), (object == null || !(object instanceof LinkedObject)) ? object : ((LinkedObject) object).toString(depth + 1), parent == null ? parent : parent.toString(depth + 1));
         return String.format("%n%1$s%2$s {%n%1$s\tparent=%3$s%n%1$s\tobject=%4$s%n%1$s\tchild=%5$s%n%1$s}", tabs, getClass().getSimpleName(), (showParents ? parent == null ? parent : parent.toString(depth + 1, showParents, showChilds) : "NN"), (object == null || !(object instanceof LinkedObject)) ? object : ((LinkedObject) object).toString(depth + 1, showParents, showChilds), (showChilds ? child == null ? child : child.toString(depth + 1, showParents, showChilds) : "NN"));
     }
     
