@@ -25,5 +25,21 @@ public class StringUtil {
     public static final boolean isNotEmpty(String string) {
         return !string.isEmpty();
     }
+    
+    
+    public static final int count(String string, String text) {
+        if (string == null) {
+            return -1;
+        }
+        if (string.isEmpty() || !string.contains(text)) {
+            return 0;
+        }
+        int count = 0;
+        int lastIndex = -text.length();
+        while ((lastIndex = string.indexOf(text, lastIndex + text.length())) != -1) {
+            count++;
+        }
+        return count;
+    }
 
 }
