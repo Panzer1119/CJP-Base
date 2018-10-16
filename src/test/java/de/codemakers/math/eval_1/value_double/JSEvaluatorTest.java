@@ -14,19 +14,19 @@
  *     limitations under the License.
  */
 
-package de.codemakers.math.eval_1;
+package de.codemakers.math.eval_1.value_double;
 
 import de.codemakers.base.entities.data.ReturningResult;
 
-public abstract class Evaluator<T> {
+public class JSEvaluatorTest {
     
-    public Evaluator() {
+    public static final void main(String[] args) {
+        final JSEvaluator jsEvaluator = new JSEvaluator();
+        //final String expression = "1.00+23.4545 - (-3*4) * 4 + (5 - 3 * (4 - 7)) / (3 ^-2)";
+        final String expression = "1 + 2 - 3 * 5 + 81 / 9";
+        System.out.println("expression: " + expression);
+        final ReturningResult<Double> result = jsEvaluator.eval(expression);
+        System.out.println("result: " + result);
     }
     
-    public ReturningResult<T> eval(String expression) {
-        return new ReturningResult<>(this::evalIntern, expression);
-    }
-    
-    protected abstract T evalIntern(String expression) throws Exception;
-        
 }
