@@ -18,7 +18,7 @@ package de.codemakers.base.entities.data;
 
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
-import de.codemakers.security.util.HashUtil;
+import de.codemakers.security.util.SecureHashUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -92,7 +92,7 @@ public abstract class HashedDeltaData extends DeltaData {
     }
     
     public HashedDeltaData generateHash(byte[] data_new) {
-        setHash(HashUtil.hashSHA256(data_new));
+        setHash(SecureHashUtil.hashSHA256(data_new));
         return this;
     }
     

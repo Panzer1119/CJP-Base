@@ -17,22 +17,28 @@
 package de.codemakers.security.util;
 
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.interfaces.Hasher;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
 
-public class HashUtil {
+public class SecureHashUtil {
     
-    public static final MessageDigest SHA_256;
+    public static final MessageDigest SHA_256 = createSHA256();
+    public static final Hasher SHA_256_HASHER = createSHA256Hasher();
     
-    static {
-        MessageDigest sha_256 = null;
+    public static MessageDigest createSHA256() {
         try {
-            sha_256 = MessageDigest.getInstance("SHA-256");
+            return MessageDigest.getInstance("SHA-256");
         } catch (Exception ex) {
             Logger.handleError(ex);
+            return null;
         }
-        SHA_256 = sha_256;
+    }
+    
+    public static Hasher createSHA256Hasher() {
+        final MessageDigest messageDigest = createSHA256();
+        return (data) -> messageDigest.digest(data);
     }
     
     public static byte[] hashSHA256(byte[] data) {
