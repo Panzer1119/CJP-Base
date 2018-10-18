@@ -16,7 +16,7 @@
 
 package de.codemakers.math.eval_1.value_double;
 
-import de.codemakers.base.entities.data.ReturningResult;
+import de.codemakers.base.entities.ReturningResult;
 
 public class JSEvaluatorTest {
     
