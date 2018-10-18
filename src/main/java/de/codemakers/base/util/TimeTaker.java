@@ -88,9 +88,9 @@ public class TimeTaker {
         if (running) {
             return start;
         }
+        reset();
         running = true;
-        start = System.currentTimeMillis();
-        return start;
+        return start = System.currentTimeMillis();
     }
     
     public long pause() {
@@ -100,16 +100,14 @@ public class TimeTaker {
         if (pause != 0) {
             return pause;
         }
-        pause = System.currentTimeMillis();
-        return pause;
+        return pause = System.currentTimeMillis();
     }
     
     public boolean unpause() {
         if (!running || pause == 0) {
             return false;
         }
-        final long now = System.currentTimeMillis();
-        pauses += (now - pause);
+        pauses += (System.currentTimeMillis() - pause);
         pause = 0;
         return true;
     }
@@ -118,19 +116,19 @@ public class TimeTaker {
         if (!running) {
             return stop;
         }
+        stop = System.currentTimeMillis();
         if (pause != 0) {
             unpause();
         }
-        stop = System.currentTimeMillis();
         running = false;
         return stop;
     }
     
     public long getDuration() {
-        final long now = System.currentTimeMillis();
         if (!running) {
             return (stop - start) - pauses;
         } else {
+            final long now = System.currentTimeMillis();
             if (pause != 0) {
                 return (now - start) - pauses - (now - pause);
             } else {
