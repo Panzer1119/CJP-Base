@@ -30,8 +30,10 @@ public class TimeTakerTest {
         timeTaker.unpause();
         Thread.sleep(3000);
         timeTaker.stop();
+        System.out.println("Time taken: " + timeTaker.getDuration(TimeUnit.MICROSECONDS) + " µs");
         System.out.println("Time taken: " + timeTaker.getDuration() + " ms");
         System.out.println("Time taken: " + timeTaker.getDuration(TimeUnit.SECONDS) + " s");
+        System.out.println("Duration  : " + timeTaker.asDuration());
         System.out.println(timeTaker);
     }
 }

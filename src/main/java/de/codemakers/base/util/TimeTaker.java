@@ -16,11 +16,12 @@
 
 package de.codemakers.base.util;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class TimeTaker {
     
-    private boolean started = false;
+    private boolean running = false;
     private long start = 0;
     private long pause = 0;
     private long stop = 0;
@@ -70,7 +71,7 @@ public class TimeTaker {
     }
     
     public boolean reset() {
-        started = false;
+        running = false;
         start = 0;
         pause = 0;
         stop = 0;
@@ -84,16 +85,16 @@ public class TimeTaker {
     }
     
     public long start() {
-        if (started) {
+        if (running) {
             return start;
         }
-        started = true;
+        running = true;
         start = System.currentTimeMillis();
         return start;
     }
     
     public long pause() {
-        if (!started) {
+        if (!running) {
             return 0;
         }
         if (pause != 0) {
@@ -104,7 +105,7 @@ public class TimeTaker {
     }
     
     public boolean unpause() {
-        if (!started || pause == 0) {
+        if (!running || pause == 0) {
             return false;
         }
         final long now = System.currentTimeMillis();
@@ -114,20 +115,20 @@ public class TimeTaker {
     }
     
     public long stop() {
-        if (!started) {
+        if (!running) {
             return stop;
         }
         if (pause != 0) {
             unpause();
         }
         stop = System.currentTimeMillis();
-        started = false;
+        running = false;
         return stop;
     }
     
     public long getDuration() {
         final long now = System.currentTimeMillis();
-        if (!started) {
+        if (!running) {
             return (stop - start) - pauses;
         } else {
             if (pause != 0) {
@@ -142,9 +143,13 @@ public class TimeTaker {
         return unit.convert(getDuration(), TimeUnit.MILLISECONDS);
     }
     
+    public Duration asDuration() {
+        return Duration.ofMillis(getDuration());
+    }
+    
     @Override
     public String toString() {
-        return "TimeTaker{" + "started=" + started + ", start=" + start + ", pause=" + pause + ", stop=" + stop + ", pauses=" + pauses + '}';
+        return "TimeTaker{" + "running=" + running + ", start=" + start + ", pause=" + pause + ", stop=" + stop + ", pauses=" + pauses + '}';
     }
     
 }
