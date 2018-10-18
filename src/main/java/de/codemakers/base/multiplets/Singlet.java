@@ -14,31 +14,31 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities.multi;
+package de.codemakers.base.multiplets;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Triplet<A, B, C> extends Doublet<A, B> {
+public class Singlet<A> implements Serializable {
     
-    protected C c;
+    protected A a;
     
-    public Triplet(A a, B b, C c) {
-        super(a, b);
-        this.c = c;
+    public Singlet(A a) {
+        this.a = a;
     }
     
-    public final C getC() {
-        return c;
+    public final A getA() {
+        return a;
     }
     
-    public final Triplet setC(C c) {
-        this.c = c;
+    public final Singlet setA(A a) {
+        this.a = a;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Triplet{" + "c=" + c + ", b=" + b + ", a=" + a + '}';
+        return "Singlet{" + "a=" + a + '}';
     }
     
     @Override
@@ -49,16 +49,13 @@ public class Triplet<A, B, C> extends Doublet<A, B> {
         if (o == null || !getClass().isAssignableFrom(o.getClass())) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
-        final Triplet<?, ?, ?> that = (Triplet<?, ?, ?>) o;
-        return Objects.equals(c, that.c);
+        final Singlet<?> that = (Singlet<?>) o;
+        return Objects.equals(a, that.a);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), c);
+        return Objects.hash(a);
     }
     
 }

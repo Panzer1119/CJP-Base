@@ -14,31 +14,31 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities.multi;
+package de.codemakers.base.multiplets;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Singlet<A> implements Serializable {
+public class Octuplet<A, B, C, D, E, F, G, H> extends Septuplet<A, B, C, D, E, F, G> {
     
-    protected A a;
+    protected H h;
     
-    public Singlet(A a) {
-        this.a = a;
+    public Octuplet(A a, B b, C c, D d, E e, F f, G g, H h) {
+        super(a, b, c, d, e, f, g);
+        this.h = h;
     }
     
-    public final A getA() {
-        return a;
+    public final H getH() {
+        return h;
     }
     
-    public final Singlet setA(A a) {
-        this.a = a;
+    public final Octuplet setH(H h) {
+        this.h = h;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Singlet{" + "a=" + a + '}';
+        return "Octuplet{" + "h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -49,13 +49,16 @@ public class Singlet<A> implements Serializable {
         if (o == null || !getClass().isAssignableFrom(o.getClass())) {
             return false;
         }
-        final Singlet<?> that = (Singlet<?>) o;
-        return Objects.equals(a, that.a);
+        if (!super.equals(o)) {
+            return false;
+        }
+        final Octuplet<?, ?, ?, ?, ?, ?, ?, ?> that = (Octuplet<?, ?, ?, ?, ?, ?, ?, ?>) o;
+        return Objects.equals(h, that.h);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(a);
+        return Objects.hash(super.hashCode(), h);
     }
     
 }

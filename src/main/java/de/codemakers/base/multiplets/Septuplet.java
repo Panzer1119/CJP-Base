@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities.multi;
+package de.codemakers.base.multiplets;
 
 import java.util.Objects;
 

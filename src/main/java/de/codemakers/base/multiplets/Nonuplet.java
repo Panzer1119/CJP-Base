@@ -14,31 +14,31 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities.multi;
+package de.codemakers.base.multiplets;
 
 import java.util.Objects;
 
-public class Quadruplet<A, B, C, D> extends Triplet<A, B, C> {
+public class Nonuplet<A, B, C, D, E, F, G, H, I> extends Octuplet<A, B, C, D, E, F, G, H> {
     
-    protected D d;
+    protected I i;
     
-    public Quadruplet(A a, B b, C c, D d) {
-        super(a, b, c);
-        this.d = d;
+    public Nonuplet(A a, B b, C c, D d, E e, F f, G g, H h, I i) {
+        super(a, b, c, d, e, f, g, h);
+        this.i = i;
     }
     
-    public final D getD() {
-        return d;
+    public final I getI() {
+        return i;
     }
     
-    public final Quadruplet setD(D d) {
-        this.d = d;
+    public final Nonuplet setI(I i) {
+        this.i = i;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Quadruplet{" + "d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
+        return "Nonuplet{" + "i=" + i + ", h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -52,13 +52,13 @@ public class Quadruplet<A, B, C, D> extends Triplet<A, B, C> {
         if (!super.equals(o)) {
             return false;
         }
-        final Quadruplet<?, ?, ?, ?> that = (Quadruplet<?, ?, ?, ?>) o;
-        return Objects.equals(d, that.d);
+        final Nonuplet<?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Nonuplet<?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
+        return Objects.equals(i, that.i);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), d);
+        return Objects.hash(super.hashCode(), i);
     }
     
 }

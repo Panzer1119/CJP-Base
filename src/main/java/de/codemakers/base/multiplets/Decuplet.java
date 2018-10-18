@@ -14,31 +14,31 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities.multi;
+package de.codemakers.base.multiplets;
 
 import java.util.Objects;
 
-public class Sextuplet<A, B, C, D, E, F> extends Quintuplet<A, B, C, D, E> {
+public class Decuplet<A, B, C, D, E, F, G, H, I, J> extends Nonuplet<A, B, C, D, E, F, G, H, I> {
     
-    protected F f;
+    protected J j;
     
-    public Sextuplet(A a, B b, C c, D d, E e, F f) {
-        super(a, b, c, d, e);
-        this.f = f;
+    public Decuplet(A a, B b, C c, D d, E e, F f, G g, H h, I i, J j) {
+        super(a, b, c, d, e, f, g, h, i);
+        this.j = j;
     }
     
-    public final F getF() {
-        return f;
+    public final J getJ() {
+        return j;
     }
     
-    public final Sextuplet setF(F f) {
-        this.f = f;
+    public final Decuplet setJ(J j) {
+        this.j = j;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Sextuplet{" + "f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
+        return "Decuplet{" + "j=" + j + ", i=" + i + ", h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -52,13 +52,13 @@ public class Sextuplet<A, B, C, D, E, F> extends Quintuplet<A, B, C, D, E> {
         if (!super.equals(o)) {
             return false;
         }
-        final Sextuplet<?, ?, ?, ?, ?, ?> that = (Sextuplet<?, ?, ?, ?, ?, ?>) o;
-        return Objects.equals(f, that.f);
+        final Decuplet<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Decuplet<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
+        return Objects.equals(j, that.j);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), f);
+        return Objects.hash(super.hashCode(), j);
     }
     
 }

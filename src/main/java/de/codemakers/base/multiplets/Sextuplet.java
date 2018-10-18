@@ -14,31 +14,31 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities.multi;
+package de.codemakers.base.multiplets;
 
 import java.util.Objects;
 
-public class Doublet<A, B> extends Singlet<A> {
+public class Sextuplet<A, B, C, D, E, F> extends Quintuplet<A, B, C, D, E> {
     
-    protected B b;
+    protected F f;
     
-    public Doublet(A a, B b) {
-        super(a);
-        this.b = b;
+    public Sextuplet(A a, B b, C c, D d, E e, F f) {
+        super(a, b, c, d, e);
+        this.f = f;
     }
     
-    public final B getB() {
-        return b;
+    public final F getF() {
+        return f;
     }
     
-    public final Doublet setB(B b) {
-        this.b = b;
+    public final Sextuplet setF(F f) {
+        this.f = f;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Doublet{" + "b=" + b + ", a=" + a + '}';
+        return "Sextuplet{" + "f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -52,13 +52,13 @@ public class Doublet<A, B> extends Singlet<A> {
         if (!super.equals(o)) {
             return false;
         }
-        final Doublet<?, ?> that = (Doublet<?, ?>) o;
-        return Objects.equals(b, that.b);
+        final Sextuplet<?, ?, ?, ?, ?, ?> that = (Sextuplet<?, ?, ?, ?, ?, ?>) o;
+        return Objects.equals(f, that.f);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), b);
+        return Objects.hash(super.hashCode(), f);
     }
     
 }

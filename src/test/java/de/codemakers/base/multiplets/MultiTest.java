@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities.multi;
+package de.codemakers.base.multiplets;
 
 public class MultiTest {
     
