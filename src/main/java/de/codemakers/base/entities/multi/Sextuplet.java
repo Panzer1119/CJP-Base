@@ -16,29 +16,29 @@
 
 package de.codemakers.base.entities.multi;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Single<A> implements Serializable {
+public class Sextuplet<A, B, C, D, E, F> extends Quintuplet<A, B, C, D, E> {
     
-    protected A a;
+    protected F f;
     
-    public Single(A a) {
-        this.a = a;
+    public Sextuplet(A a, B b, C c, D d, E e, F f) {
+        super(a, b, c, d, e);
+        this.f = f;
     }
     
-    public final A getA() {
-        return a;
+    public final F getF() {
+        return f;
     }
     
-    public final Single setA(A a) {
-        this.a = a;
+    public final Sextuplet setF(F f) {
+        this.f = f;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Single{" + "a=" + a + '}';
+        return "Sextuplet{" + "f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -49,13 +49,16 @@ public class Single<A> implements Serializable {
         if (o == null || !getClass().isAssignableFrom(o.getClass())) {
             return false;
         }
-        final Single<?> that = (Single<?>) o;
-        return Objects.equals(a, that.a);
+        if (!super.equals(o)) {
+            return false;
+        }
+        final Sextuplet<?, ?, ?, ?, ?, ?> that = (Sextuplet<?, ?, ?, ?, ?, ?>) o;
+        return Objects.equals(f, that.f);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(a);
+        return Objects.hash(super.hashCode(), f);
     }
     
 }

@@ -18,11 +18,11 @@ package de.codemakers.base.entities.multi;
 
 import java.util.Objects;
 
-public class Decuple<A, B, C, D, E, F, G, H, I, J> extends Nonuple<A, B, C, D, E, F, G, H, I> {
+public class Decuplet<A, B, C, D, E, F, G, H, I, J> extends Nonuplet<A, B, C, D, E, F, G, H, I> {
     
     protected J j;
     
-    public Decuple(A a, B b, C c, D d, E e, F f, G g, H h, I i, J j) {
+    public Decuplet(A a, B b, C c, D d, E e, F f, G g, H h, I i, J j) {
         super(a, b, c, d, e, f, g, h, i);
         this.j = j;
     }
@@ -31,14 +31,14 @@ public class Decuple<A, B, C, D, E, F, G, H, I, J> extends Nonuple<A, B, C, D, E
         return j;
     }
     
-    public final Decuple setJ(J j) {
+    public final Decuplet setJ(J j) {
         this.j = j;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Decuple{" + "j=" + j + ", i=" + i + ", h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
+        return "Decuplet{" + "j=" + j + ", i=" + i + ", h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -52,8 +52,8 @@ public class Decuple<A, B, C, D, E, F, G, H, I, J> extends Nonuple<A, B, C, D, E
         if (!super.equals(o)) {
             return false;
         }
-        final Decuple<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> decuple = (Decuple<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
-        return Objects.equals(j, decuple.j);
+        final Decuplet<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> that = (Decuplet<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
+        return Objects.equals(j, that.j);
     }
     
     @Override

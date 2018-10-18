@@ -18,11 +18,11 @@ package de.codemakers.base.entities.multi;
 
 import java.util.Objects;
 
-public class Triple<A, B, C> extends Double<A, B> {
+public class Triplet<A, B, C> extends Doublet<A, B> {
     
     protected C c;
     
-    public Triple(A a, B b, C c) {
+    public Triplet(A a, B b, C c) {
         super(a, b);
         this.c = c;
     }
@@ -31,14 +31,14 @@ public class Triple<A, B, C> extends Double<A, B> {
         return c;
     }
     
-    public final Triple setC(C c) {
+    public final Triplet setC(C c) {
         this.c = c;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Triple{" + "c=" + c + ", b=" + b + ", a=" + a + '}';
+        return "Triplet{" + "c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -52,7 +52,7 @@ public class Triple<A, B, C> extends Double<A, B> {
         if (!super.equals(o)) {
             return false;
         }
-        final Triple<?, ?, ?> that = (Triple<?, ?, ?>) o;
+        final Triplet<?, ?, ?> that = (Triplet<?, ?, ?>) o;
         return Objects.equals(c, that.c);
     }
     

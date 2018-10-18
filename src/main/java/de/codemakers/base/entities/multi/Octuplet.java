@@ -18,27 +18,27 @@ package de.codemakers.base.entities.multi;
 
 import java.util.Objects;
 
-public class Nonuple<A, B, C, D, E, F, G, H, I> extends Octuple<A, B, C, D, E, F, G, H> {
+public class Octuplet<A, B, C, D, E, F, G, H> extends Septuplet<A, B, C, D, E, F, G> {
     
-    protected I i;
+    protected H h;
     
-    public Nonuple(A a, B b, C c, D d, E e, F f, G g, H h, I i) {
-        super(a, b, c, d, e, f, g, h);
-        this.i = i;
+    public Octuplet(A a, B b, C c, D d, E e, F f, G g, H h) {
+        super(a, b, c, d, e, f, g);
+        this.h = h;
     }
     
-    public final I getI() {
-        return i;
+    public final H getH() {
+        return h;
     }
     
-    public final Nonuple setI(I i) {
-        this.i = i;
+    public final Octuplet setH(H h) {
+        this.h = h;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Nonuple{" + "i=" + i + ", h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
+        return "Octuplet{" + "h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -52,13 +52,13 @@ public class Nonuple<A, B, C, D, E, F, G, H, I> extends Octuple<A, B, C, D, E, F
         if (!super.equals(o)) {
             return false;
         }
-        final Nonuple<?, ?, ?, ?, ?, ?, ?, ?, ?> nonuple = (Nonuple<?, ?, ?, ?, ?, ?, ?, ?, ?>) o;
-        return Objects.equals(i, nonuple.i);
+        final Octuplet<?, ?, ?, ?, ?, ?, ?, ?> that = (Octuplet<?, ?, ?, ?, ?, ?, ?, ?>) o;
+        return Objects.equals(h, that.h);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), i);
+        return Objects.hash(super.hashCode(), h);
     }
     
 }

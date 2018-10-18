@@ -18,27 +18,27 @@ package de.codemakers.base.entities.multi;
 
 import java.util.Objects;
 
-public class Octuple<A, B, C, D, E, F, G, H> extends Septuple<A, B, C, D, E, F, G> {
+public class Doublet<A, B> extends Singlet<A> {
     
-    protected H h;
+    protected B b;
     
-    public Octuple(A a, B b, C c, D d, E e, F f, G g, H h) {
-        super(a, b, c, d, e, f, g);
-        this.h = h;
+    public Doublet(A a, B b) {
+        super(a);
+        this.b = b;
     }
     
-    public final H getH() {
-        return h;
+    public final B getB() {
+        return b;
     }
     
-    public final Octuple setH(H h) {
-        this.h = h;
+    public final Doublet setB(B b) {
+        this.b = b;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Octuple{" + "h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
+        return "Doublet{" + "b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -52,13 +52,13 @@ public class Octuple<A, B, C, D, E, F, G, H> extends Septuple<A, B, C, D, E, F, 
         if (!super.equals(o)) {
             return false;
         }
-        final Octuple<?, ?, ?, ?, ?, ?, ?, ?> octuple = (Octuple<?, ?, ?, ?, ?, ?, ?, ?>) o;
-        return Objects.equals(h, octuple.h);
+        final Doublet<?, ?> that = (Doublet<?, ?>) o;
+        return Objects.equals(b, that.b);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), h);
+        return Objects.hash(super.hashCode(), b);
     }
     
 }

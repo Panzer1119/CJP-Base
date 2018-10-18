@@ -18,27 +18,27 @@ package de.codemakers.base.entities.multi;
 
 import java.util.Objects;
 
-public class Sextuple<A, B, C, D, E, F> extends Quintuple<A, B, C, D, E> {
+public class Septuplet<A, B, C, D, E, F, G> extends Sextuplet<A, B, C, D, E, F> {
     
-    protected F f;
+    protected G g;
     
-    public Sextuple(A a, B b, C c, D d, E e, F f) {
-        super(a, b, c, d, e);
-        this.f = f;
+    public Septuplet(A a, B b, C c, D d, E e, F f, G g) {
+        super(a, b, c, d, e, f);
+        this.g = g;
     }
     
-    public final F getF() {
-        return f;
+    public final G getG() {
+        return g;
     }
     
-    public final Sextuple setF(F f) {
-        this.f = f;
+    public final Septuplet setG(G g) {
+        this.g = g;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Sextuple{" + "f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
+        return "Septuplet{" + "g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
     
     @Override
@@ -52,13 +52,13 @@ public class Sextuple<A, B, C, D, E, F> extends Quintuple<A, B, C, D, E> {
         if (!super.equals(o)) {
             return false;
         }
-        final Sextuple<?, ?, ?, ?, ?, ?> sextuple = (Sextuple<?, ?, ?, ?, ?, ?>) o;
-        return Objects.equals(f, sextuple.f);
+        final Septuplet<?, ?, ?, ?, ?, ?, ?> that = (Septuplet<?, ?, ?, ?, ?, ?, ?>) o;
+        return Objects.equals(g, that.g);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), f);
+        return Objects.hash(super.hashCode(), g);
     }
     
 }

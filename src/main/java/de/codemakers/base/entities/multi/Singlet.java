@@ -16,29 +16,29 @@
 
 package de.codemakers.base.entities.multi;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Double<A, B> extends Single<A> {
+public class Singlet<A> implements Serializable {
     
-    protected B b;
+    protected A a;
     
-    public Double(A a, B b) {
-        super(a);
-        this.b = b;
+    public Singlet(A a) {
+        this.a = a;
     }
     
-    public final B getB() {
-        return b;
+    public final A getA() {
+        return a;
     }
     
-    public final Double setB(B b) {
-        this.b = b;
+    public final Singlet setA(A a) {
+        this.a = a;
         return this;
     }
     
     @Override
     public String toString() {
-        return "Double{" + "b=" + b + ", a=" + a + '}';
+        return "Singlet{" + "a=" + a + '}';
     }
     
     @Override
@@ -49,16 +49,13 @@ public class Double<A, B> extends Single<A> {
         if (o == null || !getClass().isAssignableFrom(o.getClass())) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
-        final Double<?, ?> that = (Double<?, ?>) o;
-        return Objects.equals(b, that.b);
+        final Singlet<?> that = (Singlet<?>) o;
+        return Objects.equals(a, that.a);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), b);
+        return Objects.hash(a);
     }
     
 }
