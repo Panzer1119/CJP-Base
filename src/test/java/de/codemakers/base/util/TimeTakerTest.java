@@ -16,6 +16,8 @@
 
 package de.codemakers.base.util;
 
+import java.util.concurrent.TimeUnit;
+
 public class TimeTakerTest {
     
     public static final void main(String[] args) throws Exception {
@@ -29,5 +31,7 @@ public class TimeTakerTest {
         Thread.sleep(3000);
         timeTaker.stop();
         System.out.println("Time taken: " + timeTaker.getDuration() + " ms");
+        System.out.println("Time taken: " + timeTaker.getDuration(TimeUnit.SECONDS) + " s");
+        System.out.println(timeTaker);
     }
 }

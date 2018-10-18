@@ -16,20 +16,17 @@
 
 package de.codemakers.base.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class TimeTaker {
     
     private boolean started = false;
-    private boolean paused = false;
     private long start = 0;
     private long pause = 0;
     private long stop = 0;
-    private final List<Long> pauses = new ArrayList<>(); //FIXME Maybe just make a global variable, which gets added to every time this is unpaused
+    private long pauses = 0;
     
     public TimeTaker() {
-        this(-1);
     }
     
     public TimeTaker(long start) {
@@ -40,21 +37,49 @@ public class TimeTaker {
         return start;
     }
     
+    public TimeTaker setStart(long start) {
+        this.start = start;
+        return this;
+    }
+    
     public long getPause() {
         return pause;
+    }
+    
+    public TimeTaker setPause(long pause) {
+        this.pause = pause;
+        return this;
     }
     
     public long getStop() {
         return stop;
     }
     
+    public TimeTaker setStop(long stop) {
+        this.stop = stop;
+        return this;
+    }
+    
+    public long getPauses() {
+        return pauses;
+    }
+    
+    public TimeTaker addPause(long duration) {
+        this.pauses += duration;
+        return this;
+    }
+    
     public boolean reset() {
-        paused = false;
         started = false;
         start = 0;
         pause = 0;
         stop = 0;
-        pauses.clear();
+        resetPauses();
+        return true;
+    }
+    
+    public boolean resetPauses() {
+        pauses = 0;
         return true;
     }
     
@@ -62,9 +87,6 @@ public class TimeTaker {
         if (started) {
             return start;
         }
-        /*if (paused) {
-            unpause();
-        }*/
         started = true;
         start = System.currentTimeMillis();
         return start;
@@ -72,23 +94,22 @@ public class TimeTaker {
     
     public long pause() {
         if (!started) {
-            return -1;
+            return 0;
         }
-        if (paused) {
+        if (pause != 0) {
             return pause;
         }
         pause = System.currentTimeMillis();
-        paused = true;
         return pause;
     }
     
     public boolean unpause() {
-        if (!started || !paused) {
+        if (!started || pause == 0) {
             return false;
         }
         final long now = System.currentTimeMillis();
-        pauses.add(now - pause);
-        paused = false;
+        pauses += (now - pause);
+        pause = 0;
         return true;
     }
     
@@ -96,7 +117,7 @@ public class TimeTaker {
         if (!started) {
             return stop;
         }
-        if (paused) {
+        if (pause != 0) {
             unpause();
         }
         stop = System.currentTimeMillis();
@@ -106,21 +127,24 @@ public class TimeTaker {
     
     public long getDuration() {
         final long now = System.currentTimeMillis();
-        final long pause_all = getPauses();
-        System.out.println("pause_all=" + pause_all);
         if (!started) {
-            return (stop - start) - pause_all;
+            return (stop - start) - pauses;
         } else {
-            if (paused) {
-                return (now - start) - pause_all - (now - pause);
+            if (pause != 0) {
+                return (now - start) - pauses - (now - pause);
             } else {
-                return (now - start) - pause_all;
+                return (now - start) - pauses;
             }
         }
     }
     
-    protected long getPauses() {
-        return pauses.stream().reduce(0L, (pause_all_, pause_) -> pause_all_ + pause_);
+    public long getDuration(TimeUnit unit) {
+        return unit.convert(getDuration(), TimeUnit.MILLISECONDS);
+    }
+    
+    @Override
+    public String toString() {
+        return "TimeTaker{" + "started=" + started + ", start=" + start + ", pause=" + pause + ", stop=" + stop + ", pauses=" + pauses + '}';
     }
     
 }
