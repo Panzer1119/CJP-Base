@@ -16,7 +16,7 @@
 
 package de.codemakers.math.eval_1;
 
-import de.codemakers.base.entities.ReturningResult;
+import de.codemakers.base.entities.results.ReturningResult;
 
 public abstract class Evaluator<T> {
     

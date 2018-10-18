@@ -14,7 +14,7 @@
  *     limitations under the License.
  */
 
-package de.codemakers.base.entities;
+package de.codemakers.base.entities.results;
 
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.Returner;
