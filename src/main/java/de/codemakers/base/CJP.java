@@ -30,7 +30,7 @@ public class CJP {
     
     public static final Class<?>[] CJP_LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLeveledLogger.class, de.codemakers.base.logger.AdvancedLeveledSystemLogger.class, de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.LogLevel.class, de.codemakers.base.logger.SystemLogger.class};
     public static final String[] CJP_LOGGER_CLASS_NAMES = Arrays.asList(CJP_LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
-    private static final CJP CJP = new CJP(Runtime.getRuntime().availableProcessors());
+    private static final CJP CJP = createInstance();
     
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownInstance()));
@@ -64,6 +64,14 @@ public class CJP {
     
     public static final CJP getInstance() {
         return CJP;
+    }
+    
+    public static final CJP createInstance(int fixedThreadPoolSize) {
+        return new CJP(fixedThreadPoolSize);
+    }
+    
+    public static final CJP createInstance() {
+        return createInstance(Runtime.getRuntime().availableProcessors());
     }
     
     public final ExecutorService getFixedExecutorService() {
