@@ -58,7 +58,7 @@ public class ConvertUtil {
     }
     
     public static byte[] intToByteArray(int value) {
-        return ByteBuffer.allocate(Integer.BYTES).putLong(value).array();
+        return ByteBuffer.allocate(Integer.BYTES).putInt(value).array();
     }
     
     public static int byteArrayToInt(byte[] array) {
