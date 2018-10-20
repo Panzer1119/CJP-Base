@@ -16,16 +16,21 @@
 
 package de.codemakers.base.util;
 
-public class StringUtil {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+public class StringUtil {
+    
+    public static final String REGEX_ANONYMOUS_CLASS_NAME = "(.+\\.)?(.+)\\$(\\d+)";
+    public static final Pattern PATTERN_ANONYMOUS_CLASS_NAME = Pattern.compile(REGEX_ANONYMOUS_CLASS_NAME);
+    
     public static final boolean isEmpty(String string) {
         return string.isEmpty();
     }
-
+    
     public static final boolean isNotEmpty(String string) {
         return !string.isEmpty();
     }
-    
     
     public static final int count(String string, String text) {
         if (string == null) {
@@ -41,5 +46,18 @@ public class StringUtil {
         }
         return count;
     }
-
+    
+    public static final String classToSimpleName(Class<?> clazz) {
+        if (clazz == null) {
+            return "" + null;
+        }
+        if (clazz.isAnonymousClass()) {
+            final Matcher matcher = PATTERN_ANONYMOUS_CLASS_NAME.matcher(clazz.getName());
+            if (matcher.matches()) {
+                return matcher.group(2);
+            }
+        }
+        return clazz.getSimpleName();
+    }
+    
 }
