@@ -16,8 +16,10 @@
 
 package de.codemakers.base.os;
 
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -43,12 +45,20 @@ public class OSUtil {
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
     
-    protected static final OSFunction OSFUNCTION_SYSTEM_INFO_WINDOWS;
-    protected static final OSFunction OSFUNCTION_SYSTEM_INFO_LINUX;
-    protected static final OSFunction OSFUNCTION_SYSTEM_INFO_MAC_OS;
-    protected static final OSFunction OSFUNCTION_SYSTEM_INFO_CURRENT;
+    // SystemInfo
+    protected static final SystemInfo OSFUNCTION_SYSTEM_INFO_WINDOWS;
+    protected static final SystemInfo OSFUNCTION_SYSTEM_INFO_LINUX;
+    protected static final SystemInfo OSFUNCTION_SYSTEM_INFO_MAC_OS;
+    protected static final SystemInfo OSFUNCTION_SYSTEM_INFO_CURRENT;
+    // SystemFunctions
+    protected static final SystemFunctions OSFUNCTION_SYSTEM_FUNCTIONS_WINDOWS;
+    protected static final SystemFunctions OSFUNCTION_SYSTEM_FUNCTIONS_LINUX;
+    protected static final SystemFunctions OSFUNCTION_SYSTEM_FUNCTIONS_MAC_OS;
+    protected static final SystemFunctions OSFUNCTION_SYSTEM_FUNCTIONS_CURRENT;
+    // ==
     
     static {
+        // Windows
         OSFUNCTION_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.putOSFunction(SystemInfo.class, new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
@@ -103,6 +113,38 @@ public class OSUtil {
                 }
             }
         });
+        OSFUNCTION_SYSTEM_FUNCTIONS_WINDOWS = WINDOWS_HELPER.putOSFunction(SystemFunctions.class, new SystemFunctions() {
+            @Override
+            public boolean lockMonitor() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+    
+            @Override
+            public boolean logout() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+    
+            @Override
+            public boolean shutdown() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+    
+            @Override
+            public boolean reboot() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+    
+            @Override
+            public boolean lock() {
+                throw new NotImplementedException();
+            }
+    
+            @Override
+            public SystemInfo getSystemInfo() {
+                return OSFUNCTION_SYSTEM_INFO_WINDOWS;
+            }
+        });
+        // Linux
         OSFUNCTION_SYSTEM_INFO_LINUX = LINUX_HELPER.putOSFunction(SystemInfo.class, new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
@@ -135,6 +177,38 @@ public class OSUtil {
                 return null;
             }
         });
+        OSFUNCTION_SYSTEM_FUNCTIONS_LINUX = LINUX_HELPER.putOSFunction(SystemFunctions.class, new SystemFunctions() {
+            @Override
+            public boolean lockMonitor() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+        
+            @Override
+            public boolean logout() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+        
+            @Override
+            public boolean shutdown() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+        
+            @Override
+            public boolean reboot() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+        
+            @Override
+            public boolean lock() {
+                throw new NotImplementedException();
+            }
+        
+            @Override
+            public SystemInfo getSystemInfo() {
+                return OSFUNCTION_SYSTEM_INFO_LINUX;
+            }
+        });
+        // Max OS
         OSFUNCTION_SYSTEM_INFO_MAC_OS = MAC_OS_HELPER.putOSFunction(SystemInfo.class, new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
@@ -153,21 +227,57 @@ public class OSUtil {
                 }
             }
         });
+        OSFUNCTION_SYSTEM_FUNCTIONS_MAC_OS = MAC_OS_HELPER.putOSFunction(SystemFunctions.class, new SystemFunctions() {
+            @Override
+            public boolean lockMonitor() throws Exception {
+                return Runtime.getRuntime().exec("pmset displaysleepnow").waitFor(1, TimeUnit.SECONDS);
+            }
+        
+            @Override
+            public boolean logout() {
+                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            }
+        
+            @Override
+            public boolean shutdown() throws Exception { //TODO Test this (especially the missing "sudo")
+                return Runtime.getRuntime().exec("shutdown -h now").waitFor(1, TimeUnit.SECONDS);
+            }
+        
+            @Override
+            public boolean reboot() throws Exception { //TODO Test this (especially the missing "sudo")
+                return Runtime.getRuntime().exec("shutdown -r now").waitFor(1, TimeUnit.SECONDS);
+            }
+        
+            @Override
+            public boolean lock() {
+                throw new NotImplementedException();
+            }
+        
+            @Override
+            public SystemInfo getSystemInfo() {
+                return OSFUNCTION_SYSTEM_INFO_MAC_OS;
+            }
+        });
+        // Current
         switch (OS) {
             case WINDOWS:
                 OSFUNCTION_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemInfo.class, OSFUNCTION_SYSTEM_INFO_WINDOWS);
+                OSFUNCTION_SYSTEM_FUNCTIONS_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemFunctions.class, OSFUNCTION_SYSTEM_FUNCTIONS_WINDOWS);
                 break;
             case MACOS:
                 OSFUNCTION_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemInfo.class, OSFUNCTION_SYSTEM_INFO_MAC_OS);
+                OSFUNCTION_SYSTEM_FUNCTIONS_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemFunctions.class, OSFUNCTION_SYSTEM_FUNCTIONS_MAC_OS);
                 break;
             case LINUX:
             case FREEBSD:
             case SUNOS:
             case UNKNOWN:
                 OSFUNCTION_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemInfo.class, OSFUNCTION_SYSTEM_INFO_LINUX);
+                OSFUNCTION_SYSTEM_FUNCTIONS_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemFunctions.class, OSFUNCTION_SYSTEM_FUNCTIONS_LINUX);
                 break;
             default:
                 OSFUNCTION_SYSTEM_INFO_CURRENT = null;
+                OSFUNCTION_SYSTEM_FUNCTIONS_CURRENT = null;
         }
     }
     

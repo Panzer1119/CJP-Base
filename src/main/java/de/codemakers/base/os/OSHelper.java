@@ -76,12 +76,12 @@ public abstract class OSHelper {
         return osFunctions.values().stream().filter((osFunction) -> Objects.equals(name, osFunction.getName())).collect(Collectors.toList());
     }
     
-    public OSFunction putOSFunction(OSFunction osFunction) {
+    public <T extends OSFunction> T putOSFunction(T osFunction) {
         Objects.requireNonNull(osFunction);
         return putOSFunction(osFunction.getClass(), osFunction);
     }
     
-    public OSFunction putOSFunction(Class<? extends OSFunction> clazz, OSFunction osFunction) {
+    public <T extends OSFunction> T putOSFunction(Class<? extends OSFunction> clazz, T osFunction) {
         Objects.requireNonNull(osFunction);
         osFunctions.put(clazz, osFunction);
         return osFunction;
