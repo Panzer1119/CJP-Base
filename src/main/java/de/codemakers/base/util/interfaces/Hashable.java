@@ -48,7 +48,7 @@ public interface Hashable {
     }
     
     default byte[] hash() throws Exception {
-        return hash(HashUtil.XX_HASHER);
+        return hash(HashUtil.XX_HASHER_64);
     }
     
     default byte[] hash(ToughConsumer<Throwable> failure) {

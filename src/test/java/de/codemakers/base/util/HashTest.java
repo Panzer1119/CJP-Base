@@ -30,7 +30,7 @@ public class HashTest {
         final byte[] data = new byte[(int) data_length];
         random.nextBytes(data);
         //System.out.println(Arrays.toString(data));
-        final Hasher hasher = HashUtil.createXXHasher();
+        final Hasher hasher = HashUtil.createXXHasher64();
         final long ops_max = 1000;
         final long start = System.currentTimeMillis();
         byte[] hash = null;
