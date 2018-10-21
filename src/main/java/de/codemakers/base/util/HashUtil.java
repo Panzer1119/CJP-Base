@@ -17,18 +17,40 @@
 package de.codemakers.base.util;
 
 import de.codemakers.base.util.interfaces.Hasher;
+import net.jpountz.xxhash.XXHash32;
+import net.jpountz.xxhash.XXHashFactory;
 import net.openhft.hashing.LongHashFunction;
 
 public class HashUtil {
     
-    public static final Hasher XX_HASHER = createXXHasher();
+    public static final Hasher XX_HASHER_64 = createXXHasher64();
+    public static final Hasher XX_HASHER_32_SAFE = createSafeXXHasher32();
+    public static final Hasher XX_HASHER_32_FASTEST = createFastestXXHasher32();
     
-    public static Hasher createXXHasher() {
+    public static Hasher createXXHasher64() {
         return (data) -> ConvertUtil.longToByteArray(LongHashFunction.xx().hashBytes(data));
     }
     
-    public static Hasher createXXHasher(long seed) {
+    public static Hasher createXXHasher64(long seed) {
         return (data) -> ConvertUtil.longToByteArray(LongHashFunction.xx(seed).hashBytes(data));
+    }
+    
+    public static Hasher createSafeXXHasher32() {
+        return createSafeXXHasher32(0);
+    }
+    
+    public static Hasher createSafeXXHasher32(int seed) {
+        final XXHash32 xxHash32 = XXHashFactory.safeInstance().hash32();
+        return (data) -> ConvertUtil.intToByteArray(xxHash32.hash(data, 0, data.length, seed));
+    }
+    
+    public static Hasher createFastestXXHasher32() {
+        return createFastestXXHasher32(0);
+    }
+    
+    public static Hasher createFastestXXHasher32(int seed) {
+        final XXHash32 xxHash32 = XXHashFactory.fastestInstance().hash32();
+        return (data) -> ConvertUtil.intToByteArray(xxHash32.hash(data, 0, data.length, seed));
     }
     
 }
