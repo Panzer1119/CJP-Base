@@ -16,19 +16,12 @@
 
 package de.codemakers.base.os;
 
-import de.codemakers.base.os.functions.OSFunction;
-
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
-public class WindowsHelper implements OSHelper {
+public class WindowsHelper extends OSHelper {
     
     public static final Pattern DRIVER_PATTERN = Pattern.compile("([A-Z]):\\\\(.*)");
-    AtomicLong LAST_ID = new AtomicLong(-1);
-    Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
     
     public static final String DESIGN_CAPACITY = "DesignCapacity";
     public static final String DESCRIPTION = "Description";
@@ -63,6 +56,31 @@ public class WindowsHelper implements OSHelper {
     public static final String FULL_CHARGE_CAPACITY = "FullChargeCapacity";
     public static final String LAST_ERROR_CODE = "LastErrorCode";
     public static final String ESTIMATED_RUN_TIME = "EstimatedRunTime";
+    
+    public static final void process(String line_1, String line_2, Properties properties) {
+        while (true) {
+            if (line_1.isEmpty()) {
+                break;
+            }
+            final int i_1 = line_1.indexOf("  ");
+            final int i_2 = line_2.indexOf("  ");
+            if (i_1 == -1) {
+                properties.setProperty(line_1, line_2);
+                line_1 = "";
+                line_2 = "";
+            } else {
+                final String key = line_1.substring(0, i_1);
+                final String value = line_2.substring(0, i_2 < 0 ? line_2.length() : i_2);
+                int i = i_1;
+                while (i < line_1.length() && line_1.charAt(i) == ' ') {
+                    i++;
+                }
+                properties.setProperty(key, value);
+                line_1 = line_1.substring(i);
+                line_2 = line_2.substring(Math.min(line_2.length(), i));
+            }
+        }
+    }
     
     @Override
     public boolean isPathAbsolute(String path) {
@@ -108,43 +126,8 @@ public class WindowsHelper implements OSHelper {
     }
     
     @Override
-    public AtomicLong getIDCounter() {
-        return LAST_ID;
-    }
-    
-    @Override
-    public Map<Long, OSFunction> getOSFunctionsMap() {
-        return OS_FUNCTIONS;
-    }
-    
-    @Override
     public String toString() {
         return toStringIntern();
-    }
-    
-    public static final void process(String line_1, String line_2, Properties properties) {
-        while (true) {
-            if (line_1.isEmpty()) {
-                break;
-            }
-            final int i_1 = line_1.indexOf("  ");
-            final int i_2 = line_2.indexOf("  ");
-            if (i_1 == -1) {
-                properties.setProperty(line_1, line_2);
-                line_1 = "";
-                line_2 = "";
-            } else {
-                final String key = line_1.substring(0, i_1);
-                final String value = line_2.substring(0, i_2 < 0 ? line_2.length() : i_2);
-                int i = i_1;
-                while (i < line_1.length() && line_1.charAt(i) == ' ') {
-                    i++;
-                }
-                properties.setProperty(key, value);
-                line_1 = line_1.substring(i);
-                line_2 = line_2.substring(Math.min(line_2.length(), i));
-            }
-        }
     }
     
 }

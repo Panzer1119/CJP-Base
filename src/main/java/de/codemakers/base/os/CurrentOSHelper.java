@@ -16,17 +16,9 @@
 
 package de.codemakers.base.os;
 
-import de.codemakers.base.os.functions.OSFunction;
-
 import java.io.File;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
-public class CurrentOSHelper implements OSHelper {
-    
-    private static final AtomicLong LAST_ID = new AtomicLong(-1);
-    private static final Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
+public class CurrentOSHelper extends OSHelper {
     
     @Override
     public boolean isPathAbsolute(String path) {
@@ -66,16 +58,6 @@ public class CurrentOSHelper implements OSHelper {
     @Override
     public String getLineSeparator() {
         return System.getProperty("line.separator");
-    }
-    
-    @Override
-    public AtomicLong getIDCounter() {
-        return LAST_ID;
-    }
-    
-    @Override
-    public Map<Long, OSFunction> getOSFunctionsMap() {
-        return OS_FUNCTIONS;
     }
     
     @Override

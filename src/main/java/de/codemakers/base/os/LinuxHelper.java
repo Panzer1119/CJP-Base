@@ -16,14 +16,9 @@
 
 package de.codemakers.base.os;
 
-import de.codemakers.base.os.functions.OSFunction;
-
 import java.io.File;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
-public class LinuxHelper implements OSHelper {
+public class LinuxHelper extends OSHelper {
     
     public static final String FOLDER_AC_STRING = "/sys/class/power_supply";
     public static final File FOLDER_AC = new File(FOLDER_AC_STRING);
@@ -44,8 +39,6 @@ public class LinuxHelper implements OSHelper {
     public static final String POWER_SUPPLY_MODEL_NAME = "POWER_SUPPLY_MODEL_NAME";
     public static final String POWER_SUPPLY_MANUFACTURER = "POWER_SUPPLY_MANUFACTURER";
     public static final String POWER_SUPPLY_SERIAL_NUMBER = "POWER_SUPPLY_SERIAL_NUMBER";
-    AtomicLong LAST_ID = new AtomicLong(-1);
-    Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
     
     @Override
     public boolean isPathAbsolute(String path) {
@@ -88,16 +81,6 @@ public class LinuxHelper implements OSHelper {
     @Override
     public String getLineSeparator() {
         return "\n";
-    }
-    
-    @Override
-    public AtomicLong getIDCounter() {
-        return LAST_ID;
-    }
-    
-    @Override
-    public Map<Long, OSFunction> getOSFunctionsMap() {
-        return OS_FUNCTIONS;
     }
     
     @Override

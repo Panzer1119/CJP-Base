@@ -43,13 +43,13 @@ public class OSUtil {
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
     
-    public static final long OSFUNCTION_ID_SYSTEM_INFO_WINDOWS;
-    public static final long OSFUNCTION_ID_SYSTEM_INFO_LINUX;
-    public static final long OSFUNCTION_ID_SYSTEM_INFO_MAC_OS;
-    public static final long OSFUNCTION_ID_SYSTEM_INFO_CURRENT;
+    protected static final OSFunction OSFUNCTION_SYSTEM_INFO_WINDOWS;
+    protected static final OSFunction OSFUNCTION_SYSTEM_INFO_LINUX;
+    protected static final OSFunction OSFUNCTION_SYSTEM_INFO_MAC_OS;
+    protected static final OSFunction OSFUNCTION_SYSTEM_INFO_CURRENT;
     
     static {
-        OSFUNCTION_ID_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.addOSFunction(new SystemInfo() {
+        OSFUNCTION_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.putOSFunction(SystemInfo.class, new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
                 try {
@@ -103,7 +103,7 @@ public class OSUtil {
                 }
             }
         });
-        OSFUNCTION_ID_SYSTEM_INFO_LINUX = LINUX_HELPER.addOSFunction(new SystemInfo() {
+        OSFUNCTION_SYSTEM_INFO_LINUX = LINUX_HELPER.putOSFunction(SystemInfo.class, new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
                 try {
@@ -126,13 +126,7 @@ public class OSUtil {
                             }
                             final Properties properties = new Properties();
                             properties.load(new FileReader(file_uevent));
-                            return new PowerInfo(properties.getProperty(LinuxHelper.POWER_SUPPLY_SERIAL_NUMBER),
-                                    properties.getProperty(LinuxHelper.POWER_SUPPLY_NAME),
-                                    (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_NOW)) * 1.0 / (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_FULL)) * 1.0)),
-                                    BatteryState.of(properties.getProperty(LinuxHelper.POWER_SUPPLY_STATUS)),
-                                    -1, null, -1,
-                                    null,
-                                    powerSupply, properties);
+                            return new PowerInfo(properties.getProperty(LinuxHelper.POWER_SUPPLY_SERIAL_NUMBER), properties.getProperty(LinuxHelper.POWER_SUPPLY_NAME), (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_NOW)) * 1.0 / (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_FULL)) * 1.0)), BatteryState.of(properties.getProperty(LinuxHelper.POWER_SUPPLY_STATUS)), -1, null, -1, null, powerSupply, properties);
                         }
                     }
                 } catch (Exception ex) {
@@ -141,7 +135,7 @@ public class OSUtil {
                 return null;
             }
         });
-        OSFUNCTION_ID_SYSTEM_INFO_MAC_OS = MAC_OS_HELPER.addOSFunction(new SystemInfo() {
+        OSFUNCTION_SYSTEM_INFO_MAC_OS = MAC_OS_HELPER.putOSFunction(SystemInfo.class, new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
                 try {
@@ -161,25 +155,23 @@ public class OSUtil {
         });
         switch (OS) {
             case WINDOWS:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(WINDOWS_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_WINDOWS));
+                OSFUNCTION_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemInfo.class, OSFUNCTION_SYSTEM_INFO_WINDOWS);
                 break;
             case MACOS:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(LINUX_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_LINUX));
+                OSFUNCTION_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemInfo.class, OSFUNCTION_SYSTEM_INFO_MAC_OS);
                 break;
             case LINUX:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(MAC_OS_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_MAC_OS));
-                break;
             case FREEBSD:
             case SUNOS:
             case UNKNOWN:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(DEFAULT_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_LINUX));
+                OSFUNCTION_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.putOSFunction(SystemInfo.class, OSFUNCTION_SYSTEM_INFO_LINUX);
                 break;
             default:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = -1;
+                OSFUNCTION_SYSTEM_INFO_CURRENT = null;
         }
     }
     
-    public static final <T extends OSFunction> T getFunction(Class<T> clazz) {
+    public static final <T extends OSFunction> T getOSFunction(Class<T> clazz) {
         switch (OS) {
             case WINDOWS:
                 return WINDOWS_HELPER.getOSFunction(clazz);
@@ -196,7 +188,7 @@ public class OSUtil {
         }
     }
     
-    public static final <T extends OSFunction> T getCurrentFunction(Class<T> clazz) {
+    public static final <T extends OSFunction> T getCurrentOSFunction(Class<T> clazz) {
         return CURRENT_OS_HELPER.getOSFunction(clazz);
     }
     

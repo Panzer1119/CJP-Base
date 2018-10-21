@@ -16,19 +16,12 @@
 
 package de.codemakers.base.os;
 
-import de.codemakers.base.os.functions.OSFunction;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
-public class MacOSHelper implements OSHelper {
+public class MacOSHelper extends OSHelper {
     
     public static final String PATTERN_BATTERY_INFO_MAC_OS_STRING = "Now drawing from '(.+)' (.+) \\(id=(\\d+)\\)\t(\\d{1,3})%; (.+); (\\d+:\\d{1,2})(?: remaining present: (\\w+))?";
     public static final Pattern PATTERN_BATTERY_INFO_MAC_OS = Pattern.compile(PATTERN_BATTERY_INFO_MAC_OS_STRING);
-    AtomicLong LAST_ID = new AtomicLong(-1);
-    Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
     
     @Override
     public boolean isPathAbsolute(String path) {
@@ -68,16 +61,6 @@ public class MacOSHelper implements OSHelper {
     @Override
     public String getLineSeparator() {
         return "\r";
-    }
-    
-    @Override
-    public AtomicLong getIDCounter() {
-        return LAST_ID;
-    }
-    
-    @Override
-    public Map<Long, OSFunction> getOSFunctionsMap() {
-        return OS_FUNCTIONS;
     }
     
     @Override
