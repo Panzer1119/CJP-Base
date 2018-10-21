@@ -21,11 +21,11 @@ import de.codemakers.base.util.tough.ToughConsumer;
 
 public abstract class SystemFunctions extends OSFunction {
     
-    public abstract boolean lockMonitor() throws Exception;
+    public abstract boolean lockMonitor(long delay, boolean force) throws Exception;
     
-    public boolean lockMonitor(ToughConsumer<Throwable> failure) {
+    public boolean lockMonitor(long delay, boolean force, ToughConsumer<Throwable> failure) {
         try {
-            return lockMonitor();
+            return lockMonitor(delay, force);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
@@ -36,15 +36,15 @@ public abstract class SystemFunctions extends OSFunction {
         }
     }
     
-    public boolean lockMonitorWithoutException() {
-        return lockMonitor(null);
+    public boolean lockMonitorWithoutException(long delay, boolean force) {
+        return lockMonitor(delay, force, null);
     }
     
-    public abstract boolean logout() throws Exception;
+    public abstract boolean logout(long delay, boolean force) throws Exception;
     
-    public boolean logout(ToughConsumer<Throwable> failure) {
+    public boolean logout(long delay, boolean force, ToughConsumer<Throwable> failure) {
         try {
-            return logout();
+            return logout(delay, force);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
@@ -55,15 +55,15 @@ public abstract class SystemFunctions extends OSFunction {
         }
     }
     
-    public boolean logoutWithoutException() {
-        return logout(null);
+    public boolean logoutWithoutException(long delay, boolean force) {
+        return logout(delay, force, null);
     }
     
-    public abstract boolean shutdown() throws Exception;
+    public abstract boolean shutdown(long delay, boolean force) throws Exception;
     
-    public boolean shutdown(ToughConsumer<Throwable> failure) {
+    public boolean shutdown(long delay, boolean force, ToughConsumer<Throwable> failure) {
         try {
-            return shutdown();
+            return shutdown(delay, force);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
@@ -74,15 +74,15 @@ public abstract class SystemFunctions extends OSFunction {
         }
     }
     
-    public boolean shutdownWithoutException() {
-        return shutdown(null);
+    public boolean shutdownWithoutException(long delay, boolean force) {
+        return shutdown(delay, force, null);
     }
     
-    public abstract boolean reboot() throws Exception;
+    public abstract boolean reboot(long delay, boolean force) throws Exception;
     
-    public boolean reboot(ToughConsumer<Throwable> failure) {
+    public boolean reboot(long delay, boolean force, ToughConsumer<Throwable> failure) {
         try {
-            return reboot();
+            return reboot(delay, force);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
@@ -93,15 +93,15 @@ public abstract class SystemFunctions extends OSFunction {
         }
     }
     
-    public boolean rebootWithoutException() {
-        return reboot(null);
+    public boolean rebootWithoutException(long delay, boolean force) {
+        return reboot(delay, force, null);
     }
     
-    public abstract boolean lock() throws Exception;
+    public abstract boolean lock(long delay, boolean force) throws Exception;
     
-    public boolean lock(ToughConsumer<Throwable> failure) {
+    public boolean lock(long delay, boolean force, ToughConsumer<Throwable> failure) {
         try {
-            return lock();
+            return lock(delay, force);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
@@ -112,8 +112,8 @@ public abstract class SystemFunctions extends OSFunction {
         }
     }
     
-    public boolean lockWithoutException() {
-        return lock(null);
+    public boolean lockWithoutException(long delay, boolean force) {
+        return lock(delay, force, null);
     }
     
     public abstract SystemInfo getSystemInfo();

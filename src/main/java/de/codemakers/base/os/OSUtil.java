@@ -16,6 +16,7 @@
 
 package de.codemakers.base.os;
 
+import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.*;
@@ -115,30 +116,30 @@ public class OSUtil {
         });
         OSFUNCTION_SYSTEM_FUNCTIONS_WINDOWS = WINDOWS_HELPER.putOSFunction(SystemFunctions.class, new SystemFunctions() {
             @Override
-            public boolean lockMonitor() {
-                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            public boolean lockMonitor(long delay, boolean force) throws Exception { //TODO Test this
+                return Runtime.getRuntime().exec("rundll32.exe user32.dll, LockWorkStation").waitFor(1, TimeUnit.SECONDS);
             }
-    
+            
             @Override
-            public boolean logout() {
-                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            public boolean logout(long delay, boolean force) throws Exception { //TODO Test this
+                return Runtime.getRuntime().exec("shutdown –l " + (force ? "-f " : "") + "-t " + TimeUnit.MILLISECONDS.toSeconds(Math.max(0, delay))).waitFor(1, TimeUnit.SECONDS);
             }
-    
+            
             @Override
-            public boolean shutdown() {
-                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            public boolean shutdown(long delay, boolean force) throws Exception { //TODO Test this
+                return Runtime.getRuntime().exec("shutdown -s " + (force ? "-f " : "") + "-t " + TimeUnit.MILLISECONDS.toSeconds(Math.max(0, delay))).waitFor(1, TimeUnit.SECONDS);
             }
-    
+            
             @Override
-            public boolean reboot() {
-                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            public boolean reboot(long delay, boolean force) throws Exception { //TODO Test this
+                return Runtime.getRuntime().exec("shutdown -r " + (force ? "-f " : "") + "-t " + TimeUnit.MILLISECONDS.toSeconds(Math.max(0, delay))).waitFor(1, TimeUnit.SECONDS);
             }
-    
+            
             @Override
-            public boolean lock() {
+            public boolean lock(long delay, boolean force) {
                 throw new NotImplementedException();
             }
-    
+            
             @Override
             public SystemInfo getSystemInfo() {
                 return OSFUNCTION_SYSTEM_INFO_WINDOWS;
@@ -179,30 +180,35 @@ public class OSUtil {
         });
         OSFUNCTION_SYSTEM_FUNCTIONS_LINUX = LINUX_HELPER.putOSFunction(SystemFunctions.class, new SystemFunctions() {
             @Override
-            public boolean lockMonitor() {
+            public boolean lockMonitor(long delay, boolean force) throws Exception { //TODO Test this
+                if (!Runtime.getRuntime().exec("gnome-screensaver-command --lock").waitFor(5, TimeUnit.SECONDS)) {
+                    return Runtime.getRuntime().exec("dbus-send --type=method_call --dest=org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver.Lock").waitFor(5, TimeUnit.SECONDS);
+                }
+                return true;
+            }
+            
+            @Override
+            public boolean logout(long delay, boolean force) {
                 throw new NotYetImplementedRuntimeException(); //TODO Implement
             }
-        
+            
             @Override
-            public boolean logout() {
-                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            public boolean shutdown(long delay, boolean force) throws Exception { //TODO Test this (especially the missing "sudo")
+                //TODO Test the delay implementation
+                return Runtime.getRuntime().exec("shutdown " + (delay <= 0 ? "now" : TimeUnit.MILLISECONDS.toMinutes(delay))).waitFor(1, TimeUnit.SECONDS);
             }
-        
+            
             @Override
-            public boolean shutdown() {
-                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            public boolean reboot(long delay, boolean force) throws Exception { //TODO Test this (especially the missing "sudo")
+                //TODO Test the delay implementation
+                return Runtime.getRuntime().exec("reboot " + (delay <= 0 ? "now" : TimeUnit.MILLISECONDS.toMinutes(delay))).waitFor(1, TimeUnit.SECONDS);
             }
-        
+            
             @Override
-            public boolean reboot() {
-                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            public boolean lock(long delay, boolean force) {
+                throw new NotImplementedRuntimeException();
             }
-        
-            @Override
-            public boolean lock() {
-                throw new NotImplementedException();
-            }
-        
+            
             @Override
             public SystemInfo getSystemInfo() {
                 return OSFUNCTION_SYSTEM_INFO_LINUX;
@@ -229,30 +235,30 @@ public class OSUtil {
         });
         OSFUNCTION_SYSTEM_FUNCTIONS_MAC_OS = MAC_OS_HELPER.putOSFunction(SystemFunctions.class, new SystemFunctions() {
             @Override
-            public boolean lockMonitor() throws Exception {
+            public boolean lockMonitor(long delay, boolean force) throws Exception {
                 return Runtime.getRuntime().exec("pmset displaysleepnow").waitFor(1, TimeUnit.SECONDS);
             }
-        
+            
             @Override
-            public boolean logout() {
-                throw new NotYetImplementedRuntimeException(); //TODO Implement
+            public boolean logout(long delay, boolean force) throws Exception { //TODO Test this (especially the missing "sudo")
+                return Runtime.getRuntime().exec("kill WindowServer").waitFor(1, TimeUnit.SECONDS);
             }
-        
+            
             @Override
-            public boolean shutdown() throws Exception { //TODO Test this (especially the missing "sudo")
-                return Runtime.getRuntime().exec("shutdown -h now").waitFor(1, TimeUnit.SECONDS);
+            public boolean shutdown(long delay, boolean force) throws Exception { //TODO Test this (especially the missing "sudo")
+                return Runtime.getRuntime().exec("shutdown -h " + (delay <= 0 ? "now" : TimeUnit.MILLISECONDS.toMinutes(delay))).waitFor(1, TimeUnit.SECONDS);
             }
-        
+            
             @Override
-            public boolean reboot() throws Exception { //TODO Test this (especially the missing "sudo")
-                return Runtime.getRuntime().exec("shutdown -r now").waitFor(1, TimeUnit.SECONDS);
+            public boolean reboot(long delay, boolean force) throws Exception { //TODO Test this (especially the missing "sudo")
+                return Runtime.getRuntime().exec("shutdown -r " + (delay <= 0 ? "now" : TimeUnit.MILLISECONDS.toMinutes(delay))).waitFor(1, TimeUnit.SECONDS);
             }
-        
+            
             @Override
-            public boolean lock() {
+            public boolean lock(long delay, boolean force) {
                 throw new NotImplementedException();
             }
-        
+            
             @Override
             public SystemInfo getSystemInfo() {
                 return OSFUNCTION_SYSTEM_INFO_MAC_OS;
