@@ -20,7 +20,7 @@ import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.base.util.interfaces.Version;
-import de.codemakers.security.util.HashUtil;
+import de.codemakers.security.util.SecureHashUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -66,7 +66,7 @@ public class IncrementalData extends Data implements Version {
         }
         if (!forceIncrement && (deltaData instanceof HashedDeltaData)) {
             final HashedDeltaData hashedDeltaData = (HashedDeltaData) deltaData;
-            if (!HashUtil.isDataValidSHA256(data_new, hashedDeltaData.getHash())) {
+            if (!SecureHashUtil.isDataValidSHA256(data_new, hashedDeltaData.getHash())) {
                 throw new IllegalArgumentException("The hash of the new data is not equal to the given hash");
             }
         }

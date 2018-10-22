@@ -14,19 +14,13 @@
  *     limitations under the License.
  */
 
-package de.codemakers.math.eval_1.value_double;
+package de.codemakers.base.multiplets;
 
-import de.codemakers.base.entities.results.ReturningResult;
-
-public class JSEvaluatorTest {
+public class MultiTest {
     
     public static final void main(String[] args) {
-        final JSEvaluator jsEvaluator = new JSEvaluator();
-        //final String expression = "1.00+23.4545 - (-3*4) * 4 + (5 - 3 * (4 - 7)) / (3 ^-2)";
-        final String expression = "1 + 2 - 3 * 5 + 81 / 9";
-        System.out.println("expression: " + expression);
-        final ReturningResult<Double> result = jsEvaluator.eval(expression);
-        System.out.println("result: " + result);
+        final Triplet<String, Integer, Double> triplet_1 = new Triplet<>("Test", 1, 6.5);
+        System.out.println(triplet_1);
     }
     
 }

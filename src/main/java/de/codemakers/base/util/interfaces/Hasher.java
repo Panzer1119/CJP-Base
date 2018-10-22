@@ -14,19 +14,31 @@
  *     limitations under the License.
  */
 
-package de.codemakers.math.eval_1;
+package de.codemakers.base.util.interfaces;
 
-import de.codemakers.base.entities.results.ReturningResult;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
 
-public abstract class Evaluator<T> {
+@FunctionalInterface
+public interface Hasher {
     
-    public Evaluator() {
+    byte[] hash(byte[] data) throws Exception;
+    
+    default byte[] hash(byte[] data, ToughConsumer<Throwable> failure) {
+        try {
+            return hash(data);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
     }
     
-    public ReturningResult<T> eval(String expression) {
-        return new ReturningResult<>(this::evalIntern, expression);
+    default byte[] hashWithoutException(byte[] data) {
+        return hash(data, null);
     }
     
-    protected abstract T evalIntern(String expression) throws Exception;
-        
 }
