@@ -32,7 +32,7 @@ public class DoubleNumber extends AbstractNumber {
     
     @Override
     public AbstractNumber add(AbstractNumber number) {
-        return null;
+        return new DoubleNumber(value + number.toDouble());
     }
     
     @Override
