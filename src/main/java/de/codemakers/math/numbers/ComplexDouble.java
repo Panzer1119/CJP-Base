@@ -19,6 +19,7 @@ package de.codemakers.math.numbers;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.ByteSerializable;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.math.MathUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -184,36 +185,38 @@ public class ComplexDouble implements ByteSerializable, Copyable {
         return new ComplexDouble(Math.sin(re) * Math.cosh(im), Math.cos(re) * Math.sinh(im));
     }
     
+    public final ComplexDouble asin() { //FIXME this is not returning the EXACT result, that WolframAlpha returns...
+        final double a_2 = re * re;
+        final double b_2 = im * im;
+        final double c = (a_2 + b_2 - 1);
+        final double d = Math.sqrt((c * c) + (4.0 * b_2));
+        final double e = a_2 + b_2;
+        return new ComplexDouble(Math.signum(re) / 2.0 * Math.acos(d - e), Math.signum(im) / 2.0 * MathUtil.acosh(d + e));
+    }
+    
     public final ComplexDouble sinh() {
         return new ComplexDouble(Math.cos(im) * Math.sinh(re), Math.sin(im) * Math.cosh(re));
-    }
-    
-    public final ComplexDouble csc() {
-        return ONE_ZERO_I.divide(sin());
-    }
-    
-    public final ComplexDouble csch() {
-        return ONE_ZERO_I.divide(sinh());
     }
     
     public final ComplexDouble cos() {
         return new ComplexDouble(Math.cos(re) * Math.cosh(im), -Math.sin(re) * Math.sinh(im));
     }
     
+    public final ComplexDouble acos() { //FIXME this is not returning the EXACT result, that WolframAlpha returns...
+        return new ComplexDouble(Math.PI / 2.0).subtract(asin());
+    }
+    
     public final ComplexDouble cosh() {
         return new ComplexDouble(Math.cos(im) * Math.cosh(re), Math.sin(im) * Math.sinh(re));
     }
     
-    public final ComplexDouble sec() {
-        return ONE_ZERO_I.divide(cos());
-    }
-    
-    public final ComplexDouble sech() {
-        return ONE_ZERO_I.divide(cosh());
-    }
-    
     public final ComplexDouble tan() {
         return sin().divide(cos());
+    }
+    
+    public final ComplexDouble atan() {
+        final double temp = absSquared();
+        return new ComplexDouble((re == 0.0 ? (Math.abs(im) <= 1.0 ? 0.0 : ((Math.PI / 2.0) * Math.signum(im))) : ((Math.atan((temp - 1.0) / (2.0 * re)) + ((Math.PI / 2.0) * Math.signum(re))) / 2.0)), MathUtil.atanh((2.0 * im) / (temp + 1.0)) / 2.0);
     }
     
     public final ComplexDouble tanh() {
@@ -224,8 +227,38 @@ public class ComplexDouble implements ByteSerializable, Copyable {
         return cos().divide(sin());
     }
     
+    public final ComplexDouble acot() {
+        return new ComplexDouble(Math.PI / 2.0).subtract(atan());
+    }
+    
     public final ComplexDouble coth() {
         return cosh().divide(sinh());
+    }
+    
+    public final ComplexDouble sec() {
+        return ONE_ZERO_I.divide(cos());
+    }
+    
+    public final ComplexDouble asec() {
+        //FIXME THIS IS NOT WORKING!!! (The Real part is correct, but not the Imaginary part)
+        return ONE_ZERO_I.divide(this).acos();
+    }
+    
+    public final ComplexDouble sech() {
+        return ONE_ZERO_I.divide(cosh());
+    }
+    
+    public final ComplexDouble csc() {
+        return ONE_ZERO_I.divide(sin());
+    }
+    
+    public final ComplexDouble acsc() {
+        //FIXME THIS IS NOT WORKING!!! (The Real part is correct, but not the Imaginary part)
+        return ONE_ZERO_I.divide(this).asin();
+    }
+    
+    public final ComplexDouble csch() {
+        return ONE_ZERO_I.divide(sinh());
     }
     
     @Override
