@@ -25,6 +25,20 @@ import java.util.Objects;
 
 public class ComplexDouble implements ByteSerializable, Copyable {
     
+    public static final ComplexDouble MINUS_TWO_MINUS_TWO_I = new ComplexDouble(-2.0, -2.0);
+    public static final ComplexDouble ZERO_MINUS_TWO_I = new ComplexDouble(0.0, -2.0);
+    public static final ComplexDouble MINUS_TWO_ZERO_I = new ComplexDouble(-2.0);
+    public static final ComplexDouble MINUS_ONE_MINUS_ONE_I = new ComplexDouble(-1.0, -1.0);
+    public static final ComplexDouble ZERO_MINUS_ONE_I = new ComplexDouble(0.0, -1.0);
+    public static final ComplexDouble MINUS_ONE_ZERO_I = new ComplexDouble(-1.0);
+    public static final ComplexDouble ZERO_ZERO_I = new ComplexDouble();
+    public static final ComplexDouble ONE_ZERO_I = new ComplexDouble(1.0);
+    public static final ComplexDouble ZERO_ONE_I = new ComplexDouble(0.0, 1.0);
+    public static final ComplexDouble ONE_ONE_I = new ComplexDouble(1.0, 1.0);
+    public static final ComplexDouble TWO_ZERO_I = new ComplexDouble(2.0);
+    public static final ComplexDouble ZERO_TWO_I = new ComplexDouble(0.0, 2.0);
+    public static final ComplexDouble TWO_TWO_I = new ComplexDouble(2.0, 2.0);
+    
     protected double re;
     protected double im;
     
@@ -45,8 +59,16 @@ public class ComplexDouble implements ByteSerializable, Copyable {
         return re;
     }
     
+    public final boolean isPurelyReal() {
+        return im == 0.0;
+    }
+    
     public final double getImaginary() {
         return im;
+    }
+    
+    public final boolean isPurelyImaginary() {
+        return re == 0.0;
     }
     
     public final ComplexDouble add(ComplexDouble complexDouble) {
@@ -153,6 +175,57 @@ public class ComplexDouble implements ByteSerializable, Copyable {
     
     public final ComplexDouble pow(ComplexDouble complexDouble) {
         return complexDouble.multiply(ln()).exp();
+    }
+    
+    public final ComplexDouble sin() {
+        if (isPurelyImaginary()) {
+            return new ComplexDouble(0.0, Math.sinh(im));
+        }
+        return new ComplexDouble(Math.sin(re) * Math.cosh(im), Math.cos(re) * Math.sinh(im));
+    }
+    
+    public final ComplexDouble sinh() {
+        return new ComplexDouble(Math.cos(im) * Math.sinh(re), Math.sin(im) * Math.cosh(re));
+    }
+    
+    public final ComplexDouble csc() {
+        return ONE_ZERO_I.divide(sin());
+    }
+    
+    public final ComplexDouble csch() {
+        return ONE_ZERO_I.divide(sinh());
+    }
+    
+    public final ComplexDouble cos() {
+        return new ComplexDouble(Math.cos(re) * Math.cosh(im), -Math.sin(re) * Math.sinh(im));
+    }
+    
+    public final ComplexDouble cosh() {
+        return new ComplexDouble(Math.cos(im) * Math.cosh(re), Math.sin(im) * Math.sinh(re));
+    }
+    
+    public final ComplexDouble sec() {
+        return ONE_ZERO_I.divide(cos());
+    }
+    
+    public final ComplexDouble sech() {
+        return ONE_ZERO_I.divide(cosh());
+    }
+    
+    public final ComplexDouble tan() {
+        return sin().divide(cos());
+    }
+    
+    public final ComplexDouble tanh() {
+        return sinh().divide(cosh());
+    }
+    
+    public final ComplexDouble cot() {
+        return cos().divide(sin());
+    }
+    
+    public final ComplexDouble coth() {
+        return cosh().divide(sinh());
     }
     
     @Override

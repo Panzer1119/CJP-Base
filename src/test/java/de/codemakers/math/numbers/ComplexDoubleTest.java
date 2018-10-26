@@ -36,6 +36,61 @@ public class ComplexDoubleTest {
         System.out.println("complexDouble_1.pow(3)      =" + complexDouble_1.pow(3));
         System.out.println("complexDouble_1.exp()       =" + complexDouble_1.exp());
         System.out.println("complexDouble_1.pow(2-4i)   =" + complexDouble_1.pow(new ComplexDouble(2, -4)));
+        System.out.println("complexDouble_1.sin()       =" + complexDouble_1.sin());
+        System.out.println("complexDouble_1.sinh()      =" + complexDouble_1.sinh());
+        System.out.println("complexDouble_1.csc()       =" + complexDouble_1.csc());
+        System.out.println("complexDouble_1.csch()      =" + complexDouble_1.csch());
+        System.out.println("complexDouble_1.cos()       =" + complexDouble_1.cos());
+        System.out.println("complexDouble_1.cosh()      =" + complexDouble_1.cosh());
+        System.out.println("complexDouble_1.sec()       =" + complexDouble_1.sec());
+        System.out.println("complexDouble_1.sech()      =" + complexDouble_1.sech());
+        System.out.println("complexDouble_1.tan()       =" + complexDouble_1.tan());
+        System.out.println("complexDouble_1.tanh()      =" + complexDouble_1.tanh());
+        System.out.println("complexDouble_1.cot()       =" + complexDouble_1.cot());
+        System.out.println("complexDouble_1.coth()      =" + complexDouble_1.coth());
+        System.out.println("=============================");
+        final ComplexDouble complexDouble_2 = new ComplexDouble(5.0);
+        System.out.println("complexDouble_2.sin()       =" + complexDouble_2.sin());
+        System.out.println("complexDouble_2.cos()       =" + complexDouble_2.cos());
+        final ComplexDouble complexDouble_3 = new ComplexDouble(0.0, 5.0);
+        System.out.println("complexDouble_3.sin()       =" + complexDouble_3.sin());
+        System.out.println("complexDouble_3.cos()       =" + complexDouble_3.cos());
+        /*
+        //final ComplexDouble complexDouble_4 = new ComplexDouble((Math.random() < 0.5 ? -1.0 : 1.0) * Math.random() * 50, (Math.random() < 0.5 ? -1.0 : 1.0) * Math.random() * 50);
+        //final ComplexDouble complexDouble_4 = new ComplexDouble(245786);
+        //final ComplexDouble complexDouble_4 = new ComplexDouble(0, 245786);
+        System.out.println("complexDouble_4=" + complexDouble_4);
+        final int runs = 1000000;
+        final long start_1 = System.currentTimeMillis();
+        for (int i = 0; i < runs; i++) {
+            complexDouble_4.sinNEW();
+        }
+        final long duration_1 = System.currentTimeMillis() - start_1;
+        System.out.println(String.format("Time taken 1 (new): %d ms (%d runs, %f ms per run)", duration_1, runs, duration_1 * 1.0 / runs));
+        final long start_2 = System.currentTimeMillis();
+        for (int i = 0; i < runs; i++) {
+            complexDouble_4.sin();
+        }
+        final long duration_2 = System.currentTimeMillis() - start_2;
+        System.out.println(String.format("Time taken 2 (old): %d ms (%d runs, %f ms per run)", duration_2, runs, duration_2 * 1.0 / runs));
+        
+        /*
+        final ComplexDouble complexDouble_4 = new ComplexDouble((Math.random() < 0.5 ? -1.0 : 1.0) * Math.random() * 50, (Math.random() < 0.5 ? -1.0 : 1.0) * Math.random() * 50);
+        System.out.println("complexDouble_4=" + complexDouble_4);
+        final int runs = 1000000;
+        final long start_1 = System.currentTimeMillis();
+        for (int i = 0; i < runs; i++) {
+            complexDouble_4.cos();
+        }
+        final long duration_1 = System.currentTimeMillis() - start_1;
+        System.out.println(String.format("Time taken 1 (new): %d ms (%d runs, %f ms per run)", duration_1, runs, duration_1 * 1.0 / runs));
+        final long start_2 = System.currentTimeMillis();
+        for (int i = 0; i < runs; i++) {
+            complexDouble_4.cosOLD();
+        }
+        final long duration_2 = System.currentTimeMillis() - start_2;
+        System.out.println(String.format("Time taken 2 (old): %d ms (%d runs, %f ms per run)", duration_2, runs, duration_2 * 1.0 / runs));
+        */
     }
     
 }
