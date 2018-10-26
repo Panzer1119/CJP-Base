@@ -239,7 +239,7 @@ public class ComplexDouble implements ByteSerializable, Copyable {
         return ONE_ZERO_I.divide(cos());
     }
     
-    public final ComplexDouble asec() {
+    public final ComplexDouble arcsec() {
         //FIXME THIS IS NOT WORKING!!! (The Real part is correct, but not the Imaginary part)
         return ONE_ZERO_I.divide(this).acos();
     }
@@ -252,7 +252,7 @@ public class ComplexDouble implements ByteSerializable, Copyable {
         return ONE_ZERO_I.divide(sin());
     }
     
-    public final ComplexDouble acsc() {
+    public final ComplexDouble arccsc() {
         //FIXME THIS IS NOT WORKING!!! (The Real part is correct, but not the Imaginary part)
         return ONE_ZERO_I.divide(this).asin();
     }

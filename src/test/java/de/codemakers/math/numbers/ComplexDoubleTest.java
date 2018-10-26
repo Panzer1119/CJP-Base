@@ -49,10 +49,10 @@ public class ComplexDoubleTest {
         System.out.println("complexDouble_1.acot()      =" + complexDouble_1.acot());
         System.out.println("complexDouble_1.coth()      =" + complexDouble_1.coth());
         System.out.println("complexDouble_1.sec()       =" + complexDouble_1.sec());
-        System.out.println("complexDouble_1.asec()      =" + complexDouble_1.asec());
+        System.out.println("complexDouble_1.arcsec()    =" + complexDouble_1.arcsec());
         System.out.println("complexDouble_1.sech()      =" + complexDouble_1.sech());
         System.out.println("complexDouble_1.csc()       =" + complexDouble_1.csc());
-        System.out.println("complexDouble_1.acsc()      =" + complexDouble_1.acsc());
+        System.out.println("complexDouble_1.arccsc()    =" + complexDouble_1.arccsc());
         System.out.println("complexDouble_1.csch()      =" + complexDouble_1.csch());
         System.out.println("=============================");
         final ComplexDouble complexDouble_2 = new ComplexDouble(5.0);
