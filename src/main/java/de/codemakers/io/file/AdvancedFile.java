@@ -115,7 +115,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     private transient File file;
     
     public AdvancedFile(String... paths) {
-        this(null, true, (paths.length == 0 || (paths.length == 1 && paths[0].isEmpty())) ? new String[] {new File("").getPath()} : paths);
+        this(null, true, (paths.length == 0 || (paths.length == 1 && paths[0].isEmpty())) ? new String[] {""} : paths);
     }
     
     public AdvancedFile(String name, String[] paths) {
