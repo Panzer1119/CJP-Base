@@ -229,12 +229,14 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     private final boolean checkInternAndCorrect() {
-        if (paths[0].startsWith(PREFIX_INTERN)) {
-            paths[0] = paths[0].substring(PREFIX_INTERN.length());
-            return true;
-        } else if (paths[0].startsWith(PREFIX_EXTERN)) {
-            paths[0] = paths[0].substring(PREFIX_EXTERN.length());
-            return false;
+        if (paths.length > 0) {
+            if (paths[0].startsWith(PREFIX_INTERN)) {
+                paths[0] = paths[0].substring(PREFIX_INTERN.length());
+                return true;
+            } else if (paths[0].startsWith(PREFIX_EXTERN)) {
+                paths[0] = paths[0].substring(PREFIX_EXTERN.length());
+                return false;
+            }
         }
         return false;
     }
