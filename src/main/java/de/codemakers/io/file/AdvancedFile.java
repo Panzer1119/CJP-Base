@@ -115,7 +115,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     private transient File file;
     
     public AdvancedFile(String... paths) {
-        this(null, true, paths);
+        this(null, true, (paths.length == 0 || (paths.length == 1 && paths[0].isEmpty())) ? new String[] {new File("").getPath()} : paths);
     }
     
     public AdvancedFile(String name, String[] paths) {
@@ -350,7 +350,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 }
             }
         }
-        if (temp.isEmpty()) {
+        if (temp.isEmpty() && parent != null) {
             set(parent);
         } else {
             paths = temp.toArray(new String[0]);
