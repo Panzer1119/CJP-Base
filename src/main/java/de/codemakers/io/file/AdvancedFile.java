@@ -147,6 +147,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 paths = Arrays.copyOf(paths, paths.length + 1);
                 System.arraycopy(paths, 0, paths, 1, paths.length - 1);
                 paths[0] = parent.getPath();
+                this.windowsSeparator = parent.windowsSeparator;
+                this.extern = parent.extern;
+                this.absolute = parent.absolute;
             }
         }
         this.paths = paths;
@@ -912,9 +915,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 final Path myPath = closeablePath.getData();
                 final int myPath_length = myPath.toString().length();
                 if (recursive) {
-                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).forEach(advancedFiles::add);
+                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
                 } else {
-                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).forEach(advancedFiles::add);
+                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
                 }
             } catch (Exception ex) {
                 Logger.handleError(ex);
