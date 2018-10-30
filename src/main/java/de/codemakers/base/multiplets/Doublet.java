@@ -37,6 +37,11 @@ public class Doublet<A, B> extends Singlet<A> {
     }
     
     @Override
+    public Object[] toArray() {
+        return new Object[] {a, b};
+    }
+    
+    @Override
     public String toString() {
         return "Doublet{" + "b=" + b + ", a=" + a + '}';
     }

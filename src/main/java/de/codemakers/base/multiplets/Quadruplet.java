@@ -37,6 +37,11 @@ public class Quadruplet<A, B, C, D> extends Triplet<A, B, C> {
     }
     
     @Override
+    public Object[] toArray() {
+        return new Object[] {a, b, c, d};
+    }
+    
+    @Override
     public String toString() {
         return "Quadruplet{" + "d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }

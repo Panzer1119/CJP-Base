@@ -37,6 +37,11 @@ public class Octuplet<A, B, C, D, E, F, G, H> extends Septuplet<A, B, C, D, E, F
     }
     
     @Override
+    public Object[] toArray() {
+        return new Object[] {a, b, c, d, e, f, g, h};
+    }
+    
+    @Override
     public String toString() {
         return "Octuplet{" + "h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }

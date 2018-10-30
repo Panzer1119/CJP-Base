@@ -37,6 +37,11 @@ public class Nonuplet<A, B, C, D, E, F, G, H, I> extends Octuplet<A, B, C, D, E,
     }
     
     @Override
+    public Object[] toArray() {
+        return new Object[] {a, b, c, d, e, f, g, h, i};
+    }
+    
+    @Override
     public String toString() {
         return "Nonuplet{" + "i=" + i + ", h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }

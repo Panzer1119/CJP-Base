@@ -37,6 +37,11 @@ public class Quintuplet<A, B, C, D, E> extends Quadruplet<A, B, C, D> {
     }
     
     @Override
+    public Object[] toArray() {
+        return new Object[] {a, b, c, d, e};
+    }
+    
+    @Override
     public String toString() {
         return "Quintuplet{" + "e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }

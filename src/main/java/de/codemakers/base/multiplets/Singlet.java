@@ -36,6 +36,10 @@ public class Singlet<A> implements Serializable {
         return this;
     }
     
+    public Object[] toArray() {
+        return new Object[] {a};
+    }
+    
     @Override
     public String toString() {
         return "Singlet{" + "a=" + a + '}';

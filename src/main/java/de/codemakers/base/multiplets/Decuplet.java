@@ -37,6 +37,11 @@ public class Decuplet<A, B, C, D, E, F, G, H, I, J> extends Nonuplet<A, B, C, D,
     }
     
     @Override
+    public Object[] toArray() {
+        return new Object[] {a, b, c, d, e, f, g, h, i, j};
+    }
+    
+    @Override
     public String toString() {
         return "Decuplet{" + "j=" + j + ", i=" + i + ", h=" + h + ", g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }

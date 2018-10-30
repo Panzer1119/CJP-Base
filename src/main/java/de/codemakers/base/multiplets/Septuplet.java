@@ -37,6 +37,11 @@ public class Septuplet<A, B, C, D, E, F, G> extends Sextuplet<A, B, C, D, E, F> 
     }
     
     @Override
+    public Object[] toArray() {
+        return new Object[] {a, b, c, d, e, f, g};
+    }
+    
+    @Override
     public String toString() {
         return "Septuplet{" + "g=" + g + ", f=" + f + ", e=" + e + ", d=" + d + ", c=" + c + ", b=" + b + ", a=" + a + '}';
     }
