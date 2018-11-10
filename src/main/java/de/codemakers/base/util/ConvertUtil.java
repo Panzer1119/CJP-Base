@@ -177,7 +177,7 @@ public class ConvertUtil {
         for (int i = 0; i < output.length; i++) {
             output[i] = converter.applyWithoutException(array[i], new Doublet<>(array, i));
         }
-        return (R[]) array;
+        return output;
     }
     
     public static <T, R> R[] convertArrayFast(T[] array, Class<R> clazz, ToughBiFunction<T[], Integer, R> converter) {
@@ -191,7 +191,7 @@ public class ConvertUtil {
         for (int i = 0; i < output.length; i++) {
             output[i] = converter.applyWithoutException(array, i);
         }
-        return (R[]) array;
+        return output;
     }
     
 }
