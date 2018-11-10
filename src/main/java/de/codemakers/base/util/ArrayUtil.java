@@ -16,6 +16,8 @@
 
 package de.codemakers.base.util;
 
+import de.codemakers.base.multiplets.Doublet;
+import de.codemakers.base.util.tough.ToughBiFunction;
 import de.codemakers.base.util.tough.ToughPredicate;
 
 import java.util.Objects;
@@ -135,6 +137,14 @@ public class ArrayUtil {
         for (int i = 0; i < array.length / 2; i++) {
             swapPositionsFast(array, i, array.length - i - 1);
         }
+    }
+    
+    public static <T, R> R[] convertArray(T[] array, Class<R> clazz, ToughBiFunction<T, Doublet<T[], Integer>, R> converter) {
+        return ConvertUtil.convertArray(array, clazz, converter);
+    }
+    
+    public static <T, R> R[] convertArrayFast(T[] array, Class<R> clazz, ToughBiFunction<T[], Integer, R> converter) {
+        return ConvertUtil.convertArrayFast(array, clazz, converter);
     }
     
 }

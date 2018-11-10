@@ -16,6 +16,10 @@
 
 package de.codemakers.base.util;
 
+import de.codemakers.base.multiplets.Doublet;
+import de.codemakers.base.util.tough.ToughBiFunction;
+
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -160,6 +164,34 @@ public class ConvertUtil {
             output[i] = booleanArrayToByte(temp);
         }
         return output;
+    }
+    
+    public static <T, R> R[] convertArray(T[] array, Class<R> clazz, ToughBiFunction<T, Doublet<T[], Integer>, R> converter) {
+        Objects.requireNonNull(array);
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(converter);
+        if (array.length == 0) {
+            return (R[]) Array.newInstance(clazz, 0);
+        }
+        final R[] output = (R[]) Array.newInstance(clazz, array.length);
+        for (int i = 0; i < output.length; i++) {
+            output[i] = converter.applyWithoutException(array[i], new Doublet<>(array, i));
+        }
+        return (R[]) array;
+    }
+    
+    public static <T, R> R[] convertArrayFast(T[] array, Class<R> clazz, ToughBiFunction<T[], Integer, R> converter) {
+        Objects.requireNonNull(array);
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(converter);
+        if (array.length == 0) {
+            return (R[]) Array.newInstance(clazz, 0);
+        }
+        final R[] output = (R[]) Array.newInstance(clazz, array.length);
+        for (int i = 0; i < output.length; i++) {
+            output[i] = converter.applyWithoutException(array, i);
+        }
+        return (R[]) array;
     }
     
 }
