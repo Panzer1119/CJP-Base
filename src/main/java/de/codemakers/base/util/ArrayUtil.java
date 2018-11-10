@@ -16,6 +16,8 @@
 
 package de.codemakers.base.util;
 
+import de.codemakers.base.util.tough.ToughPredicate;
+
 import java.util.Objects;
 
 public class ArrayUtil {
@@ -29,7 +31,7 @@ public class ArrayUtil {
      *
      * @return <tt>true</tt> if the Array contains the Object
      */
-    public static final <T> boolean arrayContains(T[] array, T t) {
+    public static <T> boolean arrayContains(T[] array, T t) {
         if (array == null || array.length == 0) {
             return false;
         }
@@ -39,6 +41,51 @@ public class ArrayUtil {
             }
         }
         return false;
+    }
+    
+    public static <T> boolean matchAny(T[] array, ToughPredicate<T> predicate) {
+        if (array == null || array.length == 0) {
+            return false;
+        }
+        if (predicate == null) {
+            return true;
+        }
+        for (T t : array) {
+            if (predicate.testWithoutException(t)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static <T> boolean matchAll(T[] array, ToughPredicate<T> predicate) {
+        if (array == null || array.length == 0) {
+            return false;
+        }
+        if (predicate == null) {
+            return true;
+        }
+        for (T t : array) {
+            if (!predicate.testWithoutException(t)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static <T> boolean matchNone(T[] array, ToughPredicate<T> predicate) {
+        if (array == null || array.length == 0) {
+            return false;
+        }
+        if (predicate == null) {
+            return true;
+        }
+        for (T t : array) {
+            if (predicate.testWithoutException(t)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     public static byte[] xorBytes(byte[] bytes_1, byte[] bytes_2) {
@@ -60,6 +107,30 @@ public class ArrayUtil {
             }
         }
         return bytes;
+    }
+    
+    public static <T> void swapPositions(T[] array, int pos_1, int pos_2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        if (pos_1 >= array.length || pos_2 >= array.length) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (pos_1 == pos_2) {
+            return;
+        }
+        final T t = array[pos_1];
+        array[pos_1] = array[pos_2];
+        array[pos_2] = t;
+    }
+    
+    public static <T> void flipArray(T[] array) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        for (int i = 0; i < array.length / 2; i++) {
+            swapPositions(array, i, array.length - i - 1);
+        }
     }
     
 }
