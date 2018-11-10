@@ -119,6 +119,10 @@ public class ArrayUtil {
         if (pos_1 == pos_2) {
             return;
         }
+        swapPositionsFast(array, pos_1, pos_2);
+    }
+    
+    public static <T> void swapPositionsFast(T[] array, int pos_1, int pos_2) {
         final T t = array[pos_1];
         array[pos_1] = array[pos_2];
         array[pos_2] = t;
@@ -129,7 +133,7 @@ public class ArrayUtil {
             return;
         }
         for (int i = 0; i < array.length / 2; i++) {
-            swapPositions(array, i, array.length - i - 1);
+            swapPositionsFast(array, i, array.length - i - 1);
         }
     }
     
