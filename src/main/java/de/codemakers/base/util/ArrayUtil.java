@@ -20,6 +20,7 @@ import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.tough.ToughBiFunction;
 import de.codemakers.base.util.tough.ToughPredicate;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class ArrayUtil {
@@ -145,6 +146,34 @@ public class ArrayUtil {
     
     public static <T, R> R[] convertArrayFast(T[] array, Class<R> clazz, ToughBiFunction<T[], Integer, R> converter) {
         return ConvertUtil.convertArrayFast(array, clazz, converter);
+    }
+    
+    public static <T> T[] concatArrays(T[]... arrays) {
+        int length_max = 0;
+        for (T[] array : arrays) {
+            length_max += array.length;
+        }
+        final T[] output = Arrays.copyOf(arrays[0], length_max);
+        int index = 0;
+        for (T[] array : arrays) {
+            System.arraycopy(array, 0, output, index, array.length);
+            index += array.length;
+        }
+        return output;
+    }
+    
+    public static byte[] concatArrays(byte[]... arrays) {
+        int length_max = 0;
+        for (byte[] array : arrays) {
+            length_max += array.length;
+        }
+        final byte[] output = Arrays.copyOf(arrays[0], length_max);
+        int index = 0;
+        for (byte[] array : arrays) {
+            System.arraycopy(array, 0, output, index, array.length);
+            index += array.length;
+        }
+        return output;
     }
     
 }
