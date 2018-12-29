@@ -16,6 +16,7 @@
 
 package de.codemakers.base.util.interfaces;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -23,7 +24,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @FunctionalInterface
-public interface Timestamp {
+public interface Timestamp extends Serializable {
     
     long getTimestamp();
     

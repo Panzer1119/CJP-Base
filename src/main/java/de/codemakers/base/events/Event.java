@@ -16,14 +16,13 @@
 
 package de.codemakers.base.events;
 
-import de.codemakers.base.util.interfaces.Timestamp;
+import de.codemakers.base.util.interfaces.Snowflake;
 import de.codemakers.security.util.EasyCryptUtil;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
-public abstract class Event implements Timestamp, Serializable {
+public abstract class Event implements Snowflake {
     
     protected static final Random RANDOM_ID_GENERATOR = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
     
@@ -35,7 +34,7 @@ public abstract class Event implements Timestamp, Serializable {
     }
     
     public Event(long timestamp) {
-        this(createRandomId(), timestamp);
+        this(nextId(), timestamp);
     }
     
     public Event(long id, long timestamp) {
@@ -43,10 +42,11 @@ public abstract class Event implements Timestamp, Serializable {
         this.timestamp = timestamp;
     }
     
-    public static final long createRandomId() {
+    public static final long nextId() {
         return RANDOM_ID_GENERATOR.nextLong();
     }
     
+    @Override
     public final long getId() {
         return id;
     }
