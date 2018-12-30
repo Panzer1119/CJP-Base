@@ -45,4 +45,9 @@ public class DynamicBinaryMaxHeap<T extends Comparable<T>> extends BinaryMaxHeap
         return removed;
     }
     
+    @Override
+    public String toString() {
+        return "DynamicBinaryMaxHeap{" + "heap=" + Arrays.toString(heap) + ", heapSize=" + heapSize + '}';
+    }
+    
 }
