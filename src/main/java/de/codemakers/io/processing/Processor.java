@@ -16,6 +16,8 @@
 
 package de.codemakers.io.processing;
 
+import java.util.Arrays;
+
 public abstract class Processor {
     
     protected byte[] buffer = null;
@@ -42,6 +44,28 @@ public abstract class Processor {
     public Processor reset() {
         buffer = null;
         return this;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Processor processor = (Processor) o;
+        return Arrays.equals(buffer, processor.buffer);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(buffer);
+    }
+    
+    @Override
+    public String toString() {
+        return "Processor{" + "buffer=" + Arrays.toString(buffer) + '}';
     }
     
 }
