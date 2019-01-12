@@ -18,6 +18,7 @@ package de.codemakers.base;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
+import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.File;
@@ -60,6 +61,10 @@ public class Standard {
         Objects.requireNonNull(clazz);
         Objects.requireNonNull(path);
         return new File(RUNNING_JAR_PATH_STRING + File.separator + clazz.getPackage().getName().replaceAll("\\.", OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()) + File.separator + path);
+    }
+    
+    public static final void async(ToughRunnable toughRunnable) {
+        new Thread(toughRunnable::runWithoutException).start();
     }
     
 }
