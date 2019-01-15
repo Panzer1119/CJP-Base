@@ -18,7 +18,10 @@ package de.codemakers.base;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
+import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughRunnable;
+import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.File;
@@ -65,6 +68,38 @@ public class Standard {
     
     public static final void async(ToughRunnable toughRunnable) {
         new Thread(toughRunnable::runWithoutException).start();
+    }
+    
+    public static final Throwable silentError(ToughRunnable toughRunnable) {
+        try {
+            toughRunnable.run();
+            return null;
+        } catch (Exception ex) {
+            return ex;
+        }
+    }
+    
+    public static final <T> void silentError(ToughConsumer<T> toughConsumer, T input) {
+        try {
+            toughConsumer.accept(input);
+        } catch (Exception ex) {
+        }
+    }
+    
+    public static final <T, R> R silentError(ToughFunction<T, R> toughFunction, T input) {
+        try {
+            return toughFunction.apply(input);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+    
+    public static final <R> R silentError(ToughSupplier<R> toughSupplier) {
+        try {
+            return toughSupplier.get();
+        } catch (Exception ex) {
+            return null;
+        }
     }
     
 }
