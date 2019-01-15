@@ -23,7 +23,12 @@ import de.codemakers.base.util.tough.ToughConsumer;
 @FunctionalInterface
 public interface Encryptor extends Cryptor {
     
-    byte[] crypt(byte[] data, byte[] iv) throws Exception;
+    byte[] encrypt(byte[] data, byte[] iv) throws Exception;
+    
+    @Override
+    default byte[] crypt(byte[] data, byte[] iv) throws Exception {
+        return encrypt(data, iv);
+    }
     
     default byte[] encrypt(byte[] data, byte[] iv, ToughConsumer<Throwable> failure) {
         try {
@@ -74,10 +79,6 @@ public interface Encryptor extends Cryptor {
     
     default ReturningAction<byte[]> encryptAction(byte[] data) {
         return new ReturningAction<>(() -> encrypt(data));
-    }
-    
-    default byte[] encrypt(byte[] data, byte[] iv) throws Exception {
-        return encrypt(data);
     }
     
 }
