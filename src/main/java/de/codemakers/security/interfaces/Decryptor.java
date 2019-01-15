@@ -23,7 +23,37 @@ import de.codemakers.base.util.tough.ToughConsumer;
 @FunctionalInterface
 public interface Decryptor extends Cryptor {
     
-    byte[] decrypt(byte[] data) throws Exception;
+    byte[] decrypt(byte[] data, byte[] iv) throws Exception;
+    
+    @Override
+    default byte[] crypt(byte[] data, byte[] iv) throws Exception {
+        return decrypt(data, iv);
+    }
+    
+    default byte[] decrypt(byte[] data, byte[] iv, ToughConsumer<Throwable> failure) {
+        try {
+            return decrypt(data, iv);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default byte[] decryptWithoutException(byte[] data, byte[] iv) {
+        return decrypt(data, iv, null);
+    }
+    
+    default ReturningAction<byte[]> decryptAction(byte[] data, byte[] iv) {
+        return new ReturningAction<>(() -> decrypt(data, iv));
+    }
+    
+    default byte[] decrypt(byte[] data) throws Exception {
+        return decrypt(data, (byte[]) null);
+    }
     
     @Override
     default byte[] crypt(byte[] data) throws Exception {
@@ -44,7 +74,7 @@ public interface Decryptor extends Cryptor {
     }
     
     default byte[] decryptWithoutException(byte[] data) {
-        return decrypt(data, null);
+        return decrypt(data, (ToughConsumer<Throwable>) null);
     }
     
     default ReturningAction<byte[]> decryptAction(byte[] data) {
