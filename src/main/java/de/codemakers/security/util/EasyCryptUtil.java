@@ -21,8 +21,8 @@ import de.codemakers.base.util.ConvertUtil;
 import de.codemakers.base.util.tough.ToughPredicate;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.security.entities.TrustedSecureData;
-import de.codemakers.security.interfaces.*;
 import de.codemakers.security.interfaces.Signer;
+import de.codemakers.security.interfaces.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -61,12 +61,20 @@ public class EasyCryptUtil {
         return SECUREST_RANDOM;
     }
     
+    public static final boolean hasSecureRandomInstanceStrong() {
+        try {
+            return SecureRandom.getInstanceStrong() != null;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    
     public static final Cryptor cryptorOfCipher(Cipher cipher) {
-        return (data) -> cipher.doFinal(data);
+        return (data, iv) -> cipher.doFinal(data);
     }
     
     public static final Encryptor encryptorOfCipher(Cipher cipher) {
-        return (data) -> cipher.doFinal(data);
+        return (data, iv) -> cipher.doFinal(data);
     }
     
     public static final Encryptor encryptorOfCipher(Cipher cipher, SecretKey key) throws InvalidKeyException {
@@ -80,7 +88,7 @@ public class EasyCryptUtil {
     }
     
     public static final Decryptor decryptorOfCipher(Cipher cipher) {
-        return (data) -> cipher.doFinal(data);
+        return (data, iv) -> cipher.doFinal(data);
     }
     
     public static final Decryptor decryptorOfCipher(Cipher cipher, SecretKey key) throws InvalidKeyException {
@@ -232,6 +240,26 @@ public class EasyCryptUtil {
         }
         final long max_time_error_millis = unit.toMillis(max_time_error);
         return (timestamp) -> Math.abs(timeSupplier.getWithoutException() - timestamp) <= max_time_error_millis;
+    }
+    
+    public static final Cipher createCipher(String mode) {
+        try {
+            return Cipher.getInstance(mode);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static final byte[] generateRandomIV(byte[] bytes, Random random) {
+        random.nextBytes(bytes);
+        return bytes;
+    }
+    
+    public static final byte[] generateRandomIV(int bytes, Random random) {
+        final byte[] iv = new byte[bytes];
+        random.nextBytes(iv);
+        return iv;
     }
     
 }

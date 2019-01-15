@@ -16,5 +16,26 @@
 
 package de.codemakers.security.util;
 
+import javax.crypto.Cipher;
+import java.util.Random;
+
 public class AESCryptUtil {
+    
+    public static final String MODE_AES = "AES";
+    public static final String MODE_AES_CBC_PKCS5Padding = "AES/CBC/PKCS5Padding";
+    
+    public static final int IV_BYTES_CBC = 16;
+    
+    public static final Cipher createCipherAES() {
+        return EasyCryptUtil.createCipher(MODE_AES);
+    }
+    
+    public static final Cipher createCipherAESCBCPKCS5Padding() {
+        return EasyCryptUtil.createCipher(MODE_AES_CBC_PKCS5Padding);
+    }
+    
+    public static final byte[] generateRandomIVAESCBC(Random random) {
+        return EasyCryptUtil.generateRandomIV(AESCryptUtil.IV_BYTES_CBC, random);
+    }
+    
 }
