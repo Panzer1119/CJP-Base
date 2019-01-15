@@ -26,7 +26,7 @@ public interface Signer extends Cryptor {
     byte[] sign(byte[] data) throws Exception;
     
     @Override
-    default byte[] crypt(byte[] data) throws Exception {
+    default byte[] crypt(byte[] data, byte[] iv) throws Exception {
         return sign(data);
     }
     
