@@ -16,7 +16,11 @@
 
 package de.codemakers.security.util;
 
+import de.codemakers.security.interfaces.Decryptor;
+import de.codemakers.security.interfaces.Encryptor;
+
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import java.util.Random;
 
 public class AESCryptUtil {
@@ -36,6 +40,14 @@ public class AESCryptUtil {
     
     public static final byte[] generateRandomIVAESCBC(Random random) {
         return EasyCryptUtil.generateRandomIV(AESCryptUtil.IV_BYTES_CBC, random);
+    }
+    
+    public static final Encryptor createEncryptorAESCBCPKCS5Padding(SecretKey secretKey, boolean useIV) {
+        return EasyCryptUtil.createEncryptor(createCipherAESCBCPKCS5Padding(), secretKey, useIV);
+    }
+    
+    public static final Decryptor createDecryptorAESCBCPKCS5Padding(SecretKey secretKey, boolean useIV) {
+        return EasyCryptUtil.createDecryptor(createCipherAESCBCPKCS5Padding(), secretKey, useIV);
     }
     
 }

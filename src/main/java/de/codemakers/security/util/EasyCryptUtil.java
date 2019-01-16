@@ -26,6 +26,7 @@ import de.codemakers.security.interfaces.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import java.security.*;
 import java.util.Objects;
 import java.util.Random;
@@ -260,6 +261,38 @@ public class EasyCryptUtil {
         final byte[] iv = new byte[bytes];
         random.nextBytes(iv);
         return iv;
+    }
+    
+    public static final Encryptor createEncryptor(Cipher cipher, SecretKey secretKey, boolean useIV) {
+        if (useIV) {
+            return (data, iv) -> {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
+                return cipher.doFinal(data);
+            };
+        } else {
+            try {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+            return (data, iv) -> cipher.doFinal(data);
+        }
+    }
+    
+    public static final Decryptor createDecryptor(Cipher cipher, SecretKey secretKey, boolean useIV) {
+        if (useIV) {
+            return (data, iv) -> {
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
+                return cipher.doFinal(data);
+            };
+        } else {
+            try {
+                cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+            return (data, iv) -> cipher.doFinal(data);
+        }
     }
     
 }
