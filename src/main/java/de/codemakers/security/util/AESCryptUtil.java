@@ -42,12 +42,12 @@ public class AESCryptUtil {
         return EasyCryptUtil.generateRandomIV(AESCryptUtil.IV_BYTES_CBC, random);
     }
     
-    public static final Encryptor createEncryptorAESCBCPKCS5Padding(SecretKey secretKey, boolean useIV) {
-        return EasyCryptUtil.createEncryptor(createCipherAESCBCPKCS5Padding(), secretKey, useIV);
+    public static final Encryptor createEncryptorAESCBCPKCS5Padding(SecretKey secretKey) {
+        return EasyCryptUtil.createEncryptor(createCipherAESCBCPKCS5Padding(), secretKey, true);
     }
     
-    public static final Decryptor createDecryptorAESCBCPKCS5Padding(SecretKey secretKey, boolean useIV) {
-        return EasyCryptUtil.createDecryptor(createCipherAESCBCPKCS5Padding(), secretKey, useIV);
+    public static final Decryptor createDecryptorAESCBCPKCS5Padding(SecretKey secretKey) {
+        return EasyCryptUtil.createDecryptor(createCipherAESCBCPKCS5Padding(), secretKey, true);
     }
     
 }
