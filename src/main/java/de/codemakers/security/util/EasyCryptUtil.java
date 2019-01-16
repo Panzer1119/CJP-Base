@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EasyCryptUtil {
     
+    public static final String ALGORITHM_SHA256withRSA = "SHA256withRSA";
     public static final Signature SIGNATURE_SHA256withRSA;
     public static final byte[] RANDOM_TEST_BYTES = new byte[32];
     private static final Random SECUREST_RANDOM;
@@ -104,7 +105,7 @@ public class EasyCryptUtil {
     
     public static final Signature createSignatureSHA256withRSA() {
         try {
-            return Signature.getInstance("SHA256withRSA");
+            return Signature.getInstance(ALGORITHM_SHA256withRSA);
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
@@ -147,8 +148,8 @@ public class EasyCryptUtil {
         if (privateKey == null || publicKey == null) {
             return false;
         }
-        assert privateKey.getAlgorithm().equals("RSA");
-        assert publicKey.getAlgorithm().equals("RSA");
+        assert privateKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
+        assert publicKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
         final Signer signer = signerOfSignature(SIGNATURE_SHA256withRSA, privateKey);
         final Verifier verifier = verifierOfSignature(SIGNATURE_SHA256withRSA, publicKey);
         return verifier.verifyWithoutException(RANDOM_TEST_BYTES, signer.signWithoutException(RANDOM_TEST_BYTES));
