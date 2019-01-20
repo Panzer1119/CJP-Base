@@ -18,7 +18,10 @@ package de.codemakers.security.util;
 
 import de.codemakers.base.logger.Logger;
 
+import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.util.Arrays;
 
 public class KDFTest {
     
@@ -31,6 +34,26 @@ public class KDFTest {
         Logger.log("secretKeyFactory_384=" + secretKeyFactory_384);
         final SecretKeyFactory secretKeyFactory_512 = KDFUtil.createPBKDF2WithHmacSHA_512();
         Logger.log("secretKeyFactory_512=" + secretKeyFactory_512);
+        final String password = "Test1234";
+        Logger.log("password=" + password);
+        final byte[] salt = EasyCryptUtil.generateSecureRandomBytes(32);
+        Logger.log("salt=" + Arrays.toString(salt));
+        final int iterations = 100000;
+        Logger.log("iterations=" + iterations);
+        final int length = 512;
+        Logger.log("length=" + length);
+        final PBEKeySpec keySpec_512 = new PBEKeySpec(password.toCharArray(), salt, iterations, length);
+        Logger.log("keySpec_512=" + keySpec_512);
+        final long start = System.currentTimeMillis();
+        final SecretKey secretKey_512 = secretKeyFactory_512.generateSecret(keySpec_512);
+        final long stop = System.currentTimeMillis();
+        keySpec_512.clearPassword();
+        final long duration = stop - start;
+        Logger.log("Time taken: " + duration + " ms");
+        Logger.log("secretKey_512=" + secretKey_512);
+        Logger.log("secretKey_512=" + Arrays.toString(secretKey_512.getEncoded()));
+        Logger.log("secretKey_512=" + secretKey_512.getEncoded().length);
+        Logger.log("secretKey_512=" + secretKey_512.getEncoded().length * 8);
     }
     
 }
