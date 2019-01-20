@@ -34,9 +34,12 @@ import java.util.concurrent.TimeUnit;
 
 public class EasyCryptUtil {
     
-    public static final String ALGORITHM_SHA256withRSA = "SHA256withRSA";
-    public static final Signature SIGNATURE_SHA256withRSA;
-    public static final byte[] RANDOM_TEST_BYTES = new byte[32];
+    public static final String ALGORITHM_AES = AESCryptUtil.ALGORITHM_AES;
+    public static final String ALGORITHM_RSA = RSACryptUtil.ALGORITHM_RSA;
+    public static final String ALGORITHM_SHA256withRSA = SecureHashUtil.ALGORITHM_SHA256withRSA;
+    
+    private static final Signature SIGNATURE_SHA256withRSA;
+    private static final byte[] RANDOM_TEST_BYTES = new byte[32];
     private static final Random SECUREST_RANDOM;
     
     static {

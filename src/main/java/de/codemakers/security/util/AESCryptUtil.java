@@ -25,6 +25,8 @@ import java.util.Random;
 
 public class AESCryptUtil {
     
+    public static final String ALGORITHM_AES = "AES";
+    
     public static final String MODE_AES = "AES";
     public static final String MODE_AES_CBC_PKCS5Padding = "AES/CBC/PKCS5Padding";
     

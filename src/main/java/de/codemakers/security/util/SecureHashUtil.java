@@ -24,12 +24,14 @@ import java.util.Arrays;
 
 public class SecureHashUtil {
     
-    public static final MessageDigest SHA_256 = createSHA256();
-    public static final Hasher SHA_256_HASHER = createSHA256Hasher();
+    public static final String ALGORITHM_SHA256withRSA = "SHA256withRSA";
+    public static final String ALGORITHM_SHA256 = "SHA-256";
+    
+    private static final MessageDigest SHA_256 = createSHA256();
     
     public static MessageDigest createSHA256() {
         try {
-            return MessageDigest.getInstance("SHA-256");
+            return MessageDigest.getInstance(ALGORITHM_SHA256);
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
