@@ -40,8 +40,12 @@ public class AESCryptUtil {
         return EasyCryptUtil.createCipher(MODE_AES_CBC_PKCS5Padding);
     }
     
+    public static final byte[] generateSecureRandomIVAESCBC() {
+        return EasyCryptUtil.generateSecureRandomBytes(IV_BYTES_CBC);
+    }
+    
     public static final byte[] generateRandomIVAESCBC(Random random) {
-        return EasyCryptUtil.generateRandomIV(AESCryptUtil.IV_BYTES_CBC, random);
+        return EasyCryptUtil.generateRandomBytes(IV_BYTES_CBC, random);
     }
     
     public static final Encryptor createEncryptorAESCBCPKCS5Padding(SecretKey secretKey) {

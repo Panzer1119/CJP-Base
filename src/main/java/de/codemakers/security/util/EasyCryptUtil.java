@@ -256,12 +256,30 @@ public class EasyCryptUtil {
         }
     }
     
-    public static final byte[] generateRandomIV(byte[] bytes, Random random) {
+    public static final byte[] generateSecureRandomBytes(byte[] bytes) {
+        try {
+            return generateRandomBytes(bytes, SecureRandom.getInstanceStrong());
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static final byte[] generateRandomBytes(byte[] bytes, Random random) {
         random.nextBytes(bytes);
         return bytes;
     }
     
-    public static final byte[] generateRandomIV(int bytes, Random random) {
+    public static final byte[] generateSecureRandomBytes(int bytes) {
+        try {
+            return generateRandomBytes(bytes, SecureRandom.getInstanceStrong());
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static final byte[] generateRandomBytes(int bytes, Random random) {
         final byte[] iv = new byte[bytes];
         random.nextBytes(iv);
         return iv;
