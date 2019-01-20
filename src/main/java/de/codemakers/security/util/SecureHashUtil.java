@@ -42,6 +42,12 @@ public class SecureHashUtil {
         final MessageDigest messageDigest = createSHA256();
         return new Hasher() {
             @Override
+            public byte[] hash(byte[] data, int offset, int length) throws Exception {
+                messageDigest.update(data, offset, length);
+                return messageDigest.digest();
+            }
+            
+            @Override
             public byte[] hash(byte[] data) throws Exception {
                 return messageDigest.digest(data);
             }
