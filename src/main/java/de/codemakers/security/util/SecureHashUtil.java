@@ -38,7 +38,7 @@ public class SecureHashUtil {
         }
     }
     
-    public static Hasher createSHA256Hasher() {
+    public static Hasher createHasher256SHA256() {
         final MessageDigest messageDigest = createSHA256();
         return new Hasher() {
             @Override
