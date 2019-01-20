@@ -16,10 +16,11 @@
 
 package de.codemakers.base.util.interfaces;
 
+import de.codemakers.base.action.ReturningAction;
+import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
-@FunctionalInterface
 public interface Hasher {
     
     byte[] hash(byte[] data) throws Exception;
@@ -39,6 +40,71 @@ public interface Hasher {
     
     default byte[] hashWithoutException(byte[] data) {
         return hash(data, null);
+    }
+    
+    default ReturningAction<byte[]> hashAction(byte[] data) {
+        return new ReturningAction<>(() -> hash(data));
+    }
+    
+    byte[] hash() throws Exception;
+    
+    default byte[] hash(ToughConsumer<Throwable> failure) {
+        try {
+            return hash();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default byte[] hashWithoutException() {
+        return hash((ToughConsumer<Throwable>) null);
+    }
+    
+    default ReturningAction<byte[]> hashAction() {
+        return new ReturningAction<>(() -> hash());
+    }
+    
+    void update(byte[] data, int offset, int length) throws Exception;
+    
+    default void update(byte[] data) throws Exception {
+        update(data, 0, data.length);
+    }
+    
+    default void update(byte[] data, int offset, int length, ToughConsumer<Throwable> failure) {
+        try {
+            update(data, offset, length);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+        }
+    }
+    
+    default void update(byte[] data, ToughConsumer<Throwable> failure) {
+        update(data, 0, data.length, failure);
+    }
+    
+    default void updateWithoutException(byte[] data, int offset, int length) {
+        update(data, offset, length, null);
+    }
+    
+    default void updateWithoutException(byte[] data) {
+        update(data, 0, data.length, null);
+    }
+    
+    default RunningAction updateAction(byte[] data, int offset, int length) {
+        return new RunningAction(() -> update(data, offset, length));
+    }
+    
+    default RunningAction updateAction(byte[] data) {
+        return new RunningAction(() -> update(data, 0, data.length));
     }
     
 }

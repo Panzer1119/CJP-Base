@@ -40,13 +40,29 @@ public class SecureHashUtil {
     
     public static Hasher createSHA256Hasher() {
         final MessageDigest messageDigest = createSHA256();
-        return (data) -> messageDigest.digest(data);
+        return new Hasher() {
+            @Override
+            public byte[] hash(byte[] data) throws Exception {
+                return messageDigest.digest(data);
+            }
+            
+            @Override
+            public byte[] hash() throws Exception {
+                return messageDigest.digest();
+            }
+            
+            @Override
+            public void update(byte[] data, int offset, int length) throws Exception {
+                messageDigest.update(data, offset, length);
+            }
+        };
     }
     
     public static byte[] hashSHA256(byte[] data) {
         if (data == null) {
             return null;
         }
+        SHA_256.reset();
         return SHA_256.digest(data);
     }
     
