@@ -23,11 +23,15 @@ import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Hasher {
     
-    byte[] hash(byte[] data) throws Exception;
+    byte[] hash(byte[] data, int offset, int length) throws Exception;
     
-    default byte[] hash(byte[] data, ToughConsumer<Throwable> failure) {
+    default byte[] hash(byte[] data) throws Exception {
+        return hash(data, 0, data.length);
+    }
+    
+    default byte[] hash(byte[] data, int offset, int length, ToughConsumer<Throwable> failure) {
         try {
-            return hash(data);
+            return hash(data, offset, length);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
@@ -38,12 +42,24 @@ public interface Hasher {
         }
     }
     
+    default byte[] hash(byte[] data, ToughConsumer<Throwable> failure) {
+        return hash(data, 0, data.length, failure);
+    }
+    
+    default byte[] hashWithoutException(byte[] data, int offset, int length) {
+        return hash(data, offset, length, null);
+    }
+    
     default byte[] hashWithoutException(byte[] data) {
-        return hash(data, null);
+        return hashWithoutException(data, 0, data.length);
+    }
+    
+    default ReturningAction<byte[]> hashAction(byte[] data, int offset, int length) {
+        return new ReturningAction<>(() -> hash(data, offset, length));
     }
     
     default ReturningAction<byte[]> hashAction(byte[] data) {
-        return new ReturningAction<>(() -> hash(data));
+        return hashAction(data, 0, data.length);
     }
     
     byte[] hash() throws Exception;
