@@ -92,7 +92,7 @@ public abstract class HashedDeltaData extends DeltaData {
     }
     
     public HashedDeltaData generateHash(byte[] data_new) {
-        setHash(SecureHashUtil.hashSHA256(data_new));
+        setHash(SecureHashUtil.hashSHA_256(data_new));
         return this;
     }
     
