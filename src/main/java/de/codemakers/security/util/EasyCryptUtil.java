@@ -18,6 +18,7 @@ package de.codemakers.security.util;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.ConvertUtil;
+import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughPredicate;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.security.entities.TrustedSecureData;
@@ -26,8 +27,8 @@ import de.codemakers.security.interfaces.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import java.security.*;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -285,10 +286,10 @@ public class EasyCryptUtil {
         return iv;
     }
     
-    public static final Encryptor createEncryptor(Cipher cipher, SecretKey secretKey, boolean useIV) {
-        if (useIV) {
+    public static final Encryptor createEncryptor(Cipher cipher, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
+        if (ivFunction != null) {
             return (data, iv) -> {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
                 return cipher.doFinal(data);
             };
         } else {
@@ -301,10 +302,10 @@ public class EasyCryptUtil {
         }
     }
     
-    public static final Decryptor createDecryptor(Cipher cipher, SecretKey secretKey, boolean useIV) {
-        if (useIV) {
+    public static final Decryptor createDecryptor(Cipher cipher, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
+        if (ivFunction != null) {
             return (data, iv) -> {
-                cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
                 return cipher.doFinal(data);
             };
         } else {
