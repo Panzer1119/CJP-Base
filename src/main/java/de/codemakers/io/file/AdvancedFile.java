@@ -78,6 +78,8 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
+        /*
+        //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()?
         try {
             final Set<Class<? extends FileProvider>> fileProviders = ReflectionUtil.getSubClasses(FileProvider.class);
             fileProviders.stream().filter((fileProvider) -> fileProvider.getAnnotation(AutoRegister.class) != null).forEach((fileProvider) -> {
@@ -96,6 +98,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         } catch (Exception ex) {
             Logger.handleError(ex);
         }
+        */
     }
     
     private String[] paths;
