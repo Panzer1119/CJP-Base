@@ -21,7 +21,10 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.AdvancedFile;
 
 import javax.crypto.KeyAgreement;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
@@ -29,23 +32,26 @@ public class EllipticCurveUtilTest {
     
     public static final AdvancedFile ADVANCED_FILE_ECDSA_KEY_PAIR_1 = new AdvancedFile("src/test/resources/ec/keyPair_1.txt");
     public static final AdvancedFile ADVANCED_FILE_ECDSA_KEY_PAIR_2 = new AdvancedFile("src/test/resources/ec/keyPair_2.txt");
+    public static KeyPair ECDSA_KEY_PAIR_1 = null;
+    public static KeyPair ECDSA_KEY_PAIR_2 = null;
     
     public static final void main(String[] args) throws Exception {
-        initECDSA();
+        final SecureRandom secureRandom = SecureRandom.getInstanceStrong();
+        initECDSA(secureRandom);
         final byte[] staticSalt = new byte[32];
-        SecureRandom.getInstanceStrong().nextBytes(staticSalt);
+        secureRandom.nextBytes(staticSalt);
         //// Part 1
         /*
             Each Partner is generating his EC KeyPair (the PublicKey is then shared with the other partner)
          */
         // Partner 1
-        final KeyPairGenerator keyPairGenerator_1 = EllipticCurveUtil.createKeyPairGeneratorEC(SecureRandom.getInstanceStrong(), 256);
+        final KeyPairGenerator keyPairGenerator_1 = EllipticCurveUtil.createKeyPairGeneratorEC(secureRandom, 256);
         final KeyPair keyPair_1 = keyPairGenerator_1.generateKeyPair();
         Logger.log("keyPair_1=" + keyPair_1);
         Logger.log("keyPair_1.getPrivate()=" + keyPair_1.getPrivate());
         Logger.log("keyPair_1.getPublic()=" + keyPair_1.getPublic());
         // Partner 2
-        final KeyPairGenerator keyPairGenerator_2 = EllipticCurveUtil.createKeyPairGeneratorEC(SecureRandom.getInstanceStrong(), 256);
+        final KeyPairGenerator keyPairGenerator_2 = EllipticCurveUtil.createKeyPairGeneratorEC(secureRandom, 256);
         final KeyPair keyPair_2 = keyPairGenerator_2.generateKeyPair();
         Logger.log("keyPair_2=" + keyPair_2);
         Logger.log("keyPair_2.getPrivate()=" + keyPair_2.getPrivate());
@@ -98,10 +104,48 @@ public class EllipticCurveUtilTest {
         //Logger.log("expandedIV_2=" + Arrays.toString(expandedIV_2));
     }
     
-    private static void initECDSA() throws Exception {
+    private static void initECDSA(final SecureRandom secureRandom) throws Exception {
         ADVANCED_FILE_ECDSA_KEY_PAIR_1.getParentFile().mkdirs();
         ADVANCED_FILE_ECDSA_KEY_PAIR_2.getParentFile().mkdirs();
-        ADVANCED_FILE_ECDSA_KEY_PAIR_1.createNewFile();
+        if (!ADVANCED_FILE_ECDSA_KEY_PAIR_1.exists()) {
+            ECDSA_KEY_PAIR_1 = createECDSA(ADVANCED_FILE_ECDSA_KEY_PAIR_1, secureRandom);
+        } else {
+            ECDSA_KEY_PAIR_1 = loadECDSA(ADVANCED_FILE_ECDSA_KEY_PAIR_1);
+        }
+        Logger.log("ECDSA_KEY_PAIR_1=" + ECDSA_KEY_PAIR_1);
+        if (!ADVANCED_FILE_ECDSA_KEY_PAIR_2.exists()) {
+            ECDSA_KEY_PAIR_2 = createECDSA(ADVANCED_FILE_ECDSA_KEY_PAIR_2, secureRandom);
+        } else {
+            ECDSA_KEY_PAIR_2 = loadECDSA(ADVANCED_FILE_ECDSA_KEY_PAIR_2);
+        }
+        Logger.log("ECDSA_KEY_PAIR_2=" + ECDSA_KEY_PAIR_2);
+    }
+    
+    private static KeyPair createECDSA(AdvancedFile advancedFile, final SecureRandom secureRandom) throws Exception {
+        final KeyPairGenerator keyPairGenerator = EllipticCurveUtil.createKeyPairGeneratorEC(secureRandom, 256);
+        final KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        final PublicKey publicKey = keyPair.getPublic();
+        final PrivateKey privateKey = keyPair.getPrivate();
+        final DataOutputStream dataOutputStream = new DataOutputStream(advancedFile.createOutputStream(false));
+        dataOutputStream.writeInt(publicKey.getEncoded().length);
+        dataOutputStream.write(publicKey.getEncoded());
+        dataOutputStream.writeInt(privateKey.getEncoded().length);
+        dataOutputStream.write(privateKey.getEncoded());
+        dataOutputStream.flush();
+        dataOutputStream.close();
+        return keyPair;
+    }
+    
+    private static KeyPair loadECDSA(AdvancedFile advancedFile) throws Exception {
+        final DataInputStream dataInputStream = new DataInputStream(advancedFile.createInputStream());
+        final byte[] bytes_publicKey = new byte[dataInputStream.readInt()];
+        dataInputStream.read(bytes_publicKey);
+        final byte[] bytes_privateKey = new byte[dataInputStream.readInt()];
+        dataInputStream.read(bytes_privateKey);
+        dataInputStream.close();
+        final PublicKey publicKey = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey));
+        final PrivateKey privateKey = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePrivate(new PKCS8EncodedKeySpec(bytes_privateKey));
+        return new KeyPair(publicKey, privateKey);
     }
     
 }
