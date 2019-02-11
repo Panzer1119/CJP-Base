@@ -19,8 +19,12 @@ package de.codemakers.security.util;
 import at.favre.lib.crypto.HKDF;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.AdvancedFile;
+import de.codemakers.security.interfaces.Decryptor;
+import de.codemakers.security.interfaces.Encryptor;
 
 import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.security.*;
@@ -134,6 +138,7 @@ public class EllipticCurveUtilTest {
         //final byte[] expandedIV_1 = hkdf_1.expand(pseudoRandomKey_1, "aes-iv".getBytes(), 32);
         Logger.log("expandedAESKey_1=" + Arrays.toString(expandedAESKey_1));
         //Logger.log("expandedIV_1=" + Arrays.toString(expandedIV_1));
+        final SecretKey secretKey_1 = new SecretKeySpec(expandedAESKey_1, AESCryptUtil.ALGORITHM_AES);
         // Partner 2
         final HKDF hkdf_2 = HKDF.fromHmacSha512();
         final byte[] pseudoRandomKey_2 = hkdf_2.extract(staticSalt, sharedSecret_2);
@@ -142,6 +147,38 @@ public class EllipticCurveUtilTest {
         //final byte[] expandedIV_2 = hkdf_1.expand(pseudoRandomKey_2, "aes-iv".getBytes(), 32);
         Logger.log("expandedAESKey_2=" + Arrays.toString(expandedAESKey_2));
         //Logger.log("expandedIV_2=" + Arrays.toString(expandedIV_2));
+        final SecretKey secretKey_2 = new SecretKeySpec(expandedAESKey_2, AESCryptUtil.ALGORITHM_AES);
+        //// Part 4
+        /*
+            Sending messages to test the encryption/decryption
+         */
+        /// Init
+        // Partner 1
+        final Encryptor encryptor_1 = AESCryptUtil.createEncryptorAESGCMNoPadding(secretKey_1, 128);
+        final Decryptor decryptor_1 = AESCryptUtil.createDecryptorAESGCMNoPadding(secretKey_1, 128);
+        // Partner 2
+        final Encryptor encryptor_2 = AESCryptUtil.createEncryptorAESGCMNoPadding(secretKey_2, 128);
+        final Decryptor decryptor_2 = AESCryptUtil.createDecryptorAESGCMNoPadding(secretKey_2, 128);
+        /// Encrypting
+        Logger.log("Encrypting");
+        // Partner 1
+        final String message_1 = "This is a message from Partner 1 to Partner 2";
+        Logger.log("message_1=" + message_1);
+        final byte[] iv_1 = AESCryptUtil.generateSecureRandomIVAESGCM();
+        final byte[] message_encrypted_1 = encryptor_1.encrypt(message_1.getBytes(), iv_1);
+        // Partner 2
+        final String message_2 = "This is a message from Partner 2 to Partner 1";
+        Logger.log("message_2=" + message_2);
+        final byte[] iv_2 = AESCryptUtil.generateSecureRandomIVAESGCM();
+        final byte[] message_encrypted_2 = encryptor_2.encrypt(message_2.getBytes(), iv_2);
+        /// Decrypting
+        Logger.log("Decrypting");
+        // Partner 1
+        final byte[] message_decrypted_1 = decryptor_1.decrypt(message_encrypted_2, iv_2);
+        Logger.log("message_decrypted_1=" + new String(message_decrypted_1));
+        // Partner 2
+        final byte[] message_decrypted_2 = decryptor_2.decrypt(message_encrypted_1, iv_1);
+        Logger.log("message_decrypted_2=" + new String(message_decrypted_2));
     }
     
     private static void initECDSA(final SecureRandom secureRandom) throws Exception {
