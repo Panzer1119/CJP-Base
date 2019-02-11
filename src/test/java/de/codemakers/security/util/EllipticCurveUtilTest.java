@@ -50,12 +50,52 @@ public class EllipticCurveUtilTest {
         Logger.log("keyPair_1=" + keyPair_1);
         Logger.log("keyPair_1.getPrivate()=" + keyPair_1.getPrivate());
         Logger.log("keyPair_1.getPublic()=" + keyPair_1.getPublic());
+        final byte[] bytes_publicKey_1 = keyPair_1.getPublic().getEncoded();
+        Logger.log("bytes_publicKey_1=" + Arrays.toString(bytes_publicKey_1));
         // Partner 2
         final KeyPairGenerator keyPairGenerator_2 = EllipticCurveUtil.createKeyPairGeneratorEC(secureRandom, 256);
         final KeyPair keyPair_2 = keyPairGenerator_2.generateKeyPair();
         Logger.log("keyPair_2=" + keyPair_2);
         Logger.log("keyPair_2.getPrivate()=" + keyPair_2.getPrivate());
         Logger.log("keyPair_2.getPublic()=" + keyPair_2.getPublic());
+        final byte[] bytes_publicKey_2 = keyPair_2.getPublic().getEncoded();
+        Logger.log("bytes_publicKey_2=" + Arrays.toString(bytes_publicKey_2));
+        //// Part 1.5
+        /*
+            PublicKeys are exchanged and signed/verified
+         */
+        /// Signing
+        // Partner 1
+        final Signature signature_sign_1 = Signature.getInstance("SHA256withECDSA");
+        signature_sign_1.initSign(ECDSA_KEY_PAIR_1.getPrivate());
+        signature_sign_1.update(bytes_publicKey_1);
+        final byte[] signature_publicKey_1 = signature_sign_1.sign();
+        // Partner 2
+        final Signature signature_sign_2 = Signature.getInstance("SHA256withECDSA");
+        signature_sign_2.initSign(ECDSA_KEY_PAIR_2.getPrivate());
+        signature_sign_2.update(bytes_publicKey_2);
+        final byte[] signature_publicKey_2 = signature_sign_2.sign();
+        /// Verifying
+        // Partner 1
+        final Signature signature_verify_1 = Signature.getInstance("SHA256withECDSA");
+        signature_verify_1.initVerify(ECDSA_KEY_PAIR_2.getPublic());
+        signature_verify_1.update(bytes_publicKey_2);
+        if (!signature_verify_1.verify(signature_publicKey_2)) {
+            throw new Exception("ECDSA Verification 1 failed");
+        } else {
+            Logger.log("Partner 1 verified with Partner 2's ECDSA PublicKey, that Partner 2's EC PublicKey is real");
+        }
+        final PublicKey partner_1 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_2));
+        // Partner 2
+        final Signature signature_verify_2 = Signature.getInstance("SHA256withECDSA");
+        signature_verify_2.initVerify(ECDSA_KEY_PAIR_1.getPublic());
+        signature_verify_2.update(bytes_publicKey_1);
+        if (!signature_verify_2.verify(signature_publicKey_1)) {
+            throw new Exception("ECDSA Verification 2 failed");
+        } else {
+            Logger.log("Partner 2 verified with Partner 1's ECDSA PublicKey, that Partner 1's EC PublicKey is real");
+        }
+        final PublicKey partner_2 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_1));
         //// Part 2
         /*
             After the partners exchanged their PublicKeys, both are generating a shared secret
@@ -63,7 +103,7 @@ public class EllipticCurveUtilTest {
         // Partner 1
         final KeyAgreement keyAgreement_1 = EllipticCurveUtil.createKeyAgreement();
         Logger.log("keyAgreement_1=" + keyAgreement_1);
-        final PublicKey partner_1 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(keyPair_2.getPublic().getEncoded()));
+        //final PublicKey partner_1 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_2));
         Logger.log("partner_1=" + partner_1);
         keyAgreement_1.init(keyPair_1.getPrivate());
         keyAgreement_1.doPhase(partner_1, true);
@@ -74,7 +114,7 @@ public class EllipticCurveUtilTest {
         // Partner 2
         final KeyAgreement keyAgreement_2 = EllipticCurveUtil.createKeyAgreement();
         Logger.log("keyAgreement_2=" + keyAgreement_2);
-        final PublicKey partner_2 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(keyPair_1.getPublic().getEncoded()));
+        //final PublicKey partner_2 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_1));
         Logger.log("partner_2=" + partner_2);
         keyAgreement_2.init(keyPair_2.getPrivate());
         keyAgreement_2.doPhase(partner_2, true);
