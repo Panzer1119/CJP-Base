@@ -20,6 +20,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
@@ -75,9 +76,15 @@ public class RedirectStream<I extends InputStream, O extends OutputStream> imple
         return running;
     }
     
-    protected void update() throws Exception {
-        inputStream.read(buffer);
-        outputStream.write(buffer);
+    protected int update() throws Exception {
+        final int read = inputStream.read(buffer);
+        if (read == -1) {
+            throw new IOException("InputStream closed");
+        }
+        if (read > 0) {
+            outputStream.write(buffer, 0, read);
+        }
+        return read;
     }
     
     @Override
@@ -93,8 +100,9 @@ public class RedirectStream<I extends InputStream, O extends OutputStream> imple
         thread = new Thread(() -> {
             try {
                 while (running) {
-                    update();
-                    Thread.sleep(period);
+                    if (update() == 0) {
+                        Thread.sleep(period);
+                    }
                 }
             } catch (Exception ex) {
                 Logger.handleError(ex);
