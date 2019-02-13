@@ -17,6 +17,7 @@
 package de.codemakers.io.streams;
 
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.Waiter;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class RedirectingStream<I extends InputStream, O extends OutputStream> implements Closeable, Startable, Stoppable {
     
@@ -136,10 +138,10 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
     public boolean stop() throws Exception {
         running = false;
         //if (thread != null) {
-            //thread.join();
-            //final boolean success = !thread.isAlive(); //This could cause a loop, when the Thread keeps throwing a StreamClosedException
-            thread = null;
-            //return success;
+        //thread.join();
+        //final boolean success = !thread.isAlive(); //This could cause a loop, when the Thread keeps throwing a StreamClosedException
+        thread = null;
+        //return success;
         //}
         return true;
     }
@@ -155,6 +157,14 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
         }
         inputStream.close();
         outputStream.close();
+    }
+    
+    public Waiter createWaiter() {
+        return new Waiter(() -> !isRunning());
+    }
+    
+    public Waiter createWaiter(long timeout, TimeUnit unit) {
+        return new Waiter(timeout, unit, () -> !isRunning());
     }
     
 }
