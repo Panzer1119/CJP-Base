@@ -102,7 +102,7 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
             try {
                 while (running) {
                     if (update() == 0) {
-                        Thread.sleep(period);
+                        Thread.sleep(getPeriod());
                     }
                 }
             } catch (Exception ex) {
