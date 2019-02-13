@@ -70,18 +70,18 @@ public class EllipticCurveUtilTest {
          */
         /// Signing
         // Partner 1
-        final Signature signature_sign_1 = Signature.getInstance("SHA256withECDSA");
+        final Signature signature_sign_1 = Signature.getInstance(EllipticCurveUtil.ALGORITHM_SHA256withECDSA);
         signature_sign_1.initSign(ECDSA_KEY_PAIR_1.getPrivate());
         signature_sign_1.update(bytes_publicKey_1);
         final byte[] signature_publicKey_1 = signature_sign_1.sign();
         // Partner 2
-        final Signature signature_sign_2 = Signature.getInstance("SHA256withECDSA");
+        final Signature signature_sign_2 = Signature.getInstance(EllipticCurveUtil.ALGORITHM_SHA256withECDSA);
         signature_sign_2.initSign(ECDSA_KEY_PAIR_2.getPrivate());
         signature_sign_2.update(bytes_publicKey_2);
         final byte[] signature_publicKey_2 = signature_sign_2.sign();
         /// Verifying
         // Partner 1
-        final Signature signature_verify_1 = Signature.getInstance("SHA256withECDSA");
+        final Signature signature_verify_1 = Signature.getInstance(EllipticCurveUtil.ALGORITHM_SHA256withECDSA);
         signature_verify_1.initVerify(ECDSA_KEY_PAIR_2.getPublic());
         signature_verify_1.update(bytes_publicKey_2);
         if (!signature_verify_1.verify(signature_publicKey_2)) {
@@ -91,7 +91,7 @@ public class EllipticCurveUtilTest {
         }
         final PublicKey partner_1 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_2));
         // Partner 2
-        final Signature signature_verify_2 = Signature.getInstance("SHA256withECDSA");
+        final Signature signature_verify_2 = Signature.getInstance(EllipticCurveUtil.ALGORITHM_SHA256withECDSA);
         signature_verify_2.initVerify(ECDSA_KEY_PAIR_1.getPublic());
         signature_verify_2.update(bytes_publicKey_1);
         if (!signature_verify_2.verify(signature_publicKey_1)) {

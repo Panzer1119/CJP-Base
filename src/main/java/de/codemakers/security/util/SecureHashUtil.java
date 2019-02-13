@@ -25,6 +25,7 @@ import java.util.Arrays;
 public class SecureHashUtil {
     
     public static final String ALGORITHM_SHA256withRSA = "SHA256withRSA";
+    public static final String ALGORITHM_SHA256withECDSA = "SHA256withECDSA";
     public static final String ALGORITHM_SHA_1 = "SHA-1";
     public static final String ALGORITHM_SHA_256 = "SHA-256";
     public static final String ALGORITHM_SHA_384 = "SHA-384";

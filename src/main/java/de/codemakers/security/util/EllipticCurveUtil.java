@@ -26,6 +26,7 @@ public class EllipticCurveUtil {
     
     public static final String ALGORITHM_EC = "EC";
     public static final String ALGORITHM_ECDH = "ECDH";
+    public static final String ALGORITHM_SHA256withECDSA = SecureHashUtil.ALGORITHM_SHA256withECDSA;
     
     public static KeyPairGenerator createKeyPairGeneratorEC(SecureRandom secureRandom, int keySize) {
         try {
