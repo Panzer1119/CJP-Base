@@ -38,13 +38,16 @@ public class EasyCryptUtil {
     public static final String ALGORITHM_AES = AESCryptUtil.ALGORITHM_AES;
     public static final String ALGORITHM_RSA = RSACryptUtil.ALGORITHM_RSA;
     public static final String ALGORITHM_SHA256withRSA = SecureHashUtil.ALGORITHM_SHA256withRSA;
+    public static final String ALGORITHM_SHA256withECDSA = SecureHashUtil.ALGORITHM_SHA256withECDSA;
     
     private static final Signature SIGNATURE_SHA256withRSA;
+    private static final Signature SIGNATURE_SHA256withECDSA;
     private static final byte[] RANDOM_TEST_BYTES = new byte[32];
     private static final Random SECUREST_RANDOM;
     
     static {
         SIGNATURE_SHA256withRSA = createSignatureSHA256withRSA();
+        SIGNATURE_SHA256withECDSA = createSignatureSHA256withECDSA();
         Random random = null;
         try {
             random = SecureRandom.getInstanceStrong();
@@ -116,8 +119,21 @@ public class EasyCryptUtil {
         }
     }
     
+    public static final Signature createSignatureSHA256withECDSA() {
+        try {
+            return Signature.getInstance(ALGORITHM_SHA256withECDSA);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
     public static final Signer signerOfSHA256withRSA(PrivateKey key) throws InvalidKeyException {
         return signerOfSignature(createSignatureSHA256withRSA(), key);
+    }
+    
+    public static final Signer signerOfSHA256withECDSA(PrivateKey key) throws InvalidKeyException {
+        return signerOfSignature(createSignatureSHA256withECDSA(), key);
     }
     
     public static final Signer signerOfSignature(Signature signature) {
@@ -134,6 +150,10 @@ public class EasyCryptUtil {
     
     public static final Verifier verifierOfSHA256withRSA(PublicKey key) throws InvalidKeyException {
         return verifierOfSignature(createSignatureSHA256withRSA(), key);
+    }
+    
+    public static final Verifier verifierOfSHA256withECDSA(PublicKey key) throws InvalidKeyException {
+        return verifierOfSignature(createSignatureSHA256withECDSA(), key);
     }
     
     public static final Verifier verifierOfSignature(Signature signature) {
@@ -154,8 +174,22 @@ public class EasyCryptUtil {
         }
         assert privateKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
         assert publicKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
-        final Signer signer = signerOfSignature(SIGNATURE_SHA256withRSA, privateKey);
-        final Verifier verifier = verifierOfSignature(SIGNATURE_SHA256withRSA, publicKey);
+        return verifierCanVerifyDataSignedWithSigner(signerOfSignature(SIGNATURE_SHA256withRSA, privateKey), verifierOfSignature(SIGNATURE_SHA256withRSA, publicKey));
+    }
+    
+    public static final boolean publicKeyCanVerifyDataSignedWithPrivateKeyECDSA(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
+        if (privateKey == null || publicKey == null) {
+            return false;
+        }
+        assert privateKey.getAlgorithm().equals(EllipticCurveUtil.ALGORITHM_EC);
+        assert publicKey.getAlgorithm().equals(EllipticCurveUtil.ALGORITHM_EC);
+        return verifierCanVerifyDataSignedWithSigner(signerOfSignature(SIGNATURE_SHA256withECDSA, privateKey), verifierOfSignature(SIGNATURE_SHA256withECDSA, publicKey));
+    }
+    
+    public static final boolean verifierCanVerifyDataSignedWithSigner(Signer signer, Verifier verifier) {
+        if (signer == null || verifier == null) {
+            return false;
+        }
         return verifier.verifyWithoutException(RANDOM_TEST_BYTES, signer.signWithoutException(RANDOM_TEST_BYTES));
     }
     

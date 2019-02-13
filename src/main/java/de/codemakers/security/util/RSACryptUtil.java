@@ -22,6 +22,7 @@ import java.security.SecureRandom;
 public class RSACryptUtil {
     
     public static final String ALGORITHM_RSA = "RSA";
+    public static final String ALGORITHM_SHA256withRSA = SecureHashUtil.ALGORITHM_SHA256withRSA;
     
     public static final int KEYSIZE_RSA_0 = 0;
     public static final int KEYSIZE_RSA_128 = 128;
