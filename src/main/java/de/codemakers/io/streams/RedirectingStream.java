@@ -19,6 +19,7 @@ package de.codemakers.io.streams;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
+import de.codemakers.io.streams.exceptions.StreamClosedException;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -32,8 +33,9 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
     protected final O outputStream;
     protected transient final byte[] buffer;
     protected int period;
-    protected boolean running = false;
+    protected volatile boolean running = false;
     protected transient Thread thread = null;
+    protected boolean stopOnClose = false;
     
     public RedirectingStream(I inputStream, O outputStream) {
         this(inputStream, outputStream, 100);
@@ -77,10 +79,19 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
         return running;
     }
     
+    public boolean isStopOnClose() {
+        return stopOnClose;
+    }
+    
+    public RedirectingStream setStopOnClose(boolean stopOnClose) {
+        this.stopOnClose = stopOnClose;
+        return this;
+    }
+    
     protected int update() throws Exception {
         final int read = inputStream.read(buffer);
         if (read == -1) {
-            throw new IOException("InputStream closed");
+            throw new StreamClosedException(inputStream.getClass().getSimpleName() + " closed");
         }
         if (read > 0) {
             outputStream.write(buffer, 0, read);
@@ -90,7 +101,7 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
     
     @Override
     public String toString() {
-        return "RedirectingStream{" + "bufferSize=" + getBufferSize() + ", period=" + period + ", inputStream=" + inputStream + ", outputStream=" + outputStream + ", thread=" + thread + '}';
+        return "RedirectingStream{" + "bufferSize=" + getBufferSize() + ", period=" + period + ", inputStream=" + inputStream + ", outputStream=" + outputStream + ", thread=" + thread + ", stopOnClose=" + stopOnClose + '}';
     }
     
     @Override
@@ -105,9 +116,16 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
                         Thread.sleep(getPeriod());
                     }
                 }
+            } catch (StreamClosedException ex) {
+                if (stopOnClose) {
+                    stopWithoutException();
+                } else {
+                    Logger.handleError(ex);
+                }
             } catch (Exception ex) {
                 Logger.handleError(ex);
             }
+            running = false;
         });
         running = true;
         thread.start();
@@ -116,14 +134,14 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
     
     @Override
     public boolean stop() throws Exception {
-        if (!isRunning()) {
-            return false;
-        }
         running = false;
-        thread.join();
-        final boolean success = !thread.isAlive();
-        thread = null;
-        return success;
+        //if (thread != null) {
+            //thread.join();
+            //final boolean success = !thread.isAlive(); //This could cause a loop, when the Thread keeps throwing a StreamClosedException
+            thread = null;
+            //return success;
+        //}
+        return true;
     }
     
     @Override
