@@ -785,7 +785,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     @Override
     public byte[] crypt(Cryptor cryptor) throws Exception {
         Objects.requireNonNull(cryptor);
-        return cryptor.crypt(readBytes());
+        return cryptor.crypt(readBytes()); //TODO Make this via Streams, because loading big files in the memory is not efficient
     }
     
     @Override
@@ -803,19 +803,19 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     @Override
     public byte[] decrypt(Decryptor decryptor) throws Exception {
         Objects.requireNonNull(decryptor);
-        return decryptor.decrypt(readBytes());
+        return decryptor.decrypt(readBytes()); //TODO Make this via Streams, because loading big files in the memory is not efficient
     }
     
     @Override
     public byte[] encrypt(Encryptor encryptor) throws Exception {
         Objects.requireNonNull(encryptor);
-        return encryptor.encrypt(readBytes());
+        return encryptor.encrypt(readBytes()); //TODO Make this via Streams, because loading big files in the memory is not efficient
     }
     
     @Override
     public byte[] sign(Signer signer) throws Exception {
         Objects.requireNonNull(signer);
-        return signer.sign(readBytes());
+        return signer.sign(readBytes()); //TODO Make this via Streams, because loading big files in the memory is not efficient
     }
     
     @Override
@@ -831,7 +831,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     @Override
     public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
         Objects.requireNonNull(verifier);
-        return verifier.verify(readBytes(), data_signature);
+        return verifier.verify(readBytes(), data_signature); //TODO Make this via Streams, because loading big files in the memory is not efficient
     }
     
     @Override

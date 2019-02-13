@@ -1114,14 +1114,14 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     @Override
     public AdvancedFile encryptThis(Encryptor encryptor) throws Exception {
         Objects.requireNonNull(encryptor);
-        writeBytes(encryptor.encryptWithoutException(readBytes()));
+        writeBytes(encryptor.encryptWithoutException(readBytes())); //TODO Make this via Streams, because loading big files in the memory is not efficient
         return this;
     }
     
     @Override
     public AdvancedFile decryptThis(Decryptor decryptor) throws Exception {
         Objects.requireNonNull(decryptor);
-        writeBytes(decryptor.decryptWithoutException(readBytes()));
+        writeBytes(decryptor.decryptWithoutException(readBytes())); //TODO Make this via Streams, because loading big files in the memory is not efficient
         return this;
     }
     
