@@ -40,14 +40,14 @@ public class EasyCryptUtil {
     public static final String ALGORITHM_SHA256withRSA = SecureHashUtil.ALGORITHM_SHA256withRSA;
     public static final String ALGORITHM_SHA256withECDSA = SecureHashUtil.ALGORITHM_SHA256withECDSA;
     
-    private static final Signature SIGNATURE_SHA256withRSA;
-    private static final Signature SIGNATURE_SHA256withECDSA;
+    //private static final Signature SIGNATURE_SHA256withRSA;
+    //private static final Signature SIGNATURE_SHA256withECDSA;
     private static final byte[] RANDOM_TEST_BYTES = new byte[32];
     private static final Random SECUREST_RANDOM;
     
     static {
-        SIGNATURE_SHA256withRSA = createSignatureSHA256withRSA();
-        SIGNATURE_SHA256withECDSA = createSignatureSHA256withECDSA();
+        //SIGNATURE_SHA256withRSA = createSignatureSHA256withRSA();
+        //SIGNATURE_SHA256withECDSA = createSignatureSHA256withECDSA();
         Random random = null;
         try {
             random = SecureRandom.getInstanceStrong();
@@ -174,7 +174,7 @@ public class EasyCryptUtil {
         }
         assert privateKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
         assert publicKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
-        return verifierCanVerifyDataSignedWithSigner(signerOfSignature(SIGNATURE_SHA256withRSA, privateKey), verifierOfSignature(SIGNATURE_SHA256withRSA, publicKey));
+        return verifierCanVerifyDataSignedWithSigner(signerOfSHA256withRSA(privateKey), verifierOfSHA256withRSA(publicKey));
     }
     
     public static final boolean publicKeyCanVerifyDataSignedWithPrivateKeyECDSA(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
@@ -183,7 +183,7 @@ public class EasyCryptUtil {
         }
         assert privateKey.getAlgorithm().equals(EllipticCurveUtil.ALGORITHM_EC);
         assert publicKey.getAlgorithm().equals(EllipticCurveUtil.ALGORITHM_EC);
-        return verifierCanVerifyDataSignedWithSigner(signerOfSignature(SIGNATURE_SHA256withECDSA, privateKey), verifierOfSignature(SIGNATURE_SHA256withECDSA, publicKey));
+        return verifierCanVerifyDataSignedWithSigner(signerOfSHA256withECDSA(privateKey), verifierOfSHA256withECDSA(publicKey));
     }
     
     public static final boolean verifierCanVerifyDataSignedWithSigner(Signer signer, Verifier verifier) {
