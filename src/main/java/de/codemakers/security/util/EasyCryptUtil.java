@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -18,23 +18,29 @@ package de.codemakers.security.util;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.ConvertUtil;
+import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughPredicate;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.security.entities.TrustedSecureData;
-import de.codemakers.security.interfaces.*;
 import de.codemakers.security.interfaces.Signer;
+import de.codemakers.security.interfaces.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.security.*;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class EasyCryptUtil {
     
-    public static final Signature SIGNATURE_SHA256withRSA;
-    public static final byte[] RANDOM_TEST_BYTES = new byte[32];
+    public static final String ALGORITHM_AES = AESCryptUtil.ALGORITHM_AES;
+    public static final String ALGORITHM_RSA = RSACryptUtil.ALGORITHM_RSA;
+    public static final String ALGORITHM_SHA256withRSA = SecureHashUtil.ALGORITHM_SHA256withRSA;
+    
+    private static final Signature SIGNATURE_SHA256withRSA;
+    private static final byte[] RANDOM_TEST_BYTES = new byte[32];
     private static final Random SECUREST_RANDOM;
     
     static {
@@ -61,12 +67,20 @@ public class EasyCryptUtil {
         return SECUREST_RANDOM;
     }
     
+    public static final boolean hasSecureRandomInstanceStrong() {
+        try {
+            return SecureRandom.getInstanceStrong() != null;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    
     public static final Cryptor cryptorOfCipher(Cipher cipher) {
-        return (data) -> cipher.doFinal(data);
+        return (data, iv) -> cipher.doFinal(data);
     }
     
     public static final Encryptor encryptorOfCipher(Cipher cipher) {
-        return (data) -> cipher.doFinal(data);
+        return (data, iv) -> cipher.doFinal(data);
     }
     
     public static final Encryptor encryptorOfCipher(Cipher cipher, SecretKey key) throws InvalidKeyException {
@@ -80,7 +94,7 @@ public class EasyCryptUtil {
     }
     
     public static final Decryptor decryptorOfCipher(Cipher cipher) {
-        return (data) -> cipher.doFinal(data);
+        return (data, iv) -> cipher.doFinal(data);
     }
     
     public static final Decryptor decryptorOfCipher(Cipher cipher, SecretKey key) throws InvalidKeyException {
@@ -95,7 +109,7 @@ public class EasyCryptUtil {
     
     public static final Signature createSignatureSHA256withRSA() {
         try {
-            return Signature.getInstance("SHA256withRSA");
+            return Signature.getInstance(ALGORITHM_SHA256withRSA);
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
@@ -138,8 +152,8 @@ public class EasyCryptUtil {
         if (privateKey == null || publicKey == null) {
             return false;
         }
-        assert privateKey.getAlgorithm().equals("RSA");
-        assert publicKey.getAlgorithm().equals("RSA");
+        assert privateKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
+        assert publicKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
         final Signer signer = signerOfSignature(SIGNATURE_SHA256withRSA, privateKey);
         final Verifier verifier = verifierOfSignature(SIGNATURE_SHA256withRSA, publicKey);
         return verifier.verifyWithoutException(RANDOM_TEST_BYTES, signer.signWithoutException(RANDOM_TEST_BYTES));
@@ -232,6 +246,76 @@ public class EasyCryptUtil {
         }
         final long max_time_error_millis = unit.toMillis(max_time_error);
         return (timestamp) -> Math.abs(timeSupplier.getWithoutException() - timestamp) <= max_time_error_millis;
+    }
+    
+    public static final Cipher createCipher(String mode) {
+        try {
+            return Cipher.getInstance(mode);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static final byte[] generateSecureRandomBytes(byte[] bytes) {
+        try {
+            return generateRandomBytes(bytes, SecureRandom.getInstanceStrong());
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static final byte[] generateRandomBytes(byte[] bytes, Random random) {
+        random.nextBytes(bytes);
+        return bytes;
+    }
+    
+    public static final byte[] generateSecureRandomBytes(int bytes) {
+        try {
+            return generateRandomBytes(bytes, SecureRandom.getInstanceStrong());
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static final byte[] generateRandomBytes(int bytes, Random random) {
+        final byte[] iv = new byte[bytes];
+        random.nextBytes(iv);
+        return iv;
+    }
+    
+    public static final Encryptor createEncryptor(Cipher cipher, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
+        if (ivFunction != null) {
+            return (data, iv) -> {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
+                return cipher.doFinal(data);
+            };
+        } else {
+            try {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+            return (data, iv) -> cipher.doFinal(data);
+        }
+    }
+    
+    public static final Decryptor createDecryptor(Cipher cipher, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
+        if (ivFunction != null) {
+            return (data, iv) -> {
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
+                return cipher.doFinal(data);
+            };
+        } else {
+            try {
+                cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+            return (data, iv) -> cipher.doFinal(data);
+        }
     }
     
 }

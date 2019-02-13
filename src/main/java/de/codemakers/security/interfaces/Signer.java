@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ public interface Signer extends Cryptor {
     byte[] sign(byte[] data) throws Exception;
     
     @Override
-    default byte[] crypt(byte[] data) throws Exception {
+    default byte[] crypt(byte[] data, byte[] iv) throws Exception {
         return sign(data);
     }
     

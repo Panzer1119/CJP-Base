@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ public abstract class HashedDeltaData extends DeltaData {
     }
     
     public HashedDeltaData generateHash(byte[] data_new) {
-        setHash(SecureHashUtil.hashSHA256(data_new));
+        setHash(SecureHashUtil.hashSHA_256(data_new));
         return this;
     }
     

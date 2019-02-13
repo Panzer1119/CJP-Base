@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class IncrementalData extends Data implements Version {
         }
         if (!forceIncrement && (deltaData instanceof HashedDeltaData)) {
             final HashedDeltaData hashedDeltaData = (HashedDeltaData) deltaData;
-            if (!SecureHashUtil.isDataValidSHA256(data_new, hashedDeltaData.getHash())) {
+            if (!SecureHashUtil.isDataValidSHA_256(data_new, hashedDeltaData.getHash())) {
                 throw new IllegalArgumentException("The hash of the new data is not equal to the given hash");
             }
         }

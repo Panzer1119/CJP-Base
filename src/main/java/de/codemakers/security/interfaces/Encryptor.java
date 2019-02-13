@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -23,7 +23,37 @@ import de.codemakers.base.util.tough.ToughConsumer;
 @FunctionalInterface
 public interface Encryptor extends Cryptor {
     
-    byte[] encrypt(byte[] data) throws Exception;
+    byte[] encrypt(byte[] data, byte[] iv) throws Exception;
+    
+    @Override
+    default byte[] crypt(byte[] data, byte[] iv) throws Exception {
+        return encrypt(data, iv);
+    }
+    
+    default byte[] encrypt(byte[] data, byte[] iv, ToughConsumer<Throwable> failure) {
+        try {
+            return encrypt(data, iv);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default byte[] encryptWithoutException(byte[] data, byte[] iv) {
+        return encrypt(data, iv, null);
+    }
+    
+    default ReturningAction<byte[]> encryptAction(byte[] data, byte[] iv) {
+        return new ReturningAction<>(() -> encrypt(data, iv));
+    }
+    
+    default byte[] encrypt(byte[] data) throws Exception {
+        return encrypt(data, (byte[]) null);
+    }
     
     @Override
     default byte[] crypt(byte[] data) throws Exception {
@@ -44,7 +74,7 @@ public interface Encryptor extends Cryptor {
     }
     
     default byte[] encryptWithoutException(byte[] data) {
-        return encrypt(data, null);
+        return encrypt(data, (ToughConsumer<Throwable>) null);
     }
     
     default ReturningAction<byte[]> encryptAction(byte[] data) {

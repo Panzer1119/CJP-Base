@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public interface Hashable {
     }
     
     default byte[] hash() throws Exception {
-        return hash(HashUtil.XX_HASHER_64);
+        return hash(HashUtil.HASHER_64_XX);
     }
     
     default byte[] hash(ToughConsumer<Throwable> failure) {

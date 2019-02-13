@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -24,35 +24,152 @@ import java.util.Arrays;
 
 public class SecureHashUtil {
     
-    public static final MessageDigest SHA_256 = createSHA256();
-    public static final Hasher SHA_256_HASHER = createSHA256Hasher();
+    public static final String ALGORITHM_SHA256withRSA = "SHA256withRSA";
+    public static final String ALGORITHM_SHA_1 = "SHA-1";
+    public static final String ALGORITHM_SHA_256 = "SHA-256";
+    public static final String ALGORITHM_SHA_384 = "SHA-384";
+    public static final String ALGORITHM_SHA_512 = "SHA-512";
     
-    public static MessageDigest createSHA256() {
+    private static final MessageDigest SHA_1 = createSHA_1();
+    private static final MessageDigest SHA_256 = createSHA_256();
+    private static final MessageDigest SHA_384 = createSHA_384();
+    private static final MessageDigest SHA_512 = createSHA_512();
+    
+    public static MessageDigest createSHA_1() {
         try {
-            return MessageDigest.getInstance("SHA-256");
+            return MessageDigest.getInstance(ALGORITHM_SHA_1);
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
         }
     }
     
-    public static Hasher createSHA256Hasher() {
-        final MessageDigest messageDigest = createSHA256();
-        return (data) -> messageDigest.digest(data);
+    public static MessageDigest createSHA_256() {
+        try {
+            return MessageDigest.getInstance(ALGORITHM_SHA_256);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
     }
     
-    public static byte[] hashSHA256(byte[] data) {
+    public static MessageDigest createSHA_384() {
+        try {
+            return MessageDigest.getInstance(ALGORITHM_SHA_384);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static MessageDigest createSHA_512() {
+        try {
+            return MessageDigest.getInstance(ALGORITHM_SHA_512);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static Hasher createHasher20SHA_1() {
+        return fromMessageDigest(createSHA_1());
+    }
+    
+    public static Hasher createHasher32SHA_256() {
+        return fromMessageDigest(createSHA_256());
+    }
+    
+    public static Hasher createHasher32SHA_384() {
+        return fromMessageDigest(createSHA_384());
+    }
+    
+    public static Hasher createHasher64SHA_512() {
+        return fromMessageDigest(createSHA_512());
+    }
+    
+    public static Hasher fromMessageDigest(final MessageDigest messageDigest) {
+        return new Hasher() {
+            @Override
+            public byte[] hash(byte[] data, int offset, int length) throws Exception {
+                messageDigest.update(data, offset, length);
+                return messageDigest.digest();
+            }
+            
+            @Override
+            public byte[] hash(byte[] data) throws Exception {
+                return messageDigest.digest(data);
+            }
+            
+            @Override
+            public byte[] hash() throws Exception {
+                return messageDigest.digest();
+            }
+            
+            @Override
+            public void update(byte[] data, int offset, int length) throws Exception {
+                messageDigest.update(data, offset, length);
+            }
+        };
+    }
+    
+    public static byte[] hashSHA_1(byte[] data) {
         if (data == null) {
             return null;
         }
+        SHA_1.reset();
+        return SHA_1.digest(data);
+    }
+    
+    public static byte[] hashSHA_256(byte[] data) {
+        if (data == null) {
+            return null;
+        }
+        SHA_256.reset();
         return SHA_256.digest(data);
     }
     
-    public static boolean isDataValidSHA256(byte[] data, byte[] hash) {
+    public static byte[] hashSHA_384(byte[] data) {
+        if (data == null) {
+            return null;
+        }
+        SHA_384.reset();
+        return SHA_384.digest(data);
+    }
+    
+    public static byte[] hashSHA_512(byte[] data) {
+        if (data == null) {
+            return null;
+        }
+        SHA_512.reset();
+        return SHA_512.digest(data);
+    }
+    
+    public static boolean isDataValidSHA_1(byte[] data, byte[] hash) {
         if (hash == null || data == null) {
             return hash == data;
         }
-        return Arrays.equals(hashSHA256(data), hash);
+        return Arrays.equals(hashSHA_1(data), hash);
+    }
+    
+    public static boolean isDataValidSHA_256(byte[] data, byte[] hash) {
+        if (hash == null || data == null) {
+            return hash == data;
+        }
+        return Arrays.equals(hashSHA_256(data), hash);
+    }
+    
+    public static boolean isDataValidSHA_384(byte[] data, byte[] hash) {
+        if (hash == null || data == null) {
+            return hash == data;
+        }
+        return Arrays.equals(hashSHA_384(data), hash);
+    }
+    
+    public static boolean isDataValidSHA_512(byte[] data, byte[] hash) {
+        if (hash == null || data == null) {
+            return hash == data;
+        }
+        return Arrays.equals(hashSHA_512(data), hash);
     }
     
 }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -78,6 +78,8 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
+        /*
+        //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()?
         try {
             final Set<Class<? extends FileProvider>> fileProviders = ReflectionUtil.getSubClasses(FileProvider.class);
             fileProviders.stream().filter((fileProvider) -> fileProvider.getAnnotation(AutoRegister.class) != null).forEach((fileProvider) -> {
@@ -96,6 +98,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         } catch (Exception ex) {
             Logger.handleError(ex);
         }
+        */
     }
     
     private String[] paths;
@@ -915,9 +918,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 final Path myPath = closeablePath.getData();
                 final int myPath_length = myPath.toString().length();
                 if (recursive) {
-                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
+                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
                 } else {
-                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
+                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
                 }
             } catch (Exception ex) {
                 Logger.handleError(ex);
@@ -961,9 +964,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 final Path myPath = closeablePath.getData();
                 final int myPath_length = myPath.toString().length();
                 if (recursive) {
-                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).filter(advancedFileFilter).forEach(advancedFiles::add);
+                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, true, path_)).filter(advancedFileFilter).forEach(advancedFiles::add);
                 } else {
-                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> new AdvancedFile(this, true, path_)).filter(advancedFileFilter).forEach(advancedFiles::add);
+                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, true, path_)).filter(advancedFileFilter).forEach(advancedFiles::add);
                 }
             } catch (Exception ex) {
                 Logger.handleError(ex);
