@@ -20,29 +20,30 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-public class RedirectStream<I extends InputStream, O extends OutputStream> implements Startable, Stoppable {
+public class RedirectingStream<I extends InputStream, O extends OutputStream> implements Closeable, Startable, Stoppable {
     
-    protected int period;
     protected final I inputStream;
     protected final O outputStream;
-    protected boolean running = false;
     protected transient final byte[] buffer;
+    protected int period;
+    protected boolean running = false;
     protected transient Thread thread = null;
     
-    public RedirectStream(I inputStream, O outputStream) {
+    public RedirectingStream(I inputStream, O outputStream) {
         this(inputStream, outputStream, 100);
     }
     
-    public RedirectStream(I inputStream, O outputStream, int period) {
+    public RedirectingStream(I inputStream, O outputStream, int period) {
         this(inputStream, outputStream, period, 1024);
     }
     
-    public RedirectStream(I inputStream, O outputStream, int period, int bufferSize) {
+    public RedirectingStream(I inputStream, O outputStream, int period, int bufferSize) {
         Objects.requireNonNull(inputStream);
         Objects.requireNonNull(outputStream);
         this.buffer = new byte[bufferSize];
@@ -59,7 +60,7 @@ public class RedirectStream<I extends InputStream, O extends OutputStream> imple
         return period;
     }
     
-    public RedirectStream setPeriod(int period) {
+    public RedirectingStream setPeriod(int period) {
         this.period = period;
         return this;
     }
@@ -89,7 +90,7 @@ public class RedirectStream<I extends InputStream, O extends OutputStream> imple
     
     @Override
     public String toString() {
-        return "RedirectStream{" + "bufferSize=" + getBufferSize() + ", period=" + period + ", inputStream=" + inputStream + ", outputStream=" + outputStream + ", thread=" + thread + '}';
+        return "RedirectingStream{" + "bufferSize=" + getBufferSize() + ", period=" + period + ", inputStream=" + inputStream + ", outputStream=" + outputStream + ", thread=" + thread + '}';
     }
     
     @Override
@@ -123,6 +124,19 @@ public class RedirectStream<I extends InputStream, O extends OutputStream> imple
         final boolean success = !thread.isAlive();
         thread = null;
         return success;
+    }
+    
+    @Override
+    public void close() throws IOException {
+        if (isRunning()) {
+            try {
+                stop();
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+        }
+        inputStream.close();
+        outputStream.close();
     }
     
 }
