@@ -65,19 +65,19 @@ public class AESCryptUtil {
     }
     
     public static final Encryptor createEncryptorAESCBCPKCS5Padding(SecretKey secretKey) {
-        return EasyCryptUtil.createEncryptor(createCipherAESCBCPKCS5Padding(), secretKey, IvParameterSpec::new);
+        return EasyCryptUtil.createEncryptor(() -> createCipherAESCBCPKCS5Padding(), secretKey, IvParameterSpec::new);
     }
     
     public static final Encryptor createEncryptorAESGCMNoPadding(SecretKey secretKey, int authentication_tag_bits) {
-        return EasyCryptUtil.createEncryptor(createCipherAESGCMNoPadding(), secretKey, (iv) -> new GCMParameterSpec(authentication_tag_bits, iv));
+        return EasyCryptUtil.createEncryptor(() -> createCipherAESGCMNoPadding(), secretKey, (iv) -> new GCMParameterSpec(authentication_tag_bits, iv));
     }
     
     public static final Decryptor createDecryptorAESCBCPKCS5Padding(SecretKey secretKey) {
-        return EasyCryptUtil.createDecryptor(createCipherAESCBCPKCS5Padding(), secretKey, IvParameterSpec::new);
+        return EasyCryptUtil.createDecryptor(() -> createCipherAESCBCPKCS5Padding(), secretKey, IvParameterSpec::new);
     }
     
     public static final Decryptor createDecryptorAESGCMNoPadding(SecretKey secretKey, int authentication_tag_bits) {
-        return EasyCryptUtil.createDecryptor(createCipherAESGCMNoPadding(), secretKey, (iv) -> new GCMParameterSpec(authentication_tag_bits, iv));
+        return EasyCryptUtil.createDecryptor(() -> createCipherAESGCMNoPadding(), secretKey, (iv) -> new GCMParameterSpec(authentication_tag_bits, iv));
     }
     
 }
