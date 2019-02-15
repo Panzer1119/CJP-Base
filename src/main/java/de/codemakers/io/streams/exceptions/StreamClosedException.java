@@ -16,9 +16,11 @@
 
 package de.codemakers.io.streams.exceptions;
 
+import de.codemakers.base.exceptions.ICJPException;
+
 import java.io.IOException;
 
-public class StreamClosedException extends IOException {
+public class StreamClosedException extends IOException implements ICJPException {
     
     protected final boolean friendly;
     
