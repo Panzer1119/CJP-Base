@@ -26,7 +26,11 @@ import de.codemakers.security.interfaces.Signer;
 import de.codemakers.security.interfaces.*;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Objects;
@@ -79,11 +83,61 @@ public class EasyCryptUtil {
     }
     
     public static final Cryptor cryptorOfCipher(Cipher cipher) {
-        return (data, iv) -> cipher.doFinal(data);
+        return new Cryptor() {
+            @Override
+            public byte[] crypt(byte[] data, byte[] iv) throws Exception {
+                return cipher.doFinal(data);
+            }
+            
+            @Override
+            public Cipher createCipher(byte[] iv) {
+                return cipher;
+            }
+        };
+    }
+    
+    public static final Cryptor cryptorOfCipher(ToughSupplier<Cipher> cipherToughSupplier) {
+        final Cipher cipher = cipherToughSupplier.getWithoutException();
+        return new Cryptor() {
+            @Override
+            public byte[] crypt(byte[] data, byte[] iv) throws Exception {
+                return cipher.doFinal(data);
+            }
+            
+            @Override
+            public Cipher createCipher(byte[] iv) {
+                return cipherToughSupplier.getWithoutException();
+            }
+        };
     }
     
     public static final Encryptor encryptorOfCipher(Cipher cipher) {
-        return (data, iv) -> cipher.doFinal(data);
+        return new Encryptor() {
+            @Override
+            public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
+                return cipher.doFinal(data);
+            }
+            
+            @Override
+            public Cipher createCipher(byte[] iv) {
+                return cipher;
+            }
+        };
+    }
+    
+    public static final Encryptor encryptorOfCipher(ToughSupplier<Cipher> cipherToughSupplier) {
+        final Cipher cipher = cipherToughSupplier.getWithoutException();
+        return new Encryptor() {
+            @Override
+            public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
+                return cipher.doFinal(data);
+            }
+            
+            @Override
+            public Cipher createCipher(byte[] iv) {
+                return cipherToughSupplier.getWithoutException();
+            }
+        };
     }
     
     public static final Encryptor encryptorOfCipher(Cipher cipher, SecretKey key) throws InvalidKeyException {
@@ -96,8 +150,37 @@ public class EasyCryptUtil {
         return encryptorOfCipher(cipher);
     }
     
+    public static final CipherOutputStream createCipherOutputStream(OutputStream outputStream, Cipher cipher) {
+        return new CipherOutputStream(outputStream, cipher);
+    }
+    
     public static final Decryptor decryptorOfCipher(Cipher cipher) {
-        return (data, iv) -> cipher.doFinal(data);
+        return new Decryptor() {
+            @Override
+            public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
+                return cipher.doFinal(data);
+            }
+            
+            @Override
+            public Cipher createCipher(byte[] iv) {
+                return cipher;
+            }
+        };
+    }
+    
+    public static final Decryptor decryptorOfCipher(ToughSupplier<Cipher> cipherToughSupplier) {
+        final Cipher cipher = cipherToughSupplier.getWithoutException();
+        return new Decryptor() {
+            @Override
+            public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
+                return cipher.doFinal(data);
+            }
+            
+            @Override
+            public Cipher createCipher(byte[] iv) {
+                return cipherToughSupplier.getWithoutException();
+            }
+        };
     }
     
     public static final Decryptor decryptorOfCipher(Cipher cipher, SecretKey key) throws InvalidKeyException {
@@ -108,6 +191,10 @@ public class EasyCryptUtil {
     public static final Decryptor decryptorOfCipher(Cipher cipher, SecretKey key, SecureRandom secureRandom) throws InvalidKeyException {
         cipher.init(Cipher.DECRYPT_MODE, key, secureRandom);
         return decryptorOfCipher(cipher);
+    }
+    
+    public static final CipherInputStream createCipherInputStream(InputStream inputStream, Cipher cipher) {
+        return new CipherInputStream(inputStream, cipher);
     }
     
     public static final Signature createSignatureSHA256withRSA() {
@@ -322,9 +409,22 @@ public class EasyCryptUtil {
     
     public static final Encryptor createEncryptor(Cipher cipher, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
         if (ivFunction != null) {
-            return (data, iv) -> {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
-                return cipher.doFinal(data);
+            return new Encryptor() {
+                @Override
+                public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
+                    return cipher.doFinal(data);
+                }
+                
+                @Override
+                public Cipher createCipher(byte[] iv) {
+                    try {
+                        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
+                    } catch (Exception ex) {
+                        Logger.handleError(ex);
+                    }
+                    return cipher;
+                }
             };
         } else {
             try {
@@ -332,15 +432,59 @@ public class EasyCryptUtil {
             } catch (Exception ex) {
                 Logger.handleError(ex);
             }
-            return (data, iv) -> cipher.doFinal(data);
+            return encryptorOfCipher(cipher);
+        }
+    }
+    
+    public static final Encryptor createEncryptor(ToughSupplier<Cipher> cipherToughSupplier, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
+        final Cipher cipher = cipherToughSupplier.getWithoutException();
+        if (ivFunction != null) {
+            return new Encryptor() {
+                @Override
+                public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
+                    return cipher.doFinal(data);
+                }
+                
+                @Override
+                public Cipher createCipher(byte[] iv) {
+                    final Cipher temp = cipherToughSupplier.getWithoutException();
+                    try {
+                        temp.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
+                    } catch (Exception ex) {
+                        Logger.handleError(ex);
+                    }
+                    return temp;
+                }
+            };
+        } else {
+            try {
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+            return encryptorOfCipher(cipher);
         }
     }
     
     public static final Decryptor createDecryptor(Cipher cipher, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
         if (ivFunction != null) {
-            return (data, iv) -> {
-                cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
-                return cipher.doFinal(data);
+            return new Decryptor() {
+                @Override
+                public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
+                    return cipher.doFinal(data);
+                }
+                
+                @Override
+                public Cipher createCipher(byte[] iv) {
+                    try {
+                        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
+                    } catch (Exception ex) {
+                        Logger.handleError(ex);
+                    }
+                    return cipher;
+                }
             };
         } else {
             try {
@@ -348,7 +492,38 @@ public class EasyCryptUtil {
             } catch (Exception ex) {
                 Logger.handleError(ex);
             }
-            return (data, iv) -> cipher.doFinal(data);
+            return decryptorOfCipher(cipher);
+        }
+    }
+    
+    public static final Decryptor createDecryptor(ToughSupplier<Cipher> cipherToughSupplier, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
+        final Cipher cipher = cipherToughSupplier.getWithoutException();
+        if (ivFunction != null) {
+            return new Decryptor() {
+                @Override
+                public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
+                    return cipher.doFinal(data);
+                }
+                
+                @Override
+                public Cipher createCipher(byte[] iv) {
+                    final Cipher temp = cipherToughSupplier.getWithoutException();
+                    try {
+                        temp.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
+                    } catch (Exception ex) {
+                        Logger.handleError(ex);
+                    }
+                    return temp;
+                }
+            };
+        } else {
+            try {
+                cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+            return decryptorOfCipher(cipher);
         }
     }
     
