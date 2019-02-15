@@ -28,7 +28,7 @@ public class Test {
     
     public static final void main(String[] args) throws Exception {
         Logger.log("Test");
-        final KeyPairGenerator keyPairGenerator = EllipticCurveUtil.createKeyPairGeneratorEC(SecureRandom.getInstanceStrong(), 256);
+        final KeyPairGenerator keyPairGenerator = EllipticCurveUtil.createKeyPairGeneratorEC(SecureRandom.getInstanceStrong(), EllipticCurveUtil.KEYSIZE_ECC_521);
         final KeyPair keyPair = keyPairGenerator.generateKeyPair();
         Logger.log("keyPair=" + keyPair);
         Logger.log("keyPair.getPrivate()=" + keyPair.getPrivate());

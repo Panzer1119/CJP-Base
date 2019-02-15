@@ -28,6 +28,12 @@ public class EllipticCurveUtil {
     public static final String ALGORITHM_ECDH = "ECDH";
     public static final String ALGORITHM_SHA256withECDSA = SecureHashUtil.ALGORITHM_SHA256withECDSA;
     
+    public static final int KEYSIZE_ECC_0 = 0;
+    public static final int KEYSIZE_ECC_128 = 128;
+    public static final int KEYSIZE_ECC_256 = 256;
+    public static final int KEYSIZE_ECC_384 = 384;
+    public static final int KEYSIZE_ECC_521 = 521;
+    
     public static KeyPairGenerator createKeyPairGeneratorEC(SecureRandom secureRandom, int keySize) {
         try {
             final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM_EC);
