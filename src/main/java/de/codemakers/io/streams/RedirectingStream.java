@@ -137,24 +137,13 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
     @Override
     public boolean stop() throws Exception {
         running = false;
-        //if (thread != null) {
-        //thread.join();
-        //final boolean success = !thread.isAlive(); //This could cause a loop, when the Thread keeps throwing a StreamClosedException
+        close();
         thread = null;
-        //return success;
-        //}
         return true;
     }
     
     @Override
     public void close() throws IOException {
-        if (isRunning()) {
-            try {
-                stop();
-            } catch (Exception ex) {
-                Logger.handleError(ex);
-            }
-        }
         inputStream.close();
         outputStream.close();
     }
