@@ -17,10 +17,16 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
+import de.codemakers.base.exceptions.NotSupportedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
-@FunctionalInterface
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 public interface Cryptor {
     
     byte[] crypt(byte[] data, byte[] iv) throws Exception;
@@ -69,6 +75,30 @@ public interface Cryptor {
     
     default ReturningAction<byte[]> cryptAction(byte[] data) {
         return new ReturningAction<>(() -> crypt(data));
+    }
+    
+    default Cipher createCipher(byte[] iv) {
+        throw new NotSupportedRuntimeException("Algorithm for " + Cipher.class.getSimpleName() + " unknown");
+    }
+    
+    default Cipher createCipher() {
+        return createCipher(null);
+    }
+    
+    default CipherOutputStream toCipherOutputStream(OutputStream outputStream, byte[] iv) {
+        return new CipherOutputStream(outputStream, createCipher(iv));
+    }
+    
+    default CipherOutputStream toCipherOutputStream(OutputStream outputStream) {
+        return new CipherOutputStream(outputStream, createCipher());
+    }
+    
+    default CipherInputStream toCipherInputStream(InputStream inputStream, byte[] iv) {
+        return new CipherInputStream(inputStream, createCipher(iv));
+    }
+    
+    default CipherInputStream toCipherInputStream(InputStream inputStream) {
+        return new CipherInputStream(inputStream, createCipher());
     }
     
 }

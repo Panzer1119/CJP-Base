@@ -17,8 +17,11 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
+import de.codemakers.base.exceptions.NotSupportedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
+
+import javax.crypto.Cipher;
 
 @FunctionalInterface
 public interface Signer extends Cryptor {
@@ -49,6 +52,10 @@ public interface Signer extends Cryptor {
     
     default ReturningAction<byte[]> signAction(byte[] data) {
         return new ReturningAction<>(() -> sign(data));
+    }
+    
+    default Cipher getCipher(byte[] iv) {
+        throw new NotSupportedRuntimeException("This " + getClass().getSimpleName() + " does not work with a " + Cipher.class.getSimpleName());
     }
     
 }
