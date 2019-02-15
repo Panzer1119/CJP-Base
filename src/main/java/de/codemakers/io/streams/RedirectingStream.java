@@ -40,14 +40,14 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
     protected boolean stopOnClose = false;
     
     public RedirectingStream(I inputStream, O outputStream) {
-        this(inputStream, outputStream, 100);
+        this(inputStream, outputStream, 1024);
     }
     
-    public RedirectingStream(I inputStream, O outputStream, int period) {
-        this(inputStream, outputStream, period, 1024);
+    public RedirectingStream(I inputStream, O outputStream, int bufferSize) {
+        this(inputStream, outputStream, bufferSize, 100);
     }
     
-    public RedirectingStream(I inputStream, O outputStream, int period, int bufferSize) {
+    public RedirectingStream(I inputStream, O outputStream, int bufferSize, int period) {
         Objects.requireNonNull(inputStream);
         Objects.requireNonNull(outputStream);
         this.buffer = new byte[bufferSize];
