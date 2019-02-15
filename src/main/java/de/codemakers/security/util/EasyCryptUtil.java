@@ -437,8 +437,8 @@ public class EasyCryptUtil {
     }
     
     public static final Encryptor createEncryptor(ToughSupplier<Cipher> cipherToughSupplier, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
-        final Cipher cipher = cipherToughSupplier.getWithoutException();
         if (ivFunction != null) {
+            final Cipher cipher = cipherToughSupplier.getWithoutException();
             return new Encryptor() {
                 @Override
                 public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
@@ -458,12 +458,11 @@ public class EasyCryptUtil {
                 }
             };
         } else {
-            try {
+            return encryptorOfCipher(() -> {
+                final Cipher cipher = cipherToughSupplier.get();
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            } catch (Exception ex) {
-                Logger.handleError(ex);
-            }
-            return encryptorOfCipher(cipher);
+                return cipher;
+            });
         }
     }
     
@@ -497,8 +496,8 @@ public class EasyCryptUtil {
     }
     
     public static final Decryptor createDecryptor(ToughSupplier<Cipher> cipherToughSupplier, SecretKey secretKey, ToughFunction<byte[], AlgorithmParameterSpec> ivFunction) {
-        final Cipher cipher = cipherToughSupplier.getWithoutException();
         if (ivFunction != null) {
+            final Cipher cipher = cipherToughSupplier.getWithoutException();
             return new Decryptor() {
                 @Override
                 public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
@@ -518,12 +517,11 @@ public class EasyCryptUtil {
                 }
             };
         } else {
-            try {
+            return decryptorOfCipher(() -> {
+                final Cipher cipher = cipherToughSupplier.get();
                 cipher.init(Cipher.DECRYPT_MODE, secretKey);
-            } catch (Exception ex) {
-                Logger.handleError(ex);
-            }
-            return decryptorOfCipher(cipher);
+                return cipher;
+            });
         }
     }
     
