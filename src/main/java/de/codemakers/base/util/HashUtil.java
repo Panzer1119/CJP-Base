@@ -62,6 +62,11 @@ public class HashUtil {
             public void update(byte[] data, int offset, int length) throws Exception {
                 throw new NotImplementedRuntimeException();
             }
+    
+            @Override
+            public int getHashLength() {
+                return 8;
+            }
         };
     }
     
@@ -105,6 +110,11 @@ public class HashUtil {
             public void update(byte[] data, int offset, int length) throws Exception {
                 throw new NotImplementedRuntimeException();
             }
+    
+            @Override
+            public int getHashLength() {
+                return 8;
+            }
         };
     }
     
@@ -147,6 +157,11 @@ public class HashUtil {
             @Override
             public void update(byte[] data, int offset, int length) throws Exception {
                 throw new NotImplementedRuntimeException();
+            }
+    
+            @Override
+            public int getHashLength() {
+                return 4;
             }
         };
     }

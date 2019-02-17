@@ -110,6 +110,11 @@ public class SecureHashUtil {
             public void update(byte[] data, int offset, int length) throws Exception {
                 messageDigest.update(data, offset, length);
             }
+    
+            @Override
+            public int getHashLength() {
+                return messageDigest.getDigestLength();
+            }
         };
     }
     

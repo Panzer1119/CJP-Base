@@ -123,4 +123,6 @@ public interface Hasher {
         return new RunningAction(() -> update(data, 0, data.length));
     }
     
+    int getHashLength();
+    
 }
