@@ -50,16 +50,44 @@ public class Logger {
         return new AdvancedLeveledSystemLogger();
     }
     
-    public static void setLogger(ILogger logger) {
-        LOGGER = logger;
-    }
-    
     public static <L extends ILogger> L getLogger() {
         return (L) LOGGER;
     }
     
+    public static void setLogger(ILogger logger) {
+        LOGGER = logger;
+    }
+    
     public static <L extends ILogger> L getLogger(Class<L> clazz) {
         return (L) LOGGER;
+    }
+    
+    public static boolean isLoggerAssignableFrom(Class<? extends ILogger> clazz) {
+        return clazz.isAssignableFrom(LOGGER.getClass());
+    }
+    
+    public static AdvancedLogger getLoggerAsAdvancedLogger() {
+        return (AdvancedLogger) LOGGER;
+    }
+    
+    public static AdvancedLeveledLogger getLoggerAsAdvancedLeveledLogger() {
+        return (AdvancedLeveledLogger) LOGGER;
+    }
+    
+    public static AdvancedLeveledSystemLogger getLoggerAsAdvancedLeveledSystemLogger() {
+        return (AdvancedLeveledSystemLogger) LOGGER;
+    }
+    
+    public static ILogger getDefaultLogger() {
+        return DEFAULT_LOGGER;
+    }
+    
+    public static AdvancedLogger getDefaultAdvancedLogger() {
+        return DEFAULT_ADVANCED_LOGGER;
+    }
+    
+    public static AdvancedLeveledSystemLogger getDefaultAdvancedLeveledLogger() {
+        return DEFAULT_ADVANCED_LEVELED_LOGGER;
     }
     
     /**
@@ -298,6 +326,18 @@ public class Logger {
             } else {
                 LOGGER.logError(object, throwable, thread, thread, stackTraceElement, logLevel);
             }
+        }
+    }
+    
+    /**
+     * Handles an Error using the {@link de.codemakers.base.logger.Logger#LOGGER}
+     *
+     * @param throwable Error (e.g. an {@link java.lang.Exception})
+     * @param message Additional message (may be null)
+     */
+    public static final void handleError(Throwable throwable, String message) {
+        if (LOGGER != null) {
+            LOGGER.handleError(throwable, message);
         }
     }
     

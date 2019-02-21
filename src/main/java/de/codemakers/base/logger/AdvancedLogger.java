@@ -18,6 +18,7 @@ package de.codemakers.base.logger;
 
 import de.codemakers.base.CJP;
 import de.codemakers.base.util.ArrayUtil;
+import de.codemakers.base.util.tough.ToughBiFunction;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -50,6 +51,7 @@ public abstract class AdvancedLogger implements ILogger {
     protected DateTimeFormatter dateTimeFormatter = DEFAULT_DATE_TIME_FORMATTER;
     protected String logFormat = DEFAULT_LOG_FORMAT;
     protected String stackTraceElementFormat = DEFAULT_STACK_TRACE_ELEMENT_FORMAT;
+    protected ToughBiFunction<Throwable, String, Boolean> errorHandler = null;
     
     protected static final StackTraceElement cutStackTrace(StackTraceElement[] stackTraceElements) {
         if (stackTraceElements == null || stackTraceElements.length == 0) {
@@ -290,10 +292,40 @@ public abstract class AdvancedLogger implements ILogger {
         return this;
     }
     
+    /**
+     * Gets the Error handler
+     *
+     * @return {@link de.codemakers.base.util.tough.ToughBiFunction} Error handler
+     */
+    public ToughBiFunction<Throwable, String, Boolean> getErrorHandler() {
+        return errorHandler;
+    }
+    
+    /**
+     * Sets the Error handler
+     *
+     * @param errorHandler {@link de.codemakers.base.util.tough.ToughBiFunction} Error handler
+     *
+     * @return A reference to this {@link de.codemakers.base.logger.AdvancedLogger} object
+     */
+    public AdvancedLogger setErrorHandler(ToughBiFunction<Throwable, String, Boolean> errorHandler) {
+        this.errorHandler = errorHandler;
+        return this;
+    }
+    
     @Override
-    public void handleError(Throwable throwable) {
+    public void handleError(Throwable throwable, String message) {
+        if (errorHandler != null && errorHandler.applyWithoutException(throwable, message)) {
+            return;
+        }
         if (throwable != null) {
-            logError("Error handling", throwable);
+            if (message != null) {
+                logError(message, throwable);
+            } else {
+                logError("Error handling", throwable);
+            }
+        } else if (message != null) {
+            logError(message);
         }
     }
     

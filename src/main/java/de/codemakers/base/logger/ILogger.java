@@ -30,7 +30,7 @@ public interface ILogger {
     void log(Object object, Object... arguments);
     
     /**
-     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable}
+     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} as an Error
      *
      * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
      * @param throwable Error (e.g. an {@link java.lang.Exception})
@@ -39,10 +39,30 @@ public interface ILogger {
     void logError(Object object, Throwable throwable, Object... arguments);
     
     /**
+     * Logs an {@link java.lang.Object} as an Error
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
+     * @param arguments Arguments
+     */
+    default void logError(Object object, Object... arguments) {
+        logError(object, null, arguments);
+    }
+    
+    /**
+     * Handles an Error with a custom message
+     *
+     * @param throwable Error (e.g. an {@link java.lang.Exception})
+     * @param message Additional message (may be null)
+     */
+    void handleError(Throwable throwable, String message);
+    
+    /**
      * Handles an Error
      *
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      */
-    void handleError(Throwable throwable);
+    default void handleError(Throwable throwable) {
+        handleError(throwable, null);
+    }
     
 }

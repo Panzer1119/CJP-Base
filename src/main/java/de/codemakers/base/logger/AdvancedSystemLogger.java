@@ -58,10 +58,14 @@ public class AdvancedSystemLogger extends AdvancedLogger {
      * It uses {@link java.lang.Throwable#printStackTrace(PrintStream)} to print the Error
      *
      * @param throwable Error (e.g. an {@link java.lang.Exception})
+     * @param message Additional message (may be null)
      */
     @Override
-    public void handleError(Throwable throwable) {
+    public void handleError(Throwable throwable, String message) {
         if (throwable != null) {
+            if (message != null) {
+                Standard.SYSTEM_ERROR_STREAM.println(message);
+            }
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
         }
     }
