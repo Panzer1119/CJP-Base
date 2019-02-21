@@ -58,7 +58,7 @@ public abstract class AdvancedLogger implements ILogger {
             return null;
         }
         for (StackTraceElement stackTraceElement : stackTraceElements) {
-            if (ArrayUtil.arrayContains(CJP.CJP_LOGGER_CLASS_NAMES, stackTraceElement.getClassName())) {
+            if (ArrayUtil.arrayContains(CJP.getLoggerClassNames(), stackTraceElement.getClassName())) {
                 continue;
             }
             return stackTraceElement;

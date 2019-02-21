@@ -21,6 +21,7 @@ import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.logger.Logger;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,12 +29,33 @@ import java.util.concurrent.TimeUnit;
 
 public class CJP {
     
-    public static final Class<?>[] CJP_LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLeveledLogger.class, de.codemakers.base.logger.AdvancedLeveledSystemLogger.class, de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.LogLevel.class, de.codemakers.base.logger.SystemLogger.class};
-    public static final String[] CJP_LOGGER_CLASS_NAMES = Arrays.asList(CJP_LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
+    private static Class<?>[] LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLeveledLogger.class, de.codemakers.base.logger.AdvancedLeveledSystemLogger.class, de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.LogLevel.class, de.codemakers.base.logger.SystemLogger.class};
+    private static String[] LOGGER_CLASS_NAMES = Arrays.asList(LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
     private static final CJP CJP = createInstance();
     
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownInstance()));
+    }
+    
+    public static void addLoggerClass(Class<?> clazz) {
+        Objects.requireNonNull(clazz);
+        LOGGER_CLASSES = Arrays.copyOf(LOGGER_CLASSES, LOGGER_CLASSES.length + 1);
+        LOGGER_CLASSES[LOGGER_CLASSES.length - 1] = clazz;
+        addLoggerClassName(clazz.getName());
+    }
+    
+    public static void addLoggerClassName(String className) {
+        Objects.requireNonNull(className);
+        LOGGER_CLASS_NAMES = Arrays.copyOf(LOGGER_CLASS_NAMES, LOGGER_CLASS_NAMES.length + 1);
+        LOGGER_CLASS_NAMES[LOGGER_CLASS_NAMES.length - 1] = className;
+    }
+    
+    public static Class<?>[] getLoggerClasses() {
+        return LOGGER_CLASSES;
+    }
+    
+    public static String[] getLoggerClassNames() {
+        return LOGGER_CLASS_NAMES;
     }
     
     private ExecutorService fixedExecutorService;
