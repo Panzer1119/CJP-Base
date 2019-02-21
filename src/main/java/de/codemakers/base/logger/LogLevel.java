@@ -20,9 +20,10 @@ import java.awt.*;
 
 public enum LogLevel {
     
-    FINEST(false, 6, Color.WHITE, Color.LIGHT_GRAY),
-    FINER(false, 5, Color.WHITE, Color.GRAY),
-    FINE(false, 4, Color.WHITE, Color.DARK_GRAY),
+    FINEST(false, 7, Color.WHITE, Color.LIGHT_GRAY),
+    FINER(false, 6, Color.WHITE, Color.GRAY),
+    FINE(false, 5, Color.WHITE, Color.DARK_GRAY),
+    DEBUG(false, 4, Color.WHITE, Color.DARK_GRAY),
     INFO(false, 3, Color.WHITE, Color.BLACK),
     COMMAND(false, 2, Color.WHITE, Color.MAGENTA),
     INPUT(false, 1, Color.WHITE, Color.BLUE),
@@ -34,8 +35,8 @@ public enum LogLevel {
      * The higher the level the less important is this LogLevel
      */
     private final int level;
-    private final Color colorBackground;
-    private final Color colorForeground;
+    private Color colorBackground;
+    private Color colorForeground;
     
     LogLevel(boolean isBad, int level, Color colorBackground, Color colorForeground) {
         this.isBad = isBad;
@@ -52,12 +53,22 @@ public enum LogLevel {
         return level;
     }
     
-    public Color getBackgroundColor() {
+    public Color getColorBackground() {
         return colorBackground;
     }
     
-    public Color getForegroundColor() {
+    public LogLevel setColorBackground(Color colorBackground) {
+        this.colorBackground = colorBackground;
+        return this;
+    }
+    
+    public Color getColorForeground() {
         return colorForeground;
+    }
+    
+    public LogLevel setColorForeground(Color colorForeground) {
+        this.colorForeground = colorForeground;
+        return this;
     }
     
     public String toText() {
