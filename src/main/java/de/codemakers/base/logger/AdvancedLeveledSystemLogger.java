@@ -41,12 +41,11 @@ public class AdvancedLeveledSystemLogger extends AdvancedLeveledLogger {
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      */
     @Override
-    protected void logErrFinal(Object object, Throwable throwable) {
+    protected void logErrorFinal(Object object, Throwable throwable) {
         Standard.SYSTEM_ERROR_STREAM.println(object);
         if (throwable != null) {
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
         }
-        
     }
     
 }

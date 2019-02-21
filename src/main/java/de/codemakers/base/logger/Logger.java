@@ -191,9 +191,9 @@ public class Logger {
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      * @param arguments Arguments
      */
-    public static final void logErr(Object object, Throwable throwable, Object... arguments) {
+    public static final void logError(Object object, Throwable throwable, Object... arguments) {
         if (LOGGER != null) {
-            LOGGER.logErr(object, throwable, arguments);
+            LOGGER.logError(object, throwable, arguments);
         }
     }
     
@@ -203,12 +203,12 @@ public class Logger {
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      */
-    public static void logErr(Object object, Throwable throwable) {
+    public static void logError(Object object, Throwable throwable) {
         if (LOGGER != null) {
             if (LOGGER instanceof AdvancedLogger) {
-                ((AdvancedLogger) LOGGER).logErr(object, throwable);
+                ((AdvancedLogger) LOGGER).logError(object, throwable);
             } else {
-                LOGGER.logErr(object, throwable);
+                LOGGER.logError(object, throwable);
             }
         }
     }
@@ -220,12 +220,12 @@ public class Logger {
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      * @param timestamp Timestamp
      */
-    public static void logErr(Object object, Throwable throwable, Instant timestamp) {
+    public static void logError(Object object, Throwable throwable, Instant timestamp) {
         if (LOGGER != null) {
             if (LOGGER instanceof AdvancedLogger) {
-                ((AdvancedLogger) LOGGER).logErr(object, throwable, timestamp);
+                ((AdvancedLogger) LOGGER).logError(object, throwable, timestamp);
             } else {
-                LOGGER.logErr(object, throwable, timestamp);
+                LOGGER.logError(object, throwable, timestamp);
             }
         }
     }
@@ -238,12 +238,12 @@ public class Logger {
      * @param timestamp Timestamp
      * @param thread Thread
      */
-    public static void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread) {
+    public static void logError(Object object, Throwable throwable, Instant timestamp, Thread thread) {
         if (LOGGER != null) {
             if (LOGGER instanceof AdvancedLogger) {
-                ((AdvancedLogger) LOGGER).logErr(object, throwable, timestamp, thread);
+                ((AdvancedLogger) LOGGER).logError(object, throwable, timestamp, thread);
             } else {
-                LOGGER.logErr(object, throwable, thread, thread);
+                LOGGER.logError(object, throwable, thread, thread);
             }
         }
     }
@@ -257,12 +257,12 @@ public class Logger {
      * @param thread Thread
      * @param stackTraceElement StackTraceElement (used to determine the source of the {@link de.codemakers.base.logger.Logger#log(Object, Instant, Thread, StackTraceElement)} call)
      */
-    public static void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
+    public static void logError(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
         if (LOGGER != null) {
             if (LOGGER instanceof AdvancedLogger) {
-                ((AdvancedLogger) LOGGER).logErr(object, throwable, timestamp, thread, stackTraceElement);
+                ((AdvancedLogger) LOGGER).logError(object, throwable, timestamp, thread, stackTraceElement);
             } else {
-                LOGGER.logErr(object, throwable, timestamp, thread, stackTraceElement);
+                LOGGER.logError(object, throwable, timestamp, thread, stackTraceElement);
             }
         }
     }
@@ -277,14 +277,14 @@ public class Logger {
      * @param stackTraceElement StackTraceElement (used to determine the source of the {@link de.codemakers.base.logger.Logger#log(Object, Instant, Thread, StackTraceElement)} call)
      * @param logLevel {@link de.codemakers.base.logger.LogLevel}
      */
-    public static void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
+    public static void logError(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
         if (LOGGER != null) {
             if (LOGGER instanceof AdvancedLeveledLogger) {
-                ((AdvancedLeveledLogger) LOGGER).logErr(object, throwable, timestamp, thread, stackTraceElement, logLevel);
+                ((AdvancedLeveledLogger) LOGGER).logError(object, throwable, timestamp, thread, stackTraceElement, logLevel);
             } else if (LOGGER instanceof AdvancedLogger) {
-                ((AdvancedLogger) LOGGER).logErr(object, throwable, timestamp, thread, stackTraceElement);
+                ((AdvancedLogger) LOGGER).logError(object, throwable, timestamp, thread, stackTraceElement);
             } else {
-                LOGGER.logErr(object, throwable, thread, thread, stackTraceElement, logLevel);
+                LOGGER.logError(object, throwable, thread, thread, stackTraceElement, logLevel);
             }
         }
     }

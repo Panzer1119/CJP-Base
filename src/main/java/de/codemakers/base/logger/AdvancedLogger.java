@@ -20,9 +20,9 @@ import de.codemakers.base.CJP;
 import de.codemakers.base.util.ArrayUtil;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 
 /**
  * Abstract AdvancedLogger Class
@@ -46,7 +46,7 @@ public abstract class AdvancedLogger implements ILogger {
      */
     public static final String DEFAULT_STACK_TRACE_ELEMENT_FORMAT = "%1$s.%2$s(%3$s:%4$s)";
     
-    protected ZoneId zoneId = ZoneId.systemDefault();
+    protected TimeZone timeZone = TimeZone.getDefault();
     protected DateTimeFormatter dateTimeFormatter = DEFAULT_DATE_TIME_FORMATTER;
     protected String logFormat = DEFAULT_LOG_FORMAT;
     protected String stackTraceElementFormat = DEFAULT_STACK_TRACE_ELEMENT_FORMAT;
@@ -106,7 +106,7 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement)));
+        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement)));
     }
     
     @Override
@@ -126,8 +126,8 @@ public abstract class AdvancedLogger implements ILogger {
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
      * @param throwable {@link java.lang.Throwable} to get logged
      */
-    public void logErr(Object object, Throwable throwable) {
-        logErr(object, throwable, Instant.now(), Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()));
+    public void logError(Object object, Throwable throwable) {
+        logError(object, throwable, Instant.now(), Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()));
     }
     
     /**
@@ -137,8 +137,8 @@ public abstract class AdvancedLogger implements ILogger {
      * @param throwable {@link java.lang.Throwable} to get logged
      * @param timestamp Timestamp
      */
-    public void logErr(Object object, Throwable throwable, Instant timestamp) {
-        logErr(object, throwable, timestamp, Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()));
+    public void logError(Object object, Throwable throwable, Instant timestamp) {
+        logError(object, throwable, timestamp, Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()));
     }
     
     /**
@@ -149,8 +149,8 @@ public abstract class AdvancedLogger implements ILogger {
      * @param timestamp Timestamp
      * @param thread Thread
      */
-    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread) {
-        logErr(object, throwable, timestamp, thread, cutStackTrace(new Exception().getStackTrace()));
+    public void logError(Object object, Throwable throwable, Instant timestamp, Thread thread) {
+        logError(object, throwable, timestamp, thread, cutStackTrace(new Exception().getStackTrace()));
     }
     
     /**
@@ -162,23 +162,23 @@ public abstract class AdvancedLogger implements ILogger {
      * @param thread Thread
      * @param stackTraceElement StackTraceElement (used to determine the source of the {@link de.codemakers.base.logger.AdvancedLogger#log(Object, Instant, Thread, StackTraceElement)} call)
      */
-    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
+    public void logError(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logErrFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement)), throwable);
+        logErrorFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement)), throwable);
     }
     
     @Override
-    public void logErr(Object object, Throwable throwable, Object... arguments) {
+    public void logError(Object object, Throwable throwable, Object... arguments) {
         if (arguments != null && arguments.length > 0) {
-            logErrFinal(String.format(object + "", arguments), throwable);
+            logErrorFinal(String.format(object + "", arguments), throwable);
         } else {
-            logErrFinal(object, throwable);
+            logErrorFinal(object, throwable);
         }
     }
     
-    protected abstract void logErrFinal(Object object, Throwable throwable);
+    protected abstract void logErrorFinal(Object object, Throwable throwable);
     
     protected String formatThread(Thread thread) {
         if (thread == null) {
@@ -195,23 +195,23 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     /**
-     * Returns the {@link java.time.ZoneId} used for the {@link java.time.Instant}
+     * Returns the {@link java.util.TimeZone} used for the {@link java.time.Instant}
      *
-     * @return ZoneId
+     * @return TimeZone
      */
-    public final ZoneId getZoneId() {
-        return zoneId;
+    public final TimeZone getTimeZone() {
+        return timeZone;
     }
     
     /**
-     * Sets the {@link java.time.ZoneId} used for the {@link java.time.Instant}
+     * Sets the {@link java.util.TimeZone} used for the {@link java.time.Instant}
      *
-     * @param zoneId {@link java.time.ZoneId}
+     * @param timeZone {@link java.util.TimeZone}
      *
      * @return A reference to this {@link de.codemakers.base.logger.AdvancedLogger} object
      */
-    public final AdvancedLogger setZoneId(ZoneId zoneId) {
-        this.zoneId = zoneId;
+    public final AdvancedLogger setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
         return this;
     }
     
@@ -293,7 +293,7 @@ public abstract class AdvancedLogger implements ILogger {
     @Override
     public void handleError(Throwable throwable) {
         if (throwable != null) {
-            logErr("Error handling", throwable);
+            logError("Error handling", throwable);
         }
     }
     

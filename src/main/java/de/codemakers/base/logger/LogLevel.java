@@ -71,6 +71,26 @@ public enum LogLevel {
         return this;
     }
     
+    public boolean isThisLevelLessImportant(LogLevel logLevel) {
+        return level > logLevel.level;
+    }
+    
+    public boolean isThisLevelLessImportantOrEqual(LogLevel logLevel) {
+        return level >= logLevel.level;
+    }
+    
+    public boolean isLevelEqual(LogLevel logLevel) {
+        return level == logLevel.level;
+    }
+    
+    public boolean isThisLevelMoreImportantOrEqual(LogLevel logLevel) {
+        return level <= logLevel.level;
+    }
+    
+    public boolean isThisLevelMoreImportant(LogLevel logLevel) {
+        return level < logLevel.level;
+    }
+    
     public String toText() {
         return name().toUpperCase().substring(0, 1) + name().toLowerCase().substring(1);
     }

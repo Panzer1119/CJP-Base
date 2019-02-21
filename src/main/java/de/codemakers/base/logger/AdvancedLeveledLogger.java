@@ -26,6 +26,8 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
      */
     public static final String DEFAULT_LEVELED_LOG_FORMAT = "[%2$s]%3$s%4$s%5$s: %1$s";
     
+    protected LogLevel minimumLogLevel = LogLevel.INFO;
+    
     public AdvancedLeveledLogger() {
         this.logFormat = DEFAULT_LEVELED_LOG_FORMAT;
     }
@@ -51,37 +53,43 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     }
     
     public void log(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
+        if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
+            return;
+        }
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)));
+        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)));
     }
     
     @Override
-    public void logErr(Object object, Throwable throwable) {
-        logErr(object, throwable, Instant.now(), Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
+    public void logError(Object object, Throwable throwable) {
+        logError(object, throwable, Instant.now(), Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
     }
     
     @Override
-    public void logErr(Object object, Throwable throwable, Instant timestamp) {
-        logErr(object, throwable, timestamp, Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
+    public void logError(Object object, Throwable throwable, Instant timestamp) {
+        logError(object, throwable, timestamp, Thread.currentThread(), cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
     }
     
     @Override
-    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread) {
-        logErr(object, throwable, timestamp, thread, cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
+    public void logError(Object object, Throwable throwable, Instant timestamp, Thread thread) {
+        logError(object, throwable, timestamp, thread, cutStackTrace(new Exception().getStackTrace()), LogLevel.ERROR);
     }
     
     @Override
-    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
-        logErr(object, throwable, timestamp, thread, stackTraceElement, LogLevel.ERROR);
+    public void logError(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
+        logError(object, throwable, timestamp, thread, stackTraceElement, LogLevel.ERROR);
     }
     
-    public void logErr(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
+    public void logError(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
+        if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
+            return;
+        }
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logErrFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, zoneId)), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)), throwable);
+        logErrorFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)), throwable);
     }
     
     protected String formatLogLevel(LogLevel logLevel) {
@@ -89,6 +97,18 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
             return "";
         }
         return "[" + logLevel + "]";
+    }
+    
+    public LogLevel getMinimumLogLevel() {
+        return minimumLogLevel;
+    }
+    
+    public AdvancedLeveledLogger setMinimumLogLevel(LogLevel minimumLogLevel) {
+        if (minimumLogLevel == null) {
+            minimumLogLevel = LogLevel.INFO;
+        }
+        this.minimumLogLevel = minimumLogLevel;
+        return this;
     }
     
 }

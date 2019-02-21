@@ -36,7 +36,7 @@ public interface ILogger {
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      * @param arguments Arguments
      */
-    void logErr(Object object, Throwable throwable, Object... arguments);
+    void logError(Object object, Throwable throwable, Object... arguments);
     
     /**
      * Handles an Error
