@@ -51,6 +51,15 @@ public class Logger {
     }
     
     /**
+     * Logs an {@link java.lang.Object} with {@link de.codemakers.base.logger.LogLevel#DEBUG} using the {@link de.codemakers.base.logger.Logger#LOGGER}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     */
+    public static void logDebug(Object object) {
+        log(object, LogLevel.DEBUG);
+    }
+    
+    /**
      * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.logger.Logger#LOGGER}
      *
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
@@ -163,6 +172,15 @@ public class Logger {
                 LOGGER.log(object, thread, thread, stackTraceElement, logLevel);
             }
         }
+    }
+    
+    /**
+     * Logs an {@link java.lang.Object} with {@link de.codemakers.base.logger.LogLevel#WARNING} using the {@link de.codemakers.base.logger.Logger#LOGGER}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     */
+    public static void logWarning(Object object) {
+        log(object, LogLevel.WARNING);
     }
     
     
