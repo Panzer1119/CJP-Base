@@ -16,24 +16,24 @@
 
 package de.codemakers.base.logger;
 
+import org.apache.commons.text.StringSubstitutor;
+
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
+    public static final String LOG_FORMAT_LOG_LEVEL = "loglevel"; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_VAR_LOG_LEVEL = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOG_LEVEL + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
     /**
-     * Value = [%2$s]%3$s%4$s%5$s: %1$s
+     * Value = "{@link #LOG_FORMAT_VAR_TIMESTAMP}{@link #LOG_FORMAT_VAR_THREAD}{@link #LOG_FORMAT_VAR_LOCATION}{@link #LOG_FORMAT_VAR_LOG_LEVEL}: {@link #LOG_FORMAT_VAR_OBJECT}"
      */
-    //public static final String DEFAULT_LEVELED_LOG_FORMAT = "[%2$s]%3$s%4$s%5$s: %1$s"; //FIXME TODO 1242545435
-    //public static final String DEFAULT_LEVELED_LOG_FORMAT = "[timestamp][thread][location][loglevel]: [object]";
-    public static final String DEFAULT_LEVELED_LOG_FORMAT = "${timestamp}${thread}${location}${loglevel}: ${object}";
-    //public static final String DEFAULT_LEVELED_LOG_FORMAT = "[${timestamp}][${thread}][${location}][${loglevel}]: ${object}";
+    public static final String DEFAULT_LEVELED_LOG_FORMAT = LOG_FORMAT_VAR_TIMESTAMP + LOG_FORMAT_VAR_THREAD + LOG_FORMAT_VAR_LOCATION + LOG_FORMAT_VAR_LOG_LEVEL + ": " + LOG_FORMAT_VAR_OBJECT;
     
     protected LogLevel minimumLogLevel = LogLevel.INFO;
     
     public AdvancedLeveledLogger() {
-        //this.logFormat = DEFAULT_LEVELED_LOG_FORMAT; //FIXME TODO 1242545435
-        logFormatter.setFormatString(DEFAULT_LEVELED_LOG_FORMAT);
+        //logFormatter.setFormatString(DEFAULT_LEVELED_LOG_FORMAT); //FIXME TODO 1242545435
+        this.logFormat = DEFAULT_LEVELED_LOG_FORMAT;
     }
     
     @Override
@@ -57,22 +57,14 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     }
     
     public void log(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
-        if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
-            return;
-        }
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        //logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)));
-        logFormatter.reset();
-        //logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logFormatter.setValue("thread", formatThread(thread));
-        logFormatter.setValue("location", formatStackTraceElement(stackTraceElement));
-        logFormatter.setValue("loglevel", formatLogLevel(logLevel));
-        logFormatter.setValue("object", object);
-        logFinal(logFormatter);
-        //FIXME TODO 1242545435
+        if (!setLogStringMapLookup(object, timestamp, thread, stackTraceElement, logLevel)) {
+            return;
+        }
+        //logFinal(logFormatter.toString()); //FIXME TODO 1242545435
+        logFinal(logStringSubstitutor.replace(logFormat));
     }
     
     @Override
@@ -96,22 +88,24 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     }
     
     public void logError(Object object, Throwable throwable, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
-        if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
-            return;
-        }
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        //logErrorFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)), throwable);
-        logFormatter.reset();
-        //logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logFormatter.setValue("thread", formatThread(thread));
-        logFormatter.setValue("location", formatStackTraceElement(stackTraceElement));
-        logFormatter.setValue("loglevel", formatLogLevel(logLevel));
-        logFormatter.setValue("object", object);
-        logErrorFinal(logFormatter, throwable);
-        //FIXME TODO 1242545435
+        if (!setLogStringMapLookup(object, timestamp, thread, stackTraceElement, logLevel)) {
+            return;
+        }
+        //logErrorFinal(logFormatter.toString(), throwable); //FIXME TODO 1242545435
+        logErrorFinal(logStringSubstitutor.replace(logFormat), throwable);
+    }
+    
+    protected boolean setLogStringMapLookup(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
+        if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
+            return false;
+        }
+        setLogStringMapLookup(object, timestamp, thread, stackTraceElement);
+        //logFormatter.setValue("loglevel", formatLogLevel(logLevel)); //FIXME TODO 1242545435
+        logStringMapLookup.put("loglevel", formatLogLevel(logLevel));
+        return true;
     }
     
     protected String formatLogLevel(LogLevel logLevel) {

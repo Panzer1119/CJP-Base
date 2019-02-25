@@ -18,9 +18,10 @@ package de.codemakers.base.logger;
 
 import de.codemakers.base.CJP;
 import de.codemakers.base.util.ArrayUtil;
-import de.codemakers.base.util.StringFormatter;
+import de.codemakers.base.util.StringUtil;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughBiFunction;
+import org.apache.commons.text.StringSubstitutor;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -44,28 +45,43 @@ public abstract class AdvancedLogger implements ILogger {
      * Value = {@link de.codemakers.base.util.TimeUtil#ISO_OFFSET_DATE_TIME_FIXED_LENGTH}
      */
     public static final DateTimeFormatter DATE_TIME_FORMATTER_DEFAULT = TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH;
+    public static final String LOG_FORMAT_TIMESTAMP = "timestamp"; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_VAR_TIMESTAMP = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_TIMESTAMP + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_THREAD = "thread"; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_VAR_THREAD = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_THREAD + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_LOCATION = "location"; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_VAR_LOCATION = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOCATION + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_OBJECT = "object"; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_VAR_OBJECT = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_OBJECT + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
+    public static final String LOCATION_FORMAT_CLASS = "class"; //FIXME TODO 1242545435
+    public static final String LOCATION_FORMAT_VAR_CLASS = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_CLASS + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
+    public static final String LOCATION_FORMAT_METHOD = "method"; //FIXME TODO 1242545435
+    public static final String LOCATION_FORMAT_VAR_METHOD = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_METHOD + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
+    public static final String LOCATION_FORMAT_FILE = "file"; //FIXME TODO 1242545435
+    public static final String LOCATION_FORMAT_VAR_FILE = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_FILE + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
+    public static final String LOCATION_FORMAT_LINE = "line"; //FIXME TODO 1242545435
+    public static final String LOCATION_FORMAT_VAR_LINE = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_LINE + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
     /**
-     * Value = [%2$s]%3$s%4$s: %1$s
+     * Value = "{@link #LOG_FORMAT_VAR_TIMESTAMP}{@link #LOG_FORMAT_VAR_THREAD}{@link #LOG_FORMAT_VAR_LOCATION}: {@link #LOG_FORMAT_VAR_OBJECT}"
      */
-    //public static final String DEFAULT_LOG_FORMAT = "[%2$s]%3$s%4$s: %1$s"; //FIXME TODO 1242545435
-    //public static final String DEFAULT_LOG_FORMAT = "[timestamp][thread][location]: [object]";
-    public static final String DEFAULT_LOG_FORMAT = "${timestamp}${thread}${location}: ${object}";
-    //public static final String DEFAULT_LOG_FORMAT = "[${timestamp}][${thread}][${location}]: ${object}";
+    public static final String DEFAULT_LOG_FORMAT = LOG_FORMAT_VAR_TIMESTAMP + LOG_FORMAT_VAR_THREAD + LOG_FORMAT_VAR_LOCATION + ": " + LOG_FORMAT_VAR_OBJECT;
     /**
-     * Value = %1$s.%2$s(%3$s:%4$s)
+     * Value = "{@link #LOCATION_FORMAT_VAR_CLASS}.{@link #LOCATION_FORMAT_VAR_METHOD}({@link #LOCATION_FORMAT_VAR_FILE}:{@link #LOCATION_FORMAT_VAR_LINE})"
      */
-    //public static final String DEFAULT_STACK_TRACE_ELEMENT_FORMAT = "%1$s.%2$s(%3$s:%4$s)";
-    public static final String DEFAULT_STACK_TRACE_ELEMENT_FORMAT = "${class}.${method}(${file}:${line})";
+    public static final String DEFAULT_LOCATION_FORMAT = LOCATION_FORMAT_VAR_CLASS + "." + LOCATION_FORMAT_VAR_METHOD + "(" + LOCATION_FORMAT_VAR_FILE + ":" + LOCATION_FORMAT_VAR_LINE + ")";
     
     protected TimeZone timeZone = TimeZone.getDefault();
     protected DateTimeFormatter dateTimeFormatter = DATE_TIME_FORMATTER_DEFAULT;
-    protected StringFormatter logFormatter = new StringFormatter(DEFAULT_LOG_FORMAT);
-    //protected String stackTraceElementFormat = DEFAULT_STACK_TRACE_ELEMENT_FORMAT;
-    protected StringFormatter stackTraceElementFormatter = new StringFormatter(DEFAULT_STACK_TRACE_ELEMENT_FORMAT);
+    protected String logFormat = DEFAULT_LOG_FORMAT;
+    protected StringUtil.StringMapLookup logStringMapLookup = new StringUtil.StringMapLookup();
+    protected StringSubstitutor logStringSubstitutor = new StringSubstitutor(logStringMapLookup);
+    protected String locationFormat = DEFAULT_LOCATION_FORMAT;
+    protected StringUtil.StringMapLookup locationStringMapLookup = new StringUtil.StringMapLookup();
+    protected StringSubstitutor locationStringSubstitutor = new StringSubstitutor(locationStringMapLookup);
     protected ToughBiFunction<Throwable, String, Boolean> errorHandler = null;
     
     public AdvancedLogger() {
-        logFormatter.setReplaceNotExistingTagsWithNames(false); //FIXME TODO 1242545435
+        //logFormatter.setReplaceNotExistingTagsWithNames(false); //FIXME TODO 1242545435
     }
     
     protected static final StackTraceElement cutStackTrace(StackTraceElement[] stackTraceElements) {
@@ -123,15 +139,9 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        //logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement)));
-        logFormatter.reset();
-        //logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logFormatter.setValue("thread", formatThread(thread));
-        logFormatter.setValue("location", formatStackTraceElement(stackTraceElement));
-        logFormatter.setValue("object", object);
-        logFinal(logFormatter);
-        //FIXME TODO 1242545435
+        setLogStringMapLookup(object, timestamp, thread, stackTraceElement);
+        //logFinal(logFormatter.toString()); //FIXME TODO 1242545435
+        logFinal(logStringSubstitutor.replace(logFormat));
     }
     
     @Override
@@ -191,15 +201,25 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        //logErrorFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement)), throwable);
+        setLogStringMapLookup(object, timestamp, thread, stackTraceElement);
+        //logErrorFinal(logFormatter.toString(), throwable); //FIXME TODO 1242545435
+        logErrorFinal(logStringSubstitutor.replace(logFormat), throwable);
+    }
+    
+    //FIXME TODO 1242545435 METHOD NAME
+    protected void setLogStringMapLookup(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
+        /*
         logFormatter.reset();
-        //logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logFormatter.setValue("thread", formatThread(thread));
-        logFormatter.setValue("location", formatStackTraceElement(stackTraceElement));
-        logFormatter.setValue("object", object);
-        logErrorFinal(logFormatter, throwable);
-        //FIXME TODO 1242545435
+        logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId()))); //FIXME TODO 1242545435
+        logFormatter.setValue("thread", formatThread(thread)); //FIXME TODO 1242545435
+        logFormatter.setValue("location", formatStackTraceElement(stackTraceElement)); //FIXME TODO 1242545435
+        logFormatter.setValue("object", object); //FIXME TODO 1242545435
+        */
+        //logStringMapLookup.clear(); //TODO necessary?
+        logStringMapLookup.put("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        logStringMapLookup.put("thread", formatThread(thread));
+        logStringMapLookup.put("location", formatStackTraceElement(stackTraceElement));
+        logStringMapLookup.put("object", "" + object);
     }
     
     @Override
@@ -228,14 +248,20 @@ public abstract class AdvancedLogger implements ILogger {
         if (stackTraceElement == null) {
             return "";
         }
-        //return String.format("[" + stackTraceElementFormat + "]", stackTraceElement.getClassName(), stackTraceElement.getMethodName(), stackTraceElement.getFileName(), stackTraceElement.getLineNumber());
-        stackTraceElementFormatter.reset();
-        stackTraceElementFormatter.setValue("class", stackTraceElement.getClassName());
-        stackTraceElementFormatter.setValue("method", stackTraceElement.getMethodName());
-        stackTraceElementFormatter.setValue("file", stackTraceElement.getFileName());
-        stackTraceElementFormatter.setValue("line", stackTraceElement.getLineNumber());
-        return "[" + stackTraceElementFormatter.toString() + "]";
-        //FIXME TODO 1242545435
+        /* //FIXME TODO 1242545435
+        locationFormatter.reset();
+        locationFormatter.setValue("class", stackTraceElement.getClassName()); //FIXME TODO 1242545435
+        locationFormatter.setValue("method", stackTraceElement.getMethodName()); //FIXME TODO 1242545435
+        locationFormatter.setValue("file", stackTraceElement.getFileName()); //FIXME TODO 1242545435
+        locationFormatter.setValue("line", stackTraceElement.getLineNumber()); //FIXME TODO 1242545435
+        return "[" + locationFormatter.toString() + "]";
+        */
+        //locationStringMapLookup.clear(); //TODO necessary?
+        locationStringMapLookup.put("class", stackTraceElement.getClassName());
+        locationStringMapLookup.put("method", stackTraceElement.getMethodName());
+        locationStringMapLookup.put("file", stackTraceElement.getFileName());
+        locationStringMapLookup.put("line", stackTraceElement.getLineNumber());
+        return "[" + locationStringSubstitutor.replace(locationFormat) + "]";
     }
     
     /**
@@ -285,60 +311,30 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     /**
-     * Sets the {@link java.lang.String} used to format the logged Message
+     * Gets the {@link de.codemakers.base.util.StringFormatter} used to format the logged Message
      * <br>
-     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOG_FORMAT}
+     * Default format for the {@link de.codemakers.base.util.StringFormatter} is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOG_FORMAT}
      *
-     * @return Log Message Format
+     * @return Formatter
      */
-    /*public final String getLogFormat() {
-        return logFormat;
-    }*///FIXME TODO 1242545435
+    /* //FIXME TODO 1242545435
     public final StringFormatter getLogFormatter() {
         return logFormatter;
     }
+    */
     
     /**
-     * Sets the {@link java.lang.String} used to format the logged Message
+     * Gets the {@link de.codemakers.base.util.StringFormatter} used to format the {@link java.lang.StackTraceElement}
      * <br>
-     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOG_FORMAT}
+     * Default format for the {@link de.codemakers.base.util.StringFormatter} is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOCATION_FORMAT}
      *
-     * @param logFormat Log Message Format
-     *
-     * @return A reference to this {@link de.codemakers.base.logger.AdvancedLogger} object
+     * @return Formatter
      */
-    /*public final AdvancedLogger setLogFormat(String logFormat) {
-        this.logFormat = logFormat;
-        return this;
-    }*///FIXME TODO 1242545435
-    
-    /**
-     * Sets the {@link java.lang.String} used to format the {@link java.lang.StackTraceElement}
-     * <br>
-     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_STACK_TRACE_ELEMENT_FORMAT}
-     *
-     * @return {@link java.lang.StackTraceElement} Format
-     */
-    /*public final String getStackTraceElementFormat() {
-        return stackTraceElementFormat;
-    }*///FIXME TODO 1242545435
-    public final StringFormatter getStackTraceElementFormatter() {
-        return stackTraceElementFormatter;
+    /* //FIXME TODO 1242545435
+    public final StringFormatter getLocationFormatter() {
+        return locationFormatter;
     }
-    
-    /**
-     * Sets the {@link java.lang.String} used to format the {@link java.lang.StackTraceElement}
-     * <br>
-     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_STACK_TRACE_ELEMENT_FORMAT}
-     *
-     * @param stackTraceElementFormat {@link java.lang.StackTraceElement} Format
-     *
-     * @return A reference to this {@link de.codemakers.base.logger.AdvancedLogger} object
-     */
-    /*public final AdvancedLogger setStackTraceElementFormat(String stackTraceElementFormat) {
-        this.stackTraceElementFormat = stackTraceElementFormat;
-        return this;
-    }*///FIXME TODO 1242545435
+    */
     
     /**
      * Gets the Error handler
