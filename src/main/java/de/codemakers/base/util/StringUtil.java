@@ -32,7 +32,7 @@ public class StringUtil {
         return !string.isEmpty();
     }
     
-    public static final int count(String string, String text) {
+    public static int count(String string, String text) {
         if (string == null) {
             return -1;
         }
@@ -47,7 +47,7 @@ public class StringUtil {
         return count;
     }
     
-    public static final String classToSimpleName(Class<?> clazz) {
+    public static String classToSimpleName(Class<?> clazz) {
         if (clazz == null) {
             return "" + null;
         }
@@ -58,6 +58,14 @@ public class StringUtil {
             }
         }
         return clazz.getSimpleName();
+    }
+    
+    public static String toString(Object object) {
+        return "" + object;
+    }
+    
+    public static String toStringOrDefault(Object object, String defaultValue) {
+        return object == null ? defaultValue : "" + object;
     }
     
 }
