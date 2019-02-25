@@ -16,6 +16,12 @@
 
 package de.codemakers.base.util;
 
+import org.apache.commons.text.lookup.StringLookup;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,6 +72,113 @@ public class StringUtil {
     
     public static String toStringOrDefault(Object object, String defaultValue) {
         return object == null ? defaultValue : "" + object;
+    }
+    
+    public static abstract class MapLookup<T> implements StringLookup {
+        
+        private final Map<T, Object> values;
+    
+        public MapLookup() {
+            this(new HashMap<>());
+        }
+        
+        public MapLookup(Map<T, Object> values) {
+            this.values = values;
+        }
+    
+        public int size() {
+            return values.size();
+        }
+        
+        public boolean isEmpty() {
+            return values.isEmpty();
+        }
+        
+        public boolean containsKey(T key) {
+            return values.containsKey(key);
+        }
+        
+        public boolean containsValue(Object value) {
+            return values.containsValue(value);
+        }
+        
+        public Object get(T key) {
+            return values.get(key);
+        }
+        
+        public Object put(T key, Object value) {
+            return values.put(key, value);
+        }
+        
+        public Object remove(T key) {
+            return values.remove(key);
+        }
+        
+        public void putAll(Map<? extends T, ?> m) {
+            values.putAll(m);
+        }
+        
+        public void clear() {
+            values.clear();
+        }
+        
+        public Set<T> keySet() {
+            return values.keySet();
+        }
+        
+        public Collection<Object> values() {
+            return values.values();
+        }
+        
+        public Set<Map.Entry<T, Object>> entrySet() {
+            return values.entrySet();
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            return values.equals(o);
+        }
+        
+        @Override
+        public int hashCode() {
+            return values.hashCode();
+        }
+        
+        protected abstract String toString(T t);
+        
+        protected abstract T fromString(String key);
+        
+        @Override
+        public String lookup(String key) {
+            return toStringOrDefault(get(fromString(key)), key);
+        }
+        
+        @Override
+        public String toString() {
+            return "MapLookup{" + "values=" + values + '}';
+        }
+        
+    }
+    
+    public static class StringMapLookup extends MapLookup<String> {
+    
+        public StringMapLookup() {
+        }
+    
+        public StringMapLookup(Map<String, Object> values) {
+            super(values);
+        }
+    
+        @Override
+        protected String toString(String string) {
+            return string;
+        }
+        
+        @Override
+        protected String fromString(String key) {
+            return key;
+        }
+        
     }
     
 }
