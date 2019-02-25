@@ -127,4 +127,30 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         return this;
     }
     
+    /**
+     * Gets the {@link java.lang.String} used to format the log Message
+     * <br>
+     * Default format is {@link de.codemakers.base.logger.AdvancedLeveledLogger#DEFAULT_LEVELED_LOG_FORMAT}
+     *
+     * @return Log format
+     */
+    @Override
+    public final String getLogFormat() {
+        return super.getLogFormat();
+    }
+    
+    /**
+     * Sets the {@link java.lang.String} used to format the log Message
+     * <br>
+     * Default format is {@link de.codemakers.base.logger.AdvancedLeveledLogger#DEFAULT_LEVELED_LOG_FORMAT}
+     *
+     * @param logFormat Log format
+     *
+     * @return A reference to this {@link de.codemakers.base.logger.AdvancedLeveledLogger} object
+     */
+    @Override
+    public AdvancedLeveledLogger setLogFormat(String logFormat) {
+        return (AdvancedLeveledLogger) super.setLogFormat(logFormat);
+    }
+    
 }

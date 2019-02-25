@@ -311,30 +311,54 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     /**
-     * Gets the {@link de.codemakers.base.util.StringFormatter} used to format the logged Message
+     * Gets the {@link java.lang.String} used to format the log Message
      * <br>
-     * Default format for the {@link de.codemakers.base.util.StringFormatter} is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOG_FORMAT}
+     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOG_FORMAT}
      *
-     * @return Formatter
+     * @return Log format
      */
-    /* //FIXME TODO 1242545435
-    public final StringFormatter getLogFormatter() {
-        return logFormatter;
+    public String getLogFormat() {
+        return logFormat;
     }
-    */
     
     /**
-     * Gets the {@link de.codemakers.base.util.StringFormatter} used to format the {@link java.lang.StackTraceElement}
+     * Sets the {@link java.lang.String} used to format the log Message
      * <br>
-     * Default format for the {@link de.codemakers.base.util.StringFormatter} is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOCATION_FORMAT}
+     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOG_FORMAT}
      *
-     * @return Formatter
+     * @param logFormat Log format
+     *
+     * @return A reference to this {@link de.codemakers.base.logger.AdvancedLogger} object
      */
-    /* //FIXME TODO 1242545435
-    public final StringFormatter getLocationFormatter() {
-        return locationFormatter;
+    public AdvancedLogger setLogFormat(String logFormat) {
+        this.logFormat = logFormat;
+        return this;
     }
-    */
+    
+    /**
+     * Gets the {@link java.lang.String} used to format the {@link java.lang.StackTraceElement}
+     * <br>
+     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOCATION_FORMAT}
+     *
+     * @return Location format
+     */
+    public final String getLocationFormat() {
+        return locationFormat;
+    }
+    
+    /**
+     * Sets the {@link java.lang.String} used to format the {@link java.lang.StackTraceElement}
+     * <br>
+     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOCATION_FORMAT}
+     *
+     * @param locationFormat Location format
+     *
+     * @return A reference to this {@link de.codemakers.base.logger.AdvancedLogger} object
+     */
+    public AdvancedLogger setLocationFormat(String locationFormat) {
+        this.locationFormat = locationFormat;
+        return this;
+    }
     
     /**
      * Gets the Error handler
