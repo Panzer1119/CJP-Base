@@ -16,26 +16,25 @@
 
 package de.codemakers.base.util;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class StringFormatter {
     
     public static final char FORMAT_ESCAPE_CHARACTER = '\\';
-    public static final char FORMAT_TAG_START_CHARACTER = '[';
-    public static final char FORMAT_TAG_END_CHARACTER = ']';
-    
-    protected final String formatString;
+    public static final char FORMAT_TAG_START_CHARACTER_1 = '$';
+    public static final char FORMAT_TAG_START_CHARACTER_2 = '{';
+    public static final char FORMAT_TAG_END_CHARACTER = '}';
     protected final List<Object> format = new CopyOnWriteArrayList<>();
-    protected final Map<String, Object> values = new ConcurrentHashMap<>();
+    protected final Map<String, Object> values = new HashMap<>();
+    protected String formatString;
     protected boolean replaceNotExistingTagsWithNames = true;
     
     public StringFormatter(String formatString) {
-        this.formatString = formatString;
-        init();
+        setFormatString(formatString);
     }
     
     private void init() {
@@ -48,17 +47,21 @@ public class StringFormatter {
             if (c == FORMAT_ESCAPE_CHARACTER) {
                 temp += chars[++i];
             } else if (last == null) {
-                if (c == FORMAT_TAG_START_CHARACTER) {
-                    format.add(temp);
-                    temp = "";
-                    last = "";
+                if (c == FORMAT_TAG_START_CHARACTER_1 && i < chars.length - 1) {
+                    if (chars[++i] == FORMAT_TAG_START_CHARACTER_2) {
+                        format.add(temp);
+                        temp = "";
+                        last = "";
+                    } else {
+                        temp += chars[--i];
+                    }
                 } else if (c == FORMAT_TAG_END_CHARACTER) {
                     throw new IllegalArgumentException("Tag not started");
                 } else {
                     temp += chars[i];
                 }
             } else if (last != null) {
-                if (c == FORMAT_TAG_START_CHARACTER) {
+                if (c == FORMAT_TAG_START_CHARACTER_1 && i < chars.length - 1 && chars[i + 1] == FORMAT_TAG_START_CHARACTER_2) {
                     throw new IllegalArgumentException("Tag already started");
                 } else if (c == FORMAT_TAG_END_CHARACTER) {
                     format.add(new Tag(last));
@@ -89,7 +92,7 @@ public class StringFormatter {
         return format.stream().map((object) -> {
             if (object instanceof Tag) {
                 final Tag tag = (Tag) object;
-                return FORMAT_TAG_START_CHARACTER + tag.getName() + FORMAT_TAG_END_CHARACTER;
+                return tag.toFullyString();
             } else {
                 return "" + object;
             }
@@ -98,6 +101,12 @@ public class StringFormatter {
     
     public String getFormatString() {
         return formatString;
+    }
+    
+    public StringFormatter setFormatString(String formatString) {
+        this.formatString = formatString;
+        init();
+        return this;
     }
     
     public List<Object> getFormat() {
@@ -127,7 +136,7 @@ public class StringFormatter {
     
     protected String getValueForTag(Tag tag) {
         if (replaceNotExistingTagsWithNames) {
-            return "" + values.getOrDefault(tag.getName(), FORMAT_TAG_START_CHARACTER + tag.getName() + FORMAT_TAG_END_CHARACTER);
+            return "" + values.getOrDefault(tag.getName(), tag.toFullyString());
         } else {
             return "" + values.getOrDefault(tag.getName(), "");
         }
@@ -157,6 +166,10 @@ public class StringFormatter {
         
         public String getName() {
             return name;
+        }
+        
+        public String toFullyString() {
+            return "" + FORMAT_TAG_START_CHARACTER_1 + FORMAT_TAG_START_CHARACTER_2 + name + FORMAT_TAG_END_CHARACTER;
         }
         
         @Override
