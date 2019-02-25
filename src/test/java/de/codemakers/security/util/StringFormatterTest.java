@@ -24,10 +24,11 @@ import java.time.LocalTime;
 
 public class StringFormatterTest {
     
-    public static final String FORMAT_1 = "Dies ist ein Test am [datum] um [uhrzeit]. Wir sind in [land].";
+    public static final String FORMAT_1 = "Dies ist ein Test am $${datum}$ um ${uhrzeit}. Wir sind in ${land}.";
     
     public static final void main(String[] args) throws Exception {
-        Logger.DEFAULT_ADVANCED_LEVELED_LOGGER.setLogFormat("%1$s");
+        //Logger.DEFAULT_ADVANCED_LEVELED_LOGGER.setLogFormat("%1$s");
+        //Logger.DEFAULT_ADVANCED_LEVELED_LOGGER.getLogFormatter().setFormatString("[${thread}][${loglevel}][${location}]: ${object}");
         Logger.log("FORMAT_1=" + FORMAT_1);
         final StringFormatter stringFormatter_1 = new StringFormatter(FORMAT_1);
         Logger.log("stringFormatter_1.getTags()=" + stringFormatter_1.getTags());

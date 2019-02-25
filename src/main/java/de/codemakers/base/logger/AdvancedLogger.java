@@ -18,6 +18,7 @@ package de.codemakers.base.logger;
 
 import de.codemakers.base.CJP;
 import de.codemakers.base.util.ArrayUtil;
+import de.codemakers.base.util.StringFormatter;
 import de.codemakers.base.util.tough.ToughBiFunction;
 
 import java.time.Instant;
@@ -41,7 +42,10 @@ public abstract class AdvancedLogger implements ILogger {
     /**
      * Value = [%2$s]%3$s%4$s: %1$s
      */
-    public static final String DEFAULT_LOG_FORMAT = "[%2$s]%3$s%4$s: %1$s";
+    //public static final String DEFAULT_LOG_FORMAT = "[%2$s]%3$s%4$s: %1$s"; //FIXME TODO 1242545435
+    //public static final String DEFAULT_LOG_FORMAT = "[timestamp][thread][location]: [object]";
+    //public static final String DEFAULT_LOG_FORMAT = "${timestamp}${thread}${location}: ${object}";
+    public static final String DEFAULT_LOG_FORMAT = "[${timestamp}][${thread}][${location}]: ${object}";
     /**
      * Value = %1$s.%2$s(%3$s:%4$s)
      */
@@ -49,9 +53,14 @@ public abstract class AdvancedLogger implements ILogger {
     
     protected TimeZone timeZone = TimeZone.getDefault();
     protected DateTimeFormatter dateTimeFormatter = DEFAULT_DATE_TIME_FORMATTER;
-    protected String logFormat = DEFAULT_LOG_FORMAT;
+    //protected String logFormat = DEFAULT_LOG_FORMAT; //FIXME TODO 1242545435
+    protected StringFormatter logFormatter = new StringFormatter(DEFAULT_LOG_FORMAT);
     protected String stackTraceElementFormat = DEFAULT_STACK_TRACE_ELEMENT_FORMAT;
     protected ToughBiFunction<Throwable, String, Boolean> errorHandler = null;
+    
+    public AdvancedLogger() {
+        logFormatter.setReplaceNotExistingTagsWithNames(false); //FIXME TODO 1242545435
+    }
     
     protected static final StackTraceElement cutStackTrace(StackTraceElement[] stackTraceElements) {
         if (stackTraceElements == null || stackTraceElements.length == 0) {
@@ -108,7 +117,14 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement)));
+        //logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement)));
+        logFormatter.reset();
+        logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        logFormatter.setValue("thread", formatThread(thread));
+        logFormatter.setValue("location", formatStackTraceElement(stackTraceElement));
+        logFormatter.setValue("object", object);
+        logFinal(logFormatter);
+        //FIXME TODO 1242545435
     }
     
     @Override
@@ -168,7 +184,14 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logErrorFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement)), throwable);
+        //logErrorFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement)), throwable);
+        logFormatter.reset();
+        logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        logFormatter.setValue("thread", formatThread(thread));
+        logFormatter.setValue("location", formatStackTraceElement(stackTraceElement));
+        logFormatter.setValue("object", object);
+        logErrorFinal(logFormatter, throwable);
+        //FIXME TODO 1242545435
     }
     
     @Override
@@ -249,8 +272,11 @@ public abstract class AdvancedLogger implements ILogger {
      *
      * @return Log Message Format
      */
-    public final String getLogFormat() {
+    /*public final String getLogFormat() {
         return logFormat;
+    }*///FIXME TODO 1242545435
+    public final StringFormatter getLogFormatter() {
+        return logFormatter;
     }
     
     /**
@@ -262,10 +288,10 @@ public abstract class AdvancedLogger implements ILogger {
      *
      * @return A reference to this {@link de.codemakers.base.logger.AdvancedLogger} object
      */
-    public final AdvancedLogger setLogFormat(String logFormat) {
+    /*public final AdvancedLogger setLogFormat(String logFormat) {
         this.logFormat = logFormat;
         return this;
-    }
+    }*///FIXME TODO 1242545435
     
     /**
      * Sets the {@link java.lang.String} used to format the {@link java.lang.StackTraceElement}
