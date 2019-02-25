@@ -18,6 +18,8 @@ package de.codemakers.security.util;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.StringFormatter;
+import de.codemakers.base.util.StringUtil;
+import org.apache.commons.text.StringSubstitutor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -42,6 +44,13 @@ public class StringFormatterTest {
         Logger.log("stringFormatter_1.toString()=" + stringFormatter_1.toString());
         Logger.log("stringFormatter_1=" + stringFormatter_1);
         Logger.log("stringFormatter_1.getValues()=" + stringFormatter_1.getValues());
+        final StringUtil.StringMapLookup stringMapLookup_1 = new StringUtil.StringMapLookup();
+        System.out.println("stringMapLookup_1=" + stringMapLookup_1);
+        stringMapLookup_1.put("test_1", "Test 1");
+        StringSubstitutor stringSubstitutor = new StringSubstitutor(stringMapLookup_1);
+        System.out.println(stringSubstitutor.replace("Test 1: \"${test_1}\", Test2: \"${test_2}\""));
+        stringMapLookup_1.put("test_2", "Test 2");
+        System.out.println(stringSubstitutor.replace("Test 1: \"${test_1}\", Test2: \"${test_2}\""));
     }
     
 }
