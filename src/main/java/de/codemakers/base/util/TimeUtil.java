@@ -17,9 +17,16 @@
 package de.codemakers.base.util;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class TimeUtil {
+    
+    public static final DateTimeFormatter ISO_TIME_FIXED_LENGTH = DateTimeFormatter.ofPattern("HH:mm:ss.SSSZ");
+    public static final DateTimeFormatter ISO_LOCAL_DATE_TIME_FIXED_LENGTH = new DateTimeFormatterBuilder().parseCaseInsensitive().append(DateTimeFormatter.ISO_LOCAL_DATE).appendLiteral('T').append(ISO_TIME_FIXED_LENGTH).toFormatter(Locale.getDefault());
+    public static final DateTimeFormatter ISO_OFFSET_DATE_TIME_FIXED_LENGTH = new DateTimeFormatterBuilder().parseCaseInsensitive().append(ISO_LOCAL_DATE_TIME_FIXED_LENGTH).appendOffsetId().toFormatter(Locale.getDefault());
     
     public static long getTimeFloored(long timestamp, long every, TimeUnit unit) {
         return getTimeFloored(Instant.ofEpochMilli(timestamp), every, unit).toEpochMilli();
