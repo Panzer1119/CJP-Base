@@ -26,8 +26,8 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
      */
     //public static final String DEFAULT_LEVELED_LOG_FORMAT = "[%2$s]%3$s%4$s%5$s: %1$s"; //FIXME TODO 1242545435
     //public static final String DEFAULT_LEVELED_LOG_FORMAT = "[timestamp][thread][location][loglevel]: [object]";
-    //public static final String DEFAULT_LEVELED_LOG_FORMAT = "${timestamp}${thread}${location}${loglevel}: ${object}";
-    public static final String DEFAULT_LEVELED_LOG_FORMAT = "[${timestamp}][${thread}][${location}][${loglevel}]: ${object}";
+    public static final String DEFAULT_LEVELED_LOG_FORMAT = "${timestamp}${thread}${location}${loglevel}: ${object}";
+    //public static final String DEFAULT_LEVELED_LOG_FORMAT = "[${timestamp}][${thread}][${location}][${loglevel}]: ${object}";
     
     protected LogLevel minimumLogLevel = LogLevel.INFO;
     
@@ -65,7 +65,8 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         }
         //logFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)));
         logFormatter.reset();
-        logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        //logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
         logFormatter.setValue("thread", formatThread(thread));
         logFormatter.setValue("location", formatStackTraceElement(stackTraceElement));
         logFormatter.setValue("loglevel", formatLogLevel(logLevel));
@@ -103,7 +104,8 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         }
         //logErrorFinal(String.format(logFormat, object, dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())), formatThread(thread), formatStackTraceElement(stackTraceElement), formatLogLevel(logLevel)), throwable);
         logFormatter.reset();
-        logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        //logFormatter.setValue("timestamp", dateTimeFormatter.format(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
         logFormatter.setValue("thread", formatThread(thread));
         logFormatter.setValue("location", formatStackTraceElement(stackTraceElement));
         logFormatter.setValue("loglevel", formatLogLevel(logLevel));
