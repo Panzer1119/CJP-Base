@@ -216,6 +216,7 @@ public abstract class AdvancedLogger implements ILogger {
         logFormatter.setValue("object", object); //FIXME TODO 1242545435
         */
         //logStringMapLookup.clear(); //TODO necessary?
+        //FIXME einfach jedes Mal eine neue Map erstellen, weil das dann Thread sicher ist
         logStringMapLookup.put("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
         logStringMapLookup.put("thread", formatThread(thread));
         logStringMapLookup.put("location", formatStackTraceElement(stackTraceElement));
