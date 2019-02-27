@@ -16,10 +16,18 @@
 
 package de.codemakers.base.logger;
 
+import org.apache.commons.text.StringSubstitutor;
+
 public class LoggerTest {
     
     public static final void main(String[] args) {
-        Logger.DEFAULT_ADVANCED_LEVELED_LOGGER.setLogFormat(AdvancedLogger.LOG_FORMAT_VAR_TIMESTAMP + AdvancedLogger.LOG_FORMAT_VAR_THREAD + AdvancedLeveledLogger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + AdvancedLogger.LOG_FORMAT_VAR_OBJECT + "\n" + AdvancedLogger.LOG_FORMAT_VAR_LOCATION);
+        Logger.getDefaultAdvancedLeveledLogger().setLogFormat(AdvancedLogger.LOG_FORMAT_VAR_TIMESTAMP + AdvancedLeveledLogger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + AdvancedLogger.LOG_FORMAT_VAR_OBJECT + "\n" + AdvancedLogger.LOG_FORMAT_VAR_THREAD + " " + AdvancedLogger.LOG_FORMAT_VAR_LOCATION);
+        Logger.getDefaultAdvancedLeveledLogger().setLocationFormatter(((stackTraceElement, advancedLogger) -> {
+            if (stackTraceElement == null) {
+                return "";
+            }
+            return StringSubstitutor.replace(advancedLogger.locationFormat, advancedLogger.createValueMap(stackTraceElement));
+        }));
         Logger.log("Test");
         for (int i = 0; i < 100; i++) {
             Logger.log("i=" + i);

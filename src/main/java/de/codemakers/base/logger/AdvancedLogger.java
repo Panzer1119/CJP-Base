@@ -79,12 +79,7 @@ public abstract class AdvancedLogger implements ILogger {
         if (stackTraceElement == null) {
             return "";
         }
-        final Map<String, Object> map = new HashMap<>();
-        map.put(LOCATION_FORMAT_CLASS, stackTraceElement.getClassName());
-        map.put(LOCATION_FORMAT_METHOD, stackTraceElement.getMethodName());
-        map.put(LOCATION_FORMAT_FILE, stackTraceElement.getFileName());
-        map.put(LOCATION_FORMAT_LINE, stackTraceElement.getLineNumber());
-        return "[" + StringSubstitutor.replace(advancedLogger.locationFormat, map) + "]";
+        return "[" + StringSubstitutor.replace(advancedLogger.locationFormat, advancedLogger.createValueMap(stackTraceElement)) + "]";
     };
     public static final ToughBiFunction<Object, AdvancedLogger, String> DEFAULT_OBJECT_FORMATTER = (object, advancedLogger) -> "" + object;
     
@@ -222,6 +217,15 @@ public abstract class AdvancedLogger implements ILogger {
         map.put(LOG_FORMAT_THREAD, formatThread(thread));
         map.put(LOG_FORMAT_LOCATION, formatStackTraceElement(stackTraceElement));
         map.put(LOG_FORMAT_OBJECT, formatObject(object));
+        return map;
+    }
+    
+    protected Map<String, Object> createValueMap(StackTraceElement stackTraceElement) {
+        final Map<String, Object> map = new HashMap<>();
+        map.put(LOCATION_FORMAT_CLASS, stackTraceElement.getClassName());
+        map.put(LOCATION_FORMAT_METHOD, stackTraceElement.getMethodName());
+        map.put(LOCATION_FORMAT_FILE, stackTraceElement.getFileName());
+        map.put(LOCATION_FORMAT_LINE, stackTraceElement.getLineNumber());
         return map;
     }
     
