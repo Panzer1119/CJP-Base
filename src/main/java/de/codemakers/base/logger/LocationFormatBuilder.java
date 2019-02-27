@@ -16,13 +16,15 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.util.StringUtil;
+import de.codemakers.base.util.interfaces.Finishable;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class LocationFormatBuilder {
+public class LocationFormatBuilder implements Finishable<String> {
     
     protected String format;
     protected boolean checkAndCorrectAppendedText = true;
@@ -94,6 +96,11 @@ public class LocationFormatBuilder {
     @Override
     public String toString() {
         return "LocationFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
+    }
+    
+    @Override
+    public String finish() throws Exception {
+        throw new NotImplementedRuntimeException();
     }
     
 }

@@ -16,15 +16,17 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.util.StringUtil;
 import de.codemakers.base.util.TimeUtil;
+import de.codemakers.base.util.interfaces.Finishable;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LogFormatBuilder {
+public class LogFormatBuilder implements Finishable<String> {
     
     protected String format;
     protected boolean checkAndCorrectAppendedText = true;
@@ -105,6 +107,11 @@ public class LogFormatBuilder {
     @Override
     public String toString() {
         return "LogFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
+    }
+    
+    @Override
+    public String finish() throws Exception {
+        throw new NotImplementedRuntimeException();
     }
     
 }
