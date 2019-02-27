@@ -320,6 +320,24 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     /**
+     * Creates a {@link de.codemakers.base.logger.LogFormatBuilder} which is linked to this {@link de.codemakers.base.logger.AdvancedLogger}
+     * <br>
+     * The {@link de.codemakers.base.logger.LogFormatBuilder} is empty when created, but when you call {@link de.codemakers.base.logger.LogFormatBuilder#finish()} (or {@link de.codemakers.base.logger.LogFormatBuilder#finishWithoutException()})
+     * the {@link de.codemakers.base.logger.LogFormatBuilder} will set the new created format as the new log format in this {@link de.codemakers.base.logger.AdvancedLogger}
+     *
+     * @return {@link de.codemakers.base.logger.LogFormatBuilder} linked to this {@link de.codemakers.base.logger.AdvancedLogger}
+     */
+    public LogFormatBuilder createLogFormatBuilder() {
+        return new LogFormatBuilder() {
+            @Override
+            public String finish() throws Exception {
+                setLogFormat(toFormat());
+                return toFormat();
+            }
+        };
+    }
+    
+    /**
      * Gets the {@link java.lang.String} used to format the {@link java.lang.StackTraceElement}
      * <br>
      * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOCATION_FORMAT}
@@ -342,6 +360,24 @@ public abstract class AdvancedLogger implements ILogger {
     public AdvancedLogger setLocationFormat(String locationFormat) {
         this.locationFormat = Objects.requireNonNull(locationFormat, "locationFormat");
         return this;
+    }
+    
+    /**
+     * Creates a {@link de.codemakers.base.logger.LocationFormatBuilder} which is linked to this {@link de.codemakers.base.logger.AdvancedLogger}
+     * <br>
+     * The {@link de.codemakers.base.logger.LocationFormatBuilder} is empty when created, but when you call {@link de.codemakers.base.logger.LocationFormatBuilder#finish()} (or {@link de.codemakers.base.logger.LocationFormatBuilder#finishWithoutException()})
+     * the {@link de.codemakers.base.logger.LocationFormatBuilder} will set the new created format as the new location format in this {@link de.codemakers.base.logger.AdvancedLogger}
+     *
+     * @return {@link de.codemakers.base.logger.LocationFormatBuilder} linked to this {@link de.codemakers.base.logger.AdvancedLogger}
+     */
+    public LocationFormatBuilder createLocationFormatBuilder() {
+        return new LocationFormatBuilder() {
+            @Override
+            public String finish() throws Exception {
+                setLocationFormat(toFormat());
+                return toFormat();
+            }
+        };
     }
     
     /**

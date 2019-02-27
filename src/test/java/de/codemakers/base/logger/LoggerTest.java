@@ -71,6 +71,8 @@ public class LoggerTest {
         });
         Logger.log("StringUtil.STRING_SUBSTITUTOR_TO_REPLACE =" + StringUtil.STRING_SUBSTITUTOR_TO_REPLACE);
         Logger.log("StringUtil.STRING_SUBSTITUTOR_REPLACEMENT=" + StringUtil.STRING_SUBSTITUTOR_REPLACEMENT);
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendText("NEW LOG FORMAT___").appendTimestamp().appendText(": ").appendObject().finishWithoutException();
+        Logger.log("Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder() Test");
     }
     
 }
