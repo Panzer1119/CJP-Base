@@ -26,6 +26,8 @@ import org.apache.commons.text.StringSubstitutor;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -74,10 +76,10 @@ public abstract class AdvancedLogger implements ILogger {
     protected DateTimeFormatter dateTimeFormatter = DATE_TIME_FORMATTER_DEFAULT;
     protected String logFormat = DEFAULT_LOG_FORMAT;
     protected StringUtil.StringMapLookup logStringMapLookup = new StringUtil.StringMapLookup();
-    protected StringSubstitutor logStringSubstitutor = new StringSubstitutor(logStringMapLookup);
+    //protected StringSubstitutor logStringSubstitutor = new StringSubstitutor(logStringMapLookup); //FIXME TODO 1242545435
     protected String locationFormat = DEFAULT_LOCATION_FORMAT;
     protected StringUtil.StringMapLookup locationStringMapLookup = new StringUtil.StringMapLookup();
-    protected StringSubstitutor locationStringSubstitutor = new StringSubstitutor(locationStringMapLookup);
+    //protected StringSubstitutor locationStringSubstitutor = new StringSubstitutor(locationStringMapLookup); //FIXME TODO 1242545435
     protected ToughBiFunction<Throwable, String, Boolean> errorHandler = null;
     
     public AdvancedLogger() {
@@ -139,9 +141,9 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        setLogStringMapLookup(object, timestamp, thread, stackTraceElement);
+        //setLogStringMapLookup(object, timestamp, thread, stackTraceElement);
         //logFinal(logFormatter.toString()); //FIXME TODO 1242545435
-        logFinal(logStringSubstitutor.replace(logFormat));
+        logFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement)));
     }
     
     @Override
@@ -201,13 +203,13 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        setLogStringMapLookup(object, timestamp, thread, stackTraceElement);
+        //setLogStringMapLookup(object, timestamp, thread, stackTraceElement);
         //logErrorFinal(logFormatter.toString(), throwable); //FIXME TODO 1242545435
-        logErrorFinal(logStringSubstitutor.replace(logFormat), throwable);
+        logErrorFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement)), throwable);
     }
     
     //FIXME TODO 1242545435 METHOD NAME
-    protected void setLogStringMapLookup(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
+    protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
         /*
         logFormatter.reset();
         logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId()))); //FIXME TODO 1242545435
@@ -216,11 +218,21 @@ public abstract class AdvancedLogger implements ILogger {
         logFormatter.setValue("object", object); //FIXME TODO 1242545435
         */
         //logStringMapLookup.clear(); //TODO necessary?
-        //FIXME einfach jedes Mal eine neue Map erstellen, weil das dann Thread sicher ist
+        //
+        //FIXME einfach jedes Mal eine neue Map erstellen, weil das dann Thread sicher ist //NE ?! //DOCH!
+        final Map<String, Object> map = new HashMap<>();
+        map.put(LOG_FORMAT_TIMESTAMP, formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        map.put(LOG_FORMAT_THREAD, formatThread(thread));
+        map.put(LOG_FORMAT_LOCATION, formatStackTraceElement(stackTraceElement));
+        map.put(LOG_FORMAT_OBJECT, formatObject(object));
+        /*
+        logStringSubstitutor.setVariableResolver(new StringUtil.StringMapLookup(map));
         logStringMapLookup.put("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
         logStringMapLookup.put("thread", formatThread(thread));
         logStringMapLookup.put("location", formatStackTraceElement(stackTraceElement));
         logStringMapLookup.put("object", "" + object);
+        */
+        return map;
     }
     
     @Override
@@ -235,6 +247,9 @@ public abstract class AdvancedLogger implements ILogger {
     protected abstract void logErrorFinal(Object object, Throwable throwable);
     
     protected String formatTimestamp(ZonedDateTime zonedDateTime) {
+        if (zonedDateTime == null) {
+            return "";
+        }
         return "[" + dateTimeFormatter.format(zonedDateTime) + "]";
     }
     
@@ -258,11 +273,23 @@ public abstract class AdvancedLogger implements ILogger {
         return "[" + locationFormatter.toString() + "]";
         */
         //locationStringMapLookup.clear(); //TODO necessary?
+        /*
         locationStringMapLookup.put("class", stackTraceElement.getClassName());
         locationStringMapLookup.put("method", stackTraceElement.getMethodName());
         locationStringMapLookup.put("file", stackTraceElement.getFileName());
         locationStringMapLookup.put("line", stackTraceElement.getLineNumber());
-        return "[" + locationStringSubstitutor.replace(locationFormat) + "]";
+        */
+        //return "[" + locationStringSubstitutor.replace(locationFormat) + "]";
+        final Map<String, Object> map = new HashMap<>();
+        map.put(LOCATION_FORMAT_CLASS, stackTraceElement.getClassName());
+        map.put(LOCATION_FORMAT_METHOD, stackTraceElement.getMethodName());
+        map.put(LOCATION_FORMAT_FILE, stackTraceElement.getFileName());
+        map.put(LOCATION_FORMAT_LINE, stackTraceElement.getLineNumber());
+        return "[" + StringSubstitutor.replace(locationFormat, map) + "]";
+    }
+    
+    protected String formatObject(Object object) {
+        return "" + object;
     }
     
     /**

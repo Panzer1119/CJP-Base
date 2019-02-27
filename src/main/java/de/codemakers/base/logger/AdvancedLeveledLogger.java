@@ -19,6 +19,7 @@ package de.codemakers.base.logger;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.time.Instant;
+import java.util.Map;
 
 public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
@@ -60,11 +61,10 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        if (!setLogStringMapLookup(object, timestamp, thread, stackTraceElement, logLevel)) {
+        if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
-        //logFinal(logFormatter.toString()); //FIXME TODO 1242545435
-        logFinal(logStringSubstitutor.replace(logFormat));
+        logFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement, logLevel)));
     }
     
     @Override
@@ -91,21 +91,17 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        if (!setLogStringMapLookup(object, timestamp, thread, stackTraceElement, logLevel)) {
+        if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
         //logErrorFinal(logFormatter.toString(), throwable); //FIXME TODO 1242545435
-        logErrorFinal(logStringSubstitutor.replace(logFormat), throwable);
+        logErrorFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement, logLevel)), throwable);
     }
     
-    protected boolean setLogStringMapLookup(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
-        if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
-            return false;
-        }
-        setLogStringMapLookup(object, timestamp, thread, stackTraceElement);
-        //logFormatter.setValue("loglevel", formatLogLevel(logLevel)); //FIXME TODO 1242545435
-        logStringMapLookup.put("loglevel", formatLogLevel(logLevel));
-        return true;
+    protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
+        final Map<String, Object> map = createValueMap(object, timestamp, thread, stackTraceElement);
+        map.put(LOG_FORMAT_LOG_LEVEL, formatLogLevel(logLevel));
+        return map;
     }
     
     protected String formatLogLevel(LogLevel logLevel) {
