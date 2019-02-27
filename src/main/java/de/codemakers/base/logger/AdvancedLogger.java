@@ -217,29 +217,11 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
-        //FIXME Clean this
-        /*
-        logFormatter.reset();
-        logFormatter.setValue("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId()))); //FIXME TODO 1242545435
-        logFormatter.setValue("thread", formatThread(thread)); //FIXME TODO 1242545435
-        logFormatter.setValue("location", formatStackTraceElement(stackTraceElement)); //FIXME TODO 1242545435
-        logFormatter.setValue("object", object); //FIXME TODO 1242545435
-        */
-        //logStringMapLookup.clear(); //TODO necessary?
-        //
-        //FIXME einfach jedes Mal eine neue Map erstellen, weil das dann Thread sicher ist //NE ?! //DOCH!
         final Map<String, Object> map = new HashMap<>();
         map.put(LOG_FORMAT_TIMESTAMP, formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
         map.put(LOG_FORMAT_THREAD, formatThread(thread));
         map.put(LOG_FORMAT_LOCATION, formatStackTraceElement(stackTraceElement));
         map.put(LOG_FORMAT_OBJECT, formatObject(object));
-        /*
-        logStringSubstitutor.setVariableResolver(new StringUtil.StringMapLookup(map));
-        logStringMapLookup.put("timestamp", formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        logStringMapLookup.put("thread", formatThread(thread));
-        logStringMapLookup.put("location", formatStackTraceElement(stackTraceElement));
-        logStringMapLookup.put("object", "" + object);
-        */
         return map;
     }
     
