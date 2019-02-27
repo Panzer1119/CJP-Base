@@ -43,6 +43,17 @@ public class LoggerTest {
         Logger.log("LogLevel.MAXIMUM_NAME_LENGTH=" + LogLevel.MAXIMUM_NAME_LENGTH);
         Logger.log("LogLevel.MINIMUM_LEVEL=" + LogLevel.MINIMUM_LEVEL);
         Logger.log("LogLevel.MAXIMUM_LEVEL=" + LogLevel.MAXIMUM_LEVEL);
+        final LogFormatBuilder logFormatBuilder = new LogFormatBuilder();
+        Logger.log("logFormatBuilder=" + logFormatBuilder);
+        logFormatBuilder.appendTimestamp().appendLogLevel().appendText(": ").appendObject().appendText("\n").appendThread().appendLogLevel().appendText(" ").appendLocation();
+        Logger.log("logFormatBuilder=" + logFormatBuilder);
+        final LocationFormatBuilder locationFormatBuilder = new LocationFormatBuilder();
+        Logger.log("locationFormatBuilder=" + locationFormatBuilder);
+        locationFormatBuilder.appendClassName().appendText(".").appendMethodName().appendText("(").appendFileName().appendText(":").appendLineNumber().appendText(")");
+        Logger.log("locationFormatBuilder=" + locationFormatBuilder);
+        Logger.getDefaultAdvancedLeveledLogger().setLogFormat(logFormatBuilder.toFormat());
+        Logger.getDefaultAdvancedLeveledLogger().setLocationFormat(locationFormatBuilder.toFormat());
+        Logger.log("Test 2");
     }
     
 }
