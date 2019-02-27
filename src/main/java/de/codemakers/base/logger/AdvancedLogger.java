@@ -236,7 +236,7 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     protected String formatObject(Object object) {
-        return objectFormatter.applyWithoutException(object, this);
+        return objectFormatter.applyWithoutException(object, this).replaceAll("([^\\$]\\$)\\{", "$1\\${"); //TODO Use static variables from StringSubstitutor
     }
     
     /**
