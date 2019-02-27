@@ -16,24 +16,27 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.util.tough.ToughBiFunction;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
-    public static final String LOG_FORMAT_LOG_LEVEL = "loglevel"; //FIXME TODO 1242545435
-    public static final String LOG_FORMAT_VAR_LOG_LEVEL = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOG_LEVEL + StringSubstitutor.DEFAULT_VAR_END; //FIXME TODO 1242545435
+    public static final String LOG_FORMAT_LOG_LEVEL = "loglevel";
+    public static final String LOG_FORMAT_VAR_LOG_LEVEL = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOG_LEVEL + StringSubstitutor.DEFAULT_VAR_END;
     /**
      * Value = "{@link #LOG_FORMAT_VAR_TIMESTAMP}{@link #LOG_FORMAT_VAR_THREAD}{@link #LOG_FORMAT_VAR_LOCATION}{@link #LOG_FORMAT_VAR_LOG_LEVEL}: {@link #LOG_FORMAT_VAR_OBJECT}"
      */
     public static final String DEFAULT_LEVELED_LOG_FORMAT = LOG_FORMAT_VAR_TIMESTAMP + LOG_FORMAT_VAR_THREAD + LOG_FORMAT_VAR_LOCATION + LOG_FORMAT_VAR_LOG_LEVEL + ": " + LOG_FORMAT_VAR_OBJECT;
+    public static final ToughBiFunction<LogLevel, AdvancedLogger, String> DEFAULT_LOG_LEVEL_FORMATTER = (logLevel, advancedLogger) -> logLevel == null ? "" : "[" + logLevel.getNameMid() + "]";
     
     protected LogLevel minimumLogLevel = LogLevel.INFO;
+    protected ToughBiFunction<LogLevel, AdvancedLogger, String> logLevelFormatter = DEFAULT_LOG_LEVEL_FORMATTER;
     
     public AdvancedLeveledLogger() {
-        //logFormatter.setFormatString(DEFAULT_LEVELED_LOG_FORMAT); //FIXME TODO 1242545435
         this.logFormat = DEFAULT_LEVELED_LOG_FORMAT;
     }
     
@@ -94,7 +97,6 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
-        //logErrorFinal(logFormatter.toString(), throwable); //FIXME TODO 1242545435
         logErrorFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement, logLevel)), throwable);
     }
     
@@ -105,10 +107,7 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     }
     
     protected String formatLogLevel(LogLevel logLevel) {
-        if (logLevel == null) {
-            return "";
-        }
-        return "[" + logLevel + "]";
+        return logLevelFormatter.applyWithoutException(logLevel, this);
     }
     
     public LogLevel getMinimumLogLevel() {
@@ -120,6 +119,15 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
             minimumLogLevel = LogLevel.INFO;
         }
         this.minimumLogLevel = minimumLogLevel;
+        return this;
+    }
+    
+    public ToughBiFunction<LogLevel, AdvancedLogger, String> getLogLevelFormatter() {
+        return logLevelFormatter;
+    }
+    
+    public AdvancedLeveledLogger setLogLevelFormatter(ToughBiFunction<LogLevel, AdvancedLogger, String> logLevelFormatter) {
+        this.logLevelFormatter = Objects.requireNonNull(logLevelFormatter, "logLevelFormatter");
         return this;
     }
     
