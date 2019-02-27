@@ -131,7 +131,7 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement)));
+        logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement)));
     }
     
     @Override
@@ -191,7 +191,15 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logErrorFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement)), throwable);
+        logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement)), throwable);
+    }
+    
+    protected Object formatLogMessage(Map<String, Object> valueMap) {
+        try {
+            return StringSubstitutor.replace(logFormat, valueMap);
+        } catch (Exception ex) {
+            return valueMap.get(Logger.LOG_FORMAT_OBJECT);
+        }
     }
     
     protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {

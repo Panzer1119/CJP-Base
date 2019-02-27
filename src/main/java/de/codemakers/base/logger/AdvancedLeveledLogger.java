@@ -17,7 +17,6 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.util.tough.ToughBiFunction;
-import org.apache.commons.text.StringSubstitutor;
 
 import java.time.Instant;
 import java.util.Map;
@@ -65,7 +64,7 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
-        logFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement, logLevel)));
+        logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel)));
     }
     
     @Override
@@ -95,7 +94,7 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
-        logErrorFinal(StringSubstitutor.replace(logFormat, createValueMap(object, timestamp, thread, stackTraceElement, logLevel)), throwable);
+        logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel)), throwable);
     }
     
     protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
