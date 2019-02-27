@@ -16,6 +16,7 @@
 
 package de.codemakers.base.util;
 
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
 
 import java.util.Collection;
@@ -180,5 +181,15 @@ public class StringUtil {
         }
         
     }
+    
+    public static String escapeStringSubstitutorVariableCalls(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        return text.replaceAll(STRING_SUBSTITUTOR_TO_REPLACE, STRING_SUBSTITUTOR_REPLACEMENT);
+    }
+    
+    public static final String STRING_SUBSTITUTOR_TO_REPLACE = "([^\\" + StringSubstitutor.DEFAULT_ESCAPE + "]\\" + StringSubstitutor.DEFAULT_ESCAPE +")\\" + StringSubstitutor.DEFAULT_VAR_START.substring(1);
+    public static final String STRING_SUBSTITUTOR_REPLACEMENT = "$1\\" + StringSubstitutor.DEFAULT_VAR_START;
     
 }

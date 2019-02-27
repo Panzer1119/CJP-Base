@@ -16,6 +16,8 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.Standard;
+import de.codemakers.base.util.StringUtil;
 import org.apache.commons.text.StringSubstitutor;
 
 public class LoggerTest {
@@ -54,6 +56,21 @@ public class LoggerTest {
         Logger.getDefaultAdvancedLeveledLogger().setLogFormat(logFormatBuilder.toFormat());
         Logger.getDefaultAdvancedLeveledLogger().setLocationFormat(locationFormatBuilder.toFormat());
         Logger.log("Test 2");
+        Logger.log("logFormatBuilder.example()=" + logFormatBuilder.example());
+        Logger.log("locationFormatBuilder.example()=" + locationFormatBuilder.example());
+        Logger.log("logFormatBuilder.example(locationFormatBuilder)=" + logFormatBuilder.example(locationFormatBuilder));
+        Standard.silentError(() -> {
+            Thread.currentThread().setName("Anonymous-Test-Thread${loglevel}");
+            Logger.log("Anonymous Test");
+            final StackTraceElement stackTraceElement = AdvancedLogger.cutStackTrace(new Exception().getStackTrace());
+            System.out.println(stackTraceElement);
+            System.out.println(stackTraceElement.getClassName());
+            System.out.println(stackTraceElement.getMethodName());
+            System.out.println(stackTraceElement.getFileName());
+            System.out.println(stackTraceElement.getLineNumber());
+        });
+        Logger.log("StringUtil.STRING_SUBSTITUTOR_TO_REPLACE =" + StringUtil.STRING_SUBSTITUTOR_TO_REPLACE);
+        Logger.log("StringUtil.STRING_SUBSTITUTOR_REPLACEMENT=" + StringUtil.STRING_SUBSTITUTOR_REPLACEMENT);
     }
     
 }

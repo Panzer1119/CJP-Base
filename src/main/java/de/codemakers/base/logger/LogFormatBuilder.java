@@ -16,11 +16,18 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.util.StringUtil;
+import de.codemakers.base.util.TimeUtil;
 import org.apache.commons.text.StringSubstitutor;
+
+import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LogFormatBuilder {
     
     protected String format;
+    protected boolean checkAndCorrectAppendedText = true;
     
     public LogFormatBuilder() {
         this("");
@@ -31,15 +38,11 @@ public class LogFormatBuilder {
     }
     
     public LogFormatBuilder appendText(String text) {
-        //checkText(text); //FIXME
+        if (checkAndCorrectAppendedText) {
+            text = StringUtil.escapeStringSubstitutorVariableCalls(text);
+        }
         format += text;
         return this;
-    }
-    
-    protected void checkText(String text) {
-        if (text.contains(StringSubstitutor.DEFAULT_VAR_START)) { //FIXME Is this good? Maybe it is escaped with another "$"
-            //throw new IllegalArgumentException();
-        }
     }
     
     public LogFormatBuilder appendTimestamp() {
@@ -67,6 +70,20 @@ public class LogFormatBuilder {
         return this;
     }
     
+    public String example() {
+        return example(null);
+    }
+    
+    public String example(LocationFormatBuilder locationFormatBuilder) {
+        final Map<String, Object> map = new HashMap<>();
+        map.put(Logger.LOG_FORMAT_TIMESTAMP, StringUtil.escapeStringSubstitutorVariableCalls("[" + ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH) + "]"));
+        map.put(Logger.LOG_FORMAT_THREAD, StringUtil.escapeStringSubstitutorVariableCalls("[" + Thread.currentThread().getName() + "]"));
+        map.put(Logger.LOG_FORMAT_LOCATION, locationFormatBuilder == null ? StringSubstitutor.DEFAULT_ESCAPE + Logger.LOG_FORMAT_VAR_LOCATION : StringUtil.escapeStringSubstitutorVariableCalls(locationFormatBuilder.example()));
+        map.put(Logger.LOG_FORMAT_LOG_LEVEL, "[" + LogLevel.DEBUG.getNameMid() + "]");
+        map.put(Logger.LOG_FORMAT_OBJECT, "This is an example message");
+        return StringSubstitutor.replace(format, map);
+    }
+    
     public String toFormat() {
         return format;
     }
@@ -76,9 +93,18 @@ public class LogFormatBuilder {
         return this;
     }
     
+    public boolean isCheckAndCorrectAppendedText() {
+        return checkAndCorrectAppendedText;
+    }
+    
+    public LogFormatBuilder setCheckAndCorrectAppendedText(boolean checkAndCorrectAppendedText) {
+        this.checkAndCorrectAppendedText = checkAndCorrectAppendedText;
+        return this;
+    }
+    
     @Override
     public String toString() {
-        return "LogFormatBuilder{" + "format='" + format + '\'' + '}';
+        return "LogFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
     }
     
 }

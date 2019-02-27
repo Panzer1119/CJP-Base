@@ -18,6 +18,7 @@ package de.codemakers.base.logger;
 
 import de.codemakers.base.CJP;
 import de.codemakers.base.util.ArrayUtil;
+import de.codemakers.base.util.StringUtil;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughBiFunction;
 import org.apache.commons.text.StringSubstitutor;
@@ -232,19 +233,19 @@ public abstract class AdvancedLogger implements ILogger {
     protected abstract void logErrorFinal(Object object, Throwable throwable);
     
     protected String formatTimestamp(ZonedDateTime zonedDateTime) {
-        return timestampFormatter.applyWithoutException(zonedDateTime, this);
+        return StringUtil.escapeStringSubstitutorVariableCalls(timestampFormatter.applyWithoutException(zonedDateTime, this));
     }
     
     protected String formatThread(Thread thread) {
-        return threadFormatter.applyWithoutException(thread, this);
+        return StringUtil.escapeStringSubstitutorVariableCalls(threadFormatter.applyWithoutException(thread, this));
     }
     
     protected String formatStackTraceElement(StackTraceElement stackTraceElement) {
-        return locationFormatter.applyWithoutException(stackTraceElement, this);
+        return StringUtil.escapeStringSubstitutorVariableCalls(locationFormatter.applyWithoutException(stackTraceElement, this));
     }
     
     protected String formatObject(Object object) {
-        return objectFormatter.applyWithoutException(object, this).replaceAll("([^\\$]\\$)\\{", "$1\\${"); //TODO Use static variables from StringSubstitutor
+        return StringUtil.escapeStringSubstitutorVariableCalls(objectFormatter.applyWithoutException(object, this));
     }
     
     /**

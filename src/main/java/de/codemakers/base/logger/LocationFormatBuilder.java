@@ -16,11 +16,16 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.util.StringUtil;
 import org.apache.commons.text.StringSubstitutor;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LocationFormatBuilder {
     
     protected String format;
+    protected boolean checkAndCorrectAppendedText = true;
     
     public LocationFormatBuilder() {
         this("");
@@ -31,15 +36,11 @@ public class LocationFormatBuilder {
     }
     
     public LocationFormatBuilder appendText(String text) {
-        //checkText(text); //FIXME
+        if (checkAndCorrectAppendedText) {
+            text = StringUtil.escapeStringSubstitutorVariableCalls(text);
+        }
         format += text;
         return this;
-    }
-    
-    protected void checkText(String text) {
-        if (text.contains(StringSubstitutor.DEFAULT_VAR_START)) { //FIXME Is this good? Maybe it is escaped with another "$"
-            //throw new IllegalArgumentException();
-        }
     }
     
     public LocationFormatBuilder appendClassName() {
@@ -62,6 +63,16 @@ public class LocationFormatBuilder {
         return this;
     }
     
+    public String example() {
+        final Map<String, Object> map = new HashMap<>();
+        final StackTraceElement stackTraceElement = AdvancedLogger.cutStackTrace(new Exception().getStackTrace());
+        map.put(Logger.LOCATION_FORMAT_CLASS, stackTraceElement.getClassName());
+        map.put(Logger.LOCATION_FORMAT_METHOD, stackTraceElement.getMethodName());
+        map.put(Logger.LOCATION_FORMAT_FILE, stackTraceElement.getFileName());
+        map.put(Logger.LOCATION_FORMAT_LINE, stackTraceElement.getLineNumber());
+        return StringSubstitutor.replace(format, map);
+    }
+    
     public String toFormat() {
         return format;
     }
@@ -71,9 +82,18 @@ public class LocationFormatBuilder {
         return this;
     }
     
+    public boolean isCheckAndCorrectAppendedText() {
+        return checkAndCorrectAppendedText;
+    }
+    
+    public LocationFormatBuilder setCheckAndCorrectAppendedText(boolean checkAndCorrectAppendedText) {
+        this.checkAndCorrectAppendedText = checkAndCorrectAppendedText;
+        return this;
+    }
+    
     @Override
     public String toString() {
-        return "LocationFormatBuilder{" + "format='" + format + '\'' + '}';
+        return "LocationFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
     }
     
 }
