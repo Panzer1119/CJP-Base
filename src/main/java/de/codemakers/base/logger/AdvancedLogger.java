@@ -47,31 +47,14 @@ public abstract class AdvancedLogger implements ILogger {
      * Value = {@link de.codemakers.base.util.TimeUtil#ISO_OFFSET_DATE_TIME_FIXED_LENGTH}
      */
     public static final DateTimeFormatter DATE_TIME_FORMATTER_DEFAULT = TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH;
-    //TODO Add javadoc
-    public static final String LOG_FORMAT_TIMESTAMP = "timestamp";
-    public static final String LOG_FORMAT_VAR_TIMESTAMP = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_TIMESTAMP + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String LOG_FORMAT_THREAD = "thread";
-    public static final String LOG_FORMAT_VAR_THREAD = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_THREAD + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String LOG_FORMAT_LOCATION = "location";
-    public static final String LOG_FORMAT_VAR_LOCATION = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOCATION + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String LOG_FORMAT_OBJECT = "object";
-    public static final String LOG_FORMAT_VAR_OBJECT = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_OBJECT + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String LOCATION_FORMAT_CLASS = "class";
-    public static final String LOCATION_FORMAT_VAR_CLASS = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_CLASS + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String LOCATION_FORMAT_METHOD = "method";
-    public static final String LOCATION_FORMAT_VAR_METHOD = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_METHOD + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String LOCATION_FORMAT_FILE = "file";
-    public static final String LOCATION_FORMAT_VAR_FILE = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_FILE + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String LOCATION_FORMAT_LINE = "line";
-    public static final String LOCATION_FORMAT_VAR_LINE = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_LINE + StringSubstitutor.DEFAULT_VAR_END;
     /**
-     * Value = "{@link #LOG_FORMAT_VAR_TIMESTAMP}{@link #LOG_FORMAT_VAR_THREAD}{@link #LOG_FORMAT_VAR_LOCATION}: {@link #LOG_FORMAT_VAR_OBJECT}"
+     * Value = "{@link Logger#LOG_FORMAT_VAR_TIMESTAMP}{@link Logger#LOG_FORMAT_VAR_THREAD}{@link Logger#LOG_FORMAT_VAR_LOCATION}: {@link Logger#LOG_FORMAT_VAR_OBJECT}"
      */
-    public static final String DEFAULT_LOG_FORMAT = LOG_FORMAT_VAR_TIMESTAMP + LOG_FORMAT_VAR_THREAD + LOG_FORMAT_VAR_LOCATION + ": " + LOG_FORMAT_VAR_OBJECT;
+    public static final String DEFAULT_LOG_FORMAT = Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_THREAD + Logger.LOG_FORMAT_VAR_LOCATION + ": " + Logger.LOG_FORMAT_VAR_OBJECT;
     /**
-     * Value = "{@link #LOCATION_FORMAT_VAR_CLASS}.{@link #LOCATION_FORMAT_VAR_METHOD}({@link #LOCATION_FORMAT_VAR_FILE}:{@link #LOCATION_FORMAT_VAR_LINE})"
+     * Value = "{@link Logger#LOCATION_FORMAT_VAR_CLASS}.{@link Logger#LOCATION_FORMAT_VAR_METHOD}({@link Logger#LOCATION_FORMAT_VAR_FILE}:{@link Logger#LOCATION_FORMAT_VAR_LINE})"
      */
-    public static final String DEFAULT_LOCATION_FORMAT = LOCATION_FORMAT_VAR_CLASS + "." + LOCATION_FORMAT_VAR_METHOD + "(" + LOCATION_FORMAT_VAR_FILE + ":" + LOCATION_FORMAT_VAR_LINE + ")";
+    public static final String DEFAULT_LOCATION_FORMAT = Logger.LOCATION_FORMAT_VAR_CLASS + "." + Logger.LOCATION_FORMAT_VAR_METHOD + "(" + Logger.LOCATION_FORMAT_VAR_FILE + ":" + Logger.LOCATION_FORMAT_VAR_LINE + ")";
     //TODO Add javadoc
     public static final ToughBiFunction<ZonedDateTime, AdvancedLogger, String> DEFAULT_TIMESTAMP_FORMATTER = (timestamp, advancedLogger) -> timestamp == null ? "" : "[" + timestamp.format(advancedLogger.dateTimeFormatter) + "]";
     public static final ToughBiFunction<Thread, AdvancedLogger, String> DEFAULT_THREAD_FORMATTER = (thread, advancedLogger) -> thread == null ? "" : "[" + thread.getName() + "]";
@@ -213,19 +196,19 @@ public abstract class AdvancedLogger implements ILogger {
     
     protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
         final Map<String, Object> map = new HashMap<>();
-        map.put(LOG_FORMAT_TIMESTAMP, formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
-        map.put(LOG_FORMAT_THREAD, formatThread(thread));
-        map.put(LOG_FORMAT_LOCATION, formatStackTraceElement(stackTraceElement));
-        map.put(LOG_FORMAT_OBJECT, formatObject(object));
+        map.put(Logger.LOG_FORMAT_TIMESTAMP, formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));
+        map.put(Logger.LOG_FORMAT_THREAD, formatThread(thread));
+        map.put(Logger.LOG_FORMAT_LOCATION, formatStackTraceElement(stackTraceElement));
+        map.put(Logger.LOG_FORMAT_OBJECT, formatObject(object));
         return map;
     }
     
     protected Map<String, Object> createValueMap(StackTraceElement stackTraceElement) {
         final Map<String, Object> map = new HashMap<>();
-        map.put(LOCATION_FORMAT_CLASS, stackTraceElement.getClassName());
-        map.put(LOCATION_FORMAT_METHOD, stackTraceElement.getMethodName());
-        map.put(LOCATION_FORMAT_FILE, stackTraceElement.getFileName());
-        map.put(LOCATION_FORMAT_LINE, stackTraceElement.getLineNumber());
+        map.put(Logger.LOCATION_FORMAT_CLASS, stackTraceElement.getClassName());
+        map.put(Logger.LOCATION_FORMAT_METHOD, stackTraceElement.getMethodName());
+        map.put(Logger.LOCATION_FORMAT_FILE, stackTraceElement.getFileName());
+        map.put(Logger.LOCATION_FORMAT_LINE, stackTraceElement.getLineNumber());
         return map;
     }
     

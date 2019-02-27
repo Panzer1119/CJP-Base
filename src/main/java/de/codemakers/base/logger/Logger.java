@@ -16,6 +16,8 @@
 
 package de.codemakers.base.logger;
 
+import org.apache.commons.text.StringSubstitutor;
+
 import java.time.Instant;
 
 /**
@@ -37,6 +39,25 @@ public class Logger {
     public static final AdvancedLeveledSystemLogger DEFAULT_ADVANCED_LEVELED_LOGGER = createDefaultAdvancedLeveledSystemLogger();
     
     public static ILogger LOGGER = DEFAULT_ADVANCED_LEVELED_LOGGER;
+    //TODO Add javadoc
+    public static final String LOG_FORMAT_TIMESTAMP = "timestamp";
+    public static final String LOG_FORMAT_VAR_TIMESTAMP = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_TIMESTAMP + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String LOG_FORMAT_THREAD = "thread";
+    public static final String LOG_FORMAT_VAR_THREAD = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_THREAD + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String LOG_FORMAT_LOCATION = "location";
+    public static final String LOG_FORMAT_VAR_LOCATION = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOCATION + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String LOG_FORMAT_LOG_LEVEL = "loglevel";
+    public static final String LOG_FORMAT_VAR_LOG_LEVEL = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOG_LEVEL + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String LOG_FORMAT_OBJECT = "object";
+    public static final String LOG_FORMAT_VAR_OBJECT = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_OBJECT + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String LOCATION_FORMAT_CLASS = "class";
+    public static final String LOCATION_FORMAT_VAR_CLASS = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_CLASS + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String LOCATION_FORMAT_METHOD = "method";
+    public static final String LOCATION_FORMAT_VAR_METHOD = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_METHOD + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String LOCATION_FORMAT_FILE = "file";
+    public static final String LOCATION_FORMAT_VAR_FILE = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_FILE + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String LOCATION_FORMAT_LINE = "line";
+    public static final String LOCATION_FORMAT_VAR_LINE = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_LINE + StringSubstitutor.DEFAULT_VAR_END;
     
     private static final ILogger createDefaultLogger() {
         return new SystemLogger();

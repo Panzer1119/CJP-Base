@@ -25,12 +25,10 @@ import java.util.Objects;
 
 public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
-    public static final String LOG_FORMAT_LOG_LEVEL = "loglevel";
-    public static final String LOG_FORMAT_VAR_LOG_LEVEL = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOG_LEVEL + StringSubstitutor.DEFAULT_VAR_END;
     /**
-     * Value = "{@link #LOG_FORMAT_VAR_TIMESTAMP}{@link #LOG_FORMAT_VAR_THREAD}{@link #LOG_FORMAT_VAR_LOCATION}{@link #LOG_FORMAT_VAR_LOG_LEVEL}: {@link #LOG_FORMAT_VAR_OBJECT}"
+     * Value = "{@link Logger#LOG_FORMAT_VAR_TIMESTAMP}{@link Logger#LOG_FORMAT_VAR_THREAD}{@link Logger#LOG_FORMAT_VAR_LOCATION}{@link Logger#LOG_FORMAT_VAR_LOG_LEVEL}: {@link Logger#LOG_FORMAT_VAR_OBJECT}"
      */
-    public static final String DEFAULT_LEVELED_LOG_FORMAT = LOG_FORMAT_VAR_TIMESTAMP + LOG_FORMAT_VAR_THREAD + LOG_FORMAT_VAR_LOCATION + LOG_FORMAT_VAR_LOG_LEVEL + ": " + LOG_FORMAT_VAR_OBJECT;
+    public static final String DEFAULT_LEVELED_LOG_FORMAT = Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_THREAD + Logger.LOG_FORMAT_VAR_LOCATION + Logger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + Logger.LOG_FORMAT_VAR_OBJECT;
     public static final ToughBiFunction<LogLevel, AdvancedLogger, String> DEFAULT_LOG_LEVEL_FORMATTER = (logLevel, advancedLogger) -> logLevel == null ? "" : "[" + logLevel.getNameMid() + "]";
     
     protected LogLevel minimumLogLevel = LogLevel.INFO;
@@ -102,7 +100,7 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
     protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
         final Map<String, Object> map = createValueMap(object, timestamp, thread, stackTraceElement);
-        map.put(LOG_FORMAT_LOG_LEVEL, formatLogLevel(logLevel));
+        map.put(Logger.LOG_FORMAT_LOG_LEVEL, formatLogLevel(logLevel));
         return map;
     }
     
