@@ -32,6 +32,8 @@ public enum LogLevel {
     
     public static final int MINIMUM_NAME_LENGTH = Stream.of(values()).map(LogLevel::name).map(String::length).sorted().findFirst().orElse(-1);
     public static final int MAXIMUM_NAME_LENGTH = Stream.of(values()).map(LogLevel::name).map(String::length).sorted().skip(values().length - 1).findFirst().orElse(-1);
+    public static final int MINIMUM_LEVEL = Stream.of(values()).map(LogLevel::getLevel).sorted().findFirst().orElse(Integer.MAX_VALUE);
+    public static final int MAXIMUM_LEVEL = Stream.of(values()).map(LogLevel::getLevel).sorted().skip(values().length - 1).findFirst().orElse(Integer.MIN_VALUE);
     
     private final boolean isBad;
     /**

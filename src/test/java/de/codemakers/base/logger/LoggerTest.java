@@ -21,7 +21,7 @@ import org.apache.commons.text.StringSubstitutor;
 public class LoggerTest {
     
     public static final void main(String[] args) {
-        Logger.getDefaultAdvancedLeveledLogger().setLogFormat(AdvancedLogger.LOG_FORMAT_VAR_TIMESTAMP + AdvancedLeveledLogger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + AdvancedLogger.LOG_FORMAT_VAR_OBJECT + "\n" + AdvancedLogger.LOG_FORMAT_VAR_THREAD + " " + AdvancedLogger.LOG_FORMAT_VAR_LOCATION);
+        Logger.getDefaultAdvancedLeveledLogger().setLogFormat(Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + Logger.LOG_FORMAT_VAR_OBJECT + "\n" + Logger.LOG_FORMAT_VAR_THREAD + " " + Logger.LOG_FORMAT_VAR_LOCATION);
         Logger.getDefaultAdvancedLeveledLogger().setLocationFormatter(((stackTraceElement, advancedLogger) -> {
             if (stackTraceElement == null) {
                 return "";
@@ -32,8 +32,6 @@ public class LoggerTest {
         for (int i = 0; i < 100; i++) {
             Logger.log("i=" + i);
         }
-        Logger.log("LogLevel.MINIMUM_NAME_LENGTH=" + LogLevel.MINIMUM_NAME_LENGTH);
-        Logger.log("LogLevel.MAXIMUM_NAME_LENGTH=" + LogLevel.MAXIMUM_NAME_LENGTH);
         for (LogLevel logLevel : LogLevel.values()) {
             Logger.log("logLevel=" + logLevel);
             Logger.log("logLevel.getNameLeft() =" + logLevel.getNameLeft());
@@ -41,6 +39,10 @@ public class LoggerTest {
             Logger.log("logLevel.getNameMid()  =" + logLevel.getNameMid());
             Logger.log("#####################");
         }
+        Logger.log("LogLevel.MINIMUM_NAME_LENGTH=" + LogLevel.MINIMUM_NAME_LENGTH);
+        Logger.log("LogLevel.MAXIMUM_NAME_LENGTH=" + LogLevel.MAXIMUM_NAME_LENGTH);
+        Logger.log("LogLevel.MINIMUM_LEVEL=" + LogLevel.MINIMUM_LEVEL);
+        Logger.log("LogLevel.MAXIMUM_LEVEL=" + LogLevel.MAXIMUM_LEVEL);
     }
     
 }
