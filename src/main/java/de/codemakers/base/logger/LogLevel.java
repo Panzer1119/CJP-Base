@@ -17,9 +17,9 @@
 package de.codemakers.base.logger;
 
 import java.awt.*;
+import java.util.stream.Stream;
 
 public enum LogLevel {
-    
     FINEST(false, 7, Color.WHITE, Color.LIGHT_GRAY),
     FINER(false, 6, Color.WHITE, Color.GRAY),
     FINE(false, 5, Color.WHITE, Color.DARK_GRAY),
@@ -30,6 +30,9 @@ public enum LogLevel {
     WARNING(true, 0, Color.WHITE, Color.ORANGE),
     ERROR(true, -1, Color.WHITE, Color.RED);
     
+    public static final int MINIMUM_NAME_LENGTH = Stream.of(values()).map(LogLevel::name).map(String::length).sorted().findFirst().orElse(-1);
+    public static final int MAXIMUM_NAME_LENGTH = Stream.of(values()).map(LogLevel::name).map(String::length).sorted().skip(values().length - 1).findFirst().orElse(-1);
+    
     private final boolean isBad;
     /**
      * The higher the level the less important is this LogLevel
@@ -37,6 +40,9 @@ public enum LogLevel {
     private final int level;
     private Color colorBackground;
     private Color colorForeground;
+    private transient String nameLeft = null;
+    private transient String nameRight = null;
+    private transient String nameMid = null;
     
     LogLevel(boolean isBad, int level, Color colorBackground, Color colorForeground) {
         this.isBad = isBad;
@@ -93,6 +99,39 @@ public enum LogLevel {
     
     public String toText() {
         return name().toUpperCase().substring(0, 1) + name().toLowerCase().substring(1);
+    }
+    
+    public String getNameLeft() {
+        if (nameLeft == null) {
+            nameLeft = name();
+            while (nameLeft.length() < MAXIMUM_NAME_LENGTH) {
+                nameLeft += " ";
+            }
+        }
+        return nameLeft;
+    }
+    
+    public String getNameRight() {
+        if (nameRight == null) {
+            nameRight = name();
+            while (nameRight.length() < MAXIMUM_NAME_LENGTH) {
+                nameRight = " " + nameRight;
+            }
+        }
+        return nameRight;
+    }
+    
+    public String getNameMid() {
+        if (nameMid == null) {
+            nameMid = name();
+            while (nameMid.length() < MAXIMUM_NAME_LENGTH) {
+                nameMid += " ";
+                if (nameMid.length() < MAXIMUM_NAME_LENGTH) {
+                    nameMid = " " + nameMid;
+                }
+            }
+        }
+        return nameMid;
     }
     
 }
