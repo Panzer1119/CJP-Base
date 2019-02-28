@@ -106,6 +106,7 @@ public abstract class DeltaData implements ByteSerializable, Copyable, Version {
     public void set(Copyable copyable) {
         final DeltaData deltaData = Require.clazz(copyable, DeltaData.class);
         if (deltaData != null) {
+            setVersion(deltaData.version);
             setLength(deltaData.length);
             setDataNew(deltaData.data_new);
         }
