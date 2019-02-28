@@ -49,18 +49,18 @@ public class ExpiringTrustedSecureDataTest {
         System.out.println(keyGenerator);
         final SecretKey secretKey = keyGenerator.generateKey();
         System.out.println(secretKey);
-        final ExpiringTrustedSecureData expiringTrustedSecureData = new ExpiringTrustedSecureData(text_1.getBytes(), EasyCryptUtil.encryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.signerOfSHA256withRSA(keyPair.getPrivate()));
+        final ExpiringTrustedSecureData expiringTrustedSecureData = new ExpiringTrustedSecureData(text_1.getBytes(), EasyCryptUtil.encryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.signerOfSHA512withRSA(keyPair.getPrivate()));
         System.out.println(expiringTrustedSecureData);
         //expiringTrustedSecureData.createTimestamp(EasyCryptUtil.signerOfSHA256withRSA(keyPair.getPrivate()));
-        expiringTrustedSecureData.createTimestamp(EasyCryptUtil.encryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.signerOfSHA256withRSA(keyPair.getPrivate()));
+        expiringTrustedSecureData.createTimestamp(EasyCryptUtil.encryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.signerOfSHA512withRSA(keyPair.getPrivate()));
         System.out.println(expiringTrustedSecureData);
         System.out.println("=========================================================================================");
         final ExpiringTrustedSecureData expiringTrustedSecureData_c_1 = expiringTrustedSecureData.copy();
         System.out.println(expiringTrustedSecureData_c_1);
         //if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_1, EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic()))) {
-        if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_1, EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic()))) {
+        if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_1, EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic()))) {
             System.out.println("ACCEPTED 1");
-            System.out.println("VALID 1: " + expiringTrustedSecureData_c_1.verifyWithoutException(EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic())));
+            System.out.println("VALID 1: " + expiringTrustedSecureData_c_1.verifyWithoutException(EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic())));
             System.out.println(new String(expiringTrustedSecureData_c_1.getData()));
             final String text_2 = new String(expiringTrustedSecureData_c_1.decryptWithoutException(EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey)));
             System.out.println("1: " + text_2);
@@ -86,9 +86,9 @@ public class ExpiringTrustedSecureDataTest {
         System.out.println("=========================================================================================");
         */
         //if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_2, EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic()))) {
-        if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_2, EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic()))) {
+        if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_2, EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic()))) {
             System.out.println("ACCEPTED 2");
-            System.out.println("VALID 2: " + expiringTrustedSecureData_c_2.verifyWithoutException(EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic())));
+            System.out.println("VALID 2: " + expiringTrustedSecureData_c_2.verifyWithoutException(EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic())));
             System.out.println(new String(expiringTrustedSecureData_c_2.getData()));
             final String text_2 = new String(expiringTrustedSecureData_c_2.decryptWithoutException(EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey)));
             System.out.println("2: " + text_2);

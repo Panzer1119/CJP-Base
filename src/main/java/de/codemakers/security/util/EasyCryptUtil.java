@@ -43,6 +43,7 @@ public class EasyCryptUtil {
     public static final String ALGORITHM_AES = AESCryptUtil.ALGORITHM_AES;
     public static final String ALGORITHM_RSA = RSACryptUtil.ALGORITHM_RSA;
     public static final String ALGORITHM_SHA256withRSA = SecureHashUtil.ALGORITHM_SHA256withRSA;
+    public static final String ALGORITHM_SHA512withRSA = SecureHashUtil.ALGORITHM_SHA512withRSA;
     public static final String ALGORITHM_SHA256withECDSA = SecureHashUtil.ALGORITHM_SHA256withECDSA;
     
     //private static final Signature SIGNATURE_SHA256withRSA;
@@ -237,6 +238,15 @@ public class EasyCryptUtil {
         }
     }
     
+    public static final Signature createSignatureSHA512withRSA() {
+        try {
+            return Signature.getInstance(ALGORITHM_SHA512withRSA);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
     public static final Signature createSignatureSHA256withECDSA() {
         try {
             return Signature.getInstance(ALGORITHM_SHA256withECDSA);
@@ -246,8 +256,12 @@ public class EasyCryptUtil {
         }
     }
     
-    public static final Signer signerOfSHA256withRSA(PrivateKey key) throws InvalidKeyException {
+    public static final Signer signerOfSHA256withRSA(PrivateKey key) throws InvalidKeyException { //FIXME Debug only
         return signerOfSignature(createSignatureSHA256withRSA(), key);
+    }
+    
+    public static final Signer signerOfSHA512withRSA(PrivateKey key) throws InvalidKeyException {
+        return signerOfSignature(createSignatureSHA512withRSA(), key);
     }
     
     public static final Signer signerOfSHA256withECDSA(PrivateKey key) throws InvalidKeyException {
@@ -284,8 +298,12 @@ public class EasyCryptUtil {
         return signerOfSignature(signature);
     }
     
-    public static final Verifier verifierOfSHA256withRSA(PublicKey key) throws InvalidKeyException {
+    public static final Verifier verifierOfSHA256withRSA(PublicKey key) throws InvalidKeyException { //FIXME Debug only
         return verifierOfSignature(createSignatureSHA256withRSA(), key);
+    }
+    
+    public static final Verifier verifierOfSHA512withRSA(PublicKey key) throws InvalidKeyException {
+        return verifierOfSignature(createSignatureSHA512withRSA(), key);
     }
     
     public static final Verifier verifierOfSHA256withECDSA(PublicKey key) throws InvalidKeyException {
@@ -328,7 +346,7 @@ public class EasyCryptUtil {
         }
         assert privateKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
         assert publicKey.getAlgorithm().equals(RSACryptUtil.ALGORITHM_RSA);
-        return verifierCanVerifyDataSignedWithSigner(signerOfSHA256withRSA(privateKey), verifierOfSHA256withRSA(publicKey));
+        return verifierCanVerifyDataSignedWithSigner(signerOfSHA512withRSA(privateKey), verifierOfSHA512withRSA(publicKey));
     }
     
     public static final boolean publicKeyCanVerifyDataSignedWithPrivateKeyECDSA(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
@@ -355,6 +373,14 @@ public class EasyCryptUtil {
         return createTimestamp(System.currentTimeMillis(), encryptor, signerOfSHA256withRSA(key));
     }
     
+    public static final TrustedSecureData createTimestampOfSHA512withRSA(PrivateKey key) throws InvalidKeyException {
+        return createTimestampOfSHA512withRSA(null, key);
+    }
+    
+    public static final TrustedSecureData createTimestampOfSHA512withRSA(Encryptor encryptor, PrivateKey key) throws InvalidKeyException {
+        return createTimestamp(System.currentTimeMillis(), encryptor, signerOfSHA512withRSA(key));
+    }
+    
     public static final TrustedSecureData createTimestamp(Signer signer) {
         return createTimestamp(null, signer);
     }
@@ -371,6 +397,14 @@ public class EasyCryptUtil {
         return createTimestamp(timestamp, encryptor, signerOfSHA256withRSA(key));
     }
     
+    public static final TrustedSecureData createTimestampOfSHA512withRSA(long timestamp, PrivateKey key) throws InvalidKeyException {
+        return createTimestampOfSHA512withRSA(timestamp, null, key);
+    }
+    
+    public static final TrustedSecureData createTimestampOfSHA512withRSA(long timestamp, Encryptor encryptor, PrivateKey key) throws InvalidKeyException {
+        return createTimestamp(timestamp, encryptor, signerOfSHA512withRSA(key));
+    }
+    
     public static final TrustedSecureData createTimestamp(long timestamp, Signer signer) {
         return createTimestamp(timestamp, null, signer);
     }
@@ -381,6 +415,10 @@ public class EasyCryptUtil {
     
     public static final boolean isValidOfSHA256withRSA(TrustedSecureData timestamp, PublicKey key) throws InvalidKeyException {
         return isValid(timestamp, verifierOfSHA256withRSA(key));
+    }
+    
+    public static final boolean isValidOfSHA512withRSA(TrustedSecureData timestamp, PublicKey key) throws InvalidKeyException {
+        return isValid(timestamp, verifierOfSHA512withRSA(key));
     }
     
     public static final boolean isValid(TrustedSecureData timestamp, Verifier verifier) {
@@ -401,6 +439,10 @@ public class EasyCryptUtil {
     
     public static final boolean isExpiredOfSHA256withRSA(TrustedSecureData timestamp, ToughPredicate<Long> timeTester, Cipher cipher, SecretKey secretKey, PublicKey publicKey) throws InvalidKeyException {
         return isExpired(timestamp, timeTester, (cipher == null || secretKey == null) ? null : decryptorOfCipher(cipher, secretKey), publicKey == null ? null : verifierOfSHA256withRSA(publicKey));
+    }
+    
+    public static final boolean isExpiredOfSHA512withRSA(TrustedSecureData timestamp, ToughPredicate<Long> timeTester, Cipher cipher, SecretKey secretKey, PublicKey publicKey) throws InvalidKeyException {
+        return isExpired(timestamp, timeTester, (cipher == null || secretKey == null) ? null : decryptorOfCipher(cipher, secretKey), publicKey == null ? null : verifierOfSHA512withRSA(publicKey));
     }
     
     public static final boolean isExpired(TrustedSecureData timestamp, ToughPredicate<Long> timeTester, Verifier verifier) {
