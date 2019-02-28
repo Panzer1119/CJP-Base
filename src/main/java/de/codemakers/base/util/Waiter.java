@@ -16,6 +16,7 @@
 
 package de.codemakers.base.util;
 
+import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
@@ -50,21 +51,20 @@ public class Waiter {
         setDoneSupplier(done);
     }
     
-    public final ToughSupplier<Boolean> getDoneSupplier() {
+    public ToughSupplier<Boolean> getDoneSupplier() {
         return done;
     }
     
-    public final Waiter setDoneSupplier(ToughSupplier<Boolean> done) {
-        Objects.requireNonNull(done);
-        this.done = done;
+    public Waiter setDoneSupplier(ToughSupplier<Boolean> done) {
+        this.done = Objects.requireNonNull(done, "done");
         return this;
     }
     
-    public final boolean isDone() {
+    public boolean isDone() {
         return done.getWithoutException();
     }
     
-    public final long getStarted() {
+    public long getStarted() {
         return started;
     }
     
@@ -73,29 +73,29 @@ public class Waiter {
         return this;
     }
     
-    public final long getTimeoutMillis() {
+    public long getTimeoutMillis() {
         return timeoutMillis;
     }
     
-    public final Waiter setTimeoutMillis(long timeoutMillis) {
+    public Waiter setTimeoutMillis(long timeoutMillis) {
         this.timeoutMillis = timeoutMillis;
         return this;
     }
     
-    public final long getSleepTimeMillis() {
+    public long getSleepTimeMillis() {
         return sleepTimeMillis;
     }
     
-    public final Waiter setSleepTimeMillis(long sleepTimeMillis) {
+    public Waiter setSleepTimeMillis(long sleepTimeMillis) {
         this.sleepTimeMillis = sleepTimeMillis;
         return this;
     }
     
-    protected final void waitStep() throws Exception {
+    protected void waitStep() throws Exception {
         Thread.sleep(sleepTimeMillis);
     }
     
-    public final boolean waitFor() throws Exception {
+    public boolean waitFor() throws Exception {
         while (!done.getWithoutException()) {
             if (timeoutMillis >= 0 && (System.currentTimeMillis() - started) >= timeoutMillis) {
                 return false;
@@ -105,7 +105,7 @@ public class Waiter {
         return true;
     }
     
-    public final boolean waitFor(ToughConsumer<Throwable> failure) {
+    public boolean waitFor(ToughConsumer<Throwable> failure) {
         try {
             return waitFor();
         } catch (Exception ex) {
@@ -118,8 +118,12 @@ public class Waiter {
         }
     }
     
-    public final boolean waitForWithoutException() {
+    public boolean waitForWithoutException() {
         return waitFor(null);
+    }
+    
+    public ReturningAction<Boolean> waitForAction() {
+        return new ReturningAction<>(() -> waitFor());
     }
     
 }
