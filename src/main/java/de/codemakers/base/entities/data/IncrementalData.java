@@ -38,7 +38,7 @@ public class IncrementalData extends Data implements Version {
     public DeltaData changeData(byte[] data_new) {
         final byte[] data_old = getData();
         setData(data_new);
-        return new XORDeltaData(data_old, data_new, version.incrementAndGet()).generateHash(data_new);
+        return new XORDeltaData(data_old, data_new, version.incrementAndGet()).generateHash32BytesSHA256(data_new);
     }
     
     public ReturningAction<DeltaData> changeDataAction(byte[] data_new) {
