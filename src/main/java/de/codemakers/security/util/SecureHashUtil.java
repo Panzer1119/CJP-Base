@@ -83,7 +83,7 @@ public class SecureHashUtil {
         return fromMessageDigest(createSHA_256());
     }
     
-    public static Hasher createHasher32SHA_384() {
+    public static Hasher createHasher48SHA_384() {
         return fromMessageDigest(createSHA_384());
     }
     
