@@ -25,6 +25,7 @@ import de.codemakers.io.file.exceptions.isnot.*;
 import de.codemakers.security.entities.SecureData;
 import de.codemakers.security.entities.TrustedSecureData;
 import de.codemakers.security.interfaces.*;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.URI;
@@ -785,7 +786,11 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     @Override
     public byte[] crypt(Cryptor cryptor) throws Exception {
         Objects.requireNonNull(cryptor);
-        return cryptor.crypt(readBytes()); //TODO Make this via Streams, because loading big files in the memory is not efficient
+        if (cryptor.usesIV()) {
+            return IOUtils.toByteArray(cryptor.toCipherInputStreamWithIV(createInputStream()));
+        } else {
+            return IOUtils.toByteArray(cryptor.toCipherInputStream(createInputStream()));
+        }
     }
     
     @Override
@@ -802,20 +807,18 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     @Override
     public byte[] decrypt(Decryptor decryptor) throws Exception {
-        Objects.requireNonNull(decryptor);
-        return decryptor.decrypt(readBytes()); //TODO Make this via Streams, because loading big files in the memory is not efficient
+        return crypt(decryptor);
     }
     
     @Override
     public byte[] encrypt(Encryptor encryptor) throws Exception {
-        Objects.requireNonNull(encryptor);
-        return encryptor.encrypt(readBytes()); //TODO Make this via Streams, because loading big files in the memory is not efficient
+        return crypt(encryptor);
     }
     
     @Override
     public byte[] sign(Signer signer) throws Exception {
         Objects.requireNonNull(signer);
-        return signer.sign(readBytes()); //TODO Make this via Streams, because loading big files in the memory is not efficient
+        return signer.sign(createInputStream());
     }
     
     @Override
@@ -831,7 +834,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     @Override
     public boolean verify(Verifier verifier, byte[] data_signature) throws Exception {
         Objects.requireNonNull(verifier);
-        return verifier.verify(readBytes(), data_signature); //TODO Make this via Streams, because loading big files in the memory is not efficient
+        return verifier.verify(createInputStream(), data_signature);
     }
     
     @Override

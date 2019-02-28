@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OS;
@@ -78,9 +79,8 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
-        /*
-        //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()?
-        try {
+        //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()? //UPDATE Used Standard.async(), but this needs to be improved, because the first call of an AdvancedFile may takes usage of a 3rd party FileProvider, which is not yet loaded...
+        Standard.async(() -> {
             final Set<Class<? extends FileProvider>> fileProviders = ReflectionUtil.getSubClasses(FileProvider.class);
             fileProviders.stream().filter((fileProvider) -> fileProvider.getAnnotation(AutoRegister.class) != null).forEach((fileProvider) -> {
                 try {
@@ -89,16 +89,13 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                         FILE_PROVIDERS.add(fileProvider_);
                     }
                     if (DEBUG) {
-                        Logger.log("Successfully auto registered FileProvider: " + fileProvider_);
+                        Logger.logDebug("Successfully auto registered FileProvider: " + fileProvider_);
                     }
                 } catch (Exception ex) {
                     Logger.handleError(ex);
                 }
             });
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-        }
-        */
+        });
     }
     
     private String[] paths;
@@ -1114,14 +1111,14 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     @Override
     public AdvancedFile encryptThis(Encryptor encryptor) throws Exception {
         Objects.requireNonNull(encryptor);
-        writeBytes(encryptor.encryptWithoutException(readBytes())); //TODO Make this via Streams, because loading big files in the memory is not efficient
+        writeBytes(encryptor.encryptWithoutException(readBytes())); //TODO Make this via Streams, because loading big files in the memory is not efficient //STOP Could be difficult, because this is encrypting the file itself, and it is not a good idea to create an InputStream and OutputStream at the same time for a file
         return this;
     }
     
     @Override
     public AdvancedFile decryptThis(Decryptor decryptor) throws Exception {
         Objects.requireNonNull(decryptor);
-        writeBytes(decryptor.decryptWithoutException(readBytes())); //TODO Make this via Streams, because loading big files in the memory is not efficient
+        writeBytes(decryptor.decryptWithoutException(readBytes())); //TODO Make this via Streams, because loading big files in the memory is not efficient //STOP Could be difficult, because this is encrypting the file itself, and it is not a good idea to create an InputStream and OutputStream at the same time for a file
         return this;
     }
     
