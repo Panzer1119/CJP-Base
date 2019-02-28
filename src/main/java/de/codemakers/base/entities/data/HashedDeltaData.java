@@ -18,6 +18,7 @@ package de.codemakers.base.entities.data;
 
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.security.util.SecureHashUtil;
 
 import java.nio.ByteBuffer;
@@ -25,8 +26,10 @@ import java.util.Arrays;
 
 public abstract class HashedDeltaData extends DeltaData {
     
-    public static final int HASH_SIZE_BYTES = 32;
+    public static final Hasher HASHER_32SHA_256 = SecureHashUtil.createHasher32SHA_256();
+    public static final Hasher HASHER_64SHA_512 = SecureHashUtil.createHasher64SHA_512();
     
+    protected int hashLength = HASHER_32SHA_256.getHashLength();
     protected byte[] hash = null;
     
     public HashedDeltaData() {
@@ -79,20 +82,38 @@ public abstract class HashedDeltaData extends DeltaData {
         return this;
     }
     
+    public int getHashLength() {
+        return hashLength;
+    }
+    
+    public HashedDeltaData setHashLength(int hashLength) {
+        this.hashLength = hashLength;
+        return this;
+    }
+    
     public byte[] getHash() {
         return hash;
     }
     
     public HashedDeltaData setHash(byte[] hash) {
-        if (hash.length != HASH_SIZE_BYTES) {
-            throw new IllegalArgumentException();
+        if (hash.length != hashLength) {
+            throw new IllegalArgumentException("hash.length does not match hashLength");
         }
         this.hash = hash;
         return this;
     }
     
-    public HashedDeltaData generateHash(byte[] data_new) {
-        setHash(SecureHashUtil.hashSHA_256(data_new));
+    public HashedDeltaData generateHash32BytesSHA256(byte[] data_new) {
+        return generateHash(HASHER_32SHA_256, data_new);
+    }
+    
+    public HashedDeltaData generateHash64BytesSHA512(byte[] data_new) {
+        return generateHash(HASHER_64SHA_512, data_new);
+    }
+    
+    public HashedDeltaData generateHash(Hasher hasher, byte[] data_new) {
+        setHashLength(hasher.getHashLength());
+        setHash(hasher.hashWithoutException(data_new));
         return this;
     }
     
@@ -100,6 +121,7 @@ public abstract class HashedDeltaData extends DeltaData {
     public void set(Copyable copyable) {
         final HashedDeltaData deltaData = Require.clazz(copyable, HashedDeltaData.class);
         if (deltaData != null) {
+            setVersion(deltaData.version);
             setLength(deltaData.length);
             setDataNew(deltaData.data_new);
             setHash(deltaData.hash);
