@@ -56,6 +56,9 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
             } else if (((ObjectHolder) object).getObject() instanceof DeltaData) {
                 final ObjectHolder<DeltaData> objectHolder = (ObjectHolder<DeltaData>) object;
                 final IncrementalObject<T> incrementalObject = incrementalObjects.get(objectHolder.getId());
+                if (incrementalObject == null) {
+                    throw new NullPointerException(objectHolder.getObject().getClass() + " is not in incrementalObjects");
+                }
                 System.out.println("REAL SIZE BIG: " + SerializationUtil.objectToBytesWithoutException(new ObjectHolder<>(incrementalObject)).length * Byte.SIZE);
                 System.out.println("REAL SIZE SMALL: " + SerializationUtil.objectToBytesWithoutException(objectHolder).length * Byte.SIZE);
                 System.out.println("Normal Size: " + incrementalObject.getData().length * Byte.SIZE);
