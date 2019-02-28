@@ -16,13 +16,10 @@
 
 package de.codemakers.io.file;
 
-import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OS;
 import de.codemakers.base.os.OSUtil;
-import de.codemakers.base.reflection.AutoRegister;
-import de.codemakers.base.reflection.ReflectionUtil;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Convertable;
 import de.codemakers.base.util.interfaces.Copyable;
@@ -79,7 +76,8 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
-        //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()? //UPDATE Used Standard.async(), but this needs to be improved, because the first call of an AdvancedFile may takes usage of a 3rd party FileProvider, which is not yet loaded...
+        //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()? //UPDATE Enabled this using Standard.async(), but this needs to be improved, because the first call of an AdvancedFile may takes usage of a 3rd party FileProvider, which is not yet loaded... //UPDATE Disabled this again, because if you are running ultra short tests, this is still blocking the process
+        /*
         Standard.async(() -> {
             final Set<Class<? extends FileProvider>> fileProviders = ReflectionUtil.getSubClasses(FileProvider.class);
             fileProviders.stream().filter((fileProvider) -> fileProvider.getAnnotation(AutoRegister.class) != null).forEach((fileProvider) -> {
@@ -96,6 +94,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 }
             });
         });
+        */
     }
     
     private String[] paths;
