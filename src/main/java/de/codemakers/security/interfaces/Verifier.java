@@ -18,10 +18,16 @@ package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughBiPredicate;
 import de.codemakers.base.util.tough.ToughConsumer;
 
 @FunctionalInterface
-public interface Verifier {
+public interface Verifier extends ToughBiPredicate<byte[], byte[]> {
+    
+    @Override
+    default Boolean test(byte[] data, byte[] data_signature) throws Exception {
+        return verify(data, data_signature);
+    }
     
     boolean verify(byte[] data, byte[] data_signature) throws Exception;
     

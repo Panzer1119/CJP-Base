@@ -26,6 +26,11 @@ import javax.crypto.Cipher;
 @FunctionalInterface
 public interface Signer extends Cryptor {
     
+    @Override
+    default boolean usesIV() {
+        return false;
+    }
+    
     byte[] sign(byte[] data) throws Exception;
     
     @Override

@@ -19,15 +19,21 @@ package de.codemakers.security.interfaces;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.exceptions.NotSupportedRuntimeException;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughSupplier;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface Cryptor {
+    
+    boolean usesIV();
     
     byte[] crypt(byte[] data, byte[] iv) throws Exception;
     
@@ -93,12 +99,50 @@ public interface Cryptor {
         return new CipherOutputStream(outputStream, createCipher());
     }
     
+    @Deprecated
+    default CipherOutputStream toCipherOutputStream(ToughSupplier<Doublet<OutputStream, byte[]>> toughSupplier) {
+        final Doublet<OutputStream, byte[]> doublet = toughSupplier.getWithoutException();
+        return toCipherOutputStream(doublet.getA(), doublet.getB());
+    }
+    
+    default CipherOutputStream toCipherOutputStreamWithIV(OutputStream outputStream, byte[] iv) {
+        try {
+            final DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+            if (iv != null) {
+                dataOutputStream.writeInt(iv.length);
+                dataOutputStream.write(iv);
+            }
+            return toCipherOutputStream(dataOutputStream, iv);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
     default CipherInputStream toCipherInputStream(InputStream inputStream, byte[] iv) {
         return new CipherInputStream(inputStream, createCipher(iv));
     }
     
     default CipherInputStream toCipherInputStream(InputStream inputStream) {
         return new CipherInputStream(inputStream, createCipher());
+    }
+    
+    @Deprecated
+    default CipherInputStream toCipherInputStream(ToughSupplier<Doublet<InputStream, byte[]>> toughSupplier) {
+        final Doublet<InputStream, byte[]> doublet = toughSupplier.getWithoutException();
+        return toCipherInputStream(doublet.getA(), doublet.getB());
+    }
+    
+    default CipherInputStream toCipherInputStreamWithIV(InputStream inputStream) {
+        try {
+            final DataInputStream dataInputStream = new DataInputStream(inputStream);
+            final byte[] iv = new byte[dataInputStream.readInt()];
+            dataInputStream.read(iv);
+            return toCipherInputStream(dataInputStream, iv);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
     }
     
 }
