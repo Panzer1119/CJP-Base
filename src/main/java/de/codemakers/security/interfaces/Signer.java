@@ -17,13 +17,15 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
+import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.exceptions.NotSupportedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.io.IOUtil;
 
 import javax.crypto.Cipher;
+import java.io.InputStream;
 
-@FunctionalInterface
 public interface Signer extends Cryptor {
     
     @Override
@@ -59,8 +61,97 @@ public interface Signer extends Cryptor {
         return new ReturningAction<>(() -> sign(data));
     }
     
+    default byte[] sign(InputStream inputStream) throws Exception {
+        IOUtil.processInputStream(inputStream, (buffer, read) -> update(buffer, 0, read));
+        return sign();
+    }
+    
+    default byte[] sign(InputStream inputStream, ToughConsumer<Throwable> failure) {
+        try {
+            return sign(inputStream);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default byte[] signWithoutException(InputStream inputStream) {
+        return sign(inputStream, null);
+    }
+    
+    default ReturningAction<byte[]> signAction(InputStream inputStream) {
+        return new ReturningAction<>(() -> sign(inputStream));
+    }
+    
     default Cipher getCipher(byte[] iv) {
         throw new NotSupportedRuntimeException("This " + getClass().getSimpleName() + " does not work with a " + Cipher.class.getSimpleName());
     }
+    
+    byte[] sign() throws Exception;
+    
+    default byte[] sign(ToughConsumer<Throwable> failure) {
+        try {
+            return sign();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    default byte[] signWithoutException() {
+        return sign((ToughConsumer<Throwable>) null);
+    }
+    
+    default ReturningAction<byte[]> signAction() {
+        return new ReturningAction<>(() -> sign());
+    }
+    
+    void update(byte[] data, int offset, int length) throws Exception;
+    
+    default void update(byte[] data) throws Exception {
+        update(data, 0, data.length);
+    }
+    
+    default void update(byte[] data, int offset, int length, ToughConsumer<Throwable> failure) {
+        try {
+            update(data, offset, length);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+        }
+    }
+    
+    default void update(byte[] data, ToughConsumer<Throwable> failure) {
+        update(data, 0, data.length, failure);
+    }
+    
+    default void updateWithoutException(byte[] data, int offset, int length) {
+        update(data, offset, length, null);
+    }
+    
+    default void updateWithoutException(byte[] data) {
+        update(data, 0, data.length, null);
+    }
+    
+    default RunningAction updateAction(byte[] data, int offset, int length) {
+        return new RunningAction(() -> update(data, offset, length));
+    }
+    
+    default RunningAction updateAction(byte[] data) {
+        return new RunningAction(() -> update(data, 0, data.length));
+    }
+    
+    int getSignatureLength();
     
 }
