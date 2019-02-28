@@ -16,35 +16,28 @@
 
 package de.codemakers.base.logger;
 
-import de.codemakers.base.exceptions.NotImplementedRuntimeException;
+import de.codemakers.base.util.AbstractFormatBuilder;
 import de.codemakers.base.util.StringUtil;
 import de.codemakers.base.util.TimeUtil;
-import de.codemakers.base.util.interfaces.Finishable;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LogFormatBuilder implements Finishable<String> {
-    
-    protected String format;
-    protected boolean checkAndCorrectAppendedText = true;
+public class LogFormatBuilder extends AbstractFormatBuilder<LogFormatBuilder> {
     
     public LogFormatBuilder() {
-        this("");
+        super();
     }
     
     public LogFormatBuilder(String format) {
-        this.format = format;
+        super(format);
     }
     
-    public LogFormatBuilder appendText(String text) {
-        if (checkAndCorrectAppendedText) {
-            text = StringUtil.escapeStringSubstitutorVariableCalls(text);
-        }
-        format += text;
-        return this;
+    @Override
+    protected String checkAndCorrectText(String text) {
+        return StringUtil.escapeStringSubstitutorVariableCalls(text);
     }
     
     public LogFormatBuilder appendTimestamp() {
@@ -72,6 +65,7 @@ public class LogFormatBuilder implements Finishable<String> {
         return this;
     }
     
+    @Override
     public String example() {
         return example(null);
     }
@@ -86,24 +80,6 @@ public class LogFormatBuilder implements Finishable<String> {
         return StringSubstitutor.replace(format, map);
     }
     
-    public String toFormat() {
-        return format;
-    }
-    
-    public LogFormatBuilder setFormat(String format) {
-        this.format = format;
-        return this;
-    }
-    
-    public boolean isCheckAndCorrectAppendedText() {
-        return checkAndCorrectAppendedText;
-    }
-    
-    public LogFormatBuilder setCheckAndCorrectAppendedText(boolean checkAndCorrectAppendedText) {
-        this.checkAndCorrectAppendedText = checkAndCorrectAppendedText;
-        return this;
-    }
-    
     @Override
     public String toString() {
         return "LogFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
@@ -111,7 +87,7 @@ public class LogFormatBuilder implements Finishable<String> {
     
     @Override
     public String finish() throws Exception {
-        throw new NotImplementedRuntimeException();
+        throw new AbstractMethodError();
     }
     
 }
