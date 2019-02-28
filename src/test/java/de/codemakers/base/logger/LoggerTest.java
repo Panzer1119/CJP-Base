@@ -73,6 +73,7 @@ public class LoggerTest {
         Logger.log("StringUtil.STRING_SUBSTITUTOR_REPLACEMENT=" + StringUtil.STRING_SUBSTITUTOR_REPLACEMENT);
         Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendText("NEW LOG FORMAT___").appendTimestamp().appendText(": ").appendObject().finishWithoutException();
         Logger.log("Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder() Test");
+        Logger.log("Test if escape chars are causing problems $$ <- these are 2 dollar signs, this is just one -> $ and this are 3 -> $$$ (chars$around$signs) Test end");
     }
     
 }
