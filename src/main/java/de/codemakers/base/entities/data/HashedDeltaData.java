@@ -28,8 +28,10 @@ public abstract class HashedDeltaData extends DeltaData {
     
     public static final Hasher HASHER_32SHA_256 = SecureHashUtil.createHasher32SHA_256();
     public static final Hasher HASHER_64SHA_512 = SecureHashUtil.createHasher64SHA_512();
+    public static final int HASH_LENGTH_SHA_256 = HASHER_32SHA_256.getHashLength();
+    public static final int HASH_LENGTH_SHA_512 = HASHER_64SHA_512.getHashLength();
     
-    protected int hashLength = HASHER_32SHA_256.getHashLength();
+    protected int hashLength = HASH_LENGTH_SHA_256;
     protected byte[] hash = null;
     
     public HashedDeltaData() {

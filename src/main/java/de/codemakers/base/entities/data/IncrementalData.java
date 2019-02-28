@@ -53,7 +53,7 @@ public class IncrementalData extends Data implements Version {
         Objects.requireNonNull(deltaData);
         if (!forceIncrement) {
             if (deltaData.getVersion() == getVersion()) {
-                throw new IllegalArgumentException(deltaData.getClass().getName() + "'s version is the same as this version \"" + getVersion() + "\"");
+                throw new IllegalArgumentException(deltaData.getClass().getName() + "'s version is the same as this version (\"" + getVersion() + "\")");
             } else if (Math.abs(deltaData.getVersion() - getVersion()) != 1) {
                 throw new IllegalArgumentException(deltaData.getClass().getName() + "'s version \"" + deltaData.getVersion() + "\" is not 1 offset from this version \"" + getVersion() + "\" (offset is " + Math.abs(deltaData.getVersion() - getVersion()) + ")");
             }
@@ -66,8 +66,14 @@ public class IncrementalData extends Data implements Version {
         }
         if (!forceIncrement && (deltaData instanceof HashedDeltaData)) {
             final HashedDeltaData hashedDeltaData = (HashedDeltaData) deltaData;
-            if (!SecureHashUtil.isDataValidSHA_256(data_new, hashedDeltaData.getHash())) {
-                throw new IllegalArgumentException("The hash of the new data is not equal to the given hash");
+            if (hashedDeltaData.getHashLength() == HashedDeltaData.HASH_LENGTH_SHA_256) {
+                if (!SecureHashUtil.isDataValidSHA_256(data_new, hashedDeltaData.getHash())) { //FIXME Hardcoded hash length
+                    throw new IllegalArgumentException("The hash of the new data is not equal to the given hash");
+                }
+            } else if (hashedDeltaData.getHashLength() == HashedDeltaData.HASH_LENGTH_SHA_512) {
+                if (!SecureHashUtil.isDataValidSHA_512(data_new, hashedDeltaData.getHash())) { //FIXME Hardcoded hash length
+                    throw new IllegalArgumentException("The hash of the new data is not equal to the given hash");
+                }
             }
         }
         setData(data_new);
@@ -94,6 +100,7 @@ public class IncrementalData extends Data implements Version {
     public void set(Copyable copyable) {
         final IncrementalData incrementalData = Require.clazz(copyable, IncrementalData.class);
         if (incrementalData != null) {
+            version.set(incrementalData.version.get());
             setData(incrementalData.getData());
         }
     }
