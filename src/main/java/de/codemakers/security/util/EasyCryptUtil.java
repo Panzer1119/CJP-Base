@@ -16,6 +16,7 @@
 
 package de.codemakers.security.util;
 
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.ConvertUtil;
 import de.codemakers.base.util.tough.ToughFunction;
@@ -85,6 +86,11 @@ public class EasyCryptUtil {
     public static final Cryptor cryptorOfCipher(Cipher cipher) {
         return new Cryptor() {
             @Override
+            public boolean usesIV() {
+                return false;
+            }
+    
+            @Override
             public byte[] crypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
             }
@@ -100,6 +106,11 @@ public class EasyCryptUtil {
         final Cipher cipher = cipherToughSupplier.getWithoutException();
         return new Cryptor() {
             @Override
+            public boolean usesIV() {
+                return false;
+            }
+            
+            @Override
             public byte[] crypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
             }
@@ -113,6 +124,11 @@ public class EasyCryptUtil {
     
     public static final Encryptor encryptorOfCipher(Cipher cipher) {
         return new Encryptor() {
+            @Override
+            public boolean usesIV() {
+                return false;
+            }
+    
             @Override
             public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
@@ -128,6 +144,11 @@ public class EasyCryptUtil {
     public static final Encryptor encryptorOfCipher(ToughSupplier<Cipher> cipherToughSupplier) {
         final Cipher cipher = cipherToughSupplier.getWithoutException();
         return new Encryptor() {
+            @Override
+            public boolean usesIV() {
+                return false;
+            }
+    
             @Override
             public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
@@ -157,6 +178,11 @@ public class EasyCryptUtil {
     public static final Decryptor decryptorOfCipher(Cipher cipher) {
         return new Decryptor() {
             @Override
+            public boolean usesIV() {
+                return false;
+            }
+    
+            @Override
             public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
             }
@@ -171,6 +197,11 @@ public class EasyCryptUtil {
     public static final Decryptor decryptorOfCipher(ToughSupplier<Cipher> cipherToughSupplier) {
         final Cipher cipher = cipherToughSupplier.getWithoutException();
         return new Decryptor() {
+            @Override
+            public boolean usesIV() {
+                return false;
+            }
+    
             @Override
             public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
@@ -224,9 +255,27 @@ public class EasyCryptUtil {
     }
     
     public static final Signer signerOfSignature(Signature signature) {
-        return (data) -> {
-            signature.update(data);
-            return signature.sign();
+        return new Signer() {
+            @Override
+            public byte[] sign(byte[] data) throws Exception {
+                signature.update(data);
+                return signature.sign();
+            }
+    
+            @Override
+            public byte[] sign() throws Exception {
+                return signature.sign();
+            }
+    
+            @Override
+            public void update(byte[] data, int offset, int length) throws Exception {
+                signature.update(data, offset, length);
+            }
+    
+            @Override
+            public int getSignatureLength() {
+                throw new NotYetImplementedRuntimeException(); //FIXME Add this
+            }
         };
     }
     
@@ -244,9 +293,27 @@ public class EasyCryptUtil {
     }
     
     public static final Verifier verifierOfSignature(Signature signature) {
-        return (data, data_signature) -> {
-            signature.update(data);
-            return signature.verify(data_signature);
+        return new Verifier() {
+            @Override
+            public boolean verify(byte[] data, byte[] data_signature) throws Exception {
+                signature.update(data);
+                return signature.verify(data_signature);
+            }
+    
+            @Override
+            public boolean verify(byte[] data_signature) throws Exception {
+                return signature.verify(data_signature);
+            }
+    
+            @Override
+            public void update(byte[] data, int offset, int length) throws Exception {
+                signature.update(data, offset, length);
+            }
+    
+            @Override
+            public int getSignatureLength() {
+                throw new NotYetImplementedRuntimeException(); //FIXME Add this
+            }
         };
     }
     
@@ -411,11 +478,16 @@ public class EasyCryptUtil {
         if (ivFunction != null) {
             return new Encryptor() {
                 @Override
+                public boolean usesIV() {
+                    return true;
+                }
+                
+                @Override
                 public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
                     cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
                     return cipher.doFinal(data);
                 }
-                
+    
                 @Override
                 public Cipher createCipher(byte[] iv) {
                     try {
@@ -440,6 +512,11 @@ public class EasyCryptUtil {
         if (ivFunction != null) {
             final Cipher cipher = cipherToughSupplier.getWithoutException();
             return new Encryptor() {
+                @Override
+                public boolean usesIV() {
+                    return true;
+                }
+                
                 @Override
                 public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
                     cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
@@ -470,6 +547,11 @@ public class EasyCryptUtil {
         if (ivFunction != null) {
             return new Decryptor() {
                 @Override
+                public boolean usesIV() {
+                    return true;
+                }
+                
+                @Override
                 public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
                     cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
                     return cipher.doFinal(data);
@@ -499,6 +581,11 @@ public class EasyCryptUtil {
         if (ivFunction != null) {
             final Cipher cipher = cipherToughSupplier.getWithoutException();
             return new Decryptor() {
+                @Override
+                public boolean usesIV() {
+                    return true;
+                }
+                
                 @Override
                 public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
                     cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
