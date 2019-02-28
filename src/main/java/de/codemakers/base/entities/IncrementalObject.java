@@ -49,7 +49,8 @@ public class IncrementalObject<T extends Serializable> extends IncrementalData {
     @Override
     public IncrementalObject<T> incrementData(DeltaData deltaData) {
         super.incrementData(deltaData);
-        object = getData() == null ? null : (T) SerializationUtil.bytesToObjectWithoutException(getData());
+        final byte[] temp = getData();
+        object = temp == null ? null : (T) SerializationUtil.bytesToObjectWithoutException(temp);
         return this;
     }
     
