@@ -35,10 +35,13 @@ public class AdvancedFileInternTest {
         Logger.logDebug(new AdvancedFile("").getAbsoluteFile().getPath());
         Logger.logDebug(new AdvancedFile("").getAbsoluteFile().exists());
         Logger.logDebug(new AdvancedFile("").getAbsoluteFile().listFiles(false));
+        /*
+        //Not useful on Windows (Because windows has not THE root folder, it uses multiple drive letters)
         Logger.logDebug(new AdvancedFile("/"));
         Logger.logDebug(new AdvancedFile("/").getPath());
         Logger.logDebug(new AdvancedFile("/").exists());
         Logger.logDebug(new AdvancedFile("/").listFiles(false));
+        */
         Logger.logDebug(new AdvancedFile("intern:/"));
         Logger.logDebug(new AdvancedFile("intern:/").getPath());
         Logger.logDebug(new AdvancedFile("intern:/").listFiles(false));

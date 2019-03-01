@@ -145,10 +145,12 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             if (parent != null) {
                 paths = Arrays.copyOf(paths, paths.length + 1);
                 System.arraycopy(paths, 0, paths, 1, paths.length - 1);
-                paths[0] = parent.getPath();
+                paths[0] = (parent.extern ? PREFIX_EXTERN : PREFIX_INTERN) + parent.getPath();
                 this.windowsSeparator = parent.windowsSeparator;
+                /*
                 this.extern = parent.extern;
                 this.absolute = parent.absolute;
+                */
             }
         }
         this.paths = paths;
