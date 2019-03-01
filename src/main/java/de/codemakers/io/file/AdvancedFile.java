@@ -497,6 +497,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().isFile();
         } else {
+            if (paths.length == 0) {
+                return false;
+            }
             return toRealPath().closeWithoutException(Files::isRegularFile);
         }
     }
@@ -522,6 +525,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (isExtern()) {
             return toFile().isDirectory();
         } else {
+            if (paths.length == 0) {
+                return true;
+            }
             return toRealPath().closeWithoutException(Files::isDirectory);
         }
     }

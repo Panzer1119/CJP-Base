@@ -259,6 +259,15 @@ public class Logger {
     }
     
     /**
+     * Logs an {@link java.lang.Object} as Error using the {@link de.codemakers.base.logger.Logger#LOGGER}
+     *
+     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
+     */
+    public static void logError(Object object) {
+        logError(object, null);
+    }
+    
+    /**
      * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} using the {@link de.codemakers.base.logger.Logger#LOGGER}
      *
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
