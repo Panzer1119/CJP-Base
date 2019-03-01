@@ -19,9 +19,7 @@ package de.codemakers.security.interfaces;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.exceptions.NotSupportedRuntimeException;
 import de.codemakers.base.logger.Logger;
-import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.tough.ToughConsumer;
-import de.codemakers.base.util.tough.ToughSupplier;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -99,12 +97,6 @@ public interface Cryptor {
         return new CipherOutputStream(outputStream, createCipher());
     }
     
-    @Deprecated
-    default CipherOutputStream toCipherOutputStream(ToughSupplier<Doublet<OutputStream, byte[]>> toughSupplier) {
-        final Doublet<OutputStream, byte[]> doublet = toughSupplier.getWithoutException();
-        return toCipherOutputStream(doublet.getA(), doublet.getB());
-    }
-    
     default CipherOutputStream toCipherOutputStreamWithIV(OutputStream outputStream, byte[] iv) {
         try {
             final DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
@@ -125,12 +117,6 @@ public interface Cryptor {
     
     default CipherInputStream toCipherInputStream(InputStream inputStream) {
         return new CipherInputStream(inputStream, createCipher());
-    }
-    
-    @Deprecated
-    default CipherInputStream toCipherInputStream(ToughSupplier<Doublet<InputStream, byte[]>> toughSupplier) {
-        final Doublet<InputStream, byte[]> doublet = toughSupplier.getWithoutException();
-        return toCipherInputStream(doublet.getA(), doublet.getB());
     }
     
     default CipherInputStream toCipherInputStreamWithIV(InputStream inputStream) {

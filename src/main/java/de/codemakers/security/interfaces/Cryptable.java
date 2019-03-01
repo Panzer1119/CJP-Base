@@ -18,9 +18,13 @@ package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.interfaces.Streamable;
 import de.codemakers.base.util.tough.ToughConsumer;
 
-public interface Cryptable {
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+
+public interface Cryptable extends Streamable {
     
     byte[] crypt(Cryptor cryptor) throws Exception;
     
@@ -66,6 +70,30 @@ public interface Cryptable {
     
     default ReturningAction<Cryptable> cryptThisAction(Cryptor cryptor) {
         return new ReturningAction<>(() -> cryptThis(cryptor));
+    }
+    
+    default CipherInputStream toCipherInputStream(Cryptor cryptor) {
+        return cryptor.toCipherInputStream(toInputStream());
+    }
+    
+    default CipherInputStream toCipherInputStream(Cryptor cryptor, byte[] iv) {
+        return cryptor.toCipherInputStream(toInputStream(), iv);
+    }
+    
+    default CipherInputStream toCipherInputStreamWithIV(Cryptor cryptor) {
+        return cryptor.toCipherInputStreamWithIV(toInputStream());
+    }
+    
+    default CipherOutputStream toCipherOutputStream(Cryptor cryptor) {
+        return cryptor.toCipherOutputStream(toOutputStream());
+    }
+    
+    default CipherOutputStream toCipherOutputStream(Cryptor cryptor, byte[] iv) {
+        return cryptor.toCipherOutputStream(toOutputStream(), iv);
+    }
+    
+    default CipherOutputStream toCipherOutputStreamWithIV(Cryptor cryptor, byte[] iv) {
+        return cryptor.toCipherOutputStreamWithIV(toOutputStream(), iv);
     }
     
 }

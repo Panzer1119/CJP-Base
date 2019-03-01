@@ -848,6 +848,16 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return this;
     }
     
+    @Override
+    public InputStream toInputStream() {
+        return createInputStreamWithoutException();
+    }
+    
+    @Override
+    public OutputStream toOutputStream() {
+        return createOutputStreamWithoutException();
+    }
+    
     public Data toData() {
         return new Data(readBytesWithoutException());
     }

@@ -19,6 +19,9 @@ package de.codemakers.security.entities;
 import de.codemakers.base.entities.data.Data;
 import de.codemakers.security.interfaces.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -106,6 +109,16 @@ public class SecureData extends Data implements Decryptable, Encryptable {
         }
         final SecureData that = (SecureData) o;
         return Arrays.equals(data, that.data);
+    }
+    
+    @Override
+    public InputStream toInputStream() {
+        return new ByteArrayInputStream(data);
+    }
+    
+    @Override
+    public OutputStream toOutputStream() {
+        throw new UnsupportedOperationException();
     }
     
 }
