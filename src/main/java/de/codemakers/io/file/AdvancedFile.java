@@ -114,7 +114,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     private transient File file;
     
     public AdvancedFile(String... paths) {
-        this(null, true, (paths.length == 0 || (paths.length == 1 && paths[0].isEmpty())) ? new String[] {""} : paths);
+        this(null, true, (paths.length == 0/* || (paths.length == 1 && paths[0].isEmpty())*/) ? new String[] {""} : paths);
     }
     
     public AdvancedFile(String name, String[] paths) {
@@ -123,7 +123,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         this.paths = Arrays.copyOf(paths, paths.length + 1);
         this.paths[paths.length] = name;
         this.extern = !checkInternAndCorrect();
-        this.absolute = checkAbsolute(this.paths);
+        this.absolute = checkAbsoluteAndCorrect();
         checkInternAndRelative();
         init();
     }
@@ -154,7 +154,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         this.paths = paths;
         if (!init) {
             this.extern = !checkInternAndCorrect();
-            this.absolute = checkAbsolute(this.paths);
+            this.absolute = checkAbsoluteAndCorrect();
         }
         checkInternAndRelative();
         init();
@@ -171,7 +171,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             init = true;
         } else {
             this.extern = !checkInternAndCorrect();
-            this.absolute = checkAbsolute(paths);
+            this.absolute = checkAbsoluteAndCorrect();
             checkInternAndRelative();
         }
         init();
@@ -198,12 +198,29 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name)).findFirst().orElse(null);
     }
     
-    public static final boolean checkAbsolute(String... paths) {
+    public final boolean checkAbsoluteAndCorrect() {
         if (paths == null || paths.length == 0) {
             return false;
         }
-        final String temp = paths[0];
-        return temp.startsWith(FILE_SEPARATOR_DEFAULT_STRING) || (temp.length() >= 2 && temp.charAt(1) == ':');
+        if (paths[0].startsWith(FILE_SEPARATOR_DEFAULT_STRING)) {
+            paths[0] = paths[0].substring(FILE_SEPARATOR_DEFAULT_STRING.length());
+            if (paths[0].isEmpty()) {
+                System.arraycopy(paths, 1, paths, 0, paths.length - 1);
+                paths = Arrays.copyOf(paths, paths.length - 1);
+            }
+            windowsSeparator = false;
+            init = true;
+            return true;
+        } else if (paths[0].length() >= 2 && paths[0].charAt(1) == ':') {
+            paths = Arrays.copyOf(paths, paths.length + 1);
+            System.arraycopy(paths, 0, paths, 1, paths.length - 1);
+            paths[0] = paths[0].substring(0, 2);
+            paths[1] = paths[1].substring(3);
+            windowsSeparator = true;
+            init = true;
+            return true;
+        }
+        return false;
     }
     
     public static final AdvancedFile intern(String... paths) {
@@ -341,11 +358,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 temp.clear();
                 name = "";
                 if (DEBUG_FILE_PROVIDER) {
-                    System.out.println("FOUND A  FILE PROVIDER FOR: \"" + p + "\": " + fileProvider);
+                    Logger.logDebug("FOUND A  FILE PROVIDER FOR: \"" + p + "\": " + fileProvider);
                 }
             } else {
                 if (DEBUG_FILE_PROVIDER) {
-                    System.out.println("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
+                    Logger.logDebug("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
                 }
             }
         }
@@ -380,6 +397,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     private final String generatePath() {
         path = Stream.of(paths).collect(Collectors.joining(getSeparator()));
+        if (parent == null && !windowsSeparator && isAbsolute()) {
+            path = getSeparatorChar() + path;
+        }
         return path;
     }
     
@@ -1009,9 +1029,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     public String toString() {
         if (DEBUG_TO_STRING) {
             if (DEBUG_TO_STRING_BIG) {
-                return getClass().getSimpleName() + "{" + "paths=" + Arrays.toString(paths) + ", init=" + init + ", windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", absolute=" + absolute + ", fileProvider=" + fileProvider + ", clazz=" + clazz + ", path='" + path + '\'' + ", path_=" + path_ + ", uri=" + uri + ", url=" + url + ", file=" + file + ", parent=" + parent + '}';
+                return getClass().getSimpleName() + "{" + "paths=" + Arrays.toString(paths) + " (" + paths.length + ")" + ", init=" + init + ", windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", absolute=" + absolute + ", fileProvider=" + fileProvider + ", clazz=" + clazz + ", path='" + path + '\'' + ", path_=" + path_ + ", uri=" + uri + ", url=" + url + ", file=" + file + ", parent=" + parent + '}';
             } else {
-                return getClass().getSimpleName() + "{" + "paths=" + Arrays.toString(paths) + ", windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", absolute=" + absolute + ", fileProvider=" + fileProvider + ", clazz=" + clazz + ", parent=" + parent + '}';
+                return getClass().getSimpleName() + "{" + "paths=" + Arrays.toString(paths) + " (" + paths.length + ")" + ", windowsSeparator=" + windowsSeparator + ", extern=" + extern + ", absolute=" + absolute + ", fileProvider=" + fileProvider + ", clazz=" + clazz + ", parent=" + parent + '}';
             }
         }
         return getPath();

@@ -16,13 +16,37 @@
 
 package de.codemakers.io.file;
 
+import de.codemakers.base.logger.LogLevel;
+import de.codemakers.base.logger.Logger;
+
+import java.util.stream.Collectors;
+
 public class AdvancedFileInternTest {
     
     public static final void main(String[] args) {
+        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendText(": ").appendObject().appendNewLine().appendLocation().appendNewLine().finishWithoutException();
         AdvancedFile.DEBUG = true;
         AdvancedFile.DEBUG_FILE_PROVIDER = false;
         AdvancedFile.DEBUG_TO_STRING = true;
         AdvancedFile.DEBUG_TO_STRING_BIG = false;
+        Logger.logDebug(new AdvancedFile(""));
+        Logger.logDebug(new AdvancedFile("").getPath());
+        Logger.logDebug(new AdvancedFile("").getAbsoluteFile().getPath());
+        Logger.logDebug(new AdvancedFile("").getAbsoluteFile().exists());
+        Logger.logDebug(new AdvancedFile("").getAbsoluteFile().listFiles(false));
+        Logger.logDebug(new AdvancedFile("/"));
+        Logger.logDebug(new AdvancedFile("/").getPath());
+        Logger.logDebug(new AdvancedFile("/").exists());
+        Logger.logDebug(new AdvancedFile("/").listFiles(false));
+        Logger.logDebug(new AdvancedFile("intern:/"));
+        Logger.logDebug(new AdvancedFile("intern:/").getPath());
+        Logger.logDebug(new AdvancedFile("intern:/").listFiles(false));
+        Logger.logDebug(new AdvancedFile("intern:/").listFiles(false).stream().map(AdvancedFile::getPath).collect(Collectors.joining(", ", "[", "]")));
+        Logger.logDebug(new AdvancedFile("intern:/de").listFiles(false));
+        Logger.logDebug(new AdvancedFile("intern:/de").listFiles(false).stream().map(AdvancedFile::getPath).collect(Collectors.joining(", ", "[", "]")));
+        Logger.logDebug(new AdvancedFile("intern:/de/codemakers").listFiles(false));
+        Logger.logDebug(new AdvancedFile("intern:/de/codemakers").listFiles(false).stream().map(AdvancedFile::getPath).collect(Collectors.joining(", ", "[", "]")));
         final AdvancedFile advancedFile_file_1 = new AdvancedFile("intern:/de/codemakers/io/file/" + AdvancedFileInternTest.class.getSimpleName() + ".class");
         System.out.println("advancedFile_file_1: " + advancedFile_file_1);
         System.out.println("advancedFile_file_1 exists: " + advancedFile_file_1.exists());
