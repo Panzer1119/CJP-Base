@@ -30,6 +30,9 @@ public class HecTocTest {
     public static final char[] OPERATORS = OPERATORS_STRING.toCharArray();
     public static final String PRES_STRING = " -";
     public static final char[] PRES = PRES_STRING.toCharArray();
+    public static int TESTED_ALL = 0;
+    public static int TESTED = 0;
+    public static int FOUND = 0;
     
     public static final void main(String[] args) throws Exception {
         final JavaScriptEngineBuilder javaScriptEngineBuilder = new JavaScriptEngineBuilder();
@@ -39,8 +42,14 @@ public class HecTocTest {
         //final char[] numbers = new char[6];
         final char[] numbers = "523954".toCharArray();
         Logger.log("numbers=" + Arrays.toString(numbers));
+        final long start = System.currentTimeMillis();
         final boolean found = test(javaScriptEngine, numbers);
+        final long duration = System.currentTimeMillis() - start;
         Logger.log("found=" + found);
+        Logger.log("Time taken: " + duration + " ms");
+        Logger.log("TESTED_ALL=" + TESTED_ALL);
+        Logger.log("TESTED    =" + TESTED);
+        Logger.log("FOUND     =" + FOUND);
     }
     
     public static boolean test(JavaScriptEngine javaScriptEngine, char[] numbers) throws Exception {
@@ -167,12 +176,15 @@ public class HecTocTest {
         last = "";
         code += " == 100";
         try {
+            TESTED_ALL++;
             final Object result = javaScriptEngine.execute(code);
+            TESTED++; //This does not count the failed ones
             if (result == null) {
                 return false;
             }
             final boolean found = (Boolean) result;
             if (found) {
+                FOUND++;
                 Logger.log("code=" + code);
                 Logger.log("result=" + result);
                 return true;
