@@ -47,8 +47,28 @@ public class EndableInputStream extends InputStream {
     }
     
     @Override
+    public int available() throws IOException {
+        return inputStream.available();
+    }
+    
+    @Override
     public void close() throws IOException {
         inputStream.close();
+    }
+    
+    @Override
+    public synchronized void mark(int readlimit) {
+        inputStream.mark(readlimit);
+    }
+    
+    @Override
+    public synchronized void reset() throws IOException {
+        inputStream.reset();
+    }
+    
+    @Override
+    public boolean markSupported() {
+        return inputStream.markSupported();
     }
     
 }
