@@ -39,6 +39,7 @@ public class EndableInputStream extends InputStream {
             return inputStream.read();
         } else if (temp == NULL_BYTE_INT) {
             //TODO Transmission ended
+            return -1;
         }
         return temp;
     }
