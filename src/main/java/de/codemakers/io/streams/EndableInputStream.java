@@ -46,4 +46,9 @@ public class EndableInputStream extends InputStream {
         return temp;
     }
     
+    @Override
+    public void close() throws IOException {
+        inputStream.close();
+    }
+    
 }

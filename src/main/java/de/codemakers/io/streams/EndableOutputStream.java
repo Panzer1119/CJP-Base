@@ -49,7 +49,7 @@ public class EndableOutputStream extends OutputStream {
     public void close() throws IOException {
         outputStream.write(NULL_BYTE_INT);
         flush();
-        //outputStream.close(); //TODO Also close outputStream? Not good?
+        outputStream.close();
     }
     
 }
