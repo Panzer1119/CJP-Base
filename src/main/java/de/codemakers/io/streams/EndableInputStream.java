@@ -25,6 +25,8 @@ public class EndableInputStream extends InputStream {
     public static final int NULL_BYTE_INT = NULL_BYTE & 0xFF;
     public static final byte ESCAPE_BYTE = Byte.MIN_VALUE;
     public static final int ESCAPE_BYTE_INT = ESCAPE_BYTE & 0xFF;
+    public static final int CLOSED_INT = -2;
+    public static final int ENDED_INT = -2;
     
     protected final InputStream inputStream;
     
@@ -39,7 +41,7 @@ public class EndableInputStream extends InputStream {
             return inputStream.read();
         } else if (temp == NULL_BYTE_INT) {
             //TODO Transmission ended
-            return -1;
+            return ENDED_INT;
         }
         return temp;
     }

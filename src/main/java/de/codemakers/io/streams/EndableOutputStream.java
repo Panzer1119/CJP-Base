@@ -48,7 +48,8 @@ public class EndableOutputStream extends OutputStream {
     @Override
     public void close() throws IOException {
         outputStream.write(NULL_BYTE_INT);
-        //TODO Also close outputStream?
+        flush();
+        //outputStream.close(); //TODO Also close outputStream? Not good?
     }
     
 }

@@ -16,17 +16,61 @@
 
 package de.codemakers.io.streams;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
+
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.security.SecureRandom;
+import java.util.Arrays;
 
 public class EndableInputStreamTest {
     
     public static final void main(String[] args) throws Exception {
-        final EndableInputStream endableInputStream = new EndableInputStream(null);
+        final PipedOutputStream pipedOutputStream = new PipedOutputStream();
+        final PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream);
+        final EndableInputStream endableInputStream = new EndableInputStream(pipedInputStream);
         Logger.log("endableInputStream=" + endableInputStream);
         Logger.log("EndableInputStream.NULL_BYTE=" + EndableInputStream.NULL_BYTE);
         Logger.log("EndableInputStream.NULL_BYTE_INT=" + EndableInputStream.NULL_BYTE_INT);
         Logger.log("EndableInputStream.ESCAPE_BYTE=" + EndableInputStream.ESCAPE_BYTE);
         Logger.log("EndableInputStream.ESCAPE_BYTE_INT=" + EndableInputStream.ESCAPE_BYTE_INT);
+        Standard.async(() -> {
+            int b = 0;
+            while ((b = endableInputStream.read()) >= 0) {
+                Logger.log("[RECEIVER] " + ((byte) (b & 0xFF)));
+            }
+            Logger.log("[RECEIVER] ENDED WITH: " + ((byte) (b & 0xFF)));
+            endableInputStream.close();
+            pipedInputStream.close();
+        });
+        final EndableOutputStream endableOutputStream = new EndableOutputStream(pipedOutputStream);
+        //final int b = Byte.MIN_VALUE & 0xFF;
+        //Logger.log("[SENDER] " + b);
+        //endableOutputStream.write(b);
+        //endableOutputStream.write(128);
+        //endableOutputStream.flush();
+        //Thread.sleep(100);
+        for (byte b = Byte.MIN_VALUE; b < Byte.MAX_VALUE; b++) {
+            Logger.log("[SENDER] " + b);
+            endableOutputStream.write(b & 0xFF);
+            endableOutputStream.flush();
+            //Thread.sleep(100);
+            Thread.sleep(1);
+        }
+        Thread.sleep(1000);
+        Logger.log("");
+        final String message = "Test";
+        endableOutputStream.write(message.getBytes());
+        endableOutputStream.flush();
+        Thread.sleep(1000);
+        Logger.log("");
+        final byte[] bytes = new byte[16];
+        SecureRandom.getInstanceStrong().nextBytes(bytes);
+        Logger.log("bytes=" + Arrays.toString(bytes));
+        endableOutputStream.write(bytes);
+        endableOutputStream.close();
+        pipedOutputStream.close();
         /*
         for (byte b = Byte.MIN_VALUE; b < Byte.MAX_VALUE; b++) {
             Logger.log("b=" + b + ", converted=" + (b & 0xFF) + ", double converted=" + ((byte) ((b & 0xFF) & 0xFF)));
