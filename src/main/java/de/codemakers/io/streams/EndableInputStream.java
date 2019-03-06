@@ -25,7 +25,7 @@ public class EndableInputStream extends InputStream {
     public static final int NULL_BYTE_INT = NULL_BYTE & 0xFF;
     public static final byte ESCAPE_BYTE = Byte.MIN_VALUE;
     public static final int ESCAPE_BYTE_INT = ESCAPE_BYTE & 0xFF;
-    public static final int CLOSED_INT = -2;
+    public static final int CLOSED_INT = -1;
     public static final int ENDED_INT = -2;
     
     protected final InputStream inputStream;
@@ -34,14 +34,17 @@ public class EndableInputStream extends InputStream {
         this.inputStream = inputStream;
     }
     
+    public int streamEnded() {
+        return ENDED_INT;
+    }
+    
     @Override
     public int read() throws IOException {
         final int temp = inputStream.read();
         if (temp == ESCAPE_BYTE_INT) {
             return inputStream.read();
         } else if (temp == NULL_BYTE_INT) {
-            //TODO Transmission ended
-            return ENDED_INT;
+            return streamEnded();
         }
         return temp;
     }
