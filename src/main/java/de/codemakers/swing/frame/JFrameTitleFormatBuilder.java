@@ -30,8 +30,8 @@ public class JFrameTitleFormatBuilder extends AbstractFormatBuilder<JFrameTitleF
         super(format);
     }
     
-    public JFrameTitleFormatBuilder appendTitle() {
-        format += JFrameManager.TITLE_FORMAT_VAR_TITLE;
+    public JFrameTitleFormatBuilder appendName() {
+        format += JFrameManager.TITLE_FORMAT_VAR_NAME;
         return this;
     }
     

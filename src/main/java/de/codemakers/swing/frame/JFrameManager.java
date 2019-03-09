@@ -16,14 +16,24 @@
 
 package de.codemakers.swing.frame;
 
+import de.codemakers.base.Standard;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.io.file.AdvancedFile;
 import org.apache.commons.text.StringSubstitutor;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
+//FIXME This is crap?! Maybe i need to create a completely new JFrameManager class...
 public class JFrameManager extends JFrame {
-
-    public static final String TITLE_FORMAT_TITLE = "title";
-    public static final String TITLE_FORMAT_VAR_TITLE = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_TITLE + StringSubstitutor.DEFAULT_VAR_END;
+    
+    public static final String TITLE_FORMAT_NAME = "name";
+    public static final String TITLE_FORMAT_VAR_NAME = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_NAME + StringSubstitutor.DEFAULT_VAR_END;
     public static final String TITLE_FORMAT_VERSION = "version";
     public static final String TITLE_FORMAT_VAR_VERSION = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_VERSION + StringSubstitutor.DEFAULT_VAR_END;
     public static final String TITLE_FORMAT_IDE = "ide"; //TODO Rename this to "ide_state" or something similar?
@@ -33,8 +43,109 @@ public class JFrameManager extends JFrame {
     public static final String TITLE_FORMAT_SUFFIX = "suffix";
     public static final String TITLE_FORMAT_VAR_SUFFIX = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_SUFFIX + StringSubstitutor.DEFAULT_VAR_END;
     /**
-     * Value = "{@link #TITLE_FORMAT_VAR_PREFIX}{@link #TITLE_FORMAT_VAR_TITLE}{@link #TITLE_FORMAT_VAR_VERSION}{@link #TITLE_FORMAT_VAR_IDE}{@link #TITLE_FORMAT_VAR_SUFFIX}"
+     * Value = "{@link #TITLE_FORMAT_VAR_PREFIX}{@link #TITLE_FORMAT_VAR_NAME}{@link #TITLE_FORMAT_VAR_VERSION}{@link #TITLE_FORMAT_VAR_IDE}{@link #TITLE_FORMAT_VAR_SUFFIX}"
      */
-    public static final String DEFAULT_TITLE_FORMAT = TITLE_FORMAT_VAR_PREFIX + TITLE_FORMAT_VAR_TITLE + TITLE_FORMAT_VAR_VERSION + TITLE_FORMAT_VAR_IDE + TITLE_FORMAT_VAR_SUFFIX;
-
+    public static final String DEFAULT_TITLE_FORMAT = TITLE_FORMAT_VAR_PREFIX + TITLE_FORMAT_VAR_NAME + TITLE_FORMAT_VAR_VERSION + TITLE_FORMAT_VAR_IDE + TITLE_FORMAT_VAR_SUFFIX;
+    
+    protected String name;
+    protected String version;
+    protected String titleFormat = DEFAULT_TITLE_FORMAT;
+    protected final Map<String, Object> titleFormatValues = new HashMap<>();
+    
+    public JFrameManager() {
+        this("");
+    }
+    
+    public JFrameManager(String name) {
+        this(name, "");
+    }
+    
+    public JFrameManager(String name, String version) {
+        super();
+        this.name = name;
+        this.version = version;
+        titleFormatValues.put(TITLE_FORMAT_IDE, Standard.RUNNING_JAR_IS_JAR ? "" : "IDE");
+        updateTitle();
+    }
+    
+    public void setDefaultSettings() {
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        updateTitle();
+    }
+    
+    public void show(Component c) {
+        updateTitle();
+        pack();
+        setVisible(true);
+        setLocationRelativeTo(c);
+    }
+    
+    public void updateTitle() {
+        //TODO Implement
+        //Prefix
+        //Suffix
+        setTitle(StringSubstitutor.replace(titleFormat, titleFormatValues));
+    }
+    
+    public void setIconImage(String internPath) {
+        setIconImage(new AdvancedFile(AdvancedFile.PREFIX_INTERN + internPath));
+    }
+    
+    public void setIconImage(AdvancedFile advancedFile) {
+        try (final InputStream inputStream = advancedFile.createInputStream()) {
+            setIconImage(ImageIO.read(inputStream));
+        } catch (Exception ex) {
+            Logger.logError("Error while loading icon", ex);
+        }
+    }
+    
+    public JFrameTitleFormatBuilder createJFrameTitleFormatBuilder() {
+        return new JFrameTitleFormatBuilder() {
+            @Override
+            public String finish() throws Exception {
+                final String temp = toFormat();
+                setTitleFormat(temp);
+                return temp;
+            }
+        };
+    }
+    
+    @Override
+    public String getName() {
+        return name;
+    }
+    
+    @Override
+    public void setName(String name) {
+        this.name = name;
+        titleFormatValues.put(TITLE_FORMAT_NAME, name);
+        updateTitle();
+    }
+    
+    public String getVersion() {
+        return version;
+    }
+    
+    public JFrameManager setVersion(String version) {
+        this.version = version;
+        titleFormatValues.put(TITLE_FORMAT_VERSION, version);
+        updateTitle();
+        return this;
+    }
+    
+    public String getTitleFormat() {
+        return titleFormat;
+    }
+    
+    public JFrameManager setTitleFormat(String titleFormat) {
+        this.titleFormat = Objects.requireNonNull(titleFormat, "titleFormat");
+        return this;
+    }
+    
+    @Override
+    public String toString() {
+        return "JFrameManager{" + "name='" + name + '\'' + ", version='" + version + '\'' + ", titleFormat='" + titleFormat + '\'' + ", titleFormatValues=" + titleFormatValues + '}';
+    }
+    
 }
