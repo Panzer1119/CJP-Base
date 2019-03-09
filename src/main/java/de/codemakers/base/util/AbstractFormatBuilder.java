@@ -20,7 +20,7 @@ import de.codemakers.base.util.interfaces.Finishable;
 
 public abstract class AbstractFormatBuilder<C extends AbstractFormatBuilder> implements Finishable<String> {
     
-    protected String format;
+    protected String format; //TODO Maybe use a StringBuilder for this?
     protected boolean checkAndCorrectAppendedText = true;
     
     public AbstractFormatBuilder() {
