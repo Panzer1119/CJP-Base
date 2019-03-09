@@ -22,15 +22,19 @@ import javax.swing.*;
 
 public class JFrameManager extends JFrame {
 
-    public static final String FORMAT_TITLE = "title";
-    public static final String FORMAT_VAR_TITLE = StringSubstitutor.DEFAULT_VAR_START + FORMAT_TITLE + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String FORMAT_VERSION = "version";
-    public static final String FORMAT_VAR_VERSION = StringSubstitutor.DEFAULT_VAR_START + FORMAT_VERSION + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String FORMAT_IDE = "ide"; //TODO Rename this to "ide_state" or something similar?
-    public static final String FORMAT_VAR_IDE = StringSubstitutor.DEFAULT_VAR_START + FORMAT_IDE + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String FORMAT_PREFIX = "prefix";
-    public static final String FORMAT_VAR_PREFIX = StringSubstitutor.DEFAULT_VAR_START + FORMAT_PREFIX + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String FORMAT_SUFFIX = "suffix";
-    public static final String FORMAT_VAR_SUFFIX = StringSubstitutor.DEFAULT_VAR_START + FORMAT_SUFFIX + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String TITLE_FORMAT_TITLE = "title";
+    public static final String TITLE_FORMAT_VAR_TITLE = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_TITLE + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String TITLE_FORMAT_VERSION = "version";
+    public static final String TITLE_FORMAT_VAR_VERSION = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_VERSION + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String TITLE_FORMAT_IDE = "ide"; //TODO Rename this to "ide_state" or something similar?
+    public static final String TITLE_FORMAT_VAR_IDE = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_IDE + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String TITLE_FORMAT_PREFIX = "prefix";
+    public static final String TITLE_FORMAT_VAR_PREFIX = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_PREFIX + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String TITLE_FORMAT_SUFFIX = "suffix";
+    public static final String TITLE_FORMAT_VAR_SUFFIX = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_SUFFIX + StringSubstitutor.DEFAULT_VAR_END;
+    /**
+     * Value = "{@link #TITLE_FORMAT_VAR_PREFIX}{@link #TITLE_FORMAT_VAR_TITLE}{@link #TITLE_FORMAT_VAR_VERSION}{@link #TITLE_FORMAT_VAR_IDE}{@link #TITLE_FORMAT_VAR_SUFFIX}"
+     */
+    public static final String DEFAULT_TITLE_FORMAT = TITLE_FORMAT_VAR_PREFIX + TITLE_FORMAT_VAR_TITLE + TITLE_FORMAT_VAR_VERSION + TITLE_FORMAT_VAR_IDE + TITLE_FORMAT_VAR_SUFFIX;
 
 }

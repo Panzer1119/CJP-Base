@@ -30,6 +30,31 @@ public class JFrameTitleFormatBuilder extends AbstractFormatBuilder<JFrameTitleF
         super(format);
     }
     
+    public JFrameTitleFormatBuilder appendTitle() {
+        format += JFrameManager.TITLE_FORMAT_VAR_TITLE;
+        return this;
+    }
+    
+    public JFrameTitleFormatBuilder appendVersion() {
+        format += JFrameManager.TITLE_FORMAT_VAR_VERSION;
+        return this;
+    }
+    
+    public JFrameTitleFormatBuilder appendIDE() {
+        format += JFrameManager.TITLE_FORMAT_VAR_IDE;
+        return this;
+    }
+    
+    public JFrameTitleFormatBuilder appendPrefix() {
+        format += JFrameManager.TITLE_FORMAT_VAR_PREFIX;
+        return this;
+    }
+    
+    public JFrameTitleFormatBuilder appendSuffix() {
+        format += JFrameManager.TITLE_FORMAT_VAR_SUFFIX;
+        return this;
+    }
+    
     @Override
     protected String checkAndCorrectText(String text) {
         return StringUtil.escapeStringSubstitutorVariableCalls(text);
