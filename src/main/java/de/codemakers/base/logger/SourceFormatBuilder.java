@@ -20,9 +20,6 @@ import de.codemakers.base.util.AbstractFormatBuilder;
 import de.codemakers.base.util.StringUtil;
 import org.apache.commons.text.StringSubstitutor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class SourceFormatBuilder extends AbstractFormatBuilder<SourceFormatBuilder> {
     
     public SourceFormatBuilder() {
@@ -60,13 +57,7 @@ public class SourceFormatBuilder extends AbstractFormatBuilder<SourceFormatBuild
     
     @Override
     public String example() {
-        final Map<String, Object> map = new HashMap<>();
-        final StackTraceElement stackTraceElement = AdvancedLogger.cutStackTrace(new Exception().getStackTrace());
-        map.put(Logger.SOURCE_FORMAT_CLASS, stackTraceElement.getClassName());
-        map.put(Logger.SOURCE_FORMAT_METHOD, stackTraceElement.getMethodName());
-        map.put(Logger.SOURCE_FORMAT_FILE, stackTraceElement.getFileName());
-        map.put(Logger.SOURCE_FORMAT_LINE, stackTraceElement.getLineNumber());
-        return StringSubstitutor.replace(format, map);
+        return StringSubstitutor.replace(format, AdvancedLogger.createValueMap(AdvancedLogger.cutStackTrace(new Exception().getStackTrace())));
     }
     
     @Override

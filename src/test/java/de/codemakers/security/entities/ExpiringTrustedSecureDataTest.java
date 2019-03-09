@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class ExpiringTrustedSecureDataTest {
     
     public static final void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendLocation().appendText(": ").appendObject().finishWithoutException();
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendSource().appendText(": ").appendObject().finishWithoutException();
         Logger.log(ExpiringTrustedSecureDataTest.class.getName());
         final ExpiringTrustedSecureDataManager expiringTrustedSecureDataManager = new ExpiringTrustedSecureDataManager(5, TimeUnit.SECONDS);
         Logger.log(expiringTrustedSecureDataManager);

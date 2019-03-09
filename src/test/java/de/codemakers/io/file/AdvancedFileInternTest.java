@@ -25,7 +25,7 @@ public class AdvancedFileInternTest {
     
     public static final void main(String[] args) {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendText(": ").appendObject().appendNewLine().appendLocation().appendNewLine().finishWithoutException();
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendText(": ").appendObject().appendNewLine().appendSource().appendNewLine().finishWithoutException();
         AdvancedFile.DEBUG = true;
         AdvancedFile.DEBUG_FILE_PROVIDER = false;
         AdvancedFile.DEBUG_TO_STRING = true;

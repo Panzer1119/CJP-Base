@@ -44,32 +44,12 @@ public class Logger {
     public static final String LOG_FORMAT_VAR_TIMESTAMP = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_TIMESTAMP + StringSubstitutor.DEFAULT_VAR_END;
     public static final String LOG_FORMAT_THREAD = "thread";
     public static final String LOG_FORMAT_VAR_THREAD = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_THREAD + StringSubstitutor.DEFAULT_VAR_END;
-    @Deprecated
-    public static final String LOG_FORMAT_LOCATION = "location";
-    @Deprecated
-    public static final String LOG_FORMAT_VAR_LOCATION = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOCATION + StringSubstitutor.DEFAULT_VAR_END;
     public static final String LOG_FORMAT_SOURCE = "source";
     public static final String LOG_FORMAT_VAR_SOURCE = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_SOURCE + StringSubstitutor.DEFAULT_VAR_END;
     public static final String LOG_FORMAT_LOG_LEVEL = "loglevel";
     public static final String LOG_FORMAT_VAR_LOG_LEVEL = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_LOG_LEVEL + StringSubstitutor.DEFAULT_VAR_END;
     public static final String LOG_FORMAT_OBJECT = "object";
     public static final String LOG_FORMAT_VAR_OBJECT = StringSubstitutor.DEFAULT_VAR_START + LOG_FORMAT_OBJECT + StringSubstitutor.DEFAULT_VAR_END;
-    @Deprecated
-    public static final String LOCATION_FORMAT_CLASS = "class";
-    @Deprecated
-    public static final String LOCATION_FORMAT_VAR_CLASS = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_CLASS + StringSubstitutor.DEFAULT_VAR_END;
-    @Deprecated
-    public static final String LOCATION_FORMAT_METHOD = "method";
-    @Deprecated
-    public static final String LOCATION_FORMAT_VAR_METHOD = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_METHOD + StringSubstitutor.DEFAULT_VAR_END;
-    @Deprecated
-    public static final String LOCATION_FORMAT_FILE = "file";
-    @Deprecated
-    public static final String LOCATION_FORMAT_VAR_FILE = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_FILE + StringSubstitutor.DEFAULT_VAR_END;
-    @Deprecated
-    public static final String LOCATION_FORMAT_LINE = "line";
-    @Deprecated
-    public static final String LOCATION_FORMAT_VAR_LINE = StringSubstitutor.DEFAULT_VAR_START + LOCATION_FORMAT_LINE + StringSubstitutor.DEFAULT_VAR_END;
     public static final String SOURCE_FORMAT_CLASS = "class";
     public static final String SOURCE_FORMAT_VAR_CLASS = StringSubstitutor.DEFAULT_VAR_START + SOURCE_FORMAT_CLASS + StringSubstitutor.DEFAULT_VAR_END;
     public static final String SOURCE_FORMAT_METHOD = "method";

@@ -25,11 +25,6 @@ import java.util.Objects;
 public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
     /**
-     * Value = "{@link Logger#LOG_FORMAT_VAR_TIMESTAMP}{@link Logger#LOG_FORMAT_VAR_THREAD}{@link Logger#LOG_FORMAT_VAR_LOCATION}{@link Logger#LOG_FORMAT_VAR_LOG_LEVEL}: {@link Logger#LOG_FORMAT_VAR_OBJECT}"
-     */
-    @Deprecated
-    public static final String DEFAULT_LEVELED_LOG_FORMAT_OLD = Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_THREAD + Logger.LOG_FORMAT_VAR_LOCATION + Logger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + Logger.LOG_FORMAT_VAR_OBJECT;
-    /**
      * Value = "{@link Logger#LOG_FORMAT_VAR_TIMESTAMP}{@link Logger#LOG_FORMAT_VAR_THREAD}{@link Logger#LOG_FORMAT_VAR_SOURCE}{@link Logger#LOG_FORMAT_VAR_LOG_LEVEL}: {@link Logger#LOG_FORMAT_VAR_OBJECT}"
      */
     public static final String DEFAULT_LEVELED_LOG_FORMAT = Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_THREAD + Logger.LOG_FORMAT_VAR_SOURCE + Logger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + Logger.LOG_FORMAT_VAR_OBJECT;

@@ -53,24 +53,12 @@ public abstract class AdvancedLogger implements ILogger {
      */
     public static final String DEFAULT_LOG_FORMAT = Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_THREAD + Logger.LOG_FORMAT_VAR_SOURCE + ": " + Logger.LOG_FORMAT_VAR_OBJECT;
     /**
-     * Value = "{@link Logger#LOCATION_FORMAT_VAR_CLASS}.{@link Logger#LOCATION_FORMAT_VAR_METHOD}({@link Logger#LOCATION_FORMAT_VAR_FILE}:{@link Logger#LOCATION_FORMAT_VAR_LINE})"
-     */
-    @Deprecated
-    public static final String DEFAULT_LOCATION_FORMAT = Logger.LOCATION_FORMAT_VAR_CLASS + "." + Logger.LOCATION_FORMAT_VAR_METHOD + "(" + Logger.LOCATION_FORMAT_VAR_FILE + ":" + Logger.LOCATION_FORMAT_VAR_LINE + ")";
-    /**
      * Value = "{@link Logger#SOURCE_FORMAT_VAR_CLASS}.{@link Logger#SOURCE_FORMAT_VAR_METHOD}({@link Logger#SOURCE_FORMAT_VAR_FILE}:{@link Logger#SOURCE_FORMAT_VAR_LINE})"
      */
     public static final String DEFAULT_SOURCE_FORMAT = Logger.SOURCE_FORMAT_VAR_CLASS + "." + Logger.SOURCE_FORMAT_VAR_METHOD + "(" + Logger.SOURCE_FORMAT_VAR_FILE + ":" + Logger.SOURCE_FORMAT_VAR_LINE + ")";
     //TODO Add javadoc
     public static final ToughBiFunction<ZonedDateTime, AdvancedLogger, String> DEFAULT_TIMESTAMP_FORMATTER = (timestamp, advancedLogger) -> timestamp == null ? "" : "[" + timestamp.format(advancedLogger.dateTimeFormatter) + "]";
     public static final ToughBiFunction<Thread, AdvancedLogger, String> DEFAULT_THREAD_FORMATTER = (thread, advancedLogger) -> thread == null ? "" : "[" + thread.getName() + "]";
-    @Deprecated
-    public static final ToughBiFunction<StackTraceElement, AdvancedLogger, String> DEFAULT_LOCATION_FORMATTER = (stackTraceElement, advancedLogger) -> {
-        if (stackTraceElement == null) {
-            return "";
-        }
-        return "[" + StringSubstitutor.replace(advancedLogger.locationFormat, advancedLogger.createValueMap(stackTraceElement)) + "]";
-    };
     public static final ToughBiFunction<StackTraceElement, AdvancedLogger, String> DEFAULT_SOURCE_FORMATTER = (stackTraceElement, advancedLogger) -> {
         if (stackTraceElement == null) {
             return "";
@@ -82,14 +70,10 @@ public abstract class AdvancedLogger implements ILogger {
     protected TimeZone timeZone = TimeZone.getDefault();
     protected DateTimeFormatter dateTimeFormatter = DATE_TIME_FORMATTER_DEFAULT;
     protected String logFormat = DEFAULT_LOG_FORMAT;
-    @Deprecated
-    protected String locationFormat = DEFAULT_LOCATION_FORMAT;
     protected String sourceFormat = DEFAULT_SOURCE_FORMAT;
     protected ToughBiFunction<Throwable, String, Boolean> errorHandler = null;
     protected ToughBiFunction<ZonedDateTime, AdvancedLogger, String> timestampFormatter = DEFAULT_TIMESTAMP_FORMATTER;
     protected ToughBiFunction<Thread, AdvancedLogger, String> threadFormatter = DEFAULT_THREAD_FORMATTER;
-    @Deprecated
-    protected ToughBiFunction<StackTraceElement, AdvancedLogger, String> locationFormatter = DEFAULT_LOCATION_FORMATTER;
     protected ToughBiFunction<StackTraceElement, AdvancedLogger, String> sourceFormatter = DEFAULT_SOURCE_FORMATTER;
     protected ToughBiFunction<Object, AdvancedLogger, String> objectFormatter = DEFAULT_OBJECT_FORMATTER;
     
@@ -228,7 +212,7 @@ public abstract class AdvancedLogger implements ILogger {
         return map;
     }
     
-    protected Map<String, Object> createValueMap(StackTraceElement stackTraceElement) {
+    protected static Map<String, Object> createValueMap(StackTraceElement stackTraceElement) {
         final Map<String, Object> map = new HashMap<>();
         map.put(Logger.SOURCE_FORMAT_CLASS, stackTraceElement.getClassName());
         map.put(Logger.SOURCE_FORMAT_METHOD, stackTraceElement.getMethodName());
@@ -257,7 +241,7 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     protected String formatStackTraceElement(StackTraceElement stackTraceElement) {
-        return StringUtil.escapeStringSubstitutorVariableCalls(locationFormatter.applyWithoutException(stackTraceElement, this));
+        return StringUtil.escapeStringSubstitutorVariableCalls(sourceFormatter.applyWithoutException(stackTraceElement, this));
     }
     
     protected String formatObject(Object object) {
@@ -347,22 +331,11 @@ public abstract class AdvancedLogger implements ILogger {
         return new LogFormatBuilder() {
             @Override
             public String finish() throws Exception {
-                setLogFormat(toFormat());
-                return toFormat();
+                final String temp = toFormat();
+                setLogFormat(temp);
+                return temp;
             }
         };
-    }
-    
-    /**
-     * Gets the {@link java.lang.String} used to format the {@link java.lang.StackTraceElement}
-     * <br>
-     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOCATION_FORMAT}
-     *
-     * @return Location format
-     */
-    @Deprecated
-    public String getLocationFormat() {
-        return locationFormat;
     }
     
     /**
@@ -374,21 +347,6 @@ public abstract class AdvancedLogger implements ILogger {
      */
     public String getSourceFormat() {
         return sourceFormat;
-    }
-    
-    /**
-     * Sets the {@link java.lang.String} used to format the {@link java.lang.StackTraceElement}
-     * <br>
-     * Default format is {@link de.codemakers.base.logger.AdvancedLogger#DEFAULT_LOCATION_FORMAT}
-     *
-     * @param locationFormat Location format
-     *
-     * @return A reference to this {@link de.codemakers.base.logger.AdvancedLogger} object
-     */
-    @Deprecated
-    public AdvancedLogger setLocationFormat(String locationFormat) {
-        this.locationFormat = Objects.requireNonNull(locationFormat, "locationFormat");
-        return this;
     }
     
     /**
@@ -406,25 +364,6 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     /**
-     * Creates a {@link de.codemakers.base.logger.LocationFormatBuilder} which is linked to this {@link de.codemakers.base.logger.AdvancedLogger}
-     * <br>
-     * The {@link de.codemakers.base.logger.LocationFormatBuilder} is empty when created, but when you call {@link de.codemakers.base.logger.LocationFormatBuilder#finish()} (or {@link de.codemakers.base.logger.LocationFormatBuilder#finishWithoutException()})
-     * the {@link de.codemakers.base.logger.LocationFormatBuilder} will set the new created format as the new location format in this {@link de.codemakers.base.logger.AdvancedLogger}
-     *
-     * @return {@link de.codemakers.base.logger.LocationFormatBuilder} linked to this {@link de.codemakers.base.logger.AdvancedLogger}
-     */
-    @Deprecated
-    public LocationFormatBuilder createLocationFormatBuilder() {
-        return new LocationFormatBuilder() {
-            @Override
-            public String finish() throws Exception {
-                setLocationFormat(toFormat());
-                return toFormat();
-            }
-        };
-    }
-    
-    /**
      * Creates a {@link de.codemakers.base.logger.SourceFormatBuilder} which is linked to this {@link de.codemakers.base.logger.AdvancedLogger}
      * <br>
      * The {@link de.codemakers.base.logger.SourceFormatBuilder} is empty when created, but when you call {@link de.codemakers.base.logger.SourceFormatBuilder#finish()} (or {@link de.codemakers.base.logger.SourceFormatBuilder#finishWithoutException()})
@@ -436,8 +375,9 @@ public abstract class AdvancedLogger implements ILogger {
         return new SourceFormatBuilder() {
             @Override
             public String finish() throws Exception {
-                setLocationFormat(toFormat());
-                return toFormat();
+                final String temp = toFormat();
+                setSourceFormat(temp);
+                return temp;
             }
         };
     }
@@ -480,17 +420,6 @@ public abstract class AdvancedLogger implements ILogger {
     
     public AdvancedLogger setThreadFormatter(ToughBiFunction<Thread, AdvancedLogger, String> threadFormatter) {
         this.threadFormatter = Objects.requireNonNull(threadFormatter, "threadFormatter");
-        return this;
-    }
-    
-    @Deprecated
-    public ToughBiFunction<StackTraceElement, AdvancedLogger, String> getLocationFormatter() {
-        return locationFormatter;
-    }
-    
-    @Deprecated
-    public AdvancedLogger setLocationFormatter(ToughBiFunction<StackTraceElement, AdvancedLogger, String> locationFormatter) {
-        this.locationFormatter = Objects.requireNonNull(locationFormatter, "locationFormatter");
         return this;
     }
     

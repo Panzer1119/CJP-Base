@@ -45,12 +45,6 @@ public class LogFormatBuilder extends AbstractFormatBuilder<LogFormatBuilder> {
         return this;
     }
     
-    @Deprecated
-    public LogFormatBuilder appendLocation() {
-        format += Logger.LOG_FORMAT_VAR_LOCATION;
-        return this;
-    }
-    
     public LogFormatBuilder appendSource() {
         format += Logger.LOG_FORMAT_VAR_SOURCE;
         return this;
