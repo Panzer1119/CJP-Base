@@ -23,15 +23,34 @@ import org.apache.commons.text.StringSubstitutor;
 import java.util.HashMap;
 import java.util.Map;
 
-@Deprecated
-public class LocationFormatBuilder extends AbstractFormatBuilder<LocationFormatBuilder> {
+public class SourceFormatBuilder extends AbstractFormatBuilder<SourceFormatBuilder> {
     
-    public LocationFormatBuilder() {
+    public SourceFormatBuilder() {
         super("");
     }
     
-    public LocationFormatBuilder(String format) {
+    public SourceFormatBuilder(String format) {
         super(format);
+    }
+    
+    public SourceFormatBuilder appendClassName() {
+        format += Logger.SOURCE_FORMAT_VAR_CLASS;
+        return this;
+    }
+    
+    public SourceFormatBuilder appendMethodName() {
+        format += Logger.SOURCE_FORMAT_VAR_METHOD;
+        return this;
+    }
+    
+    public SourceFormatBuilder appendFileName() {
+        format += Logger.SOURCE_FORMAT_VAR_FILE;
+        return this;
+    }
+    
+    public SourceFormatBuilder appendLineNumber() {
+        format += Logger.SOURCE_FORMAT_VAR_LINE;
+        return this;
     }
     
     @Override
@@ -39,45 +58,25 @@ public class LocationFormatBuilder extends AbstractFormatBuilder<LocationFormatB
         return StringUtil.escapeStringSubstitutorVariableCalls(text);
     }
     
-    public LocationFormatBuilder appendClassName() {
-        format += Logger.LOCATION_FORMAT_VAR_CLASS;
-        return this;
-    }
-    
-    public LocationFormatBuilder appendMethodName() {
-        format += Logger.LOCATION_FORMAT_VAR_METHOD;
-        return this;
-    }
-    
-    public LocationFormatBuilder appendFileName() {
-        format += Logger.LOCATION_FORMAT_VAR_FILE;
-        return this;
-    }
-    
-    public LocationFormatBuilder appendLineNumber() {
-        format += Logger.LOCATION_FORMAT_VAR_LINE;
-        return this;
-    }
-    
     @Override
     public String example() {
         final Map<String, Object> map = new HashMap<>();
         final StackTraceElement stackTraceElement = AdvancedLogger.cutStackTrace(new Exception().getStackTrace());
-        map.put(Logger.LOCATION_FORMAT_CLASS, stackTraceElement.getClassName());
-        map.put(Logger.LOCATION_FORMAT_METHOD, stackTraceElement.getMethodName());
-        map.put(Logger.LOCATION_FORMAT_FILE, stackTraceElement.getFileName());
-        map.put(Logger.LOCATION_FORMAT_LINE, stackTraceElement.getLineNumber());
+        map.put(Logger.SOURCE_FORMAT_CLASS, stackTraceElement.getClassName());
+        map.put(Logger.SOURCE_FORMAT_METHOD, stackTraceElement.getMethodName());
+        map.put(Logger.SOURCE_FORMAT_FILE, stackTraceElement.getFileName());
+        map.put(Logger.SOURCE_FORMAT_LINE, stackTraceElement.getLineNumber());
         return StringSubstitutor.replace(format, map);
-    }
-    
-    @Override
-    public String toString() {
-        return "LocationFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
     }
     
     @Override
     public String finish() throws Exception {
         throw new AbstractMethodError();
+    }
+    
+    @Override
+    public String toString() {
+        return "SourceFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
     }
     
 }

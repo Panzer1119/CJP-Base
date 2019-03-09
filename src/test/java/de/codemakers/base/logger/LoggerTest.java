@@ -23,12 +23,20 @@ import org.apache.commons.text.StringSubstitutor;
 public class LoggerTest {
     
     public static final void main(String[] args) {
-        Logger.getDefaultAdvancedLeveledLogger().setLogFormat(Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + Logger.LOG_FORMAT_VAR_OBJECT + "\n" + Logger.LOG_FORMAT_VAR_THREAD + " " + Logger.LOG_FORMAT_VAR_LOCATION);
+        Logger.getDefaultAdvancedLeveledLogger().setLogFormat(Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + Logger.LOG_FORMAT_VAR_OBJECT + "\n" + Logger.LOG_FORMAT_VAR_THREAD + " " + Logger.LOG_FORMAT_VAR_SOURCE);
+        /*
         Logger.getDefaultAdvancedLeveledLogger().setLocationFormatter(((stackTraceElement, advancedLogger) -> {
             if (stackTraceElement == null) {
                 return "";
             }
             return StringSubstitutor.replace(advancedLogger.locationFormat, advancedLogger.createValueMap(stackTraceElement));
+        }));
+        */
+        Logger.getDefaultAdvancedLeveledLogger().setSourceFormatter(((stackTraceElement, advancedLogger) -> {
+            if (stackTraceElement == null) {
+                return "";
+            }
+            return StringSubstitutor.replace(advancedLogger.sourceFormat, advancedLogger.createValueMap(stackTraceElement));
         }));
         Logger.log("Test");
         for (int i = 0; i < 100; i++) {
@@ -47,18 +55,25 @@ public class LoggerTest {
         Logger.log("LogLevel.MAXIMUM_LEVEL=" + LogLevel.MAXIMUM_LEVEL);
         final LogFormatBuilder logFormatBuilder = new LogFormatBuilder();
         Logger.log("logFormatBuilder=" + logFormatBuilder);
-        logFormatBuilder.appendTimestamp().appendLogLevel().appendText(": ").appendObject().appendNewLine().appendThread().appendLogLevel().appendText(" ").appendLocation();
+        logFormatBuilder.appendTimestamp().appendLogLevel().appendText(": ").appendObject().appendNewLine().appendThread().appendLogLevel().appendText(" ").appendSource();
         Logger.log("logFormatBuilder=" + logFormatBuilder);
-        final LocationFormatBuilder locationFormatBuilder = new LocationFormatBuilder();
-        Logger.log("locationFormatBuilder=" + locationFormatBuilder);
-        locationFormatBuilder.appendClassName().appendText(".").appendMethodName().appendText("(").appendFileName().appendText(":").appendLineNumber().appendText(")");
-        Logger.log("locationFormatBuilder=" + locationFormatBuilder);
+        //final LocationFormatBuilder locationFormatBuilder = new LocationFormatBuilder();
+        final SourceFormatBuilder sourceFormatBuilder = new SourceFormatBuilder();
+        //Logger.log("locationFormatBuilder=" + locationFormatBuilder);
+        Logger.log("sourceFormatBuilder=" + sourceFormatBuilder);
+        //locationFormatBuilder.appendClassName().appendText(".").appendMethodName().appendText("(").appendFileName().appendText(":").appendLineNumber().appendText(")");
+        sourceFormatBuilder.appendClassName().appendText(".").appendMethodName().appendText("(").appendFileName().appendText(":").appendLineNumber().appendText(")");
+        //Logger.log("locationFormatBuilder=" + locationFormatBuilder);
+        Logger.log("sourceFormatBuilder=" + sourceFormatBuilder);
         Logger.getDefaultAdvancedLeveledLogger().setLogFormat(logFormatBuilder.toFormat());
-        Logger.getDefaultAdvancedLeveledLogger().setLocationFormat(locationFormatBuilder.toFormat());
+        //Logger.getDefaultAdvancedLeveledLogger().setLocationFormat(locationFormatBuilder.toFormat());
+        Logger.getDefaultAdvancedLeveledLogger().setSourceFormat(sourceFormatBuilder.toFormat());
         Logger.log("Test 2");
         Logger.log("logFormatBuilder.example()=" + logFormatBuilder.example());
-        Logger.log("locationFormatBuilder.example()=" + locationFormatBuilder.example());
-        Logger.log("logFormatBuilder.example(locationFormatBuilder)=" + logFormatBuilder.example(locationFormatBuilder));
+        //Logger.log("locationFormatBuilder.example()=" + locationFormatBuilder.example());
+        Logger.log("sourceFormatBuilder.example()=" + sourceFormatBuilder.example());
+        //Logger.log("logFormatBuilder.example(locationFormatBuilder)=" + logFormatBuilder.example(locationFormatBuilder));
+        Logger.log("logFormatBuilder.example(sourceFormatBuilder)=" + logFormatBuilder.example(sourceFormatBuilder));
         Standard.silentError(() -> {
             Thread.currentThread().setName("Anonymous-Test-Thread${loglevel}");
             Logger.log("Anonymous Test");

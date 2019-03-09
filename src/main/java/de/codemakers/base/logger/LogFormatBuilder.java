@@ -35,11 +35,6 @@ public class LogFormatBuilder extends AbstractFormatBuilder<LogFormatBuilder> {
         super(format);
     }
     
-    @Override
-    protected String checkAndCorrectText(String text) {
-        return StringUtil.escapeStringSubstitutorVariableCalls(text);
-    }
-    
     public LogFormatBuilder appendTimestamp() {
         format += Logger.LOG_FORMAT_VAR_TIMESTAMP;
         return this;
@@ -50,8 +45,14 @@ public class LogFormatBuilder extends AbstractFormatBuilder<LogFormatBuilder> {
         return this;
     }
     
+    @Deprecated
     public LogFormatBuilder appendLocation() {
         format += Logger.LOG_FORMAT_VAR_LOCATION;
+        return this;
+    }
+    
+    public LogFormatBuilder appendSource() {
+        format += Logger.LOG_FORMAT_VAR_SOURCE;
         return this;
     }
     
@@ -66,28 +67,33 @@ public class LogFormatBuilder extends AbstractFormatBuilder<LogFormatBuilder> {
     }
     
     @Override
+    protected String checkAndCorrectText(String text) {
+        return StringUtil.escapeStringSubstitutorVariableCalls(text);
+    }
+    
+    @Override
     public String example() {
         return example(null);
     }
     
-    public String example(LocationFormatBuilder locationFormatBuilder) {
+    public String example(SourceFormatBuilder sourceFormatBuilder) {
         final Map<String, Object> map = new HashMap<>();
         map.put(Logger.LOG_FORMAT_TIMESTAMP, StringUtil.escapeStringSubstitutorVariableCalls("[" + ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH) + "]"));
         map.put(Logger.LOG_FORMAT_THREAD, StringUtil.escapeStringSubstitutorVariableCalls("[" + Thread.currentThread().getName() + "]"));
-        map.put(Logger.LOG_FORMAT_LOCATION, locationFormatBuilder == null ? StringSubstitutor.DEFAULT_ESCAPE + Logger.LOG_FORMAT_VAR_LOCATION : StringUtil.escapeStringSubstitutorVariableCalls(locationFormatBuilder.example()));
+        map.put(Logger.LOG_FORMAT_SOURCE, sourceFormatBuilder == null ? StringSubstitutor.DEFAULT_ESCAPE + Logger.LOG_FORMAT_VAR_SOURCE : StringUtil.escapeStringSubstitutorVariableCalls(sourceFormatBuilder.example()));
         map.put(Logger.LOG_FORMAT_LOG_LEVEL, "[" + LogLevel.DEBUG.getNameMid() + "]");
         map.put(Logger.LOG_FORMAT_OBJECT, "This is an example message");
         return StringSubstitutor.replace(format, map);
     }
     
     @Override
-    public String toString() {
-        return "LogFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
+    public String finish() throws Exception {
+        throw new AbstractMethodError();
     }
     
     @Override
-    public String finish() throws Exception {
-        throw new AbstractMethodError();
+    public String toString() {
+        return "LogFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
     }
     
 }
