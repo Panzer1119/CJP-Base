@@ -21,12 +21,15 @@ import de.codemakers.io.file.AdvancedFile;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.io.InputStream;
 
-public class Console extends JFrame {
+public class Console {
     
     public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
+    
+    protected final JFrame frame = new JFrame("Console"); //FIXME Language stuff?!
     
     public Console() {
         this(DEFAULT_ICON_FILE);
@@ -44,10 +47,35 @@ public class Console extends JFrame {
     
     private void initIconImage(AdvancedFile advancedFile) {
         try (final InputStream inputStream = advancedFile.createInputStream()) {
-            setIconImage(ImageIO.read(inputStream));
+            frame.setIconImage(ImageIO.read(inputStream));
         } catch (Exception ex) {
             Logger.logError("Error while loading " + getClass().getSimpleName() + " icon", ex);
         }
+    }
+    
+    protected JFrame getFrame() {
+        return frame;
+    }
+    
+    public Console show() {
+        return show(null);
+    }
+    
+    public Console show(Component component) {
+        frame.pack();
+        frame.setLocationRelativeTo(component);
+        frame.setVisible(true);
+        return this;
+    }
+    
+    public Console hide() {
+        frame.setVisible(false);
+        return this;
+    }
+    
+    public Console setPreferredSize(Dimension dimension) {
+        frame.setPreferredSize(dimension);
+        return this;
     }
     
 }

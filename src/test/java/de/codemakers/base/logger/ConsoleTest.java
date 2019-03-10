@@ -16,12 +16,27 @@
 
 package de.codemakers.base.logger;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class ConsoleTest {
     
     public static final void main(String[] args) throws Exception {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
         final Console console = new Console();
         Logger.log("console=" + console);
+        console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        console.setPreferredSize(new Dimension(600, 300));
+        console.show();
+        /*
+        Standard.async(() -> {
+            Thread.sleep(1000);
+            console.hide();
+            Thread.sleep(1000);
+            console.show();
+
+        });
+        */
     }
     
 }
