@@ -17,7 +17,6 @@
 package de.codemakers.base.logger;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class ConsoleTest {
     
@@ -26,7 +25,7 @@ public class ConsoleTest {
         final Console console = new Console();
         Logger.log("console=" + console);
         console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        console.setPreferredSize(new Dimension(600, 300));
+        //console.setPreferredSize(new Dimension(600, 300));
         console.show();
         /*
         Standard.async(() -> {

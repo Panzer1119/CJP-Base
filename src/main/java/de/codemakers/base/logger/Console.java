@@ -34,26 +34,21 @@ public class Console {
     protected final JMenuBar menuBar = new JMenuBar();
     protected final JMenu menu_file = new JMenu("File"); //FIXME Language/Localization stuff?!
     protected final JMenuItem menuItem_reload = new JMenuItem("Reload"); //FIXME Language/Localization stuff?!
-    protected final JSeparator separator_1 = new JSeparator();
     protected final JMenuItem menuItem_saveAs = new JMenuItem("Save As"); //FIXME Language/Localization stuff?!
-    protected final JSeparator separator_2 = new JSeparator();
     protected final JMenuItem menuItem_restart = new JMenuItem("Restart"); //FIXME Language/Localization stuff?!
     protected final JMenuItem menuItem_exit = new JMenuItem("Exit"); //FIXME Language/Localization stuff?!
     protected final JMenu menu_options = new JMenu("Options"); //FIXME Language/Localization stuff?!
-    protected final JLabel label_showLogLevels = new JLabel("Show Log Levels"); //FIXME Language/Localization stuff?!
-    //protected final JSeparator separator_3 = new JSeparator(); //TODO Test if this looks better with or without
+    protected final JLabel label_displayedLogLevels = new JLabel("Displayed Log Levels"); //FIXME Language/Localization stuff?!
     protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.values()).map((logLevel) -> {
         //FIXME Language/Localization stuff?!
         return new JCheckBoxMenuItem(logLevel.toText());
     }).toArray(JCheckBoxMenuItem[]::new);
-    protected final JSeparator separator_4 = new JSeparator();
-    protected final JLabel label_showExtras = new JLabel("Visualize"); //FIXME Rename this? //FIXME Language/Localization stuff?!
-    //protected final JSeparator separator_4 = new JSeparator(); //TODO Test if this looks better with or without
-    protected final JCheckBoxMenuItem checkBoxMenuItem_showTimestamp = new JCheckBoxMenuItem("Timestamp"); //FIXME Language/Localization stuff?!
-    protected final JCheckBoxMenuItem checkBoxMenuItem_showThread = new JCheckBoxMenuItem("Thread"); //FIXME Language/Localization stuff?!
-    protected final JCheckBoxMenuItem checkBoxMenuItem_showSource = new JCheckBoxMenuItem("Source"); //FIXME Language/Localization stuff?!
-    protected final JCheckBoxMenuItem checkBoxMenuItem_showLogLevel = new JCheckBoxMenuItem("Log Level"); //FIXME Language/Localization stuff?!
-    //protected final JSeparator separator_5 = new JSeparator(); //TODO What was the "Debug Mode"?
+    protected final JLabel label_display = new JLabel("Display"); //FIXME Rename this? //FIXME Language/Localization stuff?!
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayTimestamp = new JCheckBoxMenuItem("Timestamp"); //FIXME Language/Localization stuff?!
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayThread = new JCheckBoxMenuItem("Thread"); //FIXME Language/Localization stuff?!
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displaySource = new JCheckBoxMenuItem("Source"); //FIXME Language/Localization stuff?!
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayLogLevel = new JCheckBoxMenuItem("Log Level"); //FIXME Language/Localization stuff?!
+    //TODO What was the "Debug Mode"?
     protected final JTextPane textPane_output = new JTextPane();
     protected final JScrollPane scrollPane_output = new JScrollPane(textPane_output);
     protected final JPanel panel_input = new JPanel();
@@ -68,9 +63,35 @@ public class Console {
         super();
         init();
         initIconImage(iconAdvancedFile);
+        setPreferredSize(new Dimension(1200, 600)); //TODO Testing only
     }
     
     private void init() {
+        menu_file.add(menuItem_reload);
+        menu_file.add(new JSeparator());
+        menu_file.add(menuItem_saveAs);
+        menu_file.add(new JSeparator());
+        menu_file.add(menuItem_restart);
+        menu_file.add(menuItem_exit);
+        menuBar.add(menu_file);
+        menu_options.add(label_displayedLogLevels);
+        for (JCheckBoxMenuItem checkBoxMenuItem : checkBoxMenuItems_logLevels) {
+            menu_options.add(checkBoxMenuItem); //TODO ActionListener or something similar?
+        }
+        menu_options.add(new JSeparator());
+        menu_options.add(label_display);
+        menu_options.add(checkBoxMenuItem_displayTimestamp);
+        menu_options.add(checkBoxMenuItem_displayThread);
+        menu_options.add(checkBoxMenuItem_displaySource);
+        menu_options.add(checkBoxMenuItem_displayLogLevel);
+        menuBar.add(menu_options);
+        frame.setJMenuBar(menuBar);
+        frame.setLayout(new BorderLayout());
+        frame.add(scrollPane_output, BorderLayout.CENTER);
+        panel_input.setLayout(new FlowLayout());
+        panel_input.add(textField_input);
+        panel_input.add(button_input);
+        frame.add(panel_input, BorderLayout.SOUTH);
         //TODO
     }
     
