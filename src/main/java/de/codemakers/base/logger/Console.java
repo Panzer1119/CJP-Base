@@ -16,6 +16,7 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.Standard;
 import de.codemakers.io.file.AdvancedFile;
 
 import javax.imageio.ImageIO;
@@ -24,10 +25,11 @@ import java.io.InputStream;
 
 public class Console extends JFrame {
     
-    public static final AdvancedFile DEFAULT_ICON_ADVANCED_FILE = new AdvancedFile(AdvancedFile.PREFIX_INTERN + "/de/codemakers/icons/Fresh_application_xp_terminal.png");
+    public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
+    public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
     
     public Console() {
-        this(DEFAULT_ICON_ADVANCED_FILE);
+        this(DEFAULT_ICON_FILE);
     }
     
     public Console(AdvancedFile iconAdvancedFile) {

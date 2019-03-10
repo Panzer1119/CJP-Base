@@ -45,6 +45,11 @@ public class Standard {
     public static final File RUNNING_JAR_FILE = new File(RUNNING_JAR_URL.getPath());
     public static final AdvancedFile RUNNING_JAR_ADVANCED_FILE = new AdvancedFile(RUNNING_JAR_URL.getPath());
     
+    public static final String MAIN_PATH = "/de/codemakers/";
+    public static final AdvancedFile MAIN_FOLDER = new AdvancedFile(AdvancedFile.PREFIX_INTERN + MAIN_PATH);
+    public static final String ICONS_PATH = "icons/";
+    public static final AdvancedFile ICONS_FOLDER = new AdvancedFile(MAIN_FOLDER, ICONS_PATH);
+    
     static {
         URI RUNNING_JAR_URI_ = null;
         try {
