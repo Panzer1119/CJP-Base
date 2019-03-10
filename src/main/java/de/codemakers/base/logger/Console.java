@@ -89,7 +89,7 @@ public class Console {
         frame.setLayout(new BorderLayout());
         scrollPane_output.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
         frame.add(scrollPane_output, BorderLayout.CENTER);
-        panel_input.setLayout(new FlowLayout());
+        panel_input.setLayout(new BoxLayout(panel_input, BoxLayout.X_AXIS));
         panel_input.add(textField_input);
         panel_input.add(button_input);
         panel_input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Input")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
