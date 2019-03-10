@@ -87,10 +87,12 @@ public class Console {
         menuBar.add(menu_options);
         frame.setJMenuBar(menuBar);
         frame.setLayout(new BorderLayout());
+        scrollPane_output.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
         frame.add(scrollPane_output, BorderLayout.CENTER);
         panel_input.setLayout(new FlowLayout());
         panel_input.add(textField_input);
         panel_input.add(button_input);
+        panel_input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Input")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
         frame.add(panel_input, BorderLayout.SOUTH);
         //TODO
     }
