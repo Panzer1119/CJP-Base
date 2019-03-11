@@ -99,8 +99,8 @@ public class Logger {
         return (AdvancedLeveledSystemLogger) LOGGER;
     }
     
-    public static ILogger getDefaultLogger() {
-        return DEFAULT_LOGGER;
+    public static <L extends ILogger> L getDefaultLogger() {
+        return (L) DEFAULT_LOGGER;
     }
     
     public static AdvancedLogger getDefaultAdvancedLogger() {

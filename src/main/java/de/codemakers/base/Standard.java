@@ -118,6 +118,10 @@ public class Standard {
         }
     }
     
+    public static <L extends Localizer> L getDefaultLocalizer() {
+        return (L) Localizer.DEFAULT_LOCALIZER;
+    }
+    
     public static String localizeWithArguments(String name, String defaultValue, Object... arguments) {
         return Localizer.DEFAULT_LOCALIZER.localizeWithArguments(name, defaultValue, arguments);
     }
