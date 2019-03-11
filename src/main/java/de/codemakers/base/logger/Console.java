@@ -22,10 +22,12 @@ import de.codemakers.io.file.AdvancedFile;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-public class Console {
+public abstract class Console {
     
     public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
@@ -63,7 +65,44 @@ public class Console {
         super();
         init();
         initIconImage(iconAdvancedFile);
+        initListeners();
         setPreferredSize(new Dimension(1200, 600)); //TODO Testing only
+    }
+    
+    protected abstract boolean onInput(String input) throws Exception;
+    
+    protected boolean onInputIntern(String input) {
+        try {
+            return onInput(input);
+        } catch (Exception ex) {
+            Logger.logError("Error while handling input \"" + input + "\"", ex);
+            return false;
+        }
+    }
+    
+    private void initListeners() {
+        textField_input.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
+                    button_input.doClick();
+                }
+            }
+    
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                //TODO Implement this thing, where you can switch between old inputs with Arrow Keys Up and Down
+            }
+    
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+            }
+        });
+        button_input.addActionListener((actionEvent) -> {
+            if (onInputIntern(textField_input.getText())) {
+                textField_input.setText("");
+            }
+        });
     }
     
     private void init() {
