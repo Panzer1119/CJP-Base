@@ -198,6 +198,10 @@ public abstract class AdvancedLogger implements ILogger {
         }
     }
     
+    protected Map<String, Object> createValueMap(LogEntry logEntry) {
+        return createValueMap(logEntry.getLogEntry(), logEntry.getTimestamp(), logEntry.getThread(), logEntry.getStackTraceElement());
+    }
+    
     protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
         final Map<String, Object> map = new HashMap<>();
         map.put(Logger.LOG_FORMAT_TIMESTAMP, formatTimestamp(ZonedDateTime.ofInstant(timestamp, timeZone.toZoneId())));

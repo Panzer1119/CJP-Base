@@ -25,12 +25,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class Console implements Reloadable {
     
     public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
+    
+    protected final List<LogEntry> logEntries = new CopyOnWriteArrayList<>();
+    protected final Map<LogLevel, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
+    protected final Set<LogLevel> displayedLogLevels = new CopyOnWriteArraySet<>();
     
     protected final JFrame frame = new JFrame("Console"); //FIXME Language/Localization stuff?!
     protected final JMenuBar menuBar = new JMenuBar();
@@ -44,10 +55,26 @@ public abstract class Console implements Reloadable {
     protected final JLabel label_displayedLogLevels = new JLabel("Displayed Log Levels"); //FIXME Language/Localization stuff?!
     protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.values()).map((logLevel) -> {
         final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(logLevel.toText()); //FIXME Language/Localization stuff?!
-        checkBoxMenuItem.addActionListener((actionEvent) -> reloadWithoutException());
+        checkBoxMenuItem.setSelected(Logger.getDefaultAdvancedLeveledLogger().getMinimumLogLevel().isThisLevelLessImportantOrEqual(logLevel));
+        logLevelDisplayStatus.put(logLevel, checkBoxMenuItem.isSelected());
+        if (checkBoxMenuItem.isSelected()) {
+            displayedLogLevels.add(logLevel);
+        } else {
+            displayedLogLevels.remove(logLevel);
+        }
+        checkBoxMenuItem.addActionListener((actionEvent) -> {
+            logLevelDisplayStatus.put(logLevel, checkBoxMenuItem.isSelected());
+            if (checkBoxMenuItem.isSelected()) {
+                displayedLogLevels.add(logLevel);
+            } else {
+                displayedLogLevels.remove(logLevel);
+            }
+            reloadWithoutException();
+        });
         return checkBoxMenuItem;
     }).toArray(JCheckBoxMenuItem[]::new);
     protected final JLabel label_display = new JLabel("Display"); //FIXME Rename this? //FIXME Language/Localization stuff?!
+    //TODO Maybe make this customizable in a separate (settings) window? (Like switching positioning of the elements e.g. with another LogFormatBuilder)
     protected final JCheckBoxMenuItem checkBoxMenuItem_displayTimestamp = new JCheckBoxMenuItem("Timestamp"); //FIXME Language/Localization stuff?!
     protected final JCheckBoxMenuItem checkBoxMenuItem_displayThread = new JCheckBoxMenuItem("Thread"); //FIXME Language/Localization stuff?!
     protected final JCheckBoxMenuItem checkBoxMenuItem_displaySource = new JCheckBoxMenuItem("Source"); //FIXME Language/Localization stuff?!
@@ -70,9 +97,10 @@ public abstract class Console implements Reloadable {
         initIconImage(iconAdvancedFile);
         initListeners();
         setPreferredSize(new Dimension(1200, 600)); //TODO Testing only
+        reloadWithoutException(); //TODO Good?
     }
     
-    protected abstract boolean onInput(String input) throws Exception;
+    protected abstract boolean onInput(String input) throws Exception; //FIXME Where is determined if this is an LogLevel.INPUT or an LogLevel.COMMAND?
     
     protected boolean onInputIntern(String input) {
         try {
@@ -138,6 +166,8 @@ public abstract class Console implements Reloadable {
         frame.setJMenuBar(menuBar);
         frame.setLayout(new BorderLayout());
         textPane_output.setEditable(false);
+        final Font font = textPane_output.getFont();
+        textPane_output.setFont(new Font("Courier New", font.getStyle(), font.getSize())); //FIXME Move the hardcoded font name
         scrollPane_output.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
         frame.add(scrollPane_output, BorderLayout.CENTER);
         panel_input.setLayout(new BoxLayout(panel_input, BoxLayout.X_AXIS));
@@ -185,6 +215,14 @@ public abstract class Console implements Reloadable {
         } catch (Exception ex) {
             Logger.logError("Error while loading " + getClass().getSimpleName() + " icon", ex);
         }
+    }
+    
+    protected List<LogEntry> getLogEntries() {
+        return logEntries;
+    }
+    
+    protected List<LogEntry> getLogEntriesFilteredByLogLevel() {
+        return logEntries.stream().filter((logEntry) -> logEntry.getLogLevel() == null || displayedLogLevels.contains(logEntry.getLogLevel())).collect(Collectors.toList());
     }
     
     protected JFrame getFrame() {

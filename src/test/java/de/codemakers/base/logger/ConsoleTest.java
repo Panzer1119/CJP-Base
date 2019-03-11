@@ -16,20 +16,41 @@
 
 package de.codemakers.base.logger;
 
+import org.apache.commons.text.StringSubstitutor;
+
 import javax.swing.*;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import java.awt.*;
+import java.util.List;
 
 public class ConsoleTest {
     
     public static final void main(String[] args) throws Exception {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendTimestamp().appendLogLevel().appendText(": ").appendObject().appendText(" ").appendSource().appendThread().finishWithoutException();
         final Console console = new Console() {
             @Override
             public boolean reload() throws Exception {
-                Logger.log("Reload requested", LogLevel.WARNING);
-                //TODO Implement
-                return false;
+                //Logger.log("Reload requested", LogLevel.WARNING);
+                //Logger.log("getLogEntries()=" + getLogEntries(), LogLevel.DEBUG);
+                //Logger.log("getLogEntriesFilteredByLogLevel()=" + getLogEntriesFilteredByLogLevel(), LogLevel.DEBUG);
+                //TODO Testing adding LogEntry start
+                final List<LogEntry> logEntries = getLogEntriesFilteredByLogLevel();
+                final StyledDocument styledDocument = textPane_output.getStyledDocument();
+                styledDocument.remove(0, styledDocument.getLength()); //TODO Good? Because when there are too many LogEntries, this could cause lag
+                final Style style = styledDocument.addStyle("LogStyle", null);
+                for (LogEntry logEntry : logEntries) {
+                    StyleConstants.setBackground(style, logEntry.getLogLevel() == null ? Color.WHITE : logEntry.getLogLevel().getColorBackground());
+                    StyleConstants.setForeground(style, logEntry.getLogLevel() == null ? Color.BLACK : logEntry.getLogLevel().getColorForeground());
+                    styledDocument.insertString(styledDocument.getLength(), StringSubstitutor.replace(Logger.getDefaultAdvancedLeveledLogger().getLogFormat(), Logger.getDefaultAdvancedLeveledLogger().createValueMap(logEntry)) + "\n", style);
+                }
+                textPane_output.setCaretPosition(styledDocument.getLength());
+                //TODO Testing adding LogEntry end
+                return true;
             }
-    
+            
             @Override
             protected boolean onInput(String input) throws Exception {
                 if (input.isEmpty()) {
@@ -38,6 +59,11 @@ public class ConsoleTest {
                 Logger.log("input=" + input, LogLevel.INPUT);
                 return true;
             }
+        };
+        //AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = console.logEntries::add;
+        AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = (logEntry) -> {
+            console.logEntries.add(logEntry);
+            console.reloadWithoutException();
         };
         Logger.log("console=" + console);
         console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
