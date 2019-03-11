@@ -16,22 +16,30 @@
 
 package de.codemakers.base.util;
 
-import de.codemakers.base.exceptions.CJPRuntimeException;
+import com.sun.org.apache.bcel.internal.classfile.ClassFormatException;
 
 public class Require {
     
     public static final <T> T clazz(Object object, Class<T> clazz) {
-        if (clazz == null) {
-            return null;
-        }
-        if (object == null) {
+        return clazz(object, clazz, object + " is not an instance of " + clazz);
+    }
+    
+    public static final <T> T clazz(Object object, Class<T> clazz, String message) {
+        if (clazz == null || object == null) {
             return null;
         }
         final boolean match = clazz.isAssignableFrom(object.getClass());
         if (!match) {
-            throw new CJPRuntimeException(object + " does not match " + clazz);
+            throw new ClassFormatException(message);
         }
         return (T) object;
+    }
+    
+    public static final <T> T clazzOrNull(Object object, Class<T> clazz) {
+        if (clazz == null || object == null) {
+            return null;
+        }
+        return clazz.isAssignableFrom(object.getClass()) ? (T) object : null;
     }
     
 }

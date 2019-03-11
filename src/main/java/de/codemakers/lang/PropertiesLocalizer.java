@@ -17,26 +17,33 @@
 package de.codemakers.lang;
 
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.Require;
+import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.Properties;
 
-public class PropertiesLocalizer implements Localizer {
+public class PropertiesLocalizer extends Localizer {
     
-    private final Properties properties = new Properties();
+    private final Properties properties;
     
     public PropertiesLocalizer() {
+        this(new Properties());
+    }
+    
+    public PropertiesLocalizer(Properties properties) {
+        this.properties = Objects.requireNonNull(properties, "properties");
     }
     
     public PropertiesLocalizer(AdvancedFile advancedFile) {
+        this();
         loadFromFile(advancedFile);
     }
     
     public PropertiesLocalizer loadFromFile(AdvancedFile advancedFile) {
         Objects.requireNonNull(advancedFile);
-        properties.clear();
         try (final InputStream inputStream = advancedFile.createInputStream()) {
             properties.load(inputStream);
         } catch (Exception ex) {
@@ -72,6 +79,27 @@ public class PropertiesLocalizer implements Localizer {
     @Override
     public String getLanguageCode() {
         return properties.getProperty(KEY_LANGUAGE_CODE);
+    }
+    
+    @Override
+    public Localizer addLocalizer(Localizer localizer) {
+        final PropertiesLocalizer propertiesLocalizer = Require.clazz(localizer, PropertiesLocalizer.class, "localizer is not an instance of " + PropertiesLocalizer.class.getSimpleName());
+        properties.putAll(propertiesLocalizer.properties);
+        return this;
+    }
+    
+    @Override
+    public PropertiesLocalizer copy() {
+        return new PropertiesLocalizer((Properties) properties.clone());
+    }
+    
+    @Override
+    public void set(Copyable copyable) {
+        final PropertiesLocalizer propertiesLocalizer = Require.clazz(copyable, PropertiesLocalizer.class);
+        if (propertiesLocalizer != null) {
+            properties.clear();
+            properties.putAll(propertiesLocalizer.properties);
+        }
     }
     
     @Override

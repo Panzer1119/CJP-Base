@@ -16,22 +16,34 @@
 
 package de.codemakers.lang;
 
-public interface Localizer {
+import de.codemakers.base.util.interfaces.Copyable;
+
+import java.util.Locale;
+
+public abstract class Localizer implements Copyable {
     
-    String KEY_LANGUAGE_NAME_LOCAL = "language_name_local";
-    String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
-    String KEY_LANGUAGE_CODE = "language_code";
+    public static final String KEY_LANGUAGE_NAME_LOCAL = "language_name_local";
+    public static final String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
+    public static final String KEY_LANGUAGE_CODE = "language_code";
     
-    String localize(String name, String defaultValue, Object... arguments);
+    public static Localizer DEFAULT_LOCALIZER = new PropertiesLocalizer();
     
-    default String localize(String name, Object... arguments) {
+    public abstract String localize(String name, String defaultValue, Object... arguments);
+    
+    public String localize(String name, Object... arguments) {
         return localize(name, name, arguments);
     }
     
-    String getLanguageNameLocal();
+    public abstract String getLanguageNameLocal();
     
-    String getLanguageNameEnglish();
+    public abstract String getLanguageNameEnglish();
     
-    String getLanguageCode();
+    public abstract String getLanguageCode();
+    
+    public Locale getLocale() {
+        return Locale.forLanguageTag(getLanguageCode());
+    }
+    
+    public abstract Localizer addLocalizer(Localizer localizer);
     
 }

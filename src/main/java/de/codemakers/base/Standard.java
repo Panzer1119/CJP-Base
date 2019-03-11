@@ -23,12 +23,15 @@ import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
+import de.codemakers.lang.Localizer;
+import de.codemakers.lang.PropertiesLocalizer;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Standard {
@@ -49,6 +52,9 @@ public class Standard {
     public static final AdvancedFile MAIN_FOLDER = new AdvancedFile(AdvancedFile.PREFIX_INTERN + MAIN_PATH);
     public static final String ICONS_PATH = "icons/";
     public static final AdvancedFile ICONS_FOLDER = new AdvancedFile(MAIN_FOLDER, ICONS_PATH);
+    public static final String LANG_PATH = "lang/";
+    public static final AdvancedFile LANG_FOLDER = new AdvancedFile(MAIN_FOLDER, LANG_PATH);
+    public static final String LANG_FILE_EXTENSION = "lang";
     
     static {
         URI RUNNING_JAR_URI_ = null;
@@ -58,6 +64,11 @@ public class Standard {
             Logger.handleError(ex);
         }
         RUNNING_JAR_URI = RUNNING_JAR_URI_;
+        try {
+            ((PropertiesLocalizer) Localizer.DEFAULT_LOCALIZER).loadFromFile(new AdvancedFile(LANG_FOLDER, Locale.getDefault().getLanguage() + "." + LANG_FILE_EXTENSION));
+        } catch (Exception ex) {
+            Logger.logError("Failed to load language file for local language \"" + Locale.getDefault() + "\"", ex);
+        }
     }
     
     public static final File getInternFileFromAbsolutePath(String path) {
@@ -105,6 +116,14 @@ public class Standard {
         } catch (Exception ex) {
             return null;
         }
+    }
+    
+    public static String localize(String name, String defaultValue, Object... arguments) {
+        return Localizer.DEFAULT_LOCALIZER.localize(name, defaultValue, arguments);
+    }
+    
+    public static String localize(String name, Object... arguments) {
+        return Localizer.DEFAULT_LOCALIZER.localize(name, arguments);
     }
     
 }
