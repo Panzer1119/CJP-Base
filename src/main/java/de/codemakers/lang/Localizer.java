@@ -18,6 +18,10 @@ package de.codemakers.lang;
 
 public interface Localizer {
     
+    String KEY_LANGUAGE_NAME_LOCAL = "language_name_local";
+    String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
+    String KEY_LANGUAGE_CODE = "language_code";
+    
     String localize(String name, String defaultValue, Object... arguments);
     
     default String localize(String name, Object... arguments) {

@@ -27,13 +27,20 @@ public class PropertiesLocalizer implements Localizer {
     
     private final Properties properties = new Properties();
     
+    public PropertiesLocalizer() {
+    }
+    
+    public PropertiesLocalizer(AdvancedFile advancedFile) {
+        loadFromFile(advancedFile);
+    }
+    
     public PropertiesLocalizer loadFromFile(AdvancedFile advancedFile) {
         Objects.requireNonNull(advancedFile);
         properties.clear();
         try (final InputStream inputStream = advancedFile.createInputStream()) {
             properties.load(inputStream);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            Logger.handleError(ex, "tried loading " + PropertiesLocalizer.class.getSimpleName() + " from \"" + advancedFile + "\"");
         }
         return this;
     }
@@ -54,17 +61,17 @@ public class PropertiesLocalizer implements Localizer {
     
     @Override
     public String getLanguageNameLocal() {
-        return properties.getProperty("language_name_local", getLanguageNameEnglish());
+        return properties.getProperty(KEY_LANGUAGE_NAME_LOCAL, getLanguageNameEnglish());
     }
     
     @Override
     public String getLanguageNameEnglish() {
-        return properties.getProperty("language_name_english", getLanguageCode());
+        return properties.getProperty(KEY_LANGUAGE_NAME_ENGLISH, getLanguageCode());
     }
     
     @Override
     public String getLanguageCode() {
-        return properties.getProperty("language_code");
+        return properties.getProperty(KEY_LANGUAGE_CODE);
     }
     
     @Override
