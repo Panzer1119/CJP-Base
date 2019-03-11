@@ -118,12 +118,20 @@ public class Standard {
         }
     }
     
-    public static String localize(String name, String defaultValue, Object... arguments) {
-        return Localizer.DEFAULT_LOCALIZER.localize(name, defaultValue, arguments);
+    public static String localizeWithArguments(String name, String defaultValue, Object... arguments) {
+        return Localizer.DEFAULT_LOCALIZER.localizeWithArguments(name, defaultValue, arguments);
     }
     
-    public static String localize(String name, Object... arguments) {
-        return Localizer.DEFAULT_LOCALIZER.localize(name, arguments);
+    public static String localize(String name, String defaultValue) {
+        return Localizer.DEFAULT_LOCALIZER.localize(name, defaultValue);
+    }
+    
+    public static String localizeWithArguments(String name, Object... arguments) {
+        return Localizer.DEFAULT_LOCALIZER.localizeWithArguments(name, arguments);
+    }
+    
+    public static String localize(String name) {
+        return Localizer.DEFAULT_LOCALIZER.localize(name);
     }
     
 }

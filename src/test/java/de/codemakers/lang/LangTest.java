@@ -16,6 +16,7 @@
 
 package de.codemakers.lang;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
 
 import java.util.Locale;
@@ -39,7 +40,10 @@ public class LangTest {
         Logger.log(Locale.forLanguageTag("en"));
         final PropertiesLocalizer propertiesLocalizer = (PropertiesLocalizer) Localizer.DEFAULT_LOCALIZER;
         Logger.log("propertiesLocalizer=" + propertiesLocalizer);
-        Logger.log("propertiesLocalizer.copy()=" + propertiesLocalizer.copy());
+        Logger.log("propertiesLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH)=" + propertiesLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH));
+        Logger.log("Standard.localize(\"test_123\")=" + Standard.localize("test_123"));
+        Logger.log("Standard.localize(\"test_123\", null)=" + Standard.localize("test_123", null));
+        Logger.log("Standard.localize(\"test_123\")=" + Standard.localize("test_1234"));
         //test();
     }
     

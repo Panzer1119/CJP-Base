@@ -28,10 +28,18 @@ public abstract class Localizer implements Copyable {
     
     public static Localizer DEFAULT_LOCALIZER = new PropertiesLocalizer();
     
-    public abstract String localize(String name, String defaultValue, Object... arguments);
+    public abstract String localizeWithArguments(String name, String defaultValue, Object... arguments);
     
-    public String localize(String name, Object... arguments) {
-        return localize(name, name, arguments);
+    public String localize(String name, String defaultValue) {
+        return localizeWithArguments(name, defaultValue);
+    }
+    
+    public String localizeWithArguments(String name, Object... arguments) {
+        return localizeWithArguments(name, name, arguments);
+    }
+    
+    public String localize(String name) {
+        return localize(name, name);
     }
     
     public abstract String getLanguageNameLocal();

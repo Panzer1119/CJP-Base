@@ -62,7 +62,7 @@ public class PropertiesLocalizer extends Localizer {
     }
     
     @Override
-    public String localize(String name, String defaultValue, Object... arguments) {
+    public String localizeWithArguments(String name, String defaultValue, Object... arguments) {
         return properties.getProperty(name, defaultValue);
     }
     
