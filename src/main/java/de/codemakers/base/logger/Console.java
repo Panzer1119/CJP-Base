@@ -84,9 +84,6 @@ public abstract class Console {
         textField_input.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent keyEvent) {
-                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
-                    button_input.doClick();
-                }
             }
     
             @Override
@@ -96,6 +93,9 @@ public abstract class Console {
     
             @Override
             public void keyReleased(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
+                    button_input.doClick();
+                }
             }
         });
         button_input.addActionListener((actionEvent) -> {

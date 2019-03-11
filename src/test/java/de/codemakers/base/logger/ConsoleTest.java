@@ -22,7 +22,16 @@ public class ConsoleTest {
     
     public static final void main(String[] args) throws Exception {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
-        final Console console = new Console();
+        final Console console = new Console() {
+            @Override
+            protected boolean onInput(String input) throws Exception {
+                if (input.isEmpty()) {
+                    return false;
+                }
+                Logger.log("input=" + input, LogLevel.INPUT);
+                return true;
+            }
+        };
         Logger.log("console=" + console);
         console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //console.setPreferredSize(new Dimension(600, 300));
