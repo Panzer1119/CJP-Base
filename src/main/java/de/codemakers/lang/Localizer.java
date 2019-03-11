@@ -17,6 +17,7 @@
 package de.codemakers.lang;
 
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.tough.ToughSupplier;
 
 import java.util.Locale;
 
@@ -26,12 +27,19 @@ public abstract class Localizer implements Copyable {
     public static final String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
     public static final String KEY_LANGUAGE_CODE = "language_code";
     
+    public static final Localizer ENGLISH_LOCALIZER = new PropertiesLocalizer();
     public static Localizer DEFAULT_LOCALIZER = new PropertiesLocalizer();
     
     public abstract String localizeWithArguments(String name, String defaultValue, Object... arguments);
     
+    public abstract String localizeWithArguments(String name, ToughSupplier<String> defaultValueSupplier, Object... arguments);
+    
     public String localize(String name, String defaultValue) {
         return localizeWithArguments(name, defaultValue);
+    }
+    
+    public String localize(String name, ToughSupplier<String> defaultValueSupplier) {
+        return localizeWithArguments(name, defaultValueSupplier);
     }
     
     public String localizeWithArguments(String name, Object... arguments) {

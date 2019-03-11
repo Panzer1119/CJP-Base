@@ -38,19 +38,27 @@ public abstract class Console implements Reloadable {
     
     public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
+    //Language key constants
+    public static final String LANGUAGE_KEY_CONSOLE = "console";
+    public static final String LANGUAGE_KEY_FILE = "file";
+    public static final String LANGUAGE_KEY_RELOAD = "reload";
+    public static final String LANGUAGE_KEY_SAVE_AS = "save_as";
+    public static final String LANGUAGE_KEY_RESTART = "restart";
+    public static final String LANGUAGE_KEY_EXIT = "exit";
+    public static final String LANGUAGE_KEY_OPTIONS = "options";
     
     protected final List<LogEntry> logEntries = new CopyOnWriteArrayList<>();
     protected final Map<LogLevel, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
     protected final Set<LogLevel> displayedLogLevels = new CopyOnWriteArraySet<>();
     
-    protected final JFrame frame = new JFrame("Console"); //FIXME Language/Localization stuff?!
+    protected final JFrame frame = new JFrame(Standard.localize(LANGUAGE_KEY_CONSOLE)); //FIXME Language/Localization stuff?!
     protected final JMenuBar menuBar = new JMenuBar();
-    protected final JMenu menu_file = new JMenu("File"); //FIXME Language/Localization stuff?!
-    protected final JMenuItem menuItem_reload = new JMenuItem("Reload"); //FIXME Language/Localization stuff?!
-    protected final JMenuItem menuItem_saveAs = new JMenuItem("Save As"); //FIXME Language/Localization stuff?!
-    protected final JMenuItem menuItem_restart = new JMenuItem("Restart"); //FIXME Language/Localization stuff?!
-    protected final JMenuItem menuItem_exit = new JMenuItem("Exit"); //FIXME Language/Localization stuff?!
-    protected final JMenu menu_options = new JMenu("Options"); //FIXME Language/Localization stuff?!
+    protected final JMenu menu_file = new JMenu(Standard.localize(LANGUAGE_KEY_FILE)); //FIXME Language/Localization stuff?!
+    protected final JMenuItem menuItem_reload = new JMenuItem(Standard.localize(LANGUAGE_KEY_RELOAD)); //FIXME Language/Localization stuff?!
+    protected final JMenuItem menuItem_saveAs = new JMenuItem(Standard.localize(LANGUAGE_KEY_SAVE_AS)); //FIXME Language/Localization stuff?!
+    protected final JMenuItem menuItem_restart = new JMenuItem(Standard.localize(LANGUAGE_KEY_RESTART)); //FIXME Language/Localization stuff?!
+    protected final JMenuItem menuItem_exit = new JMenuItem(Standard.localize(LANGUAGE_KEY_EXIT)); //FIXME Language/Localization stuff?!
+    protected final JMenu menu_options = new JMenu(Standard.localize(LANGUAGE_KEY_OPTIONS)); //FIXME Language/Localization stuff?!
     //Output
     protected final JLabel label_displayedLogLevels = new JLabel("Displayed Log Levels"); //FIXME Language/Localization stuff?!
     protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.values()).map((logLevel) -> {
@@ -180,28 +188,28 @@ public abstract class Console implements Reloadable {
             @Override
             public void windowOpened(WindowEvent e) {
             }
-    
+            
             @Override
             public void windowClosing(WindowEvent e) {
                 hide();
             }
-    
+            
             @Override
             public void windowClosed(WindowEvent e) {
             }
-    
+            
             @Override
             public void windowIconified(WindowEvent e) {
             }
-    
+            
             @Override
             public void windowDeiconified(WindowEvent e) {
             }
-    
+            
             @Override
             public void windowActivated(WindowEvent e) {
             }
-    
+            
             @Override
             public void windowDeactivated(WindowEvent e) {
             }

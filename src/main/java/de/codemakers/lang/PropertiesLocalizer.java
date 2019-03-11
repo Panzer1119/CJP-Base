@@ -19,6 +19,7 @@ package de.codemakers.lang;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.InputStream;
@@ -64,6 +65,12 @@ public class PropertiesLocalizer extends Localizer {
     @Override
     public String localizeWithArguments(String name, String defaultValue, Object... arguments) {
         return properties.getProperty(name, defaultValue);
+    }
+    
+    @Override
+    public String localizeWithArguments(String name, ToughSupplier<String> defaultValueSupplier, Object... arguments) {
+        final String temp = properties.getProperty(name);
+        return temp != null ? temp : defaultValueSupplier.getWithoutException();
     }
     
     @Override

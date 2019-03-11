@@ -69,6 +69,11 @@ public class Standard {
         } catch (Exception ex) {
             Logger.logError("Failed to load language file for local language \"" + Locale.getDefault() + "\"", ex);
         }
+        try {
+            ((PropertiesLocalizer) Localizer.ENGLISH_LOCALIZER).loadFromFile(new AdvancedFile(LANG_FOLDER, Locale.ENGLISH.getLanguage() + "." + LANG_FILE_EXTENSION));
+        } catch (Exception ex) {
+            Logger.logError("Failed to load language file for english", ex);
+        }
     }
     
     public static final File getInternFileFromAbsolutePath(String path) {
@@ -122,6 +127,10 @@ public class Standard {
         return (L) Localizer.DEFAULT_LOCALIZER;
     }
     
+    public static <L extends Localizer> L getEnglishLocalizer() {
+        return (L) Localizer.ENGLISH_LOCALIZER;
+    }
+    
     public static String localizeWithArguments(String name, String defaultValue, Object... arguments) {
         return Localizer.DEFAULT_LOCALIZER.localizeWithArguments(name, defaultValue, arguments);
     }
@@ -131,11 +140,11 @@ public class Standard {
     }
     
     public static String localizeWithArguments(String name, Object... arguments) {
-        return Localizer.DEFAULT_LOCALIZER.localizeWithArguments(name, arguments);
+        return Localizer.DEFAULT_LOCALIZER.localizeWithArguments(name, () -> Localizer.ENGLISH_LOCALIZER.localizeWithArguments(name, arguments), arguments);
     }
     
     public static String localize(String name) {
-        return Localizer.DEFAULT_LOCALIZER.localize(name);
+        return Localizer.DEFAULT_LOCALIZER.localize(name, () -> Localizer.ENGLISH_LOCALIZER.localize(name));
     }
     
 }
