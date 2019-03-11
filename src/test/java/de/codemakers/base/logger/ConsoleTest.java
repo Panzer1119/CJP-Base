@@ -24,6 +24,13 @@ public class ConsoleTest {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
         final Console console = new Console() {
             @Override
+            public boolean reload() throws Exception {
+                Logger.log("Reload requested", LogLevel.WARNING);
+                //TODO Implement
+                return false;
+            }
+    
+            @Override
             protected boolean onInput(String input) throws Exception {
                 if (input.isEmpty()) {
                     return false;

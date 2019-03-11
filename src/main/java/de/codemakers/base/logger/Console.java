@@ -17,17 +17,19 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.util.interfaces.Reloadable;
 import de.codemakers.io.file.AdvancedFile;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-public abstract class Console {
+public abstract class Console implements Reloadable {
     
     public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
@@ -40,10 +42,12 @@ public abstract class Console {
     protected final JMenuItem menuItem_restart = new JMenuItem("Restart"); //FIXME Language/Localization stuff?!
     protected final JMenuItem menuItem_exit = new JMenuItem("Exit"); //FIXME Language/Localization stuff?!
     protected final JMenu menu_options = new JMenu("Options"); //FIXME Language/Localization stuff?!
+    //Output
     protected final JLabel label_displayedLogLevels = new JLabel("Displayed Log Levels"); //FIXME Language/Localization stuff?!
     protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.values()).map((logLevel) -> {
-        //FIXME Language/Localization stuff?!
-        return new JCheckBoxMenuItem(logLevel.toText());
+        final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(logLevel.toText()); //FIXME Language/Localization stuff?!
+        checkBoxMenuItem.addActionListener((actionEvent) -> reloadWithoutException());
+        return checkBoxMenuItem;
     }).toArray(JCheckBoxMenuItem[]::new);
     protected final JLabel label_display = new JLabel("Display"); //FIXME Rename this? //FIXME Language/Localization stuff?!
     protected final JCheckBoxMenuItem checkBoxMenuItem_displayTimestamp = new JCheckBoxMenuItem("Timestamp"); //FIXME Language/Localization stuff?!
@@ -53,6 +57,7 @@ public abstract class Console {
     //TODO What was the "Debug Mode"?
     protected final JTextPane textPane_output = new JTextPane();
     protected final JScrollPane scrollPane_output = new JScrollPane(textPane_output);
+    //Input
     protected final JPanel panel_input = new JPanel();
     protected final JTextField textField_input = new JTextField();
     protected final JButton button_input = new JButton("Enter"); //FIXME Language/Localization stuff?!
@@ -81,16 +86,24 @@ public abstract class Console {
     }
     
     private void initListeners() {
+        //Output
+        final ActionListener actionListener_reload = actionEvent -> reloadWithoutException();
+        menuItem_reload.addActionListener(actionListener_reload);
+        checkBoxMenuItem_displayTimestamp.addActionListener(actionListener_reload);
+        checkBoxMenuItem_displayThread.addActionListener(actionListener_reload);
+        checkBoxMenuItem_displaySource.addActionListener(actionListener_reload);
+        checkBoxMenuItem_displayLogLevel.addActionListener(actionListener_reload);
+        //Input
         textField_input.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent keyEvent) {
             }
-    
+            
             @Override
             public void keyPressed(KeyEvent keyEvent) {
                 //TODO Implement this thing, where you can switch between old inputs with Arrow Keys Up and Down
             }
-    
+            
             @Override
             public void keyReleased(KeyEvent keyEvent) {
                 if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -126,6 +139,7 @@ public abstract class Console {
         menuBar.add(menu_options);
         frame.setJMenuBar(menuBar);
         frame.setLayout(new BorderLayout());
+        textPane_output.setEditable(false);
         scrollPane_output.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
         frame.add(scrollPane_output, BorderLayout.CENTER);
         panel_input.setLayout(new BoxLayout(panel_input, BoxLayout.X_AXIS));
