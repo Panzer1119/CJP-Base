@@ -23,9 +23,7 @@ import de.codemakers.io.file.AdvancedFile;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
@@ -147,6 +145,37 @@ public abstract class Console implements Reloadable {
         panel_input.add(button_input);
         panel_input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Input")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
         frame.add(panel_input, BorderLayout.SOUTH);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+    
+            @Override
+            public void windowClosing(WindowEvent e) {
+                hide();
+            }
+    
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+    
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+    
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+    
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+    
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
         //TODO Add ActionListeners and KeyInputListeners for the (CheckBox)MenuItems and the TextField/Button
     }
     

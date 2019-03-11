@@ -59,12 +59,7 @@ public abstract class AdvancedLogger implements ILogger {
     //TODO Add javadoc
     public static final ToughBiFunction<ZonedDateTime, AdvancedLogger, String> DEFAULT_TIMESTAMP_FORMATTER = (timestamp, advancedLogger) -> timestamp == null ? "" : "[" + timestamp.format(advancedLogger.dateTimeFormatter) + "]";
     public static final ToughBiFunction<Thread, AdvancedLogger, String> DEFAULT_THREAD_FORMATTER = (thread, advancedLogger) -> thread == null ? "" : "[" + thread.getName() + "]";
-    public static final ToughBiFunction<StackTraceElement, AdvancedLogger, String> DEFAULT_SOURCE_FORMATTER = (stackTraceElement, advancedLogger) -> {
-        if (stackTraceElement == null) {
-            return "";
-        }
-        return "[" + StringSubstitutor.replace(advancedLogger.sourceFormat, advancedLogger.createValueMap(stackTraceElement)) + "]";
-    };
+    public static final ToughBiFunction<StackTraceElement, AdvancedLogger, String> DEFAULT_SOURCE_FORMATTER = (stackTraceElement, advancedLogger) -> stackTraceElement == null ? "" : "[" + StringSubstitutor.replace(advancedLogger.sourceFormat, createValueMap(stackTraceElement)) + "]";
     public static final ToughBiFunction<Object, AdvancedLogger, String> DEFAULT_OBJECT_FORMATTER = (object, advancedLogger) -> "" + object;
     
     protected TimeZone timeZone = TimeZone.getDefault();
