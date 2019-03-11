@@ -155,10 +155,18 @@ public class Logger {
      */
     public static void log(Object object, LogLevel logLevel) {
         if (LOGGER != null) {
-            if (LOGGER instanceof AdvancedLeveledLogger) {
-                ((AdvancedLeveledLogger) LOGGER).log(object, Instant.now(), Thread.currentThread(), AdvancedLogger.cutStackTrace(new Exception().getStackTrace()), logLevel);
+            if (logLevel != null && logLevel.isBad()) {
+                if (LOGGER instanceof AdvancedLeveledLogger) {
+                    ((AdvancedLeveledLogger) LOGGER).logError(object, null, Instant.now(), Thread.currentThread(), AdvancedLogger.cutStackTrace(new Exception().getStackTrace()), logLevel);
+                } else {
+                    LOGGER.logError(object);
+                }
             } else {
-                LOGGER.log(object);
+                if (LOGGER instanceof AdvancedLeveledLogger) {
+                    ((AdvancedLeveledLogger) LOGGER).log(object, Instant.now(), Thread.currentThread(), AdvancedLogger.cutStackTrace(new Exception().getStackTrace()), logLevel);
+                } else {
+                    LOGGER.log(object);
+                }
             }
         }
     }
