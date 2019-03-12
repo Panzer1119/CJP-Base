@@ -132,7 +132,7 @@ public class PipedInputStream extends InputStream {
      * Receives data into an array of bytes.  This method will
      * block until some input is available.
      *
-     * @param b the buffer into which the data is received
+     * @param data the buffer into which the data is received
      * @param off the start offset of the data
      * @param len the maximum number of bytes received
      *
@@ -140,7 +140,7 @@ public class PipedInputStream extends InputStream {
      * {@link #connect(PipedOutputStream) unconnected},
      * closed,or if an I/O error occurs.
      */
-    synchronized void receive(byte b[], int off, int len) throws IOException {
+    synchronized void receive(byte[] data, int off, int len) throws IOException {
         checkStateForReceive();
         int bytesToTransfer = len;
         while (bytesToTransfer > 0) {
@@ -162,7 +162,7 @@ public class PipedInputStream extends InputStream {
                 nextTransferAmount = bytesToTransfer;
             }
             assert (nextTransferAmount > 0);
-            System.arraycopy(b, off, buffer, in, nextTransferAmount);
+            System.arraycopy(data, off, buffer, in, nextTransferAmount);
             bytesToTransfer -= nextTransferAmount;
             off += nextTransferAmount;
             in += nextTransferAmount;
@@ -248,7 +248,7 @@ public class PipedInputStream extends InputStream {
      * available, end of the stream has been detected, or an exception is
      * thrown.
      *
-     * @param b the buffer into which the data is read.
+     * @param data the buffer into which the data is read.
      * @param off the start offset in the destination array <code>b</code>
      * @param len the maximum number of bytes read.
      *

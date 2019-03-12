@@ -45,9 +45,10 @@ public class PipedOutputStream extends OutputStream {
      * pipedInputStream.connect(pipedOutputStream)</pre></blockquote>
      * The two calls have the same effect.
      *
-     * @param pipedInputStream the piped input stream to connect to.
+     * @param pipedInputStream the {@link PipedInputStream} to connect to.
      *
      * @throws IOException if an I/O error occurs.
+     * @see java.io.PipedOutputStream#connect(java.io.PipedInputStream)
      */
     public synchronized void connect(PipedInputStream pipedInputStream) throws IOException {
         if (pipedInputStream == null) {
@@ -61,9 +62,82 @@ public class PipedOutputStream extends OutputStream {
         pipedInputStream.connected = true;
     }
     
+    /**
+     * Writes the specified <code>byte</code> to the {@link PipedOutputStream}.
+     * <p>
+     * Implements the <code>write</code> method of <code>OutputStream</code>.
+     *
+     * @param b the <code>byte</code> to be written.
+     *
+     * @throws IOException if the Pipe is <a href=#BROKEN> broken</a>,
+     * {@link #connect(PipedInputStream) unconnected},
+     * closed, or if an I/O error occurs.
+     * @see java.io.PipedOutputStream#write(int)
+     */
     @Override
     public void write(int b) throws IOException {
+        if (pipedInputStream == null) {
+            throw new IOException("Pipe not connected");
+        }
+        pipedInputStream.receive(b);
+    }
     
+    /**
+     * Writes <code>len</code> bytes from the specified byte array
+     * starting at offset <code>off</code> to this {@link PipedOutputStream}.
+     * This method blocks until all the bytes are written to the output
+     * stream.
+     *
+     * @param data the data.
+     * @param off the start offset in the data.
+     * @param len the number of bytes to write.
+     *
+     * @throws IOException if the Pipe is <a href=#BROKEN> broken</a>,
+     * {@link #connect(PipedInputStream) unconnected},
+     * closed, or if an I/O error occurs.
+     * @see java.io.PipedOutputStream#write(byte[], int, int)
+     */
+    public void write(byte[] data, int off, int len) throws IOException {
+        if (pipedInputStream == null) {
+            throw new IOException("Pipe not connected");
+        } else if (data == null) {
+            throw new NullPointerException();
+        } else if ((off < 0) || (off > data.length) || (len < 0) || ((off + len) > data.length) || ((off + len) < 0)) {
+            throw new IndexOutOfBoundsException();
+        } else if (len == 0) {
+            return;
+        }
+        pipedInputStream.receive(data, off, len);
+    }
+    
+    /**
+     * Flushes this {@link PipedOutputStream} and forces any buffered output bytes
+     * to be written out.
+     * This will notify any readers that bytes are waiting in the pipe.
+     *
+     * @throws IOException if an I/O error occurs.
+     * @see java.io.PipedOutputStream#flush()
+     */
+    public synchronized void flush() throws IOException {
+        if (pipedInputStream != null) {
+            synchronized (pipedInputStream) {
+                pipedInputStream.notifyAll();
+            }
+        }
+    }
+    
+    /**
+     * Closes this {@link PipedOutputStream} and releases any system resources
+     * associated with this stream. This stream may no longer be used for
+     * writing bytes.
+     *
+     * @throws IOException if an I/O error occurs.
+     * @see java.io.PipedOutputStream#close()
+     */
+    public void close() throws IOException {
+        if (pipedInputStream != null) {
+            pipedInputStream.receivedLast();
+        }
     }
     
 }
