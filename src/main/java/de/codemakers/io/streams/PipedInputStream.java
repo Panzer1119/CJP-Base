@@ -274,7 +274,7 @@ public class PipedInputStream extends InputStream {
             return 0;
         }
         //possibly wait on the first character
-        int b = read();
+        final int b = read();
         if (b < 0) {
             return -1;
         }
@@ -291,7 +291,7 @@ public class PipedInputStream extends InputStream {
             if (available > (len - 1)) {
                 available = len - 1;
             }
-            System.arraycopy(buffer, out, b, off + read, available);
+            System.arraycopy(buffer, out, data, off + read, available);
             out += available;
             read += available;
             len -= available;

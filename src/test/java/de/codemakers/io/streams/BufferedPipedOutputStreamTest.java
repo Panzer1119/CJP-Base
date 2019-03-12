@@ -20,8 +20,8 @@ import de.codemakers.base.Standard;
 import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class BufferedPipedOutputStreamTest {
@@ -34,40 +34,45 @@ public class BufferedPipedOutputStreamTest {
         final PipedInputStream pipedInputStream = new PipedInputStream(bufferedPipedOutputStream);
         Logger.log("pipedInputStream=" + pipedInputStream);
         Standard.async(() -> {
-            Thread.sleep(500);
             Thread.currentThread().setName("RECEIVER");
             Logger.log("Started Receiving");
-            /*
             final ObjectInputStream objectInputStream = new ObjectInputStream(pipedInputStream);
-            Object object = null;
-            while ((object = objectInputStream.readObject()) != null) {
-                Logger.log("received: \"" + object + "\"");
-            }
+            Logger.log("received: \"" + objectInputStream.readObject() + "\"");
             Logger.log("Stopping Receiving");
             objectInputStream.close();
-            */
+            /*
+            Logger.log("Started Receiving");
             final DataInputStream dataInputStream = new DataInputStream(pipedInputStream);
             Logger.log("received: \"" + dataInputStream.readInt() + "\"");
             Logger.log("Stopping Receiving");
             dataInputStream.close();
+            */
         });
         Thread.currentThread().setName("TRANSMITTER");
         Logger.log("Started Transmitting");
-        /*
         final ObjectOutputStream objectOutputStream = new ObjectOutputStream(bufferedPipedOutputStream);
+        /*
         for (int i = 0; i < 1; i++) {
             final TestObject testObject = new TestObject();
-            Logger.log("transmitted: \"" + testObject + "\"");
+            Logger.log("transmitting: \"" + testObject + "\"");
             objectOutputStream.writeObject(testObject);
         }
         */
+        final TestObject testObject = new TestObject();
+        Logger.log("transmitting: \"" + testObject + "\"");
+        objectOutputStream.writeObject(testObject);
+        Thread.sleep(1000);
+        Logger.log("Stopping Transmitting");
+        objectOutputStream.close();
+        /*
+        Logger.log("Started Transmitting");
         final DataOutputStream dataOutputStream = new DataOutputStream(bufferedPipedOutputStream);
-        Logger.log("transmitted: \"42\"");
+        Logger.log("transmitting: \"42\"");
         dataOutputStream.writeInt(42);
         Thread.sleep(1000);
         Logger.log("Stopping Transmitting");
-        //objectOutputStream.close();
         dataOutputStream.close();
+        */
     }
     
     public static class TestObject implements Serializable {
