@@ -21,7 +21,7 @@ import java.io.OutputStream;
 
 public class PipedOutputStream extends OutputStream {
     
-    private PipedInputStream pipedInputStream = null;
+    protected PipedInputStream pipedInputStream = null;
     
     public PipedOutputStream() {
     }
@@ -53,7 +53,7 @@ public class PipedOutputStream extends OutputStream {
     public synchronized void connect(PipedInputStream pipedInputStream) throws IOException {
         if (pipedInputStream == null) {
             throw new NullPointerException();
-        } else if (pipedInputStream != null || pipedInputStream.connected) {
+        } else if (this.pipedInputStream != null || pipedInputStream.connected) {
             throw new IOException("Already connected");
         }
         this.pipedInputStream = pipedInputStream;
