@@ -43,7 +43,7 @@ public interface Resettable {
     }
     
     default ReturningAction<Boolean> resetAction() {
-        return new ReturningAction<>(() -> reset());
+        return new ReturningAction<>(this::reset);
     }
     
 }

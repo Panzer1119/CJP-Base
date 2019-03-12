@@ -43,7 +43,7 @@ public interface Openable<T> {
     }
     
     default ReturningAction<T> openAction() {
-        return new ReturningAction<>(() -> open());
+        return new ReturningAction<>(this::open);
     }
     
 }

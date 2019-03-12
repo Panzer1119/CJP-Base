@@ -123,7 +123,7 @@ public class Waiter {
     }
     
     public ReturningAction<Boolean> waitForAction() {
-        return new ReturningAction<>(() -> waitFor());
+        return new ReturningAction<>(this::waitFor);
     }
     
 }

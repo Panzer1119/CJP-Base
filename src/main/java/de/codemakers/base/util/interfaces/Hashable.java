@@ -69,7 +69,7 @@ public interface Hashable {
     }
     
     default ReturningAction<byte[]> hashAction() {
-        return new ReturningAction<>(() -> hash());
+        return new ReturningAction<>(this::hash);
     }
     
 }

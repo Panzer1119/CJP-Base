@@ -43,7 +43,7 @@ public interface Disconnectable {
     }
     
     default ReturningAction<Boolean> disconnectAction() {
-        return new ReturningAction<>(() -> disconnect());
+        return new ReturningAction<>(this::disconnect);
     }
     
 }

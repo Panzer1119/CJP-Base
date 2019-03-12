@@ -153,7 +153,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<Boolean> mkdirAction() {
-        return new ReturningAction<>(() -> mkdir());
+        return new ReturningAction<>(this::mkdir);
     }
     
     public abstract boolean mkdirs() throws Exception;
@@ -176,7 +176,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<Boolean> mkdirsAction() {
-        return new ReturningAction<>(() -> mkdirs());
+        return new ReturningAction<>(this::mkdirs);
     }
     
     public abstract boolean delete() throws Exception;
@@ -199,7 +199,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<Boolean> deleteAction() {
-        return new ReturningAction<>(() -> delete());
+        return new ReturningAction<>(this::delete);
     }
     
     public abstract boolean createNewFile() throws Exception;
@@ -222,7 +222,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<Boolean> createNewFileAction() {
-        return new ReturningAction<>(() -> createNewFile());
+        return new ReturningAction<>(this::createNewFile);
     }
     
     public BufferedReader createBufferedReader() throws Exception {
@@ -247,7 +247,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<BufferedReader> createBufferedReaderAction() {
-        return new ReturningAction<>(() -> createBufferedReader());
+        return new ReturningAction<>(this::createBufferedReader);
     }
     
     public abstract InputStream createInputStream() throws Exception;
@@ -270,7 +270,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<InputStream> createInputStreamAction() {
-        return new ReturningAction<>(() -> createInputStream());
+        return new ReturningAction<>(this::createInputStream);
     }
     
     public abstract byte[] readBytes() throws Exception;
@@ -293,7 +293,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<byte[]> readBytesAction() {
-        return new ReturningAction<>(() -> readBytes());
+        return new ReturningAction<>(this::readBytes);
     }
     
     public BufferedWriter createBufferedWriter() throws Exception {
@@ -369,7 +369,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<OutputStream> createOutputStreamAction() {
-        return new ReturningAction<>(() -> createOutputStream());
+        return new ReturningAction<>(this::createOutputStream);
     }
     
     public ReturningAction<OutputStream> createOutputStreamAction(boolean append) {
@@ -461,7 +461,7 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     }
     
     public ReturningAction<List<T>> listFilesAction() {
-        return new ReturningAction<>(() -> listFiles());
+        return new ReturningAction<>(this::listFiles);
     }
     
     public ReturningAction<List<T>> listFilesAction(boolean recursive) {

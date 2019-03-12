@@ -111,7 +111,7 @@ public interface Signer extends Cryptor {
     }
     
     default ReturningAction<byte[]> signAction() {
-        return new ReturningAction<>(() -> sign());
+        return new ReturningAction<>(this::sign);
     }
     
     void update(byte[] data, int offset, int length) throws Exception;

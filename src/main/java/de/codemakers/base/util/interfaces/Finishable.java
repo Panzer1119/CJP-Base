@@ -42,8 +42,8 @@ public interface Finishable<R> {
         return finish(null);
     }
     
-    default ReturningAction<R> startAction() {
-        return new ReturningAction<>(() -> finish());
+    default ReturningAction<R> finishAction() {
+        return new ReturningAction<>(this::finish);
     }
     
 }

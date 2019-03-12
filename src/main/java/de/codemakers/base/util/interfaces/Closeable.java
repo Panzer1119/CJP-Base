@@ -16,34 +16,45 @@
 
 package de.codemakers.base.util.interfaces;
 
-import de.codemakers.base.action.ReturningAction;
+import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
-@FunctionalInterface
-public interface Reloadable {
+import java.io.IOException;
+
+public interface Closeable extends java.io.Closeable {
     
-    boolean reload() throws Exception;
-    
-    default boolean reload(ToughConsumer<Throwable> failure) {
+    @Override
+    default void close() throws IOException {
         try {
-            return reload();
+            closeIntern();
+        } catch (IOException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new IOException(ex);
+        }
+    }
+    
+    void closeIntern() throws Exception;
+    
+    default void close(ToughConsumer<Throwable> failure) {
+        try {
+            closeIntern();
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
                 Logger.handleError(ex);
             }
-            return false;
         }
     }
     
-    default boolean reloadWithoutException() {
-        return reload(null);
+    default void closeWithoutException() {
+        close(null);
     }
     
-    default ReturningAction<Boolean> reloadAction() {
-        return new ReturningAction<>(this::reload);
+    default RunningAction closeAction() {
+        return new RunningAction(this::closeIntern);
     }
     
 }

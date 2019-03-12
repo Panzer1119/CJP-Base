@@ -82,7 +82,7 @@ public interface Hasher {
     }
     
     default ReturningAction<byte[]> hashAction() {
-        return new ReturningAction<>(() -> hash());
+        return new ReturningAction<>(this::hash);
     }
     
     void update(byte[] data, int offset, int length) throws Exception;

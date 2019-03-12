@@ -57,7 +57,7 @@ public abstract class Action<T extends Tough, R> {
      * @return The created {@link de.codemakers.base.action.ReturningAction}
      */
     public static final <T> ReturningAction<T> ofSupplier(Supplier<T> supplier) {
-        return ofToughSupplier(() -> supplier.get());
+        return ofToughSupplier(supplier::get);
     }
     
     /**
@@ -80,7 +80,7 @@ public abstract class Action<T extends Tough, R> {
      * @return The created {@link de.codemakers.base.action.RunningAction}
      */
     public static final RunningAction ofRunnable(Runnable runnable) {
-        return ofToughRunnable(() -> runnable.run());
+        return ofToughRunnable(runnable::run);
     }
     
     /**

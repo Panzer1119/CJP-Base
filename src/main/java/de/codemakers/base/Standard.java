@@ -129,6 +129,7 @@ public class Standard {
     }
     
     public static Thread addShutdownHookAsSingleThread(ToughRunnable toughRunnable) {
+        Objects.requireNonNull(toughRunnable);
         final Thread thread = new Thread(toughRunnable::runWithoutException);
         Runtime.getRuntime().addShutdownHook(thread);
         return thread;
@@ -139,6 +140,7 @@ public class Standard {
     }
     
     public static int addShutdownHook(ToughRunnable toughRunnable) {
+        Objects.requireNonNull(toughRunnable, "toughRunnable");
         int id = Integer.MIN_VALUE;
         while (SHUTDOWN_HOOKS.containsKey(id)) {
             id++;
@@ -147,8 +149,8 @@ public class Standard {
         return id;
     }
     
-    public static boolean removeShutdownHook(int id) {
-        return SHUTDOWN_HOOKS.remove(id) != null;
+    public static ToughRunnable removeShutdownHook(int id) {
+        return SHUTDOWN_HOOKS.remove(id);
     }
     
     public static <L extends Localizer> L getDefaultLocalizer() {
@@ -173,6 +175,20 @@ public class Standard {
     
     public static String localize(String name) {
         return Localizer.DEFAULT_LOCALIZER.localize(name, () -> Localizer.ENGLISH_LOCALIZER.localize(name));
+    }
+    
+    public static <R, T> R useWhenNotNull(T t, ToughFunction<T, R> toughFunction) {
+        if (t == null || toughFunction == null) {
+            return null;
+        }
+        return toughFunction.applyWithoutException(t);
+    }
+    
+    public static <T> void useWhenNotNull(T t, ToughConsumer<T> toughConsumer) {
+        if (t == null || toughConsumer == null) {
+            return;
+        }
+        toughConsumer.acceptWithoutException(t);
     }
     
 }

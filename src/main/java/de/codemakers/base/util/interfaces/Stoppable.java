@@ -43,7 +43,7 @@ public interface Stoppable {
     }
     
     default ReturningAction<Boolean> stopAction() {
-        return new ReturningAction<>(() -> stop());
+        return new ReturningAction<>(this::stop);
     }
     
 }

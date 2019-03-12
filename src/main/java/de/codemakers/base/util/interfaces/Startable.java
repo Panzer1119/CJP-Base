@@ -43,7 +43,7 @@ public interface Startable {
     }
     
     default ReturningAction<Boolean> startAction() {
-        return new ReturningAction<>(() -> start());
+        return new ReturningAction<>(this::start);
     }
     
 }
