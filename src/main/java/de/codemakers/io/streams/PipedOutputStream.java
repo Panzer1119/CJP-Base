@@ -75,11 +75,16 @@ public class PipedOutputStream extends OutputStream {
      * @see java.io.PipedOutputStream#write(int)
      */
     @Override
-    public void write(int b) throws IOException {
+    public synchronized void write(int b) throws IOException {
         if (pipedInputStream == null) {
             throw new IOException("Pipe not connected");
         }
         pipedInputStream.receive(b);
+    }
+    
+    @Override
+    public synchronized void write(byte[] data) throws IOException {
+        write(data, 0, data.length);
     }
     
     /**
@@ -97,7 +102,7 @@ public class PipedOutputStream extends OutputStream {
      * closed, or if an I/O error occurs.
      * @see java.io.PipedOutputStream#write(byte[], int, int)
      */
-    public void write(byte[] data, int off, int len) throws IOException {
+    public synchronized void write(byte[] data, int off, int len) throws IOException {
         if (pipedInputStream == null) {
             throw new IOException("Pipe not connected");
         } else if (data == null) {
@@ -134,7 +139,7 @@ public class PipedOutputStream extends OutputStream {
      * @throws IOException if an I/O error occurs.
      * @see java.io.PipedOutputStream#close()
      */
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         if (pipedInputStream != null) {
             pipedInputStream.receivedLast();
         }

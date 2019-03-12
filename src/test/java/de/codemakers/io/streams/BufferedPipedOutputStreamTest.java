@@ -29,11 +29,13 @@ public class BufferedPipedOutputStreamTest {
     public static final void main(String[] args) throws Exception {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
         Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendLogLevel().appendSource().appendText(": ").appendObject().finishWithoutException();
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendTimestamp().appendSource().appendText(": ").appendObject().finishWithoutException();
         final BufferedPipedOutputStream bufferedPipedOutputStream = new BufferedPipedOutputStream();
         Logger.log("bufferedPipedOutputStream=" + bufferedPipedOutputStream);
         final PipedInputStream pipedInputStream = new PipedInputStream(bufferedPipedOutputStream);
         Logger.log("pipedInputStream=" + pipedInputStream);
         Standard.async(() -> {
+            Logger.log("reading: " + pipedInputStream.read());
             Thread.currentThread().setName("RECEIVER");
             Logger.log("Started Receiving");
             final ObjectInputStream objectInputStream = new ObjectInputStream(pipedInputStream);
@@ -48,6 +50,11 @@ public class BufferedPipedOutputStreamTest {
             dataInputStream.close();
             */
         });
+        Logger.log("Waiting");
+        Thread.sleep(500);
+        Logger.log("Writing");
+        bufferedPipedOutputStream.write(44);
+        Thread.sleep(1000);
         Thread.currentThread().setName("TRANSMITTER");
         Logger.log("Started Transmitting");
         final ObjectOutputStream objectOutputStream = new ObjectOutputStream(bufferedPipedOutputStream);
@@ -77,7 +84,15 @@ public class BufferedPipedOutputStreamTest {
     
     public static class TestObject implements Serializable {
         
-        private final double random = Math.random();
+        public final double random;
+        
+        public TestObject() {
+            this(Math.random());
+        }
+        
+        public TestObject(double random) {
+            this.random = random;
+        }
         
         @Override
         public String toString() {

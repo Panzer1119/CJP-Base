@@ -17,9 +17,11 @@
 package de.codemakers.io.streams;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -27,6 +29,7 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     
     protected final Object lock = new Object();
     protected final Queue<byte[]> buffer = new ConcurrentLinkedQueue<>();
+    protected final Queue<ToughRunnable> buffer_ = new ConcurrentLinkedQueue<>();
     Thread thread = Standard.toughThread(this::loop);
     
     public BufferedPipedOutputStream() {
@@ -41,6 +44,15 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
         Thread.currentThread().setName(this + "-Writing-" + Thread.class.getSimpleName());
         try {
             while (pipedInputStream != null && pipedInputStream.connected) {
+                final ToughRunnable toughRunnable = buffer_.poll();
+                if (toughRunnable == null) {
+                    synchronized (lock) {
+                        lock.wait();
+                    }
+                    continue;
+                }
+                toughRunnable.run();
+                /*
                 final byte[] temp = buffer.poll();
                 if (temp == null) {
                     synchronized (lock) {
@@ -48,8 +60,10 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
                     }
                     continue;
                 }
-                super.write(temp, 0, temp.length);
+                super.write(temp);
+                */
                 //lock.notify(); //TODO Is this creating a deadlock?
+                
             }
             if (pipedInputStream != null) {
                 throw new StreamClosedException();
@@ -66,18 +80,26 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     }
     
     @Override
-    public void write(int b) throws IOException {
+    public synchronized void write(int b) throws IOException {
         buffer.add(new byte[] {(byte) (b & 0xFF)});
+        buffer_.add(() -> super.write(b));
         synchronized (lock) {
             lock.notify();
         }
     }
     
     @Override
-    public void write(byte[] data, int off, int len) throws IOException {
+    public synchronized void write(byte[] data) throws IOException {
+        write(data, 0, data.length);
+    }
+    
+    @Override
+    public synchronized void write(byte[] data, int off, int len) throws IOException {
         final byte[] temp = new byte[len - off];
         System.arraycopy(data, off, temp, 0, len);
         buffer.add(temp);
+        final byte[] data_ = Arrays.copyOf(data, data.length);
+        buffer_.add(() -> super.write(data_, off, len));
         synchronized (lock) {
             lock.notify();
         }
@@ -93,7 +115,7 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     }
     
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         super.close();
         thread.interrupt(); //TODO Do more to end the thread? (Because what happens when the thread is blocked by the super.write method?)
     }

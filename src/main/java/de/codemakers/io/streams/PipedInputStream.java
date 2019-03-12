@@ -34,7 +34,7 @@ public class PipedInputStream extends InputStream {
     /**
      * The circular buffer into which incoming data is placed.
      */
-    protected byte buffer[] = null;
+    protected volatile byte buffer[] = null;
     
     /**
      * The index of the position in the circular buffer at which the
@@ -42,13 +42,13 @@ public class PipedInputStream extends InputStream {
      * {@link PipedOutputStream}. <code>in&lt;0</code> implies the buffer is empty,
      * <code>in==out</code> implies the buffer is full
      */
-    protected int in = -1;
+    protected volatile int in = -1;
     
     /**
      * The index of the position in the circular buffer at which the next
      * byte of data will be read by this {@link PipedInputStream}.
      */
-    protected int out = 0;
+    protected volatile int out = 0;
     
     public PipedInputStream() {
         this(DEFAULT_PIPE_SIZE);
@@ -113,7 +113,7 @@ public class PipedInputStream extends InputStream {
      * {@link #connect(PipedOutputStream) unconnected},
      * closed, or if an I/O error occurs.
      */
-    protected synchronized void receive(int b) throws IOException {
+    protected void receive(int b) throws IOException {
         checkStateForReceive();
         if (in == out) {
             awaitSpace();
@@ -125,6 +125,9 @@ public class PipedInputStream extends InputStream {
         buffer[in++] = (byte) (b & 0xFF);
         if (in >= buffer.length) {
             in = 0;
+        }
+        synchronized (this) {
+            notify();
         }
     }
     
@@ -140,7 +143,7 @@ public class PipedInputStream extends InputStream {
      * {@link #connect(PipedOutputStream) unconnected},
      * closed,or if an I/O error occurs.
      */
-    synchronized void receive(byte[] data, int off, int len) throws IOException {
+    protected void receive(byte[] data, int off, int len) throws IOException {
         checkStateForReceive();
         int bytesToTransfer = len;
         while (bytesToTransfer > 0) {
@@ -169,6 +172,9 @@ public class PipedInputStream extends InputStream {
             if (in >= buffer.length) {
                 in = 0;
             }
+        }
+        synchronized (this) {
+            notify();
         }
     }
     
@@ -224,8 +230,16 @@ public class PipedInputStream extends InputStream {
             throw new IOException("Pipe not connected");
         } else if (closedByReader) {
             throw new IOException("Pipe closed");
-        } else if (closedByWriter) {
-            return -1;
+        }
+        while (in < 0) {
+            if (closedByWriter) {
+                return -1;
+            }
+            try {
+                wait(100);
+            } catch (InterruptedException ex) {
+                throw new InterruptedIOException();
+            }
         }
         final int temp = buffer[out++] & 0xFF;
         if (out >= buffer.length) {
@@ -236,6 +250,11 @@ public class PipedInputStream extends InputStream {
             in = -1;
         }
         return temp;
+    }
+    
+    @Override
+    public synchronized int read(byte[] data) throws IOException {
+        return read(data, 0, data.length);
     }
     
     /**
