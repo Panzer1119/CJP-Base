@@ -17,7 +17,9 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Reloadable;
+import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.file.AdvancedFile;
 
 import javax.imageio.ImageIO;
@@ -25,16 +27,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class Console implements Reloadable {
+public abstract class Console implements Closeable, Reloadable {
     
     public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
@@ -106,6 +112,12 @@ public abstract class Console implements Reloadable {
     protected final JTextField textField_input = new JTextField();
     protected final JButton button_input = new JButton(Standard.localize(LANGUAGE_KEY_ENTER)); //FIXME Language/Localization stuff?! //Reloading Language??
     
+    protected final int shutdownHookId = Standard.addShutdownHook(this::closeIntern);
+    protected final PipedOutputStream outputStream = new PipedOutputStream();
+    protected final PipedInputStream inputStream = new PipedInputStream();
+    protected Thread thread_input = null;
+    protected final Queue<byte[]> queue_input = new ConcurrentLinkedQueue<>(); //TODO Implement adding to this queue, when a non command input appeared
+    
     public Console() {
         this(DEFAULT_ICON_FILE);
     }
@@ -115,6 +127,7 @@ public abstract class Console implements Reloadable {
         init();
         initIconImage(iconAdvancedFile);
         initListeners();
+        initStreams();
         setPreferredSize(new Dimension(1200, 600)); //TODO Testing only
         reloadWithoutException(); //TODO Good?
     }
@@ -128,6 +141,23 @@ public abstract class Console implements Reloadable {
             Logger.logError("Error while handling input \"" + input + "\"", ex);
             return false;
         }
+    }
+    
+    private void initStreams() {
+        Standard.silentError(() -> outputStream.connect(inputStream));
+        thread_input = Standard.toughThread(() -> {
+            while (true) { //TODO Add some exit stuff?
+                final byte[] temp = queue_input.poll(); //FIXME The method that handles the input has to call thread_input.notify() after bytes were written
+                if (temp == null) {
+                    //Thread.sleep(100);
+                    thread_input.wait(); //TODO Does this work?
+                    continue;
+                }
+                outputStream.write(temp);
+            }
+        });
+        //TODO thread_input could be started just when the first bytes were written, so it does not run at the construction of this Console
+        thread_input.setName(Console.class.getSimpleName() + "-" + InputStream.class.getSimpleName() + "-" + Thread.class.getSimpleName());
     }
     
     private void initListeners() {
@@ -267,6 +297,12 @@ public abstract class Console implements Reloadable {
     public Console setPreferredSize(Dimension dimension) {
         frame.setPreferredSize(dimension);
         return this;
+    }
+    
+    @Override
+    protected void finalize() throws Throwable {
+        Standard.useWhenNotNull(Standard.removeShutdownHook(shutdownHookId), ToughRunnable::runWithoutException);
+        super.finalize();
     }
     
 }

@@ -191,4 +191,8 @@ public class Standard {
         toughConsumer.acceptWithoutException(t);
     }
     
+    public static Thread toughThread(ToughRunnable toughRunnable) {
+        return new Thread(toughRunnable::runWithoutException);
+    }
+    
 }
