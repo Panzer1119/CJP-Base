@@ -32,7 +32,9 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Standard {
     
@@ -56,6 +58,8 @@ public class Standard {
     public static final AdvancedFile LANG_FOLDER = new AdvancedFile(MAIN_FOLDER, LANG_PATH);
     public static final String LANG_FILE_EXTENSION = "lang";
     
+    public static final Map<Integer, ToughRunnable> SHUTDOWN_HOOKS = new ConcurrentHashMap<>();
+    
     static {
         URI RUNNING_JAR_URI_ = null;
         try {
@@ -74,6 +78,7 @@ public class Standard {
         } catch (Exception ex) {
             Logger.logError("Failed to load language file for english", ex);
         }
+        addShutdownHookAsSingleThread(() -> SHUTDOWN_HOOKS.values().forEach(ToughRunnable::runWithoutException)); //TODO Clone/Copy the values before execution? So that if a Shutdown Hook modifies #SHUTDOWN_HOOKS no unwanted behaviour is happening?
     }
     
     public static final File getInternFileFromAbsolutePath(String path) {
@@ -121,6 +126,29 @@ public class Standard {
         } catch (Exception ex) {
             return null;
         }
+    }
+    
+    public static Thread addShutdownHookAsSingleThread(ToughRunnable toughRunnable) {
+        final Thread thread = new Thread(toughRunnable::runWithoutException);
+        Runtime.getRuntime().addShutdownHook(thread);
+        return thread;
+    }
+    
+    public static boolean removeShutdownHook(Thread thread) {
+        return Runtime.getRuntime().removeShutdownHook(thread);
+    }
+    
+    public static int addShutdownHook(ToughRunnable toughRunnable) {
+        int id = Integer.MIN_VALUE;
+        while (SHUTDOWN_HOOKS.containsKey(id)) {
+            id++;
+        }
+        SHUTDOWN_HOOKS.put(id, toughRunnable);
+        return id;
+    }
+    
+    public static boolean removeShutdownHook(int id) {
+        return SHUTDOWN_HOOKS.remove(id) != null;
     }
     
     public static <L extends Localizer> L getDefaultLocalizer() {

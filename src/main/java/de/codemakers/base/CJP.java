@@ -34,7 +34,7 @@ public class CJP {
     private static final CJP CJP = createInstance();
     
     static {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownInstance()));
+        Standard.addShutdownHook(de.codemakers.base.CJP::shutdownInstance);
     }
     
     public static void addLoggerClass(Class<?> clazz) {
