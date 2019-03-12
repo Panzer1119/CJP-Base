@@ -232,7 +232,7 @@ public class PipedInputStream extends InputStream {
             out = 0;
         }
         if (in == out) {
-            //No empty
+            //Now empty
             in = -1;
         }
         return temp;
