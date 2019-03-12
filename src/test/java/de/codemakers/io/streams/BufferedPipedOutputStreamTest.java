@@ -23,6 +23,8 @@ import de.codemakers.base.logger.Logger;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Random;
 
 public class BufferedPipedOutputStreamTest {
     
@@ -30,6 +32,10 @@ public class BufferedPipedOutputStreamTest {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
         Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendLogLevel().appendSource().appendText(": ").appendObject().finishWithoutException();
         Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendTimestamp().appendSource().appendText(": ").appendObject().finishWithoutException();
+        if (false) {
+            test();
+            return;
+        }
         final BufferedPipedOutputStream bufferedPipedOutputStream = new BufferedPipedOutputStream();
         Logger.log("bufferedPipedOutputStream=" + bufferedPipedOutputStream);
         final PipedInputStream pipedInputStream = new PipedInputStream(bufferedPipedOutputStream);
@@ -80,6 +86,29 @@ public class BufferedPipedOutputStreamTest {
         Logger.log("Stopping Transmitting");
         dataOutputStream.close();
         */
+    }
+    
+    private static void test() throws Exception {
+        final BufferedPipedOutputStream bufferedPipedOutputStream = new BufferedPipedOutputStream();
+        final PipedInputStream pipedInputStream = new PipedInputStream(bufferedPipedOutputStream);
+        Standard.async(() -> {
+            final byte[] buffer = new byte[16];
+            int read = -1;
+            while ((read = pipedInputStream.read(buffer)) >= 0) {
+                Logger.log(String.format("buffer=%s, read=%d", Arrays.toString(buffer), read));
+            }
+            pipedInputStream.close();
+        });
+        final Random random = new Random();
+        final byte[] temp = new byte[64];
+        Logger.log("Start");
+        for (int i = 0; i < 8; i++) {
+            random.nextBytes(temp);
+            Logger.log(String.format("temp=%s", Arrays.toString(temp)));
+            bufferedPipedOutputStream.write(temp);
+        }
+        Logger.log("Stop");
+        bufferedPipedOutputStream.close();
     }
     
     public static class TestObject implements Serializable {

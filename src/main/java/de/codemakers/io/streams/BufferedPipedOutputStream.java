@@ -28,9 +28,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class BufferedPipedOutputStream extends PipedOutputStream {
     
     protected final Object lock = new Object();
-    protected final Queue<byte[]> buffer = new ConcurrentLinkedQueue<>();
+    //protected final Queue<byte[]> buffer = new ConcurrentLinkedQueue<>(); //FIXME What is the problem with this method? The current method uses probably more memory...
     protected final Queue<ToughRunnable> buffer_ = new ConcurrentLinkedQueue<>();
-    Thread thread = Standard.toughThread(this::loop);
+    Thread thread = Standard.toughThread(this::loop); //TODO Threads can only be started once, so create a new one? But when this is closed its over, a stream is normally also a one time used thing
     
     public BufferedPipedOutputStream() {
         super();
@@ -81,7 +81,7 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     
     @Override
     public synchronized void write(int b) throws IOException {
-        buffer.add(new byte[] {(byte) (b & 0xFF)});
+        //buffer.add(new byte[] {(byte) (b & 0xFF)}); //FIXME What is the problem with this method? The current method uses probably more memory...
         buffer_.add(() -> super.write(b));
         synchronized (lock) {
             lock.notify();
@@ -95,11 +95,13 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     
     @Override
     public synchronized void write(byte[] data, int off, int len) throws IOException {
+        /* //FIXME What is the problem with this method? The current method uses probably more memory...
         final byte[] temp = new byte[len - off];
         System.arraycopy(data, off, temp, 0, len);
         buffer.add(temp);
-        final byte[] data_ = Arrays.copyOf(data, data.length);
-        buffer_.add(() -> super.write(data_, off, len));
+        */
+        final byte[] temp = Arrays.copyOf(data, data.length);
+        buffer_.add(() -> super.write(temp, off, len));
         synchronized (lock) {
             lock.notify();
         }
