@@ -46,23 +46,34 @@ public abstract class Console implements Reloadable {
     public static final String LANGUAGE_KEY_RESTART = "restart";
     public static final String LANGUAGE_KEY_EXIT = "exit";
     public static final String LANGUAGE_KEY_OPTIONS = "options";
+    public static final String LANGUAGE_KEY_DISPLAYED_LOG_LEVELS = "console_displayed_log_levels";
+    public static final String LANGUAGE_KEY_DISPLAY = "console_display";
+    public static final String LANGUAGE_KEY_TIMESTAMP = "console_timestamp";
+    public static final String LANGUAGE_KEY_THREAD = "console_thread";
+    public static final String LANGUAGE_KEY_SOURCE = "console_source";
+    public static final String LANGUAGE_KEY_LOG_LEVEL = "console_log_level";
+    public static final String LANGUAGE_KEY_ENTER = "button_enter";
+    public static final String LANGUAGE_KEY_OUTPUT = "console_output";
+    public static final String LANGUAGE_KEY_INPUT = "console_input";
+    
+    public static final String DEFAULT_FONT_NAME = "Courier New";
     
     protected final List<LogEntry> logEntries = new CopyOnWriteArrayList<>();
     protected final Map<LogLevel, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
     protected final Set<LogLevel> displayedLogLevels = new CopyOnWriteArraySet<>();
     
-    protected final JFrame frame = new JFrame(Standard.localize(LANGUAGE_KEY_CONSOLE)); //FIXME Language/Localization stuff?!
+    protected final JFrame frame = new JFrame(Standard.localize(LANGUAGE_KEY_CONSOLE)); //FIXME Language/Localization stuff?! //Reloading Language??
     protected final JMenuBar menuBar = new JMenuBar();
-    protected final JMenu menu_file = new JMenu(Standard.localize(LANGUAGE_KEY_FILE)); //FIXME Language/Localization stuff?!
-    protected final JMenuItem menuItem_reload = new JMenuItem(Standard.localize(LANGUAGE_KEY_RELOAD)); //FIXME Language/Localization stuff?!
-    protected final JMenuItem menuItem_saveAs = new JMenuItem(Standard.localize(LANGUAGE_KEY_SAVE_AS)); //FIXME Language/Localization stuff?!
-    protected final JMenuItem menuItem_restart = new JMenuItem(Standard.localize(LANGUAGE_KEY_RESTART)); //FIXME Language/Localization stuff?!
-    protected final JMenuItem menuItem_exit = new JMenuItem(Standard.localize(LANGUAGE_KEY_EXIT)); //FIXME Language/Localization stuff?!
-    protected final JMenu menu_options = new JMenu(Standard.localize(LANGUAGE_KEY_OPTIONS)); //FIXME Language/Localization stuff?!
+    protected final JMenu menu_file = new JMenu(Standard.localize(LANGUAGE_KEY_FILE)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JMenuItem menuItem_reload = new JMenuItem(Standard.localize(LANGUAGE_KEY_RELOAD)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JMenuItem menuItem_saveAs = new JMenuItem(Standard.localize(LANGUAGE_KEY_SAVE_AS)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JMenuItem menuItem_restart = new JMenuItem(Standard.localize(LANGUAGE_KEY_RESTART)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JMenuItem menuItem_exit = new JMenuItem(Standard.localize(LANGUAGE_KEY_EXIT)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JMenu menu_options = new JMenu(Standard.localize(LANGUAGE_KEY_OPTIONS)); //FIXME Language/Localization stuff?! //Reloading Language??
     //Output
-    protected final JLabel label_displayedLogLevels = new JLabel("Displayed Log Levels"); //FIXME Language/Localization stuff?!
+    protected final JLabel label_displayedLogLevels = new JLabel(Standard.localize(LANGUAGE_KEY_DISPLAYED_LOG_LEVELS)); //FIXME Language/Localization stuff?! //Reloading Language??
     protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.values()).map((logLevel) -> {
-        final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(logLevel.toText()); //FIXME Language/Localization stuff?!
+        final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(Standard.localize(logLevel.getUnlocalizedName())); //FIXME Language/Localization stuff?! //Reloading Language??
         checkBoxMenuItem.setSelected(Logger.getDefaultAdvancedLeveledLogger().getMinimumLogLevel().isThisLevelLessImportantOrEqual(logLevel));
         logLevelDisplayStatus.put(logLevel, checkBoxMenuItem.isSelected());
         if (checkBoxMenuItem.isSelected()) {
@@ -81,19 +92,19 @@ public abstract class Console implements Reloadable {
         });
         return checkBoxMenuItem;
     }).toArray(JCheckBoxMenuItem[]::new);
-    protected final JLabel label_display = new JLabel("Display"); //FIXME Rename this? //FIXME Language/Localization stuff?!
+    protected final JLabel label_display = new JLabel(Standard.localize(LANGUAGE_KEY_DISPLAY)); //FIXME Rename this? //FIXME Language/Localization stuff?! //Reloading Language??
     //TODO Maybe make this customizable in a separate (settings) window? (Like switching positioning of the elements e.g. with another LogFormatBuilder)
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayTimestamp = new JCheckBoxMenuItem("Timestamp"); //FIXME Language/Localization stuff?!
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayThread = new JCheckBoxMenuItem("Thread"); //FIXME Language/Localization stuff?!
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displaySource = new JCheckBoxMenuItem("Source"); //FIXME Language/Localization stuff?!
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayLogLevel = new JCheckBoxMenuItem("Log Level"); //FIXME Language/Localization stuff?!
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayTimestamp = new JCheckBoxMenuItem(Standard.localize(LANGUAGE_KEY_TIMESTAMP)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayThread = new JCheckBoxMenuItem(Standard.localize(LANGUAGE_KEY_THREAD)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displaySource = new JCheckBoxMenuItem(Standard.localize(LANGUAGE_KEY_SOURCE)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayLogLevel = new JCheckBoxMenuItem(Standard.localize(LANGUAGE_KEY_LOG_LEVEL)); //FIXME Language/Localization stuff?! //Reloading Language??
     //TODO What was the "Debug Mode"?
     protected final JTextPane textPane_output = new JTextPane();
     protected final JScrollPane scrollPane_output = new JScrollPane(textPane_output);
     //Input
     protected final JPanel panel_input = new JPanel();
     protected final JTextField textField_input = new JTextField();
-    protected final JButton button_input = new JButton("Enter"); //FIXME Language/Localization stuff?!
+    protected final JButton button_input = new JButton(Standard.localize(LANGUAGE_KEY_ENTER)); //FIXME Language/Localization stuff?! //Reloading Language??
     
     public Console() {
         this(DEFAULT_ICON_FILE);
@@ -175,13 +186,13 @@ public abstract class Console implements Reloadable {
         frame.setLayout(new BorderLayout());
         textPane_output.setEditable(false);
         final Font font = textPane_output.getFont();
-        textPane_output.setFont(new Font("Courier New", font.getStyle(), font.getSize())); //FIXME Move the hardcoded font name
-        scrollPane_output.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
+        textPane_output.setFont(new Font(DEFAULT_FONT_NAME, font.getStyle(), font.getSize()));
+        scrollPane_output.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), Standard.localize(LANGUAGE_KEY_OUTPUT))); //TODO Is this looking good? //FIXME Language/Localization stuff?! //Reloading Language??
         frame.add(scrollPane_output, BorderLayout.CENTER);
         panel_input.setLayout(new BoxLayout(panel_input, BoxLayout.X_AXIS));
         panel_input.add(textField_input);
         panel_input.add(button_input);
-        panel_input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Input")); //TODO Is this looking good? //FIXME Language/Localization stuff?!
+        panel_input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), Standard.localize(LANGUAGE_KEY_INPUT))); //TODO Is this looking good? //FIXME Language/Localization stuff?! //Reloading Language??
         frame.add(panel_input, BorderLayout.SOUTH);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowListener() {
