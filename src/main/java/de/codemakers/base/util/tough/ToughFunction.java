@@ -16,11 +16,13 @@
 
 package de.codemakers.base.util.tough;
 
+import de.codemakers.base.logger.Logger;
+
 @FunctionalInterface
 public interface ToughFunction<T, R> extends Tough<T, R> {
-
+    
     R apply(T t) throws Exception;
-
+    
     default R apply(T t, ToughConsumer<Throwable> failure) {
         try {
             return apply(t);
@@ -28,29 +30,29 @@ public interface ToughFunction<T, R> extends Tough<T, R> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                ex.printStackTrace();
+                Logger.handleError(ex);
             }
             return null;
         }
     }
-
+    
     default R applyWithoutException(T t) {
         return apply(t, null);
     }
-
+    
     @Override
     default R action(T t) throws Exception {
         return apply(t);
     }
-
+    
     @Override
     default boolean canConsume() {
         return true;
     }
-
+    
     @Override
     default boolean canSupply() {
         return true;
     }
-
+    
 }

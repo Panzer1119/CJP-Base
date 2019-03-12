@@ -16,6 +16,8 @@
 
 package de.codemakers.base.util.tough;
 
+import de.codemakers.base.logger.Logger;
+
 public interface ToughMultiFunction<T, R> extends Tough<T, R> {
     
     R apply(T... ts) throws Exception;
@@ -27,7 +29,7 @@ public interface ToughMultiFunction<T, R> extends Tough<T, R> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                ex.printStackTrace();
+                Logger.handleError(ex);
             }
             return null;
         }

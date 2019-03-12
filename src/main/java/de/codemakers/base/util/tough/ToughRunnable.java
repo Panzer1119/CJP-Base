@@ -16,11 +16,13 @@
 
 package de.codemakers.base.util.tough;
 
+import de.codemakers.base.logger.Logger;
+
 @FunctionalInterface
 public interface ToughRunnable extends Tough<Void, Void> {
-
+    
     void run() throws Exception;
-
+    
     default void run(ToughConsumer<Throwable> failure) {
         try {
             run();
@@ -28,29 +30,29 @@ public interface ToughRunnable extends Tough<Void, Void> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                ex.printStackTrace();
+                Logger.handleError(ex);
             }
         }
     }
-
+    
     default void runWithoutException() {
         run(null);
     }
-
+    
     @Override
     default Void action(Void v) throws Exception {
         run();
         return null;
     }
-
+    
     @Override
     default boolean canConsume() {
         return false;
     }
-
+    
     @Override
     default boolean canSupply() {
         return false;
     }
-
+    
 }

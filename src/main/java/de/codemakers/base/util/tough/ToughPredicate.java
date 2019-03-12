@@ -16,15 +16,17 @@
 
 package de.codemakers.base.util.tough;
 
+import de.codemakers.base.logger.Logger;
+
 @FunctionalInterface
 public interface ToughPredicate<T> extends Tough<T, Boolean> {
-
+    
     Boolean test(T t) throws Exception;
-
+    
     default Boolean test(T t, ToughConsumer<Throwable> failure) {
         return test(t, false, failure);
     }
-
+    
     default Boolean test(T t, boolean onError, ToughConsumer<Throwable> failure) {
         try {
             return test(t);
@@ -32,7 +34,7 @@ public interface ToughPredicate<T> extends Tough<T, Boolean> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                ex.printStackTrace();
+                Logger.handleError(ex);
             }
             return onError;
         }
@@ -41,28 +43,28 @@ public interface ToughPredicate<T> extends Tough<T, Boolean> {
     default ToughPredicate<T> negate() {
         return (t) -> !test(t);
     }
-
+    
     default Boolean testWithoutException(T t) {
         return test(t, null);
     }
-
+    
     default Boolean testWithoutException(T t, boolean onError) {
         return test(t, onError, null);
     }
-
+    
     @Override
     default Boolean action(T t) throws Exception {
         return test(t);
     }
-
+    
     @Override
     default boolean canConsume() {
         return true;
     }
-
+    
     @Override
     default boolean canSupply() {
         return true;
     }
-
+    
 }
