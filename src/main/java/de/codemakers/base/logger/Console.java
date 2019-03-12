@@ -300,6 +300,13 @@ public abstract class Console implements Closeable, Reloadable {
     }
     
     @Override
+    public void closeIntern() throws Exception {
+        outputStream.close(); //TODO Is the order important? Close OutputStream before InputStream or vice versa?
+        inputStream.close();
+        //TODO Stop thread_input?
+    }
+    
+    @Override
     protected void finalize() throws Throwable {
         Standard.useWhenNotNull(Standard.removeShutdownHook(shutdownHookId), ToughRunnable::runWithoutException);
         super.finalize();
