@@ -36,27 +36,27 @@ public class LogFormatBuilder extends AbstractFormatBuilder<LogFormatBuilder> {
     }
     
     public LogFormatBuilder appendTimestamp() {
-        format += Logger.LOG_FORMAT_VAR_TIMESTAMP;
+        format.append(Logger.LOG_FORMAT_VAR_TIMESTAMP);
         return this;
     }
     
     public LogFormatBuilder appendThread() {
-        format += Logger.LOG_FORMAT_VAR_THREAD;
+        format.append(Logger.LOG_FORMAT_VAR_THREAD);
         return this;
     }
     
     public LogFormatBuilder appendSource() {
-        format += Logger.LOG_FORMAT_VAR_SOURCE;
+        format.append(Logger.LOG_FORMAT_VAR_SOURCE);
         return this;
     }
     
     public LogFormatBuilder appendLogLevel() {
-        format += Logger.LOG_FORMAT_VAR_LOG_LEVEL;
+        format.append(Logger.LOG_FORMAT_VAR_LOG_LEVEL);
         return this;
     }
     
     public LogFormatBuilder appendObject() {
-        format += Logger.LOG_FORMAT_VAR_OBJECT;
+        format.append(Logger.LOG_FORMAT_VAR_OBJECT);
         return this;
     }
     

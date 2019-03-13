@@ -31,22 +31,22 @@ public class SourceFormatBuilder extends AbstractFormatBuilder<SourceFormatBuild
     }
     
     public SourceFormatBuilder appendClassName() {
-        format += Logger.SOURCE_FORMAT_VAR_CLASS;
+        format.append(Logger.SOURCE_FORMAT_VAR_CLASS);
         return this;
     }
     
     public SourceFormatBuilder appendMethodName() {
-        format += Logger.SOURCE_FORMAT_VAR_METHOD;
+        format.append(Logger.SOURCE_FORMAT_VAR_METHOD);
         return this;
     }
     
     public SourceFormatBuilder appendFileName() {
-        format += Logger.SOURCE_FORMAT_VAR_FILE;
+        format.append(Logger.SOURCE_FORMAT_VAR_FILE);
         return this;
     }
     
     public SourceFormatBuilder appendLineNumber() {
-        format += Logger.SOURCE_FORMAT_VAR_LINE;
+        format.append(Logger.SOURCE_FORMAT_VAR_LINE);
         return this;
     }
     

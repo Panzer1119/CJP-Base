@@ -18,9 +18,13 @@ package de.codemakers.base.util;
 
 import de.codemakers.base.util.interfaces.Finishable;
 
+import java.util.Objects;
+
 public abstract class AbstractFormatBuilder<C extends AbstractFormatBuilder> implements Finishable<String> {
     
-    protected String format; //TODO Maybe use a StringBuilder for this?
+    public static final char NEW_LINE = '\n';
+    
+    protected StringBuilder format;
     protected boolean checkAndCorrectAppendedText = true;
     
     public AbstractFormatBuilder() {
@@ -28,32 +32,38 @@ public abstract class AbstractFormatBuilder<C extends AbstractFormatBuilder> imp
     }
     
     public AbstractFormatBuilder(String format) {
-        this.format = format;
+        this(new StringBuilder(format));
+    }
+    
+    public AbstractFormatBuilder(StringBuilder format) {
+        this.format = Objects.requireNonNull(format, "format");
     }
     
     public C appendText(String text) {
         if (checkAndCorrectAppendedText) {
             text = checkAndCorrectText(text);
         }
-        format += text;
+        format.append(text);
         return (C) this;
     }
     
     protected abstract String checkAndCorrectText(String text);
     
     public C appendNewLine() {
-        format += "\n";
+        format.append(NEW_LINE);
         return (C) this;
     }
     
     public abstract String example();
     
     public String toFormat() {
-        return format;
+        return format.toString();
     }
     
     public C setFormat(String format) {
-        this.format = format;
+        //this.format = new StringBuilder(format);
+        this.format.setLength(0);
+        appendText(format);
         return (C) this;
     }
     

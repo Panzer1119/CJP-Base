@@ -31,27 +31,27 @@ public class JFrameTitleFormatBuilder extends AbstractFormatBuilder<JFrameTitleF
     }
     
     public JFrameTitleFormatBuilder appendName() {
-        format += JFrameManager.TITLE_FORMAT_VAR_NAME;
+        format.append(JFrameManager.TITLE_FORMAT_VAR_NAME);
         return this;
     }
     
     public JFrameTitleFormatBuilder appendVersion() {
-        format += JFrameManager.TITLE_FORMAT_VAR_VERSION;
+        format.append(JFrameManager.TITLE_FORMAT_VAR_VERSION);
         return this;
     }
     
     public JFrameTitleFormatBuilder appendIDE() {
-        format += JFrameManager.TITLE_FORMAT_VAR_IDE;
+        format.append(JFrameManager.TITLE_FORMAT_VAR_IDE);
         return this;
     }
     
     public JFrameTitleFormatBuilder appendPrefix() {
-        format += JFrameManager.TITLE_FORMAT_VAR_PREFIX;
+        format.append(JFrameManager.TITLE_FORMAT_VAR_PREFIX);
         return this;
     }
     
     public JFrameTitleFormatBuilder appendSuffix() {
-        format += JFrameManager.TITLE_FORMAT_VAR_SUFFIX;
+        format.append(JFrameManager.TITLE_FORMAT_VAR_SUFFIX);
         return this;
     }
     
