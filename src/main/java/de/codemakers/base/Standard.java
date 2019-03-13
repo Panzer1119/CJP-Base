@@ -55,6 +55,12 @@ public class Standard {
     public static final AdvancedFile MAIN_FOLDER = new AdvancedFile(AdvancedFile.PREFIX_INTERN + MAIN_PATH);
     public static final String ICONS_PATH = "icons/";
     public static final AdvancedFile ICONS_FOLDER = new AdvancedFile(MAIN_FOLDER, ICONS_PATH);
+    public static final String ICONS_FAT_COW_PATH = "FatCow/";
+    public static final AdvancedFile ICONS_FAT_COW_FOLDER = new AdvancedFile(ICONS_FOLDER, ICONS_FAT_COW_PATH);
+    public static final String ICONS_16x16_PATH = "16x16/";
+    public static final AdvancedFile ICONS_FAT_COW_16x16_FOLDER = new AdvancedFile(ICONS_FAT_COW_FOLDER, ICONS_16x16_PATH);
+    public static final String ICONS_32x32_PATH = "32x32/";
+    public static final AdvancedFile ICONS_FAT_COW_32x32_FOLDER = new AdvancedFile(ICONS_FAT_COW_FOLDER, ICONS_32x32_PATH);
     public static final String LANG_PATH = LanguageUtil.LANG_PATH;
     public static final AdvancedFile LANG_FOLDER = LanguageUtil.LANG_FOLDER;
     public static final String LANG_FILE_EXTENSION = LanguageUtil.LANG_FILE_EXTENSION;

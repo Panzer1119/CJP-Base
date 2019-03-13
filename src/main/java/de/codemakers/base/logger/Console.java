@@ -44,8 +44,10 @@ import java.util.stream.Stream;
 
 public abstract class Console implements Closeable, LanguageReloadable, Reloadable {
     
-    public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
-    public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
+    public static final String DEFAULT_ICON = "application_xp_terminal.png";
+    public static final String DEFAULT_ICON_SETTINGS = "gear_in.png";
+    public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FAT_COW_32x32_FOLDER, DEFAULT_ICON);
+    public static final AdvancedFile DEFAULT_ICON_SETTINGS_FILE = new AdvancedFile(Standard.ICONS_FAT_COW_32x32_FOLDER, DEFAULT_ICON_SETTINGS);
     //Language key constants
     public static final String LANGUAGE_KEY_CONSOLE = "console";
     public static final String LANGUAGE_KEY_FILE = "file";
@@ -122,16 +124,19 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     protected final PipedInputStream pipedInputStream = new PipedInputStream();
     protected final int shutdownHookId = Standard.addShutdownHook(this::closeIntern);
     
+    protected final ConsoleSettings consoleSettings;
+    
     public Console() {
-        this(DEFAULT_ICON_FILE);
+        this(DEFAULT_ICON_FILE, DEFAULT_ICON_SETTINGS_FILE);
     }
     
-    public Console(AdvancedFile iconAdvancedFile) {
+    public Console(AdvancedFile iconAdvancedFile, AdvancedFile iconSettingsAdvancedFile) {
         super();
         init();
         initIconImage(iconAdvancedFile);
         initListeners();
         initStreams();
+        consoleSettings = new ConsoleSettings(iconSettingsAdvancedFile);
         setPreferredSize(new Dimension(1200, 600)); //TODO Testing only
         reloadWithoutException(); //TODO Good?
     }
@@ -317,7 +322,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         try (final InputStream inputStream = advancedFile.createInputStream()) {
             frame.setIconImage(ImageIO.read(inputStream));
         } catch (Exception ex) {
-            Logger.logError("Error while loading " + getClass().getSimpleName() + " icon", ex);
+            Logger.logError("Error while loading icon for frame", ex);
         }
     }
     
@@ -369,6 +374,62 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     
     public InputStream getInputStream() {
         return pipedInputStream;
+    }
+    
+    public class ConsoleSettings implements LanguageReloadable {
+        
+        public static final String LANGUAGE_KEY_SETTINGS = "settings";
+        
+        protected final JDialog dialog = new JDialog(frame, true);
+        
+        public ConsoleSettings(AdvancedFile iconAdvancedFile) {
+            init();
+            initIconImage(iconAdvancedFile);
+            dialog.setPreferredSize(new Dimension(600, 800)); //TODO Testing only
+            reloadLanguageWithoutException();
+        }
+        
+        private void init() {
+            dialog.setResizable(false);
+        }
+        
+        private void initIconImage(AdvancedFile advancedFile) {
+            try (final InputStream inputStream = advancedFile.createInputStream()) {
+                dialog.setIconImage(ImageIO.read(inputStream));
+            } catch (Exception ex) {
+                Logger.logError("Error while loading icon for dialog", ex);
+            }
+        }
+        
+        public ConsoleSettings showAtConsole() {
+            return show(frame);
+        }
+        
+        public ConsoleSettings show(Component component) {
+            dialog.pack();
+            dialog.setLocationRelativeTo(component);
+            dialog.setVisible(true);
+            return this;
+        }
+        
+        public ConsoleSettings hide() {
+            dialog.setVisible(false);
+            return this;
+        }
+        
+        @Override
+        public boolean reloadLanguage() throws Exception {
+            dialog.setTitle(Standard.localize(LANGUAGE_KEY_SETTINGS));
+            dialog.invalidate();
+            dialog.repaint();
+            return true;
+        }
+        
+        @Override
+        public boolean unloadLanguage() throws Exception {
+            return false;
+        }
+        
     }
     
 }

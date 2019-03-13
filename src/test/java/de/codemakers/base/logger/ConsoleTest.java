@@ -108,6 +108,7 @@ public class ConsoleTest {
         Logger.log("console=" + console);
         console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //FIXME Testing only
         console.menuItem_exit.addActionListener((actionEvent) -> System.exit(1)); //FIXME Testing only
+        console.menuItem_settings.addActionListener((actionEvent) -> console.consoleSettings.showAtConsole()); //FIXME Testing only
         //console.setPreferredSize(new Dimension(600, 300));
         console.show();
         /*
