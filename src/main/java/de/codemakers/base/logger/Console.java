@@ -21,20 +21,20 @@ import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Reloadable;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.file.AdvancedFile;
+import de.codemakers.io.streams.BufferedPipedOutputStream;
+import de.codemakers.io.streams.PipedInputStream;
+import de.codemakers.io.streams.PipedOutputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
@@ -113,10 +113,8 @@ public abstract class Console implements Closeable, Reloadable {
     protected final JButton button_input = new JButton(Standard.localize(LANGUAGE_KEY_ENTER)); //FIXME Language/Localization stuff?! //Reloading Language??
     
     protected final int shutdownHookId = Standard.addShutdownHook(this::closeIntern);
-    protected final PipedOutputStream outputStream = new PipedOutputStream();
-    protected final PipedInputStream inputStream = new PipedInputStream();
-    protected Thread thread_input = null;
-    protected final Queue<byte[]> queue_input = new ConcurrentLinkedQueue<>(); //TODO Implement adding to this queue, when a non command input appeared
+    protected final BufferedPipedOutputStream pipedOutputStream = new BufferedPipedOutputStream();
+    protected final PipedInputStream pipedInputStream = new PipedInputStream();
     
     public Console() {
         this(DEFAULT_ICON_FILE);
@@ -132,32 +130,43 @@ public abstract class Console implements Closeable, Reloadable {
         reloadWithoutException(); //TODO Good?
     }
     
-    protected abstract boolean onInput(String input) throws Exception; //FIXME Where is determined if this is an LogLevel.INPUT or an LogLevel.COMMAND?
+    protected abstract boolean runCommand(String command) throws Exception;
     
-    protected boolean onInputIntern(String input) {
+    protected boolean runCommandWithoutException(String command) {
         try {
-            return onInput(input);
+            return runCommand(command);
         } catch (Exception ex) {
-            Logger.logError("Error while handling input \"" + input + "\"", ex);
+            Logger.logError("Error while handling command \"" + command + "\"", ex);
             return false;
         }
     }
     
+    /**
+     * Handles input
+     *
+     * @param input Input
+     *
+     * @return If this input was handled (e.g. it was determined to be a command)
+     *
+     * @throws Exception
+     */
+    protected abstract InputType handleInput(String input) throws Exception; //FIXME Where is determined if this is an LogLevel.INPUT or an LogLevel.COMMAND?
+    
+    protected InputType handleInputWithoutException(String input) {
+        try {
+            return Objects.requireNonNull(handleInput(input), "handleInput(input)");
+        } catch (Exception ex) {
+            Logger.logError("Error while handling input \"" + input + "\"", ex);
+            return InputType.ERRORED;
+        }
+    }
+    
     private void initStreams() {
-        Standard.silentError(() -> outputStream.connect(inputStream));
-        thread_input = Standard.toughThread(() -> {
-            while (true) { //TODO Add some exit stuff?
-                final byte[] temp = queue_input.poll(); //FIXME The method that handles the input has to call thread_input.notify() after bytes were written
-                if (temp == null) {
-                    //Thread.sleep(100);
-                    thread_input.wait(); //TODO Does this work?
-                    continue;
-                }
-                outputStream.write(temp);
-            }
+        Standard.silentError(() -> pipedOutputStream.connect(pipedInputStream));
+        pipedOutputStream.setThreadFunction((thread) -> {
+            thread.setName(Console.class.getSimpleName() + "-" + PipedOutputStream.class.getSimpleName() + "-" + Thread.class.getSimpleName());
+            return thread;
         });
-        //TODO thread_input could be started just when the first bytes were written, so it does not run at the construction of this Console
-        thread_input.setName(Console.class.getSimpleName() + "-" + InputStream.class.getSimpleName() + "-" + Thread.class.getSimpleName());
     }
     
     private void initListeners() {
@@ -187,8 +196,16 @@ public abstract class Console implements Closeable, Reloadable {
             }
         });
         button_input.addActionListener((actionEvent) -> {
-            if (onInputIntern(textField_input.getText())) {
+            final String input = textField_input.getText();
+            final InputType inputType = handleInputWithoutException(input);
+            if (inputType.canInputBeCleared()) {
                 textField_input.setText("");
+            }
+            if (!inputType.isHandled()) {
+                Standard.silentError(() -> pipedOutputStream.write(input.getBytes()));
+            }
+            if (inputType == InputType.COMMAND) {
+                runCommandWithoutException(input);
             }
         });
     }
@@ -301,15 +318,130 @@ public abstract class Console implements Closeable, Reloadable {
     
     @Override
     public void closeIntern() throws Exception {
-        outputStream.close(); //TODO Is the order important? Close OutputStream before InputStream or vice versa?
-        inputStream.close();
-        //TODO Stop thread_input?
+        pipedInputStream.close();
+        pipedOutputStream.close(); //TODO Is the order important? Close OutputStream before InputStream or vice versa?
     }
     
     @Override
     protected void finalize() throws Throwable {
         Standard.useWhenNotNull(Standard.removeShutdownHook(shutdownHookId), ToughRunnable::runWithoutException);
         super.finalize();
+    }
+    
+    public enum InputTypeOLD {
+        /**
+         * The input has been handled and should not be treated further
+         */
+        HANDLED(true, true, false),
+        /**
+         * The input has not been handled and should be treated further
+         */
+        UNHANDLED(true, false, true),
+        /**
+         * The input has been handled, but should be treated further
+         */
+        CONTINUE(true, true, true),
+        /**
+         * The input has been recognized as a command and should not be treated further
+         */
+        COMMAND(true, true, false),
+        /**
+         * The input has been determined illegal and should not be treated further
+         */
+        ILLEGAL(false, false, false),
+        /**
+         * The input caused some error and should not be treated further
+         */
+        ERRORED(false, false, false),
+        /**
+         * The input is unknown and should be treated further
+         */
+        UNKNOWN(true, false, true);
+        
+        private final boolean clear;
+        private final boolean handled;
+        private final boolean write;
+        
+        InputTypeOLD(boolean clear, boolean handled, boolean write) {
+            this.clear = clear;
+            this.handled = handled;
+            this.write = write;
+        }
+        
+        public boolean isClear() {
+            return clear;
+        }
+        
+        public boolean isHandled() {
+            return handled;
+        }
+        
+        public boolean isWrite() {
+            return write;
+        }
+        
+    }
+    
+    public static class InputType2 { //FIXME Make a class that is returned to determine what should happen with an input? (13.03.2019 00:33)
+    
+    }
+    
+    public enum InputType {
+        /**
+         * The input should not be cleared, has not been handled and should not be written
+         */
+        ILLEGAL_UNHANDLED_STOP(false, false, false),
+        /**
+         * The input should not be cleared, has not been handled and should be written
+         */
+        ILLEGAL_UNHANDLED_CONTINUE(false, false, true),
+        /**
+         * The input should not be cleared, has been handled and should not be written
+         */
+        ILLEGAL_HANDLED_STOP(false, true, false),
+        /**
+         * The input should not be cleared, has been handled and should be written
+         */
+        ILLEGAL_HANDLED_CONTINUE(false, true, true),
+        /**
+         * The input should be cleared, has not been handled and should not be written
+         */
+        UNHANDLED_STOP(true, false, false),
+        /**
+         * The input should be cleared, has not been handled and should be written
+         */
+        UNHANDLED_CONTINUE(true, false, true),
+        /**
+         * The input should be cleared, has been handled and should not be written
+         */
+        STOP(true, true, false),
+        /**
+         * The input should be cleared, has been handled and should be written
+         */
+        CONTINUE(true, true, true);
+        
+        private final boolean clear;
+        private final boolean handled;
+        private final boolean write;
+        
+        InputType(boolean clear, boolean handled, boolean write) {
+            this.clear = clear;
+            this.handled = handled;
+            this.write = write;
+        }
+        
+        public boolean isClear() {
+            return clear;
+        }
+        
+        public boolean isHandled() {
+            return handled;
+        }
+        
+        public boolean isWrite() {
+            return write;
+        }
+        
     }
     
 }

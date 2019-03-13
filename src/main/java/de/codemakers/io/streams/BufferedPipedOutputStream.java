@@ -17,11 +17,13 @@
 package de.codemakers.io.streams;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -30,18 +32,28 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     protected final Object lock = new Object();
     //protected final Queue<byte[]> buffer = new ConcurrentLinkedQueue<>(); //FIXME What is the problem with this method? The current method uses probably more memory...
     protected final Queue<ToughRunnable> buffer_ = new ConcurrentLinkedQueue<>();
-    Thread thread = Standard.toughThread(this::loop); //TODO Threads can only be started once, so create a new one? But when this is closed its over, a stream is normally also a one time used thing
+    protected Thread thread = null;
+    protected ToughFunction<Thread, Thread> threadFunction = null;
     
     public BufferedPipedOutputStream() {
         super();
+        initThread();
     }
     
     public BufferedPipedOutputStream(PipedInputStream pipedInputStream) throws IOException {
         super(pipedInputStream);
+        initThread();
+    }
+    
+    private void initThread() {
+        thread = Standard.toughThread(this::loop);
+        thread.setName(this + "-Writing-" + Thread.class.getSimpleName());
+        if (threadFunction != null) {
+            thread = Objects.requireNonNull(threadFunction.applyWithoutException(thread), "threadFunction.applyWithoutException(thread)");
+        }
     }
     
     private void loop() throws Exception {
-        Thread.currentThread().setName(this + "-Writing-" + Thread.class.getSimpleName());
         try {
             while (pipedInputStream != null && pipedInputStream.connected) {
                 final ToughRunnable toughRunnable = buffer_.poll();
@@ -71,6 +83,30 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
         } catch (InterruptedException ex) {
             //Nothing probably close was called
         }
+    }
+    
+    public Thread getThread() {
+        return thread;
+    }
+    
+    public BufferedPipedOutputStream setThread(Thread thread) {
+        if (this.thread != null && this.thread.isAlive()) {
+            throw new IllegalStateException("A " + Thread.class.getSimpleName() + " is already running");
+        }
+        this.thread = thread;
+        return this;
+    }
+    
+    public ToughFunction<Thread, Thread> getThreadFunction() {
+        return threadFunction;
+    }
+    
+    public BufferedPipedOutputStream setThreadFunction(ToughFunction<Thread, Thread> threadFunction) {
+        this.threadFunction = threadFunction;
+        if (thread == null || !thread.isAlive()) {
+            initThread();
+        }
+        return this;
     }
     
     @Override

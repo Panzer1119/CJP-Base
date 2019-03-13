@@ -16,6 +16,7 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import org.apache.commons.text.StringSubstitutor;
 
 import javax.swing.*;
@@ -51,14 +52,25 @@ public class ConsoleTest {
                 return true;
             }
             
+            
             @Override
-            protected boolean onInput(String input) throws Exception {
-                if (input.isEmpty()) {
-                    return false;
-                }
-                Logger.log("input=" + input, LogLevel.INPUT);
-                return true;
+            protected boolean runCommand(String command) throws Exception {
+                Logger.log(command, LogLevel.COMMAND);
+                throw new NotYetImplementedRuntimeException(); //TODO Implement Command stuff
             }
+            
+            @Override
+            protected InputType handleInput(String input) throws Exception {
+                if (input.isEmpty()) {
+                    return InputType.ILLEGAL;
+                }
+                if (input.startsWith("/")) { //TODO Implement Command stuff
+                    return InputType.COMMAND;
+                }
+                Logger.log(input, LogLevel.INPUT);
+                return InputType.CONTINUE;
+            }
+            
         };
         //AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = console.logEntries::add;
         AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = (logEntry) -> {
