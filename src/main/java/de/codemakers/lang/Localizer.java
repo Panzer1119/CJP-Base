@@ -17,11 +17,12 @@
 package de.codemakers.lang;
 
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.interfaces.Unloadable;
 import de.codemakers.base.util.tough.ToughSupplier;
 
 import java.util.Locale;
 
-public abstract class Localizer implements Copyable {
+public abstract class Localizer implements Copyable, Unloadable {
     
     public static final String KEY_LANGUAGE_NAME_LOCAL = "language_name_local";
     public static final String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
