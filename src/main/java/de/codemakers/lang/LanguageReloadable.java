@@ -50,4 +50,27 @@ public interface LanguageReloadable extends Reloadable {
         return new ReturningAction<>(this::reloadLanguage);
     }
     
+    boolean unloadLanguage() throws Exception;
+    
+    default boolean unloadLanguage(ToughConsumer<Throwable> failure) {
+        try {
+            return unloadLanguage();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return false;
+        }
+    }
+    
+    default boolean unloadLanguageWithoutException() {
+        return unloadLanguage(null);
+    }
+    
+    default ReturningAction<Boolean> unloadLanguageAction() {
+        return new ReturningAction<>(this::unloadLanguage);
+    }
+    
 }

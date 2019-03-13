@@ -76,6 +76,25 @@ public class LanguageReloader implements LanguageReloadable {
     }
     
     @Override
+    public boolean unloadLanguage() throws Exception {
+        boolean good = true;
+        if (failOnError) {
+            for (LanguageReloadable languageReloadable : languageReloadables) {
+                if (!languageReloadable.unloadLanguage()) {
+                    good = false;
+                }
+            }
+        } else {
+            for (LanguageReloadable languageReloadable : languageReloadables) {
+                if (!languageReloadable.unloadLanguageWithoutException()) {
+                    good = false;
+                }
+            }
+        }
+        return good;
+    }
+    
+    @Override
     public String toString() {
         return "LanguageReloader{" + "languageReloadables=" + languageReloadables + ", failOnError=" + failOnError + '}';
     }
