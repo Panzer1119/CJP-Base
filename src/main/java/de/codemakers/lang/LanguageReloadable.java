@@ -46,7 +46,7 @@ public interface LanguageReloadable extends Reloadable {
         return reloadLanguage(null);
     }
     
-    default ReturningAction<Boolean> reloadAction() {
+    default ReturningAction<Boolean> reloadLanguageAction() {
         return new ReturningAction<>(this::reloadLanguage);
     }
     
