@@ -17,7 +17,6 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import org.apache.commons.text.StringSubstitutor;
 
 import javax.swing.*;
@@ -55,7 +54,7 @@ public class ConsoleTest {
                 //TODO Testing adding LogEntry end
                 return true;
             }
-            
+    
             @Override
             protected boolean handleInput(String input) throws Exception {
                 if (input.isEmpty()) {
@@ -69,9 +68,24 @@ public class ConsoleTest {
                 return true;
             }
             
-            protected boolean runCommand(String command) throws Exception {
+            protected boolean runCommand(final String command) throws Exception {
                 Logger.log(command, LogLevel.COMMAND);
-                throw new NotYetImplementedRuntimeException(); //TODO Implement Command stuff
+                String temp = command.substring("/".length()).trim();
+                if (temp.startsWith("lang")) {
+                    temp = temp.substring("lang".length()).trim();
+                    if (temp.equalsIgnoreCase("english")) {
+                        Standard.setLocalizer(Standard.getEnglishLocalizer());
+                        Logger.logDebug("Setted localizer to english");
+                        return true;
+                    } else if (temp.equalsIgnoreCase("default")) {
+                        Standard.setLocalizer(Standard.getDefaultLocalizer());
+                        Logger.logDebug("Setted localizer to default");
+                        return true;
+                    }
+                }
+                //throw new NotYetImplementedRuntimeException(); //TODO Implement Command stuff
+                Logger.logWarning(String.format("Command \"%s\" does not exist", command));
+                return false;
             }
             
         };
@@ -92,7 +106,8 @@ public class ConsoleTest {
             console.reloadWithoutException();
         };
         Logger.log("console=" + console);
-        console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //FIXME Testing only
+        console.menuItem_exit.addActionListener((actionEvent) -> System.exit(1)); //FIXME Testing only
         //console.setPreferredSize(new Dimension(600, 300));
         console.show();
         /*

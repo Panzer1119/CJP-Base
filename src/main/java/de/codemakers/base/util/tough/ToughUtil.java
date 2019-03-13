@@ -18,8 +18,10 @@ package de.codemakers.base.util.tough;
 
 import java.util.function.Consumer;
 
+@Deprecated
 public class ToughUtil {
-
+    
+    @Deprecated
     public static final <T, R> void useTough(Tough<T, R> tough, Consumer<ToughConsumer<T>> toughConsumer, Consumer<ToughSupplier<R>> toughSupplier, Consumer<ToughFunction<T, R>> toughFunction, Consumer<ToughRunnable> toughRunnable) {
         if (tough == null) {
             return;
@@ -46,5 +48,5 @@ public class ToughUtil {
             }
         }
     }
-
+    
 }

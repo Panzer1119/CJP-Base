@@ -23,6 +23,8 @@ import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
+import de.codemakers.lang.LanguageReloader;
+import de.codemakers.lang.LanguageUtil;
 import de.codemakers.lang.Localizer;
 import de.codemakers.lang.PropertiesLocalizer;
 
@@ -31,7 +33,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,9 +55,9 @@ public class Standard {
     public static final AdvancedFile MAIN_FOLDER = new AdvancedFile(AdvancedFile.PREFIX_INTERN + MAIN_PATH);
     public static final String ICONS_PATH = "icons/";
     public static final AdvancedFile ICONS_FOLDER = new AdvancedFile(MAIN_FOLDER, ICONS_PATH);
-    public static final String LANG_PATH = "lang/";
-    public static final AdvancedFile LANG_FOLDER = new AdvancedFile(MAIN_FOLDER, LANG_PATH);
-    public static final String LANG_FILE_EXTENSION = "lang";
+    public static final String LANG_PATH = LanguageUtil.LANG_PATH;
+    public static final AdvancedFile LANG_FOLDER = LanguageUtil.LANG_FOLDER;
+    public static final String LANG_FILE_EXTENSION = LanguageUtil.LANG_FILE_EXTENSION;
     
     public static final Map<Integer, ToughRunnable> SHUTDOWN_HOOKS = new ConcurrentHashMap<>();
     
@@ -68,16 +69,7 @@ public class Standard {
             Logger.handleError(ex);
         }
         RUNNING_JAR_URI = RUNNING_JAR_URI_;
-        try {
-            ((PropertiesLocalizer) Localizer.DEFAULT_LOCALIZER).loadFromFile(new AdvancedFile(LANG_FOLDER, Locale.getDefault().getLanguage() + "." + LANG_FILE_EXTENSION));
-        } catch (Exception ex) {
-            Logger.logError("Failed to load language file for local language \"" + Locale.getDefault() + "\"", ex);
-        }
-        try {
-            ((PropertiesLocalizer) Localizer.ENGLISH_LOCALIZER).loadFromFile(new AdvancedFile(LANG_FOLDER, Locale.ENGLISH.getLanguage() + "." + LANG_FILE_EXTENSION));
-        } catch (Exception ex) {
-            Logger.logError("Failed to load language file for english", ex);
-        }
+        LanguageUtil.initLocalizers();
         addShutdownHookAsSingleThread(() -> SHUTDOWN_HOOKS.values().forEach(ToughRunnable::runWithoutException)); //TODO Clone/Copy the values before execution? So that if a Shutdown Hook modifies #SHUTDOWN_HOOKS no unwanted behaviour is happening?
     }
     
@@ -153,28 +145,64 @@ public class Standard {
         return SHUTDOWN_HOOKS.remove(id);
     }
     
-    public static <L extends Localizer> L getDefaultLocalizer() {
-        return (L) Localizer.DEFAULT_LOCALIZER;
+    public static LanguageReloader getDefaultLanguageReloader() {
+        return LanguageUtil.getDefaultLanguageReloader();
     }
     
-    public static <L extends Localizer> L getEnglishLocalizer() {
-        return (L) Localizer.ENGLISH_LOCALIZER;
+    public static <L extends LanguageReloader> L getLanguageReloader() {
+        return LanguageUtil.getLanguageReloader();
+    }
+    
+    public static <L extends LanguageReloader> L getLanguageReloader(Class<L> clazz) {
+        return LanguageUtil.getLanguageReloader(clazz);
+    }
+    
+    public static void setLanguageReloader(LanguageReloader languageReloader) {
+        LanguageUtil.setLanguageReloader(languageReloader);
+    }
+    
+    public static boolean reloadLanguage() {
+        return LanguageUtil.reloadLanguageWithoutException();
+    }
+    
+    public static boolean unloadLanguage() {
+        return LanguageUtil.unloadLanguageWithoutException();
+    }
+    
+    public static PropertiesLocalizer getEnglishLocalizer() {
+        return LanguageUtil.getEnglishLocalizer();
+    }
+    
+    public static PropertiesLocalizer getDefaultLocalizer() {
+        return LanguageUtil.getDefaultLocalizer();
+    }
+    
+    public static <L extends Localizer> L getLocalizer() {
+        return LanguageUtil.getLocalizer();
+    }
+    
+    public static <L extends Localizer> L getLocalizer(Class<L> clazz) {
+        return LanguageUtil.getLocalizer(clazz);
+    }
+    
+    public static void setLocalizer(Localizer localizer) {
+        LanguageUtil.setLocalizer(localizer);
     }
     
     public static String localizeWithArguments(String name, String defaultValue, Object... arguments) {
-        return Localizer.DEFAULT_LOCALIZER.localizeWithArguments(name, defaultValue, arguments);
-    }
-    
-    public static String localize(String name, String defaultValue) {
-        return Localizer.DEFAULT_LOCALIZER.localize(name, defaultValue);
+        return LanguageUtil.localizeWithArguments(name, defaultValue, arguments);
     }
     
     public static String localizeWithArguments(String name, Object... arguments) {
-        return Localizer.DEFAULT_LOCALIZER.localizeWithArguments(name, () -> Localizer.ENGLISH_LOCALIZER.localizeWithArguments(name, arguments), arguments);
+        return LanguageUtil.localizeWithArguments(name, arguments);
+    }
+    
+    public static String localize(String name, String defaultValue) {
+        return LanguageUtil.localize(name, defaultValue);
     }
     
     public static String localize(String name) {
-        return Localizer.DEFAULT_LOCALIZER.localize(name, () -> Localizer.ENGLISH_LOCALIZER.localize(name));
+        return LanguageUtil.localize(name);
     }
     
     public static <R, T> R useWhenNotNull(T t, ToughFunction<T, R> toughFunction) {

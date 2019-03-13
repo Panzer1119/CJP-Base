@@ -24,9 +24,11 @@ import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.streams.BufferedPipedOutputStream;
 import de.codemakers.io.streams.PipedInputStream;
 import de.codemakers.io.streams.PipedOutputStream;
+import de.codemakers.lang.LanguageReloadable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -40,7 +42,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class Console implements Closeable, Reloadable {
+public abstract class Console implements Closeable, LanguageReloadable, Reloadable {
     
     public static final String DEFAULT_ICON = "Farm-Fresh_application_xp_terminal.png";
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FOLDER, DEFAULT_ICON);
@@ -48,10 +50,11 @@ public abstract class Console implements Closeable, Reloadable {
     public static final String LANGUAGE_KEY_CONSOLE = "console";
     public static final String LANGUAGE_KEY_FILE = "file";
     public static final String LANGUAGE_KEY_RELOAD = "reload";
+    public static final String LANGUAGE_KEY_SETTINGS = "settings";
     public static final String LANGUAGE_KEY_SAVE_AS = "save_as";
     public static final String LANGUAGE_KEY_RESTART = "restart";
     public static final String LANGUAGE_KEY_EXIT = "exit";
-    public static final String LANGUAGE_KEY_OPTIONS = "options";
+    public static final String LANGUAGE_KEY_VIEW = "view";
     public static final String LANGUAGE_KEY_DISPLAYED_LOG_LEVELS = "console_displayed_log_levels";
     public static final String LANGUAGE_KEY_DISPLAY = "console_display";
     public static final String LANGUAGE_KEY_TIMESTAMP = "console_timestamp";
@@ -72,10 +75,14 @@ public abstract class Console implements Closeable, Reloadable {
     protected final JMenuBar menuBar = new JMenuBar();
     protected final JMenu menu_file = new JMenu(Standard.localize(LANGUAGE_KEY_FILE)); //FIXME Language/Localization stuff?! //Reloading Language??
     protected final JMenuItem menuItem_reload = new JMenuItem(Standard.localize(LANGUAGE_KEY_RELOAD)); //FIXME Language/Localization stuff?! //Reloading Language??
+    //JSeparator
+    protected final JMenuItem menuItem_settings = new JMenuItem(Standard.localize(LANGUAGE_KEY_SETTINGS));
+    //JSeparator
     protected final JMenuItem menuItem_saveAs = new JMenuItem(Standard.localize(LANGUAGE_KEY_SAVE_AS)); //FIXME Language/Localization stuff?! //Reloading Language??
+    //JSeparator
     protected final JMenuItem menuItem_restart = new JMenuItem(Standard.localize(LANGUAGE_KEY_RESTART)); //FIXME Language/Localization stuff?! //Reloading Language??
     protected final JMenuItem menuItem_exit = new JMenuItem(Standard.localize(LANGUAGE_KEY_EXIT)); //FIXME Language/Localization stuff?! //Reloading Language??
-    protected final JMenu menu_options = new JMenu(Standard.localize(LANGUAGE_KEY_OPTIONS)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JMenu menu_view = new JMenu(Standard.localize(LANGUAGE_KEY_VIEW));
     //Output
     protected final JLabel label_displayedLogLevels = new JLabel(Standard.localize(LANGUAGE_KEY_DISPLAYED_LOG_LEVELS)); //FIXME Language/Localization stuff?! //Reloading Language??
     protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.values()).map((logLevel) -> {
@@ -161,8 +168,41 @@ public abstract class Console implements Closeable, Reloadable {
             return handleInput(input);
         } catch (Exception ex) {
             Logger.logError("Error while handling input \"" + input + "\"", ex);
-            return false;
+            return true;
         }
+    }
+    
+    @Override
+    public boolean reloadLanguage() throws Exception {
+        frame.setTitle(Standard.localize(LANGUAGE_KEY_CONSOLE));
+        menu_file.setText(Standard.localize(LANGUAGE_KEY_FILE));
+        menuItem_reload.setText(Standard.localize(LANGUAGE_KEY_RELOAD));
+        menuItem_settings.setText(Standard.localize(LANGUAGE_KEY_SETTINGS));
+        menuItem_saveAs.setText(Standard.localize(LANGUAGE_KEY_SAVE_AS));
+        menuItem_restart.setText(Standard.localize(LANGUAGE_KEY_RESTART));
+        menuItem_exit.setText(Standard.localize(LANGUAGE_KEY_EXIT));
+        menu_view.setText(Standard.localize(LANGUAGE_KEY_VIEW));
+        label_displayedLogLevels.setText(Standard.localize(LANGUAGE_KEY_DISPLAYED_LOG_LEVELS));
+        final LogLevel[] logLevels = LogLevel.values();
+        for (int i = 0; i < logLevels.length; i++) {
+            checkBoxMenuItems_logLevels[i].setText(Standard.localize(logLevels[i].getUnlocalizedName()));
+        }
+        label_display.setText(Standard.localize(LANGUAGE_KEY_DISPLAY));
+        checkBoxMenuItem_displayTimestamp.setText(Standard.localize(LANGUAGE_KEY_TIMESTAMP));
+        checkBoxMenuItem_displayThread.setText(Standard.localize(LANGUAGE_KEY_THREAD));
+        checkBoxMenuItem_displaySource.setText(Standard.localize(LANGUAGE_KEY_SOURCE));
+        checkBoxMenuItem_displayLogLevel.setText(Standard.localize(LANGUAGE_KEY_LOG_LEVEL));
+        button_input.setText(Standard.localize(LANGUAGE_KEY_ENTER));
+        ((TitledBorder) scrollPane_output.getBorder()).setTitle(Standard.localize(LANGUAGE_KEY_OUTPUT));
+        ((TitledBorder) panel_input.getBorder()).setTitle(Standard.localize(LANGUAGE_KEY_INPUT));
+        frame.invalidate();
+        frame.repaint();
+        return true;
+    }
+    
+    @Override
+    public boolean unloadLanguage() throws Exception {
+        return true;
     }
     
     private void initStreams() {
@@ -207,24 +247,26 @@ public abstract class Console implements Closeable, Reloadable {
     }
     
     private void init() {
-        menu_file.add(menuItem_reload);
+        Standard.getDefaultLanguageReloader().addLanguageReloadable(this);
+        menu_file.add(menuItem_settings);
         menu_file.add(new JSeparator());
+        menu_file.add(menuItem_reload);
         menu_file.add(menuItem_saveAs);
         menu_file.add(new JSeparator());
         menu_file.add(menuItem_restart);
         menu_file.add(menuItem_exit);
         menuBar.add(menu_file);
-        menu_options.add(label_displayedLogLevels);
+        menu_view.add(label_displayedLogLevels);
         for (JCheckBoxMenuItem checkBoxMenuItem : checkBoxMenuItems_logLevels) {
-            menu_options.add(checkBoxMenuItem); //TODO ActionListener or something similar?
+            menu_view.add(checkBoxMenuItem); //TODO ActionListener or something similar?
         }
-        menu_options.add(new JSeparator());
-        menu_options.add(label_display);
-        menu_options.add(checkBoxMenuItem_displayTimestamp);
-        menu_options.add(checkBoxMenuItem_displayThread);
-        menu_options.add(checkBoxMenuItem_displaySource);
-        menu_options.add(checkBoxMenuItem_displayLogLevel);
-        menuBar.add(menu_options);
+        menu_view.add(new JSeparator());
+        menu_view.add(label_display);
+        menu_view.add(checkBoxMenuItem_displayTimestamp);
+        menu_view.add(checkBoxMenuItem_displayThread);
+        menu_view.add(checkBoxMenuItem_displaySource);
+        menu_view.add(checkBoxMenuItem_displayLogLevel);
+        menuBar.add(menu_view);
         frame.setJMenuBar(menuBar);
         frame.setLayout(new BorderLayout());
         textPane_output.setEditable(false);
@@ -316,6 +358,7 @@ public abstract class Console implements Closeable, Reloadable {
     public void closeIntern() throws Exception {
         pipedInputStream.close();
         pipedOutputStream.close(); //TODO Is the order important? Close OutputStream before InputStream or vice versa?
+        Standard.getDefaultLanguageReloader().removeLanguageReloadable(this);
     }
     
     @Override
