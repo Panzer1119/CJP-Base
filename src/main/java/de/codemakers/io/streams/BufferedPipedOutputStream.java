@@ -34,6 +34,7 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     protected final Queue<ToughRunnable> buffer_ = new ConcurrentLinkedQueue<>();
     protected Thread thread = null;
     protected ToughFunction<Thread, Thread> threadFunction = null;
+    protected boolean started = false;
     
     public BufferedPipedOutputStream() {
         super();
@@ -85,6 +86,14 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
         }
     }
     
+    protected void start() {
+        if (started) {
+            return;
+        }
+        thread.start();
+        started = true;
+    }
+    
     public Thread getThread() {
         return thread;
     }
@@ -112,7 +121,6 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     @Override
     public synchronized void connect(PipedInputStream pipedInputStream) throws IOException {
         super.connect(pipedInputStream);
-        thread.start();
     }
     
     @Override
@@ -145,6 +153,7 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     
     @Override
     public synchronized void flush() throws IOException {
+        start();
         synchronized (lock) {
             lock.notify();
             //lock.wait(); //TODO Is this creating a deadlock?
@@ -156,6 +165,7 @@ public class BufferedPipedOutputStream extends PipedOutputStream {
     public synchronized void close() throws IOException {
         super.close();
         thread.interrupt(); //TODO Do more to end the thread? (Because what happens when the thread is blocked by the super.write method?)
+        started = false;
     }
     
 }
