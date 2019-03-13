@@ -27,9 +27,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AdvancedLocalizer extends Localizer {
     
-    protected final AdvancedFile advancedFile;
+    protected AdvancedFile advancedFile;
     protected final PropertiesLocalizer propertiesLocalizer;
     protected final List<Localizer> localizers = new CopyOnWriteArrayList<>();
+    
+    public AdvancedLocalizer() {
+        this(null);
+    }
     
     public AdvancedLocalizer(AdvancedFile advancedFile) {
         this(advancedFile, new PropertiesLocalizer());
@@ -121,7 +125,7 @@ public class AdvancedLocalizer extends Localizer {
     public void set(Copyable copyable) {
         final AdvancedLocalizer advancedLocalizer = Require.clazz(copyable, AdvancedLocalizer.class);
         if (advancedLocalizer != null) {
-            //AdvancedFile is a final value...
+            advancedFile = advancedLocalizer.advancedFile;
             propertiesLocalizer.clear();
             propertiesLocalizer.set(advancedLocalizer.propertiesLocalizer);
             localizers.clear();
@@ -132,6 +136,7 @@ public class AdvancedLocalizer extends Localizer {
     @Override
     public boolean load() throws Exception {
         boolean good = true;
+        propertiesLocalizer.clear();
         if (!propertiesLocalizer.loadFromFile(advancedFile)) {
             good = false;
         }

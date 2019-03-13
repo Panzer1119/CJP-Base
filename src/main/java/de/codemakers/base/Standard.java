@@ -23,10 +23,10 @@ import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
+import de.codemakers.lang.AdvancedLocalizer;
 import de.codemakers.lang.LanguageReloader;
 import de.codemakers.lang.LanguageUtil;
 import de.codemakers.lang.Localizer;
-import de.codemakers.lang.PropertiesLocalizer;
 
 import java.io.File;
 import java.io.InputStream;
@@ -169,11 +169,11 @@ public class Standard {
         return LanguageUtil.unloadLanguageWithoutException();
     }
     
-    public static PropertiesLocalizer getEnglishLocalizer() {
+    public static AdvancedLocalizer getEnglishLocalizer() {
         return LanguageUtil.getEnglishLocalizer();
     }
     
-    public static PropertiesLocalizer getDefaultLocalizer() {
+    public static AdvancedLocalizer getDefaultLocalizer() {
         return LanguageUtil.getDefaultLocalizer();
     }
     

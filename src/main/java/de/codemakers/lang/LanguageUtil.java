@@ -38,8 +38,8 @@ public class LanguageUtil {
     
     private static final LanguageReloader DEFAULT_LANGUAGE_RELOADER = new LanguageReloader();
     private static LanguageReloader LANGUAGE_RELOADER = DEFAULT_LANGUAGE_RELOADER;
-    private static final PropertiesLocalizer ENGLISH_LOCALIZER = new PropertiesLocalizer();
-    private static final PropertiesLocalizer DEFAULT_LOCALIZER = new PropertiesLocalizer();
+    private static final AdvancedLocalizer ENGLISH_LOCALIZER = new AdvancedLocalizer(LANG_FILE_ENGLISH);
+    private static final AdvancedLocalizer DEFAULT_LOCALIZER = new AdvancedLocalizer(LANG_FILE_DEFAULT);
     private static Localizer LOCALIZER = DEFAULT_LOCALIZER;
     
     public static LanguageReloader getDefaultLanguageReloader() {
@@ -95,25 +95,15 @@ public class LanguageUtil {
     }
     
     public static void initLocalizers() {
-        try {
-            getEnglishLocalizer().clear();
-            getEnglishLocalizer().loadFromFile(LANG_FILE_ENGLISH);
-        } catch (Exception ex) {
-            Logger.logError("Failed to load language file for english", ex);
-        }
-        try {
-            getDefaultLocalizer().clear();
-            getDefaultLocalizer().loadFromFile(LANG_FILE_DEFAULT);
-        } catch (Exception ex) {
-            Logger.logError("Failed to load language file for default language \"" + LOCALE_DEFAULT + "\"", ex);
-        }
+        getEnglishLocalizer().load((ex) -> Logger.logError("Failed to load language file for english language \"" + LOCALE_ENGLISH + "\"", ex));
+        getDefaultLocalizer().load((ex) -> Logger.logError("Failed to load language file for default language \"" + LOCALE_DEFAULT + "\"", ex));
     }
     
-    public static PropertiesLocalizer getEnglishLocalizer() {
+    public static AdvancedLocalizer getEnglishLocalizer() {
         return ENGLISH_LOCALIZER;
     }
     
-    public static PropertiesLocalizer getDefaultLocalizer() {
+    public static AdvancedLocalizer getDefaultLocalizer() {
         return DEFAULT_LOCALIZER;
     }
     

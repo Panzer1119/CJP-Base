@@ -38,9 +38,9 @@ public class LangTest {
         Logger.log("locale.getVariant()=" + locale.getVariant());
         Logger.log("locale.toLanguageTag()=" + locale.toLanguageTag());
         Logger.log(Locale.forLanguageTag("en"));
-        final PropertiesLocalizer propertiesLocalizer = LanguageUtil.getDefaultLocalizer();
-        Logger.log("propertiesLocalizer=" + propertiesLocalizer);
-        Logger.log("propertiesLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH)=" + propertiesLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH));
+        final AdvancedLocalizer advancedLocalizer = LanguageUtil.getDefaultLocalizer();
+        Logger.log("advancedLocalizer=" + advancedLocalizer);
+        Logger.log("advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH)=" + advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH));
         Logger.log("Standard.localize(\"test_123\")=" + Standard.localize("test_123"));
         Logger.log("Standard.localize(\"test_123\", null)=" + Standard.localize("test_123", null));
         Logger.log("Standard.localize(\"test_123\")=" + Standard.localize("test_1234"));
