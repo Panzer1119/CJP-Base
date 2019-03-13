@@ -202,12 +202,12 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         ((TitledBorder) panel_input.getBorder()).setTitle(Standard.localize(LANGUAGE_KEY_INPUT));
         frame.invalidate();
         frame.repaint();
-        return true;
+        return consoleSettings.reloadLanguage();
     }
     
     @Override
     public boolean unloadLanguage() throws Exception {
-        return true;
+        return consoleSettings.unloadLanguage();
     }
     
     private void initStreams() {
@@ -427,7 +427,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         
         @Override
         public boolean unloadLanguage() throws Exception {
-            return false;
+            return true;
         }
         
     }
