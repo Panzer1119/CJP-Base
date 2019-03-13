@@ -52,23 +52,22 @@ public class ConsoleTest {
                 return true;
             }
             
-            
             @Override
+            protected boolean handleInput(String input) throws Exception {
+                if (input.isEmpty()) {
+                    return false;
+                }
+                if (input.startsWith("/")) {
+                    return runCommand(input);
+                }
+                Logger.log(input, LogLevel.INPUT);
+                write(input.getBytes());
+                return true;
+            }
+            
             protected boolean runCommand(String command) throws Exception {
                 Logger.log(command, LogLevel.COMMAND);
                 throw new NotYetImplementedRuntimeException(); //TODO Implement Command stuff
-            }
-            
-            @Override
-            protected InputType handleInput(String input) throws Exception {
-                if (input.isEmpty()) {
-                    return InputType.ILLEGAL;
-                }
-                if (input.startsWith("/")) { //TODO Implement Command stuff
-                    return InputType.COMMAND;
-                }
-                Logger.log(input, LogLevel.INPUT);
-                return InputType.CONTINUE;
             }
             
         };

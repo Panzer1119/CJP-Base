@@ -29,10 +29,10 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -111,10 +111,9 @@ public abstract class Console implements Closeable, Reloadable {
     protected final JPanel panel_input = new JPanel();
     protected final JTextField textField_input = new JTextField();
     protected final JButton button_input = new JButton(Standard.localize(LANGUAGE_KEY_ENTER)); //FIXME Language/Localization stuff?! //Reloading Language??
-    
-    protected final int shutdownHookId = Standard.addShutdownHook(this::closeIntern);
     protected final BufferedPipedOutputStream pipedOutputStream = new BufferedPipedOutputStream();
     protected final PipedInputStream pipedInputStream = new PipedInputStream();
+    protected final int shutdownHookId = Standard.addShutdownHook(this::closeIntern);
     
     public Console() {
         this(DEFAULT_ICON_FILE);
@@ -130,15 +129,20 @@ public abstract class Console implements Closeable, Reloadable {
         reloadWithoutException(); //TODO Good?
     }
     
-    protected abstract boolean runCommand(String command) throws Exception;
+    protected void write(int b) throws IOException {
+        pipedOutputStream.write(b);
+    }
     
-    protected boolean runCommandWithoutException(String command) {
-        try {
-            return runCommand(command);
-        } catch (Exception ex) {
-            Logger.logError("Error while handling command \"" + command + "\"", ex);
-            return false;
-        }
+    protected void write(byte[] data) throws IOException {
+        pipedOutputStream.write(data);
+    }
+    
+    protected void write(byte[] data, int off, int len) throws IOException {
+        pipedOutputStream.write(data, off, len);
+    }
+    
+    protected void flush() throws IOException {
+        pipedOutputStream.flush();
     }
     
     /**
@@ -146,18 +150,18 @@ public abstract class Console implements Closeable, Reloadable {
      *
      * @param input Input
      *
-     * @return If this input was handled (e.g. it was determined to be a command)
+     * @return If the {@link #textField_input} should be cleared
      *
      * @throws Exception
      */
-    protected abstract InputType handleInput(String input) throws Exception; //FIXME Where is determined if this is an LogLevel.INPUT or an LogLevel.COMMAND?
+    protected abstract boolean handleInput(String input) throws Exception; //FIXME Where is determined if this is an LogLevel.INPUT or an LogLevel.COMMAND?
     
-    protected InputType handleInputWithoutException(String input) {
+    protected boolean handleInputWithoutException(String input) {
         try {
-            return Objects.requireNonNull(handleInput(input), "handleInput(input)");
+            return handleInput(input);
         } catch (Exception ex) {
             Logger.logError("Error while handling input \"" + input + "\"", ex);
-            return InputType.ERRORED;
+            return false;
         }
     }
     
@@ -196,16 +200,8 @@ public abstract class Console implements Closeable, Reloadable {
             }
         });
         button_input.addActionListener((actionEvent) -> {
-            final String input = textField_input.getText();
-            final InputType inputType = handleInputWithoutException(input);
-            if (inputType.canInputBeCleared()) {
+            if (handleInputWithoutException(textField_input.getText())) {
                 textField_input.setText("");
-            }
-            if (!inputType.isHandled()) {
-                Standard.silentError(() -> pipedOutputStream.write(input.getBytes()));
-            }
-            if (inputType == InputType.COMMAND) {
-                runCommandWithoutException(input);
             }
         });
     }
@@ -326,122 +322,6 @@ public abstract class Console implements Closeable, Reloadable {
     protected void finalize() throws Throwable {
         Standard.useWhenNotNull(Standard.removeShutdownHook(shutdownHookId), ToughRunnable::runWithoutException);
         super.finalize();
-    }
-    
-    public enum InputTypeOLD {
-        /**
-         * The input has been handled and should not be treated further
-         */
-        HANDLED(true, true, false),
-        /**
-         * The input has not been handled and should be treated further
-         */
-        UNHANDLED(true, false, true),
-        /**
-         * The input has been handled, but should be treated further
-         */
-        CONTINUE(true, true, true),
-        /**
-         * The input has been recognized as a command and should not be treated further
-         */
-        COMMAND(true, true, false),
-        /**
-         * The input has been determined illegal and should not be treated further
-         */
-        ILLEGAL(false, false, false),
-        /**
-         * The input caused some error and should not be treated further
-         */
-        ERRORED(false, false, false),
-        /**
-         * The input is unknown and should be treated further
-         */
-        UNKNOWN(true, false, true);
-        
-        private final boolean clear;
-        private final boolean handled;
-        private final boolean write;
-        
-        InputTypeOLD(boolean clear, boolean handled, boolean write) {
-            this.clear = clear;
-            this.handled = handled;
-            this.write = write;
-        }
-        
-        public boolean isClear() {
-            return clear;
-        }
-        
-        public boolean isHandled() {
-            return handled;
-        }
-        
-        public boolean isWrite() {
-            return write;
-        }
-        
-    }
-    
-    public static class InputType2 { //FIXME Make a class that is returned to determine what should happen with an input? (13.03.2019 00:33)
-    
-    }
-    
-    public enum InputType {
-        /**
-         * The input should not be cleared, has not been handled and should not be written
-         */
-        ILLEGAL_UNHANDLED_STOP(false, false, false),
-        /**
-         * The input should not be cleared, has not been handled and should be written
-         */
-        ILLEGAL_UNHANDLED_CONTINUE(false, false, true),
-        /**
-         * The input should not be cleared, has been handled and should not be written
-         */
-        ILLEGAL_HANDLED_STOP(false, true, false),
-        /**
-         * The input should not be cleared, has been handled and should be written
-         */
-        ILLEGAL_HANDLED_CONTINUE(false, true, true),
-        /**
-         * The input should be cleared, has not been handled and should not be written
-         */
-        UNHANDLED_STOP(true, false, false),
-        /**
-         * The input should be cleared, has not been handled and should be written
-         */
-        UNHANDLED_CONTINUE(true, false, true),
-        /**
-         * The input should be cleared, has been handled and should not be written
-         */
-        STOP(true, true, false),
-        /**
-         * The input should be cleared, has been handled and should be written
-         */
-        CONTINUE(true, true, true);
-        
-        private final boolean clear;
-        private final boolean handled;
-        private final boolean write;
-        
-        InputType(boolean clear, boolean handled, boolean write) {
-            this.clear = clear;
-            this.handled = handled;
-            this.write = write;
-        }
-        
-        public boolean isClear() {
-            return clear;
-        }
-        
-        public boolean isHandled() {
-            return handled;
-        }
-        
-        public boolean isWrite() {
-            return write;
-        }
-        
     }
     
 }
