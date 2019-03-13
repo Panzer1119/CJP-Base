@@ -43,14 +43,15 @@ public class PropertiesLocalizer extends Localizer {
         loadFromFile(advancedFile);
     }
     
-    public PropertiesLocalizer loadFromFile(AdvancedFile advancedFile) {
+    public boolean loadFromFile(AdvancedFile advancedFile) {
         Objects.requireNonNull(advancedFile);
         try (final InputStream inputStream = advancedFile.createInputStream()) {
             properties.load(inputStream);
+            return true;
         } catch (Exception ex) {
             Logger.handleError(ex, "tried loading " + PropertiesLocalizer.class.getSimpleName() + " from \"" + advancedFile + "\"");
+            return false;
         }
-        return this;
     }
     
     public PropertiesLocalizer clear() {
@@ -89,10 +90,10 @@ public class PropertiesLocalizer extends Localizer {
     }
     
     @Override
-    public Localizer addLocalizer(Localizer localizer) {
+    public boolean addLocalizer(Localizer localizer) {
         final PropertiesLocalizer propertiesLocalizer = Require.clazz(localizer, PropertiesLocalizer.class, "localizer is not an instance of " + PropertiesLocalizer.class.getSimpleName());
         properties.putAll(propertiesLocalizer.properties);
-        return this;
+        return true;
     }
     
     @Override
@@ -110,14 +111,19 @@ public class PropertiesLocalizer extends Localizer {
     }
     
     @Override
-    public String toString() {
-        return "PropertiesLocalizer{" + "properties=" + properties + '}';
+    public boolean load() throws Exception {
+        return false;
     }
     
     @Override
     public boolean unload() throws Exception {
         clear();
         return properties.isEmpty();
+    }
+    
+    @Override
+    public String toString() {
+        return "PropertiesLocalizer{" + "properties=" + properties + '}';
     }
     
 }

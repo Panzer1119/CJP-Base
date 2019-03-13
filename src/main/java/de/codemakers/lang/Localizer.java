@@ -17,12 +17,13 @@
 package de.codemakers.lang;
 
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.interfaces.Loadable;
 import de.codemakers.base.util.interfaces.Unloadable;
 import de.codemakers.base.util.tough.ToughSupplier;
 
 import java.util.Locale;
 
-public abstract class Localizer implements Copyable, Unloadable {
+public abstract class Localizer implements Copyable, Loadable, Unloadable {
     
     public static final String KEY_LANGUAGE_NAME_LOCAL = "language_name_local";
     public static final String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
@@ -58,6 +59,10 @@ public abstract class Localizer implements Copyable, Unloadable {
         return Locale.forLanguageTag(getLanguageCode());
     }
     
-    public abstract Localizer addLocalizer(Localizer localizer);
+    public abstract boolean addLocalizer(Localizer localizer);
+    
+    public boolean removeLocalizer(Localizer localizer) {
+        throw new AbstractMethodError();
+    }
     
 }
