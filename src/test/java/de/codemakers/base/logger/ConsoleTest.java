@@ -16,6 +16,7 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import org.apache.commons.text.StringSubstitutor;
 
@@ -24,6 +25,9 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 public class ConsoleTest {
@@ -60,8 +64,8 @@ public class ConsoleTest {
                 if (input.startsWith("/")) {
                     return runCommand(input);
                 }
-                Logger.log(input, LogLevel.INPUT);
-                write(input.getBytes());
+                //Logger.log(input, LogLevel.INPUT);
+                write((input + "\n").getBytes());
                 return true;
             }
             
@@ -71,6 +75,17 @@ public class ConsoleTest {
             }
             
         };
+        Standard.async(() -> {
+            Thread.currentThread().setName("Console-InputStream-Reader");
+            final InputStream inputStream = console.getInputStream();
+            final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                Logger.log(line, LogLevel.INPUT);
+            }
+            bufferedReader.close();
+        });
         //AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = console.logEntries::add;
         AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = (logEntry) -> {
             console.logEntries.add(logEntry);

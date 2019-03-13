@@ -324,4 +324,8 @@ public abstract class Console implements Closeable, Reloadable {
         super.finalize();
     }
     
+    public InputStream getInputStream() {
+        return pipedInputStream;
+    }
+    
 }
