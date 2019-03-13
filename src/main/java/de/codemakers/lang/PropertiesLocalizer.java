@@ -114,4 +114,10 @@ public class PropertiesLocalizer extends Localizer {
         return "PropertiesLocalizer{" + "properties=" + properties + '}';
     }
     
+    @Override
+    public boolean unload() throws Exception {
+        clear();
+        return properties.isEmpty();
+    }
+    
 }
