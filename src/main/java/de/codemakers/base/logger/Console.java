@@ -17,6 +17,7 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.entities.BoundResettableVariable;
 import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Reloadable;
 import de.codemakers.base.util.tough.ToughRunnable;
@@ -382,11 +383,52 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         
         protected final JDialog dialog = new JDialog(frame, true);
         
+        protected final BoundResettableVariable<String> titleBound = new BoundResettableVariable<>(frame.getTitle(), frame::setTitle); //FIXME Testing only //This is working great!
+        
         public ConsoleSettings(AdvancedFile iconAdvancedFile) {
             init();
             initIconImage(iconAdvancedFile);
             dialog.setPreferredSize(new Dimension(600, 800)); //TODO Testing only
             reloadLanguageWithoutException();
+            test(); //FIXME Testing only
+        }
+        
+        private void test() { //FIXME Testing only
+            dialog.setLayout(new BorderLayout());
+            final JTextArea textArea = new JTextArea();
+            textArea.setText(titleBound.getCurrent());
+            titleBound.setToughConsumer((title) -> {
+                frame.setTitle(title);
+                textArea.setText(title);
+            });
+            final JScrollPane scrollPane = new JScrollPane(textArea);
+            textArea.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+                }
+                
+                @Override
+                public void keyPressed(KeyEvent e) {
+                }
+                
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    titleBound.setTemp(textArea.getText());
+                }
+            });
+            dialog.add(scrollPane, BorderLayout.CENTER);
+            final JPanel panel = new JPanel();
+            final JButton button_reset = new JButton("Reset");
+            final JButton button_test = new JButton("Test");
+            final JButton button_finish = new JButton("Finish");
+            button_reset.addActionListener((actionEvent) -> titleBound.resetWithoutException());
+            button_test.addActionListener((actionEvent) -> titleBound.testWithoutException());
+            button_finish.addActionListener((actionEvent) -> titleBound.finishWithoutException());
+            panel.setLayout(new FlowLayout());
+            panel.add(button_reset);
+            panel.add(button_test);
+            panel.add(button_finish);
+            dialog.add(panel, BorderLayout.SOUTH);
         }
         
         private void init() {
