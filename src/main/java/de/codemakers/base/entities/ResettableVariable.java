@@ -23,8 +23,8 @@ import java.util.Objects;
 
 public class ResettableVariable<T> implements Finishable<T>, Resettable {
     
-    private T current;
-    private T temp;
+    protected T current;
+    protected T temp;
     
     public ResettableVariable() {
         this(null);
