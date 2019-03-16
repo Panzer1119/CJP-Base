@@ -17,12 +17,36 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 public class AdvancedLeveledSystemLogger extends AdvancedLeveledLogger {
     
+    private ToughConsumer<LogEntry> preLogEntryToughConsumer = null; //TODO Writing LogEntries to Console?
+    private ToughConsumer<LogEntry> postLogEntryToughConsumer = null; //TODO Writing LogEntries to AdvancedFile?
+    
+    public ToughConsumer<LogEntry> getPreLogEntryToughConsumer() {
+        return preLogEntryToughConsumer;
+    }
+    
+    public AdvancedLeveledSystemLogger setPreLogEntryToughConsumer(ToughConsumer<LogEntry> preLogEntryToughConsumer) {
+        this.preLogEntryToughConsumer = preLogEntryToughConsumer;
+        return this;
+    }
+    
+    public ToughConsumer<LogEntry> getPostLogEntryToughConsumer() {
+        return postLogEntryToughConsumer;
+    }
+    
+    public AdvancedLeveledSystemLogger setPostLogEntryToughConsumer(ToughConsumer<LogEntry> postLogEntryToughConsumer) {
+        this.postLogEntryToughConsumer = postLogEntryToughConsumer;
+        return this;
+    }
+    
     @Override
     protected void preFinal(LogEntry logEntry) {
-        //TODO Writing LogEntries to Console?
+        if (preLogEntryToughConsumer != null) {
+            preLogEntryToughConsumer.acceptWithoutException(logEntry);
+        }
     }
     
     @Override
@@ -42,7 +66,9 @@ public class AdvancedLeveledSystemLogger extends AdvancedLeveledLogger {
     
     @Override
     protected void postFinal(LogEntry logEntry) {
-        //TODO Writing LogEntries to AdvancedFile?
+        if (postLogEntryToughConsumer != null) {
+            postLogEntryToughConsumer.acceptWithoutException(logEntry);
+        }
     }
     
 }

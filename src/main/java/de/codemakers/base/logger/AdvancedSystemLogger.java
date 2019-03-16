@@ -17,6 +17,7 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 /**
  * Standard {@link de.codemakers.base.logger.AdvancedLogger}, this implementation uses the original {@link java.lang.System} {@link java.io.PrintStream}s
@@ -24,9 +25,32 @@ import de.codemakers.base.Standard;
  */
 public class AdvancedSystemLogger extends AdvancedLogger {
     
+    private ToughConsumer<LogEntry> preLogEntryToughConsumer = null; //TODO Writing LogEntries to Console?
+    private ToughConsumer<LogEntry> postLogEntryToughConsumer = null; //TODO Writing LogEntries to AdvancedFile?
+    
+    public ToughConsumer<LogEntry> getPreLogEntryToughConsumer() {
+        return preLogEntryToughConsumer;
+    }
+    
+    public AdvancedSystemLogger setPreLogEntryToughConsumer(ToughConsumer<LogEntry> preLogEntryToughConsumer) {
+        this.preLogEntryToughConsumer = preLogEntryToughConsumer;
+        return this;
+    }
+    
+    public ToughConsumer<LogEntry> getPostLogEntryToughConsumer() {
+        return postLogEntryToughConsumer;
+    }
+    
+    public AdvancedSystemLogger setPostLogEntryToughConsumer(ToughConsumer<LogEntry> postLogEntryToughConsumer) {
+        this.postLogEntryToughConsumer = postLogEntryToughConsumer;
+        return this;
+    }
+    
     @Override
     protected void preFinal(LogEntry logEntry) {
-        //TODO Writing LogEntries to Console?
+        if (preLogEntryToughConsumer != null) {
+            preLogEntryToughConsumer.acceptWithoutException(logEntry);
+        }
     }
     
     @Override
@@ -46,7 +70,9 @@ public class AdvancedSystemLogger extends AdvancedLogger {
     
     @Override
     protected void postFinal(LogEntry logEntry) {
-        //TODO Writing LogEntries to AdvancedFile?
+        if (postLogEntryToughConsumer != null) {
+            postLogEntryToughConsumer.acceptWithoutException(logEntry);
+        }
     }
     
 }
