@@ -16,64 +16,75 @@
 
 package de.codemakers.base.logger;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
-public class LogEntry {
+public class LogEntry implements Serializable {
     
-    private final Object logEntry;
-    private final Instant timestamp;
-    private final Thread thread;
-    private final StackTraceElement stackTraceElement;
-    private final Throwable throwable;
-    private final boolean isBad;
-    private final LogLevel logLevel;
+    protected final Object object; //Object
+    protected final Instant timestamp; //Timestamp
+    protected final Thread thread; //Thread
+    protected final StackTraceElement stackTraceElement; //Source
+    protected final Throwable throwable;
+    protected final boolean bad;
     
-    public LogEntry(Object logEntry, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, Throwable throwable, boolean isBad, LogLevel logLevel) {
-        this.logEntry = logEntry;
+    public LogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
+        this(object, timestamp, thread, stackTraceElement, null);
+    }
+    
+    public LogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, Throwable throwable) {
+        this(object, timestamp, thread, stackTraceElement, throwable, throwable != null);
+    }
+    
+    public LogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, Throwable throwable, boolean bad) {
+        this.object = object;
         this.timestamp = timestamp;
         this.thread = thread;
         this.stackTraceElement = stackTraceElement;
         this.throwable = throwable;
-        this.isBad = isBad;
-        this.logLevel = logLevel;
+        this.bad = bad;
     }
     
-    public final Object getLogEntry() {
-        return logEntry;
+    public Object getObject() {
+        return object;
     }
     
-    public final Instant getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
     
-    public final Thread getThread() {
+    public Thread getThread() {
         return thread;
     }
     
-    public final StackTraceElement getStackTraceElement() {
+    public StackTraceElement getStackTraceElement() {
         return stackTraceElement;
     }
     
-    public final Throwable getThrowable() {
+    public Throwable getThrowable() {
         return throwable;
     }
     
-    public final boolean isBad() {
-        return isBad;
+    public boolean isBad() {
+        return bad;
     }
     
-    public final LogLevel getLogLevel() {
-        return logLevel;
+    public boolean isNotBad() {
+        return !bad;
     }
     
-    public final boolean hasError() {
+    public boolean hasError() {
         return throwable != null;
     }
     
+    public boolean hasNoError() {
+        return throwable == null;
+    }
+    
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{" + "logEntry=" + logEntry + ", timestamp=" + timestamp + ", thread=" + thread + ", stackTraceElement=" + stackTraceElement + ", throwable=" + throwable + ", isBad=" + isBad + ", logLevel=" + logLevel + '}';
+    public int hashCode() {
+        return Objects.hash(object, timestamp, thread, stackTraceElement, throwable, bad);
     }
     
     @Override
@@ -84,13 +95,13 @@ public class LogEntry {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final LogEntry logEntry1 = (LogEntry) o;
-        return isBad == logEntry1.isBad && Objects.equals(logEntry, logEntry1.logEntry) && Objects.equals(timestamp, logEntry1.timestamp) && Objects.equals(thread, logEntry1.thread) && Objects.equals(stackTraceElement, logEntry1.stackTraceElement) && Objects.equals(throwable, logEntry1.throwable) && logLevel == logEntry1.logLevel;
+        final LogEntry logEntry = (LogEntry) o;
+        return bad == logEntry.bad && Objects.equals(object, logEntry.object) && Objects.equals(timestamp, logEntry.timestamp) && Objects.equals(thread, logEntry.thread) && Objects.equals(stackTraceElement, logEntry.stackTraceElement) && Objects.equals(throwable, logEntry.throwable);
     }
     
     @Override
-    public int hashCode() {
-        return Objects.hash(logEntry, timestamp, thread, stackTraceElement, throwable, isBad, logLevel);
+    public String toString() {
+        return "LogEntry{" + "object=" + object + ", timestamp=" + timestamp + ", thread=" + thread + ", stackTraceElement=" + stackTraceElement + ", throwable=" + throwable + ", bad=" + bad + '}';
     }
     
 }
