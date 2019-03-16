@@ -28,6 +28,10 @@ public class TimeUtil {
     public static final DateTimeFormatter ISO_LOCAL_DATE_TIME_FIXED_LENGTH = new DateTimeFormatterBuilder().parseCaseInsensitive().append(DateTimeFormatter.ISO_LOCAL_DATE).appendLiteral('T').append(ISO_TIME_FIXED_LENGTH).toFormatter(Locale.getDefault());
     public static final DateTimeFormatter ISO_OFFSET_DATE_TIME_FIXED_LENGTH = new DateTimeFormatterBuilder().parseCaseInsensitive().append(ISO_LOCAL_DATE_TIME_FIXED_LENGTH).appendOffsetId().toFormatter(Locale.getDefault());
     
+    public static final DateTimeFormatter ISO_TIME_FIXED_LENGTH_FOR_FILES = DateTimeFormatter.ofPattern("HH.mm.ss.SSS");
+    public static final DateTimeFormatter ISO_LOCAL_DATE_TIME_FIXED_LENGTH_FOR_FILES = new DateTimeFormatterBuilder().parseCaseInsensitive().append(DateTimeFormatter.ISO_LOCAL_DATE).appendLiteral('T').append(ISO_TIME_FIXED_LENGTH_FOR_FILES).toFormatter(Locale.getDefault());
+    public static final DateTimeFormatter ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES = new DateTimeFormatterBuilder().parseCaseInsensitive().append(ISO_LOCAL_DATE_TIME_FIXED_LENGTH_FOR_FILES).appendOffset("+HHMM", "+0000").toFormatter(Locale.getDefault());
+    
     public static long getTimeFloored(long timestamp, long every, TimeUnit unit) {
         return getTimeFloored(Instant.ofEpochMilli(timestamp), every, unit).toEpochMilli();
     }
