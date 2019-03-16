@@ -67,9 +67,10 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
-        final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement, null, false, logLevel); //TODO Maybe use this LogEntry to format the message/printed String?
+        //final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement, null, false, logLevel); //TODO Maybe use this LogEntry to format the message/printed String?
+        final LeveledLogEntry leveledLogEntry = new LeveledLogEntry(object, timestamp, thread, stackTraceElement, logLevel); //TODO Maybe use this LogEntry to format the message/printed String?
         if (LOG_ENTRY_CONSUMER != null) {
-            LOG_ENTRY_CONSUMER.acceptWithoutException(logEntry); //FIXME Debug only
+            LOG_ENTRY_CONSUMER.acceptWithoutException(leveledLogEntry); //FIXME Debug only
         }
         logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel)));
     }
@@ -101,16 +102,21 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
-        final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement, throwable, true, logLevel);
+        //final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement, throwable, true, logLevel);
+        final LeveledLogEntry leveledLogEntry = new LeveledLogEntry(object, timestamp, thread, stackTraceElement, throwable, true, logLevel);
         if (LOG_ENTRY_CONSUMER != null) {
-            LOG_ENTRY_CONSUMER.acceptWithoutException(logEntry); //FIXME Debug only
+            LOG_ENTRY_CONSUMER.acceptWithoutException(leveledLogEntry); //FIXME Debug only
         }
         logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel)), throwable);
     }
     
     @Override
     protected Map<String, Object> createValueMap(LogEntry logEntry) {
-        return createValueMap(logEntry.getLogEntry(), logEntry.getTimestamp(), logEntry.getThread(), logEntry.getStackTraceElement(), logEntry.getLogLevel());
+        if (logEntry instanceof LeveledLogEntry) {
+            final LeveledLogEntry leveledLogEntry = (LeveledLogEntry) logEntry;
+            return createValueMap(leveledLogEntry.getObject(), leveledLogEntry.getTimestamp(), leveledLogEntry.getThread(), leveledLogEntry.getStackTraceElement(), leveledLogEntry.getLogLevel());
+        }
+        return super.createValueMap(logEntry);
     }
     
     protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {

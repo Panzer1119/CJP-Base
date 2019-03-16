@@ -199,7 +199,7 @@ public abstract class AdvancedLogger implements ILogger {
     }
     
     protected Map<String, Object> createValueMap(LogEntry logEntry) {
-        return createValueMap(logEntry.getLogEntry(), logEntry.getTimestamp(), logEntry.getThread(), logEntry.getStackTraceElement());
+        return createValueMap(logEntry.getObject(), logEntry.getTimestamp(), logEntry.getThread(), logEntry.getStackTraceElement());
     }
     
     protected Map<String, Object> createValueMap(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {

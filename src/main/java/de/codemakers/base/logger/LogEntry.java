@@ -21,10 +21,9 @@ import org.apache.commons.text.StringSubstitutor;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 
-public class LogEntry implements Formattable<String>, Serializable {
+public class LogEntry implements Formattable<AdvancedLogger>, Serializable {
     
     protected final Object object; //Object
     protected final Instant timestamp; //Timestamp
@@ -87,8 +86,8 @@ public class LogEntry implements Formattable<String>, Serializable {
     }
     
     @Override
-    public String format(String format) throws Exception {
-        return StringSubstitutor.replace(format, (Map<String, Object>) null); //FIXME Implement valueMap
+    public String format(AdvancedLogger advancedLogger) throws Exception {
+        return StringSubstitutor.replace(advancedLogger.logFormat, advancedLogger.createValueMap(this));
     }
     
     @Override
