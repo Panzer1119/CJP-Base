@@ -16,7 +16,10 @@
 
 package de.codemakers.base.logger;
 
+import org.apache.commons.text.StringSubstitutor;
+
 import java.time.Instant;
+import java.util.Map;
 import java.util.Objects;
 
 public class LeveledLogEntry extends LogEntry {
@@ -52,6 +55,11 @@ public class LeveledLogEntry extends LogEntry {
     
     public LogLevel getLogLevel() {
         return logLevel;
+    }
+    
+    @Override
+    public String format(String format) throws Exception {
+        return StringSubstitutor.replace(format, (Map<String, Object>) null); //FIXME Implement valueMap
     }
     
     @Override
