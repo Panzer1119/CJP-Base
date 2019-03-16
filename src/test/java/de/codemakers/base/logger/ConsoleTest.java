@@ -41,11 +41,11 @@ public class ConsoleTest {
                 //Logger.log("getLogEntries()=" + getLogEntries(), LogLevel.DEBUG);
                 //Logger.log("getLogEntriesFilteredByLogLevel()=" + getLogEntriesFilteredByLogLevel(), LogLevel.DEBUG);
                 //TODO Testing adding LogEntry start
-                final List<LogEntry> logEntries = getLogEntriesFilteredByLogLevel();
+                final List<LeveledLogEntry> logEntries = getLogEntriesFilteredByLogLevel();
                 final StyledDocument styledDocument = textPane_output.getStyledDocument();
                 styledDocument.remove(0, styledDocument.getLength()); //TODO Good? Because when there are too many LogEntries, this could cause lag
                 final Style style = styledDocument.addStyle("LogStyle", null);
-                for (LogEntry logEntry : logEntries) {
+                for (LeveledLogEntry logEntry : logEntries) {
                     StyleConstants.setBackground(style, logEntry.getLogLevel() == null ? Color.WHITE : logEntry.getLogLevel().getColorBackground());
                     StyleConstants.setForeground(style, logEntry.getLogLevel() == null ? Color.BLACK : logEntry.getLogLevel().getColorForeground());
                     styledDocument.insertString(styledDocument.getLength(), StringSubstitutor.replace(Logger.getDefaultAdvancedLeveledLogger().getLogFormat(), Logger.getDefaultAdvancedLeveledLogger().createValueMap(logEntry)) + "\n", style);
@@ -101,10 +101,12 @@ public class ConsoleTest {
             bufferedReader.close();
         });
         //AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = console.logEntries::add;
+        /*
         AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = (logEntry) -> {
             console.logEntries.add(logEntry);
             console.reloadWithoutException();
         };
+        */
         Logger.log("console=" + console);
         console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //FIXME Testing only
         console.menuItem_exit.addActionListener((actionEvent) -> System.exit(1)); //FIXME Testing only

@@ -70,7 +70,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     
     public static final String DEFAULT_FONT_NAME = "Courier New";
     
-    protected final List<LogEntry> logEntries = new CopyOnWriteArrayList<>();
+    protected final List<LeveledLogEntry> logEntries = new CopyOnWriteArrayList<>(); //FIXME Save them here?
     protected final Map<LogLevel, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
     protected final Set<LogLevel> displayedLogLevels = new CopyOnWriteArraySet<>();
     
@@ -327,12 +327,12 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         }
     }
     
-    protected List<LogEntry> getLogEntries() {
+    protected List<LeveledLogEntry> getLogEntries() {
         return logEntries;
     }
     
-    protected List<LogEntry> getLogEntriesFilteredByLogLevel() {
-        return logEntries.stream().filter((logEntry) -> logEntry.getLogLevel() == null || displayedLogLevels.contains(logEntry.getLogLevel())).collect(Collectors.toList());
+    protected List<LeveledLogEntry> getLogEntriesFilteredByLogLevel() {
+        return logEntries.stream().filter((leveledLogEntry) -> leveledLogEntry.getLogLevel() == null || displayedLogLevels.contains(leveledLogEntry.getLogLevel())).collect(Collectors.toList());
     }
     
     protected JFrame getFrame() {
