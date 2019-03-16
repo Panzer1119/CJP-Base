@@ -18,39 +18,11 @@ package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
 
-import java.io.PrintStream;
-
 /**
  * Standard {@link de.codemakers.base.logger.AdvancedLogger}, this implementation uses the original {@link java.lang.System} {@link java.io.PrintStream}s
  * to log messages with timestamps and more
  */
 public class AdvancedSystemLogger extends AdvancedLogger {
-    
-    /**
-     * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.Standard#SYSTEM_OUTPUT_STREAM}
-     *
-     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
-     */
-    @Deprecated
-    protected void logFinal(Object object) { //FIXME Remove this old method
-        Standard.SYSTEM_OUTPUT_STREAM.println(object);
-    }
-    
-    /**
-     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} using the {@link de.codemakers.base.Standard#SYSTEM_ERROR_STREAM}
-     * <br>
-     * It uses {@link java.lang.Throwable#printStackTrace(PrintStream)} to print the Error
-     *
-     * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
-     * @param throwable Error (e.g. an {@link java.lang.Exception})
-     */
-    @Deprecated
-    protected void logErrorFinal(Object object, Throwable throwable) { //FIXME Remove this old method
-        Standard.SYSTEM_ERROR_STREAM.println(object);
-        if (throwable != null) {
-            throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
-        }
-    }
     
     @Override
     protected void preFinal(LogEntry logEntry) {
