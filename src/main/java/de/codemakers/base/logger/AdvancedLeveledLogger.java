@@ -17,7 +17,6 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.util.tough.ToughBiFunction;
-import de.codemakers.base.util.tough.ToughConsumer;
 
 import java.time.Instant;
 import java.util.Map;
@@ -30,8 +29,6 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
      */
     public static final String DEFAULT_LEVELED_LOG_FORMAT = Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_THREAD + Logger.LOG_FORMAT_VAR_SOURCE + Logger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + Logger.LOG_FORMAT_VAR_OBJECT;
     public static final ToughBiFunction<LogLevel, AdvancedLogger, String> DEFAULT_LOG_LEVEL_FORMATTER = (logLevel, advancedLogger) -> logLevel == null ? "" : "[" + logLevel.getNameMid() + "]";
-    
-    public static ToughConsumer<LogEntry> LOG_ENTRY_CONSUMER = null;
     
     protected LogLevel minimumLogLevel = LogLevel.INFO;
     protected ToughBiFunction<LogLevel, AdvancedLogger, String> logLevelFormatter = DEFAULT_LOG_LEVEL_FORMATTER;
@@ -67,12 +64,10 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
-        //final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement, null, false, logLevel); //TODO Maybe use this LogEntry to format the message/printed String?
-        final LeveledLogEntry leveledLogEntry = new LeveledLogEntry(object, timestamp, thread, stackTraceElement, logLevel); //TODO Maybe use this LogEntry to format the message/printed String?
-        if (LOG_ENTRY_CONSUMER != null) {
-            LOG_ENTRY_CONSUMER.acceptWithoutException(leveledLogEntry); //FIXME Debug only
-        }
-        logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel)));
+        final LeveledLogEntry leveledLogEntry = new LeveledLogEntry(object, timestamp, thread, stackTraceElement, logLevel);
+        //logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel))); //FIXME Remove this old line
+        logFinal(leveledLogEntry);
+        //TODO Maybe add method for writing LogEntries to file?
     }
     
     @Override
@@ -102,12 +97,10 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
         if (minimumLogLevel.isThisLevelMoreImportant(logLevel)) {
             return;
         }
-        //final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement, throwable, true, logLevel);
         final LeveledLogEntry leveledLogEntry = new LeveledLogEntry(object, timestamp, thread, stackTraceElement, throwable, true, logLevel);
-        if (LOG_ENTRY_CONSUMER != null) {
-            LOG_ENTRY_CONSUMER.acceptWithoutException(leveledLogEntry); //FIXME Debug only
-        }
-        logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel)), throwable);
+        //logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel)), throwable); //FIXME Remove this old line
+        logFinal(leveledLogEntry);
+        //TODO Maybe add method for writing LogEntries to file?
     }
     
     @Override

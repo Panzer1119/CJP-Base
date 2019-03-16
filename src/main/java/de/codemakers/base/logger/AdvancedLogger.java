@@ -85,6 +85,8 @@ public abstract class AdvancedLogger implements ILogger {
         return null;
     }
     
+    protected abstract void logFinal(LogEntry logEntry);
+    
     /**
      * Logs an {@link java.lang.Object} with an default {@link java.time.Instant} derived from {@link Instant#now()}, {@link java.lang.Thread} derived from {@link Thread#currentThread()} and {@link java.lang.StackTraceElement} derived from {@link Exception#getStackTrace()}
      *
@@ -127,19 +129,20 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement)));
+        final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement);
+        //logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement))); //FIXME Remove this old line
+        logFinal(logEntry);
+        //TODO Maybe add method for writing LogEntries to file?
     }
     
     @Override
     public void log(Object object, Object... arguments) {
         if (arguments != null && arguments.length > 0) {
-            logFinal(String.format(object + "", arguments));
+            log(String.format("" + object, arguments)); //FIXME Is this causing StackOverflows?
         } else {
-            logFinal(object);
+            log(object); //FIXME Is this causing StackOverflows?
         }
     }
-    
-    protected abstract void logFinal(Object object);
     
     /**
      * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} with an default {@link java.time.Instant} derived from {@link Instant#now()}, {@link java.lang.Thread} derived from {@link Thread#currentThread()} and {@link java.lang.StackTraceElement} derived from {@link Exception#getStackTrace()}
@@ -187,9 +190,23 @@ public abstract class AdvancedLogger implements ILogger {
         if (timestamp == null) {
             timestamp = Instant.now();
         }
-        logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement)), throwable);
+        final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement, throwable, true);
+        //logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement)), throwable); //FIXME Remove this old line
+        logFinal(logEntry);
+        //TODO Maybe add method for writing LogEntries to file?
     }
     
+    @Override
+    public void logError(Object object, Throwable throwable, Object... arguments) {
+        if (arguments != null && arguments.length > 0) {
+            logError(String.format(object + "", arguments), throwable); //FIXME Is this causing StackOverflows?
+        } else {
+            logError(object, throwable); //FIXME Is this causing StackOverflows?
+        }
+    }
+    
+    //FIXME (Re)Move this to (Leveled)LogEntry!!!
+    @Deprecated
     protected Object formatLogMessage(Map<String, Object> valueMap) {
         try {
             return StringSubstitutor.replace(logFormat, valueMap);
@@ -219,17 +236,6 @@ public abstract class AdvancedLogger implements ILogger {
         map.put(Logger.SOURCE_FORMAT_LINE, stackTraceElement.getLineNumber());
         return map;
     }
-    
-    @Override
-    public void logError(Object object, Throwable throwable, Object... arguments) {
-        if (arguments != null && arguments.length > 0) {
-            logErrorFinal(String.format(object + "", arguments), throwable);
-        } else {
-            logErrorFinal(object, throwable);
-        }
-    }
-    
-    protected abstract void logErrorFinal(Object object, Throwable throwable);
     
     protected String formatTimestamp(ZonedDateTime zonedDateTime) {
         return StringUtil.escapeStringSubstitutorVariableCalls(timestampFormatter.applyWithoutException(zonedDateTime, this));

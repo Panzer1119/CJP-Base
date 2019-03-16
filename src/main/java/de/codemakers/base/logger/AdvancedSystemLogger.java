@@ -31,8 +31,8 @@ public class AdvancedSystemLogger extends AdvancedLogger {
      *
      * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
      */
-    @Override
-    protected void logFinal(Object object) {
+    @Deprecated
+    protected void logFinal(Object object) { //FIXME Remove this old method
         Standard.SYSTEM_OUTPUT_STREAM.println(object);
     }
     
@@ -44,29 +44,26 @@ public class AdvancedSystemLogger extends AdvancedLogger {
      * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
      * @param throwable Error (e.g. an {@link java.lang.Exception})
      */
-    @Override
-    protected void logErrorFinal(Object object, Throwable throwable) {
+    @Deprecated
+    protected void logErrorFinal(Object object, Throwable throwable) { //FIXME Remove this old method
         Standard.SYSTEM_ERROR_STREAM.println(object);
         if (throwable != null) {
             throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
         }
     }
     
-    /**
-     * Handles an Error using the {@link de.codemakers.base.Standard#SYSTEM_ERROR_STREAM}
-     * <br>
-     * It uses {@link java.lang.Throwable#printStackTrace(PrintStream)} to print the Error
-     *
-     * @param throwable Error (e.g. an {@link java.lang.Exception})
-     * @param message Additional message (may be null)
-     */
     @Override
-    public void handleError(Throwable throwable, String message) {
-        if (throwable != null) {
-            if (message != null) {
-                Standard.SYSTEM_ERROR_STREAM.println(message);
+    protected void logFinal(LogEntry logEntry) {
+        if (logEntry == null) {
+            return; //FIXME Remove this? Or is this not a performance problem?
+        }
+        if (logEntry.isBad()) {
+            Standard.SYSTEM_ERROR_STREAM.println(logEntry.formatWithoutException(this));
+            if (logEntry.hasError()) {
+                logEntry.getThrowable().printStackTrace(Standard.SYSTEM_ERROR_STREAM);
             }
-            throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
+        } else {
+            Standard.SYSTEM_OUTPUT_STREAM.println(logEntry.formatWithoutException(this));
         }
     }
     
