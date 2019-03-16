@@ -85,7 +85,11 @@ public abstract class AdvancedLogger implements ILogger {
         return null;
     }
     
+    protected abstract void preFinal(LogEntry logEntry);
+    
     protected abstract void logFinal(LogEntry logEntry);
+    
+    protected abstract void postFinal(LogEntry logEntry);
     
     /**
      * Logs an {@link java.lang.Object} with an default {@link java.time.Instant} derived from {@link Instant#now()}, {@link java.lang.Thread} derived from {@link Thread#currentThread()} and {@link java.lang.StackTraceElement} derived from {@link Exception#getStackTrace()}
@@ -130,9 +134,10 @@ public abstract class AdvancedLogger implements ILogger {
             timestamp = Instant.now();
         }
         final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement);
-        //logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement))); //FIXME Remove this old line
+        preFinal(logEntry);
         logFinal(logEntry);
-        //TODO Maybe add method for writing LogEntries to file?
+        postFinal(logEntry);
+        
     }
     
     @Override
@@ -191,9 +196,9 @@ public abstract class AdvancedLogger implements ILogger {
             timestamp = Instant.now();
         }
         final LogEntry logEntry = new LogEntry(object, timestamp, thread, stackTraceElement, throwable, true);
-        //logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement)), throwable); //FIXME Remove this old line
+        preFinal(logEntry);
         logFinal(logEntry);
-        //TODO Maybe add method for writing LogEntries to file?
+        postFinal(logEntry);
     }
     
     @Override

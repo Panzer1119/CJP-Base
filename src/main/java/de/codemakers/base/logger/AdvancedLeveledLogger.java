@@ -65,9 +65,9 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
             return;
         }
         final LeveledLogEntry leveledLogEntry = new LeveledLogEntry(object, timestamp, thread, stackTraceElement, logLevel);
-        //logFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel))); //FIXME Remove this old line
+        preFinal(leveledLogEntry);
         logFinal(leveledLogEntry);
-        //TODO Maybe add method for writing LogEntries to file?
+        postFinal(leveledLogEntry);
     }
     
     @Override
@@ -98,9 +98,9 @@ public abstract class AdvancedLeveledLogger extends AdvancedLogger {
             return;
         }
         final LeveledLogEntry leveledLogEntry = new LeveledLogEntry(object, timestamp, thread, stackTraceElement, throwable, true, logLevel);
-        //logErrorFinal(formatLogMessage(createValueMap(object, timestamp, thread, stackTraceElement, logLevel)), throwable); //FIXME Remove this old line
+        preFinal(leveledLogEntry);
         logFinal(leveledLogEntry);
-        //TODO Maybe add method for writing LogEntries to file?
+        postFinal(leveledLogEntry);
     }
     
     @Override

@@ -53,7 +53,12 @@ public class AdvancedSystemLogger extends AdvancedLogger {
     }
     
     @Override
-    protected void logFinal(LogEntry logEntry) {
+    protected void preFinal(LogEntry logEntry) {
+        //TODO Writing LogEntries to Console?
+    }
+    
+    @Override
+    protected void logFinal(LogEntry logEntry) { //Writing LogEntries to System.out/System.err
         if (logEntry == null) {
             return; //FIXME Remove this? Or is this not a performance problem?
         }
@@ -65,6 +70,11 @@ public class AdvancedSystemLogger extends AdvancedLogger {
         } else {
             Standard.SYSTEM_OUTPUT_STREAM.println(logEntry.formatWithoutException(this));
         }
+    }
+    
+    @Override
+    protected void postFinal(LogEntry logEntry) {
+        //TODO Writing LogEntries to AdvancedFile?
     }
     
 }
