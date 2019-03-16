@@ -88,15 +88,15 @@ public class LogEntry implements Serializable {
     }
     
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (object == null || !(object instanceof LogEntry)) {
             return false;
         }
-        final LogEntry logEntry = (LogEntry) o;
-        return bad == logEntry.bad && Objects.equals(object, logEntry.object) && Objects.equals(timestamp, logEntry.timestamp) && Objects.equals(thread, logEntry.thread) && Objects.equals(stackTraceElement, logEntry.stackTraceElement) && Objects.equals(throwable, logEntry.throwable);
+        final LogEntry logEntry = (LogEntry) object;
+        return bad == logEntry.bad && Objects.equals(this.object, logEntry.object) && Objects.equals(timestamp, logEntry.timestamp) && Objects.equals(thread, logEntry.thread) && Objects.equals(stackTraceElement, logEntry.stackTraceElement) && Objects.equals(throwable, logEntry.throwable);
     }
     
     @Override
