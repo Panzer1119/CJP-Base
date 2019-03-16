@@ -17,6 +17,8 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.util.TimeUtil;
+import de.codemakers.io.file.AdvancedFile;
 import org.apache.commons.text.StringSubstitutor;
 
 import javax.swing.*;
@@ -25,15 +27,37 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public class ConsoleTest {
     
+    public static final AdvancedFile LOG_FOLDER = new AdvancedFile("test/logs");
+    public static final AdvancedFile LOG_FILE;
+    public static final BufferedWriter BUFFERED_WRITER_LOG_FILE;
+    
+    static {
+        LOG_FOLDER.mkdirsWithoutException();
+        LOG_FILE = new AdvancedFile(LOG_FOLDER, "log_" + ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES) + ".txt");
+        BUFFERED_WRITER_LOG_FILE = LOG_FILE.createBufferedWriterWithoutException(false);
+        Standard.addShutdownHook(() -> {
+            Logger.log("Closing BUFFERED_WRITER_LOG_FILE");
+            BUFFERED_WRITER_LOG_FILE.flush();
+            BUFFERED_WRITER_LOG_FILE.close();
+        });
+    }
+    
     public static final void main(String[] args) throws Exception {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
         Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendTimestamp().appendLogLevel().appendText(": ").appendObject().appendText(" ").appendSource().appendThread().finishWithoutException();
+        Logger.getDefaultAdvancedLeveledLogger().setPostLogEntryToughConsumer((leveledLogEntry) -> {
+            BUFFERED_WRITER_LOG_FILE.write(leveledLogEntry.formatWithoutException(Logger.getDefaultAdvancedLeveledLogger()));
+            BUFFERED_WRITER_LOG_FILE.newLine();
+            BUFFERED_WRITER_LOG_FILE.flush();
+        });
         final Console console = new Console() {
             @Override
             public boolean reload() throws Exception {
