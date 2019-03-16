@@ -21,23 +21,23 @@ import de.codemakers.base.util.tough.ToughConsumer;
 
 public class AdvancedLeveledSystemLogger extends AdvancedLeveledLogger {
     
-    private ToughConsumer<LogEntry> preLogEntryToughConsumer = null; //TODO Writing LogEntries to Console?
-    private ToughConsumer<LogEntry> postLogEntryToughConsumer = null; //TODO Writing LogEntries to AdvancedFile?
+    private ToughConsumer<LeveledLogEntry> preLogEntryToughConsumer = null; //TODO Writing LogEntries to Console?
+    private ToughConsumer<LeveledLogEntry> postLogEntryToughConsumer = null; //TODO Writing LogEntries to AdvancedFile?
     
-    public ToughConsumer<LogEntry> getPreLogEntryToughConsumer() {
+    public ToughConsumer<LeveledLogEntry> getPreLogEntryToughConsumer() {
         return preLogEntryToughConsumer;
     }
     
-    public AdvancedLeveledSystemLogger setPreLogEntryToughConsumer(ToughConsumer<LogEntry> preLogEntryToughConsumer) {
+    public AdvancedLeveledSystemLogger setPreLogEntryToughConsumer(ToughConsumer<LeveledLogEntry> preLogEntryToughConsumer) {
         this.preLogEntryToughConsumer = preLogEntryToughConsumer;
         return this;
     }
     
-    public ToughConsumer<LogEntry> getPostLogEntryToughConsumer() {
+    public ToughConsumer<LeveledLogEntry> getPostLogEntryToughConsumer() {
         return postLogEntryToughConsumer;
     }
     
-    public AdvancedLeveledSystemLogger setPostLogEntryToughConsumer(ToughConsumer<LogEntry> postLogEntryToughConsumer) {
+    public AdvancedLeveledSystemLogger setPostLogEntryToughConsumer(ToughConsumer<LeveledLogEntry> postLogEntryToughConsumer) {
         this.postLogEntryToughConsumer = postLogEntryToughConsumer;
         return this;
     }
@@ -45,7 +45,7 @@ public class AdvancedLeveledSystemLogger extends AdvancedLeveledLogger {
     @Override
     protected void preFinal(LogEntry logEntry) {
         if (preLogEntryToughConsumer != null) {
-            preLogEntryToughConsumer.acceptWithoutException(logEntry);
+            preLogEntryToughConsumer.acceptWithoutException((LeveledLogEntry) logEntry);
         }
     }
     
@@ -67,7 +67,7 @@ public class AdvancedLeveledSystemLogger extends AdvancedLeveledLogger {
     @Override
     protected void postFinal(LogEntry logEntry) {
         if (postLogEntryToughConsumer != null) {
-            postLogEntryToughConsumer.acceptWithoutException(logEntry);
+            postLogEntryToughConsumer.acceptWithoutException((LeveledLogEntry) logEntry);
         }
     }
     
