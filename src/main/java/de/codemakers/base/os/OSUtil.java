@@ -16,6 +16,7 @@
 
 package de.codemakers.base.os;
 
+import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.*;
 import de.codemakers.base.reflection.ReflectionUtil;
@@ -186,14 +187,12 @@ public class OSUtil {
     private static final boolean registerClassAsOSFunction(Class<?> clazz) {
         try {
             final RegisterOSFunction registerOSFunction = clazz.getAnnotation(RegisterOSFunction.class);
-            Logger.logDebug("registerOSFunction=" + registerOSFunction);
             final OSFunction osFunction = (OSFunction) clazz.newInstance();
-            Logger.logDebug("osFunction=" + osFunction);
+            Logger.log(String.format("[%s]: Registering %s: \"%s\" as %s (Annotation: \"%s\")", OSUtil.class.getSimpleName(), OSFunction.class.getSimpleName(), osFunction, osFunction.getClass().getSuperclass().getName(), registerOSFunction), LogLevel.FINEST);
             for (OS os : registerOSFunction.supported()) {
-                Logger.logDebug("os=" + os);
-                Logger.logDebug("os.getHelper()=" + os.getHelper());
                 os.getHelper().addOSFunction(osFunction);
             }
+            Logger.log(String.format("[%s]: Registered %s: \"%s\" as %s (Annotation: \"%s\")", OSUtil.class.getSimpleName(), OSFunction.class.getSimpleName(), osFunction, osFunction.getClass().getSuperclass().getName(), registerOSFunction), LogLevel.FINER);
             return true;
         } catch (Exception ex) {
             Logger.handleError(ex);
