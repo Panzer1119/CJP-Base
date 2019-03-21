@@ -58,7 +58,7 @@ public class ConsoleTest {
             BUFFERED_WRITER_LOG_FILE.newLine();
             BUFFERED_WRITER_LOG_FILE.flush();
         });
-        final Console console = new Console() {
+        final Console<AdvancedLeveledLogger> console = new Console<AdvancedLeveledLogger>(Logger.getDefaultAdvancedLeveledLogger()) {
             @Override
             public boolean reload() throws Exception {
                 //Logger.log("Reload requested", LogLevel.WARNING);
