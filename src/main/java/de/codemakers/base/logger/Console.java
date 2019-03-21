@@ -384,6 +384,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         public static final String LANGUAGE_KEY_SETTINGS = "settings";
         public static final String LANGUAGE_KEY_BUTTON_OK = "button_ok";
         public static final String LANGUAGE_KEY_BUTTON_CANCEL = "button_cancel";
+        public static final String LANGUAGE_KEY_BUTTON_RESET = "button_reset";
         public static final String LANGUAGE_KEY_BUTTON_APPLY = "button_apply";
         
         protected final JDialog dialog = new JDialog(frame, true);
@@ -391,6 +392,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         // Bottom Buttons
         protected final JButton button_ok = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
         protected final JButton button_cancel = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
+        protected final JButton button_reset = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_RESET));
         protected final JButton button_apply = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
         
         protected final UpdatableBoundResettableVariable<String> titleBound = new UpdatableBoundResettableVariable<>(frame::getTitle, frame::setTitle); //FIXME Testing only //This is working great!
@@ -428,6 +430,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
                     if (livePreview) {
                         titleBound.testWithoutException();
                     }
+                    onAction();
                 }
             });
             dialog.add(scrollPane, BorderLayout.CENTER);
@@ -436,11 +439,22 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
                 finishWithoutException();
                 hide();
             });
-            button_cancel.addActionListener((actionEvent) -> resetWithoutException());
-            button_apply.addActionListener((actionEvent) -> finishWithoutException());
+            button_cancel.addActionListener((actionEvent) -> {
+                resetWithoutException();
+                hide();
+            });
+            button_reset.addActionListener((actionEvent) -> {
+                resetWithoutException();
+                onAction();
+            });
+            button_apply.addActionListener((actionEvent) -> {
+                finishWithoutException();
+                onAction();
+            });
             panel.setLayout(new FlowLayout());
             panel.add(button_ok);
             panel.add(button_cancel);
+            panel.add(button_reset);
             panel.add(button_apply);
             dialog.add(panel, BorderLayout.SOUTH);
         }
@@ -508,6 +522,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
             dialog.pack();
             dialog.setLocationRelativeTo(component);
             showing();
+            onAction();
             dialog.setVisible(true);
             return this;
         }
@@ -515,6 +530,15 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         public ConsoleSettings hide() {
             dialog.setVisible(false);
             return this;
+        }
+        
+        protected void onAction() {
+            final boolean edited = isEdited();
+            button_reset.setEnabled(edited);
+        }
+        
+        protected boolean isEdited() {
+            return titleBound.isDifferent();
         }
         
         @Override
