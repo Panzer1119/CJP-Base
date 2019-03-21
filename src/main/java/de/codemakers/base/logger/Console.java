@@ -46,7 +46,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class Console implements Closeable, LanguageReloadable, Reloadable {
+public abstract class Console<L extends ILogger> implements Closeable, LanguageReloadable, Reloadable {
     
     public static final String DEFAULT_ICON = "application_xp_terminal.png";
     public static final String DEFAULT_ICON_SETTINGS = "gear_in.png";
@@ -73,6 +73,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     
     public static final String DEFAULT_FONT_NAME = "Courier New";
     
+    protected final L logger; //FIXME Or should the logger provide the LogEntries???
     protected final List<LeveledLogEntry> logEntries = new CopyOnWriteArrayList<>(); //FIXME Save them here?
     protected final Map<LogLevel, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
     protected final Set<LogLevel> displayedLogLevels = new CopyOnWriteArraySet<>();
@@ -132,12 +133,13 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     
     protected final History<String> inputHistory = new History<>();
     
-    public Console() {
-        this(DEFAULT_ICON_FILE, DEFAULT_ICON_SETTINGS_FILE);
+    public Console(L logger) {
+        this(logger, DEFAULT_ICON_FILE, DEFAULT_ICON_SETTINGS_FILE);
     }
     
-    public Console(AdvancedFile iconAdvancedFile, AdvancedFile iconSettingsAdvancedFile) {
+    public Console(L logger, AdvancedFile iconAdvancedFile, AdvancedFile iconSettingsAdvancedFile) {
         super();
+        this.logger = logger;
         init();
         initIconImage(iconAdvancedFile);
         initListeners();
@@ -161,6 +163,10 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     
     protected void flush() throws IOException {
         pipedOutputStream.flush();
+    }
+    
+    public L getLogger() {
+        return logger;
     }
     
     /**
