@@ -33,3 +33,5 @@ button_ok=OK
 button_cancel=Cancel
 button_reset=Reset
 button_apply=Apply
+test=Test
+general=General

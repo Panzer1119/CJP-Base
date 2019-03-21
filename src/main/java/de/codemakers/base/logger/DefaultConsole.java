@@ -123,6 +123,8 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
     public class DefaultConsoleSettings extends ConsoleSettings {
         
         public static final String LANGUAGE_KEY_SETTINGS = "settings";
+        public static final String LANGUAGE_KEY_TAB_GENERAL = "general";
+        public static final String LANGUAGE_KEY_TAB_VIEW = "view";
         public static final String LANGUAGE_KEY_BUTTON_OK = "button_ok";
         public static final String LANGUAGE_KEY_BUTTON_CANCEL = "button_cancel";
         public static final String LANGUAGE_KEY_BUTTON_RESET = "button_reset";
@@ -133,6 +135,8 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         // Bottom Buttons
         protected final JButton button_ok = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
         protected final JTabbedPane tabbedPane = new JTabbedPane();
+        protected final JPanel panel_tab_general = new JPanel();
+        protected final JPanel panel_tab_view = new JPanel();
         protected final JButton button_cancel = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
         protected final JButton button_reset = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_RESET));
         protected final JButton button_apply = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
@@ -176,7 +180,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
                 }
             });
             //dialog.add(scrollPane, BorderLayout.CENTER);
-            tabbedPane.addTab(Standard.localize("Test"), scrollPane); //TODO What if language reloads?
+            tabbedPane.addTab(Standard.localize("test"), scrollPane); //TODO What if language reloads?
             final JPanel panel = new JPanel();
             button_ok.addActionListener((actionEvent) -> {
                 finishWithoutException();
@@ -206,6 +210,8 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             dialog.setResizable(false);
             dialog.setLayout(new BorderLayout());
             tabbedPane.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+            tabbedPane.addTab(Standard.localize(LANGUAGE_KEY_TAB_GENERAL), panel_tab_general); //TODO What if language reloads?
+            tabbedPane.addTab(Standard.localize(LANGUAGE_KEY_TAB_VIEW), panel_tab_view); //TODO What if language reloads?
             dialog.add(tabbedPane, BorderLayout.CENTER);
         }
         
