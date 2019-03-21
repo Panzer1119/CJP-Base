@@ -29,3 +29,7 @@ console_log_level=Log Level
 button_enter=Enter
 console_output=Output
 console_input=Input
+button_ok=OK
+button_cancel=Cancel
+button_reset=Reset
+button_apply=Apply

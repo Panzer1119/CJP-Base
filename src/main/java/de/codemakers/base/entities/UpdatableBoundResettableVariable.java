@@ -41,6 +41,7 @@ public class UpdatableBoundResettableVariable<T> extends BoundResettableVariable
     @Override
     public Boolean update(Void aVoid) throws Exception {
         setCurrent(toughSupplier.get());
+        setTemp(getCurrent());
         return true;
     }
     
