@@ -17,14 +17,14 @@
 package de.codemakers.misc.os.functions;
 
 import de.codemakers.base.logger.Logger;
-import de.codemakers.base.os.OSUtil;
+import de.codemakers.base.os.OS;
 import de.codemakers.base.os.functions.RegisterOSFunction;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.awt.*;
 import java.io.File;
 
-@RegisterOSFunction(supported = OSUtil.OS.WINDOWS)
+@RegisterOSFunction(supported = {OS.WINDOWS})
 public class WindowsSpeakText extends SpeakText {
     
     protected static final String FORMAT = "dim fname\nset voice=createobject(\"sapi.spvoice\")\nvoice.speak(\"%s\")";
@@ -37,11 +37,9 @@ public class WindowsSpeakText extends SpeakText {
         }
         final String temp = String.format(FORMAT, text);
         final AdvancedFile advancedFile = new AdvancedFile(File.createTempFile("" + ((int) (Math.random() * 10000000)), ".vbs"));
-        Logger.logDebug("advancedFile=" + advancedFile);
         advancedFile.writeBytes(temp.getBytes());
         Desktop.getDesktop().open(advancedFile.toFile());
-        //TODO Wait some time?
-        Thread.sleep(1000);
+        Thread.sleep(100);
         advancedFile.delete();
         return !advancedFile.exists();
     }
