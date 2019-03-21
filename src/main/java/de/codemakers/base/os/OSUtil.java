@@ -20,6 +20,8 @@ import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.*;
 import de.codemakers.base.reflection.ReflectionUtil;
+import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.base.util.tough.ToughSupplier;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -223,6 +225,29 @@ public class OSUtil {
     
     public static final <T extends OSFunction> T getCurrentFunction(Class<T> clazz) {
         return CURRENT_OS_HELPER.getOSFunction(clazz);
+    }
+    
+    public static final <T extends OSFunction, R> R invokeFunction(Class<T> clazz, ToughFunction<T, R> toughFunction) {
+        return invokeFunction(clazz, toughFunction, null);
+    }
+    
+    public static final <T extends OSFunction, R> R invokeFunction(Class<T> clazz, ToughFunction<T, R> toughFunction, ToughSupplier<R> defaultValueSupplier) {
+        return invokeOSFunction(getFunction(clazz), toughFunction, defaultValueSupplier);
+    }
+    
+    public static final <T extends OSFunction, R> R invokeCurrentFunction(Class<T> clazz, ToughFunction<T, R> toughFunction) {
+        return invokeCurrentFunction(clazz, toughFunction, null);
+    }
+    
+    public static final <T extends OSFunction, R> R invokeCurrentFunction(Class<T> clazz, ToughFunction<T, R> toughFunction, ToughSupplier<R> defaultValueSupplier) {
+        return invokeOSFunction(getCurrentFunction(clazz), toughFunction, defaultValueSupplier);
+    }
+    
+    public static final <T extends OSFunction, R> R invokeOSFunction(T osFunction, ToughFunction<T, R> toughFunction, ToughSupplier<R> defaultValueSupplier) {
+        if (osFunction == null || toughFunction == null) {
+            return defaultValueSupplier == null ? null : defaultValueSupplier.getWithoutException();
+        }
+        return toughFunction.applyWithoutException(osFunction);
     }
     
 }
