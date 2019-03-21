@@ -99,7 +99,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     private String[] paths;
     private boolean init = false;
-    private boolean windowsSeparator = OSUtil.OS == OS.WINDOWS;
+    private boolean windowsSeparator = OSUtil.CURRENT_OS == OS.WINDOWS;
     private boolean extern = true;
     private boolean absolute = true;
     private AdvancedFile parent;

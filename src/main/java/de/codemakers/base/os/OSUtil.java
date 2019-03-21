@@ -32,18 +32,18 @@ import java.util.stream.Collectors;
 
 public class OSUtil {
     
-    public static final String[] STANDARD_OS_NAMES = new String[] {"Windows", "Linux", "Mac OS", "SunOS", "FreeBSD"};
-    
-    public static final String OS_NAME = System.getProperty("os.name");
-    public static final String OS_ARCH = System.getProperty("os.arch");
-    public static final String JAVA_VERSION = System.getProperty("java.version");
-    public static final OS OS = de.codemakers.base.os.OS.getOS(OS_NAME);
-    
     public static final WindowsHelper WINDOWS_HELPER = new WindowsHelper();
     public static final LinuxHelper LINUX_HELPER = new LinuxHelper();
     public static final MacOSHelper MAC_OS_HELPER = new MacOSHelper();
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
+    
+    public static final String[] STANDARD_OS_NAMES = new String[] {"Windows", "Linux", "Mac OS", "SunOS", "FreeBSD"};
+    
+    public static final String OS_NAME = System.getProperty("os.name");
+    public static final String OS_ARCH = System.getProperty("os.arch");
+    public static final String JAVA_VERSION = System.getProperty("java.version");
+    public static final OS CURRENT_OS = OS.byName(OS_NAME);
     
     public static final long OSFUNCTION_ID_SYSTEM_INFO_WINDOWS;
     public static final long OSFUNCTION_ID_SYSTEM_INFO_LINUX;
@@ -155,7 +155,7 @@ public class OSUtil {
                 }
             }
         });
-        switch (OS) {
+        switch (CURRENT_OS) {
             case WINDOWS:
                 OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(WINDOWS_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_WINDOWS));
                 break;
@@ -176,18 +176,22 @@ public class OSUtil {
         init();
     }
     
-    private static void init() {
+    private static final void init() {
         final Set<Class<?>> classes = ReflectionUtil.getTypesAnnotatedWith(RegisterOSFunction.class);
         for (Class<?> clazz : classes) {
             registerClassAsOSFunction(clazz);
         }
     }
     
-    private static boolean registerClassAsOSFunction(Class<?> clazz) {
+    private static final boolean registerClassAsOSFunction(Class<?> clazz) {
         try {
             final RegisterOSFunction registerOSFunction = clazz.getAnnotation(RegisterOSFunction.class);
+            Logger.logDebug("registerOSFunction=" + registerOSFunction);
             final OSFunction osFunction = (OSFunction) clazz.newInstance();
+            Logger.logDebug("osFunction=" + osFunction);
             for (OS os : registerOSFunction.supported()) {
+                Logger.logDebug("os=" + os);
+                Logger.logDebug("os.getHelper()=" + os.getHelper());
                 os.getHelper().addOSFunction(osFunction);
             }
             return true;
@@ -197,8 +201,12 @@ public class OSUtil {
         }
     }
     
+    public static final OS getCurrentOs() {
+        return CURRENT_OS;
+    }
+    
     public static final <T extends OSFunction> T getFunction(Class<T> clazz) {
-        switch (OS) {
+        switch (CURRENT_OS) {
             case WINDOWS:
                 return WINDOWS_HELPER.getOSFunction(clazz);
             case MACOS:

@@ -22,7 +22,7 @@ public class OSTest {
     
     public static final void main(String[] args) {
         System.out.println(OSUtil.OS_NAME);
-        System.out.println(OSUtil.OS);
+        System.out.println(OSUtil.CURRENT_OS);
         final File file_absolute = new File("absolute").getAbsoluteFile();
         final File file_relative = new File("relative");
         System.out.println(file_absolute);
