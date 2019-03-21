@@ -17,6 +17,7 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.entities.History;
 import de.codemakers.base.entities.UpdatableBoundResettableVariable;
 import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Finishable;
@@ -129,6 +130,8 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     
     protected final ConsoleSettings consoleSettings;
     
+    protected final History<String> inputHistory = new History<>();
+    
     public Console() {
         this(DEFAULT_ICON_FILE, DEFAULT_ICON_SETTINGS_FILE);
     }
@@ -222,6 +225,37 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     }
     
     private void initListeners() {
+        frame.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+            
+            @Override
+            public void windowClosing(WindowEvent e) {
+                hide();
+            }
+            
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+            
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+            
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+            
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+            
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
+        //TODO Add ActionListeners and KeyInputListeners for the (CheckBox)MenuItems and the TextField/Button
         //Output
         final ActionListener actionListener_reload = actionEvent -> reloadWithoutException();
         menuItem_reload.addActionListener(actionListener_reload);
@@ -238,6 +272,11 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
             @Override
             public void keyPressed(KeyEvent keyEvent) {
                 //TODO Implement this thing, where you can switch between old inputs with Arrow Keys Up and Down
+                if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
+                    setInputTextField(inputHistory.previous());
+                } else if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
+                    setInputTextField(inputHistory.next());
+                }
             }
             
             @Override
@@ -248,7 +287,9 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
             }
         });
         button_input.addActionListener((actionEvent) -> {
-            if (handleInputWithoutException(textField_input.getText())) {
+            final String input = textField_input.getText();
+            if (handleInputWithoutException(input)) {
+                inputHistory.add(input);
                 textField_input.setText("");
             }
         });
@@ -288,37 +329,6 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         panel_input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), Standard.localize(LANGUAGE_KEY_INPUT))); //TODO Is this looking good? //FIXME Language/Localization stuff?! //Reloading Language??
         frame.add(panel_input, BorderLayout.SOUTH);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-            }
-            
-            @Override
-            public void windowClosing(WindowEvent e) {
-                hide();
-            }
-            
-            @Override
-            public void windowClosed(WindowEvent e) {
-            }
-            
-            @Override
-            public void windowIconified(WindowEvent e) {
-            }
-            
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-            }
-            
-            @Override
-            public void windowActivated(WindowEvent e) {
-            }
-            
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-            }
-        });
-        //TODO Add ActionListeners and KeyInputListeners for the (CheckBox)MenuItems and the TextField/Button
     }
     
     private void initIconImage(AdvancedFile advancedFile) {
@@ -327,6 +337,10 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         } catch (Exception ex) {
             Logger.logError("Error while loading icon for frame", ex);
         }
+    }
+    
+    protected void setInputTextField(String input) {
+        textField_input.setText(input == null ? "" : input);
     }
     
     protected List<LeveledLogEntry> getLogEntries() {
@@ -418,15 +432,15 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
             final JScrollPane scrollPane = new JScrollPane(textArea);
             textArea.addKeyListener(new KeyListener() {
                 @Override
-                public void keyTyped(KeyEvent e) {
+                public void keyTyped(KeyEvent keyEvent) {
                 }
                 
                 @Override
-                public void keyPressed(KeyEvent e) {
+                public void keyPressed(KeyEvent keyEvent) {
                 }
                 
                 @Override
-                public void keyReleased(KeyEvent e) {
+                public void keyReleased(KeyEvent keyEvent) {
                     titleBound.setTemp(textArea.getText());
                     if (livePreview) {
                         titleBound.testWithoutException();
@@ -545,7 +559,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         protected boolean isEdited() {
             return titleBound.isDifferent();
         }
-    
+        
         protected boolean isNotEdited() {
             return titleBound.isSame();
         }
