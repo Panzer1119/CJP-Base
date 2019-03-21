@@ -24,7 +24,7 @@ import java.util.Objects;
 public enum OS {
     WINDOWS("Windows", new String[] {"Windows Server 2019", "Windows Server 2016", "Windows 10 Mobile", "Windows 10", "Windows Server 2012", "Windows RT", "Windows Phone 8", "Windows 8", "Windows Server 2008 R2", "Windows 7", "Windows Server 2008", "Windows Vista", "Windows XP Professional", "Windows Server 2003", "Windows 2003", "Windows XP", "Windows 2000", "Windows NT", "Windows Me", "Windows 98", "Windows 95"}, () -> OSUtil.WINDOWS_HELPER),
     LINUX("Linux", new String[] {"Unix"}, () -> OSUtil.LINUX_HELPER),
-    MACOS("Mac OS", new String[] {"Mac OS X"}, () -> OSUtil.LINUX_HELPER),
+    MACOS("Mac OS", new String[] {"Mac OS X"}, () -> OSUtil.MAC_OS_HELPER),
     SUNOS("SunOS", new String[0], () -> OSUtil.DEFAULT_HELPER),
     FREEBSD("FreeBSD", new String[0], () -> OSUtil.DEFAULT_HELPER),
     UNKNOWN("Unknown", new String[0], () -> OSUtil.DEFAULT_HELPER);
