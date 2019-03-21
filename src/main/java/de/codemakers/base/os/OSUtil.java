@@ -16,6 +16,7 @@
 
 package de.codemakers.base.os;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.*;
@@ -27,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -35,23 +37,26 @@ import java.util.stream.Collectors;
 
 public class OSUtil {
     
+    public static final String[] STANDARD_OS_NAMES = new String[] {"Windows", "Linux", "Mac OS", "SunOS", "FreeBSD"};
+    
+    public static final String OS_NAME = System.getProperty("os.name");
+    public static final String OS_ARCH = System.getProperty("os.arch");
+    public static final String JAVA_VERSION = System.getProperty("java.version");
+    
+    private static final OS CURRENT_OS = OS.byName(OS_NAME);
+    
     public static final WindowsHelper WINDOWS_HELPER = new WindowsHelper();
     public static final LinuxHelper LINUX_HELPER = new LinuxHelper();
     public static final MacOSHelper MAC_OS_HELPER = new MacOSHelper();
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
     
-    public static final String[] STANDARD_OS_NAMES = new String[] {"Windows", "Linux", "Mac OS", "SunOS", "FreeBSD"};
-    
-    public static final String OS_NAME = System.getProperty("os.name");
-    public static final String OS_ARCH = System.getProperty("os.arch");
-    public static final String JAVA_VERSION = System.getProperty("java.version");
-    public static final OS CURRENT_OS = OS.byName(OS_NAME);
-    
     public static final long OSFUNCTION_ID_SYSTEM_INFO_WINDOWS;
     public static final long OSFUNCTION_ID_SYSTEM_INFO_LINUX;
     public static final long OSFUNCTION_ID_SYSTEM_INFO_MAC_OS;
     public static final long OSFUNCTION_ID_SYSTEM_INFO_CURRENT;
+    
+    private static final boolean temp = true;
     
     static {
         OSFUNCTION_ID_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.addOSFunction(new SystemInfo() {
@@ -112,7 +117,7 @@ public class OSUtil {
             @Override
             public PowerInfo getBatteryInfo() {
                 try {
-                    for (File file : LinuxHelper.FOLDER_AC.listFiles(pathname -> {
+                    for (File file : Objects.requireNonNull(LinuxHelper.FOLDER_AC.listFiles(pathname -> {
                         if (!pathname.isDirectory()) {
                             return false;
                         }
@@ -122,7 +127,7 @@ public class OSUtil {
                             }
                         }
                         return false;
-                    })) {
+                    }))) {
                         final File file_uevent = new File(file.getAbsolutePath() + File.separator + LinuxHelper.FILE_UEVENT_NAME);
                         if (file_uevent.exists()) {
                             final PowerSupply powerSupply = PowerSupply.of(file.getName());
@@ -176,7 +181,7 @@ public class OSUtil {
             default:
                 OSFUNCTION_ID_SYSTEM_INFO_CURRENT = -1;
         }
-        init();
+        new Thread(() -> Standard.silentError(OSUtil::init)).start(); //This is here, because calling the class "Standard" directly from here causes Errors
     }
     
     private static final void init() {
@@ -202,7 +207,7 @@ public class OSUtil {
         }
     }
     
-    public static final OS getCurrentOs() {
+    public static final OS getCurrentOS() {
         return CURRENT_OS;
     }
     
