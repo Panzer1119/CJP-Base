@@ -72,6 +72,12 @@ public class History<T> implements Resettable {
     }
     
     public History<T> add(T t) {
+        list.add(t);
+        index.set(-1);
+        return this;
+    }
+    
+    public History<T> addAndDeleteLast(T t) {
         deleteLastElements(index.get() + 1);
         list.add(t);
         index.set(-1);
