@@ -19,23 +19,24 @@ package de.codemakers.base.entities;
 import de.codemakers.base.util.interfaces.Resettable;
 import de.codemakers.base.util.tough.ToughSupplier;
 
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class History<T> implements Resettable {
     
-    protected final Deque<T> stack_main = new ConcurrentLinkedDeque<>();
-    protected final Deque<T> stack_temp = new ConcurrentLinkedDeque<>();
+    protected final List<T> list = new CopyOnWriteArrayList<>();
+    protected final AtomicInteger index = new AtomicInteger(-1);
     
     public T previous() {
         return previous(() -> null);
     }
     
     public T previous(ToughSupplier<T> defaultValueSupplier) {
-        if (stack_main.isEmpty() && defaultValueSupplier != null) {
-            return defaultValueSupplier.getWithoutException();
+        index.incrementAndGet();
+        if (index.get() >= getSize()) {
+            index.set(getSize() - 1);
         }
-        stack_temp.add(stack_main.remove());
         return current(defaultValueSupplier);
     }
     
@@ -44,10 +45,10 @@ public class History<T> implements Resettable {
     }
     
     public T current(ToughSupplier<T> defaultValueSupplier) {
-        if (stack_main.isEmpty() && defaultValueSupplier != null) {
+        if ((list.isEmpty() || getIndex() < 0) && defaultValueSupplier != null) {
             return defaultValueSupplier.getWithoutException();
         }
-        return stack_main.element();
+        return list.get(getSize() - index.get() - 1);
     }
     
     public T next() {
@@ -55,43 +56,56 @@ public class History<T> implements Resettable {
     }
     
     public T next(ToughSupplier<T> defaultValueSupplier) {
-        if (stack_temp.isEmpty() && defaultValueSupplier != null) {
-            return defaultValueSupplier.getWithoutException();
+        index.decrementAndGet();
+        if (index.get() < -1) {
+            index.set(-1);
         }
-        stack_main.add(stack_temp.remove());
         return current(defaultValueSupplier);
     }
     
     public boolean isNewest() {
-        return getDepth() == 0;
+        return getIndex() + 1 == 0;
     }
     
     public boolean isOldest() {
-        return getDepth() == getSize();
+        return getIndex() + 1 == getSize();
     }
     
     public History<T> add(T t) {
-        stack_main.add(t);
-        stack_temp.clear();
+        deleteLastElements(index.get() + 1);
+        list.add(t);
+        index.set(-1);
         return this;
     }
     
-    public int getDepth() {
-        return stack_temp.size();
+    protected History<T> deleteLastElements(int elements) {
+        if (elements <= 0) {
+            return this;
+        }
+        for (int i = 0; i < elements; i++) {
+            index.decrementAndGet();
+            list.remove(list.size() - 1);
+        }
+        return this;
     }
     
-    public int getMainSize() {
-        return stack_main.size();
+    public int getIndex() {
+        return index.get();
     }
     
     public int getSize() {
-        return stack_main.size() + stack_temp.size();
+        return list.size();
     }
     
     @Override
     public boolean reset() throws Exception {
-        stack_temp.clear();
+        index.set(-1);
         return true;
+    }
+    
+    @Override
+    public String toString() {
+        return "History{" + "list=" + list + ", index=" + index + '}';
     }
     
 }
