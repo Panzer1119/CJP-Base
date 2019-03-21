@@ -61,8 +61,18 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         return logger.getLogFormat();
     }
     
+    protected DefaultConsole setLogFormat(String logFormat) {
+        logger.setLogFormat(logFormat);
+        return this;
+    }
+    
     protected String getSourceFormat() {
         return logger.getSourceFormat();
+    }
+    
+    protected DefaultConsole setSourceFormat(String sourceFormat) {
+        logger.setSourceFormat(sourceFormat);
+        return this;
     }
     
     @Override
@@ -142,6 +152,10 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         protected final JButton button_apply = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
         
         protected final UpdatableBoundResettableVariable<String> titleBound = new UpdatableBoundResettableVariable<>(frame::getTitle, frame::setTitle); //FIXME Testing only //This is working great!
+        protected final UpdatableBoundResettableVariable<String> logFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getLogFormat, DefaultConsole.this::setLogFormat); //FIXME Testing only
+        protected final UpdatableBoundResettableVariable<String> sourceFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getSourceFormat, DefaultConsole.this::setSourceFormat); //FIXME Testing only
+    
+        protected final boolean livePreview = true; //FIXME Testing only?
         
         public DefaultConsoleSettings(AdvancedFile iconAdvancedFile) {
             init();
@@ -153,7 +167,6 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         }
         
         private void test() { //FIXME Testing only
-            final boolean livePreview = true;
             final JTextArea textArea = new JTextArea();
             textArea.setText(titleBound.getCurrent());
             titleBound.setToughConsumer((title) -> {
@@ -211,6 +224,67 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             dialog.setLayout(new BorderLayout());
             tabbedPane.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
             tabbedPane.addTab(Standard.localize(LANGUAGE_KEY_TAB_GENERAL), panel_tab_general); //TODO What if language reloads?
+            //TODO Test start
+            panel_tab_view.setLayout(new GridLayout(2, 2));
+            panel_tab_view.add(new JLabel("Log Format")); //FIXME Language reloading!!!
+            final JTextArea textArea_logFormat = new JTextArea(getLogFormat());
+            textArea_logFormat.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent keyEvent) {
+                }
+    
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                }
+    
+                @Override
+                public void keyReleased(KeyEvent keyEvent) {
+                    logFormatBound.setTemp(textArea_logFormat.getText());
+                    if (livePreview) {
+                        logFormatBound.testWithoutException();
+                    }
+                    onAction();
+                }
+            });
+            logFormatBound.setToughConsumer((logFormat) -> {
+                DefaultConsole.this.setLogFormat(logFormat);
+                if (!textArea_logFormat.getText().equals(logFormat)) {
+                    textArea_logFormat.setText(logFormat);
+                }
+                DefaultConsole.this.reloadWithoutException(); //FIXME Or should this be executed in the finish method?
+            });
+            //panel_tab_view.add(textArea_logFormat);
+            panel_tab_view.add(new JScrollPane(textArea_logFormat));
+            panel_tab_view.add(new JLabel("Source Format")); //FIXME Language reloading!!!
+            final JTextArea textArea_sourceFormat = new JTextArea(getSourceFormat());
+            textArea_sourceFormat.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent keyEvent) {
+                }
+        
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                }
+        
+                @Override
+                public void keyReleased(KeyEvent keyEvent) {
+                    sourceFormatBound.setTemp(textArea_sourceFormat.getText());
+                    if (livePreview) {
+                        sourceFormatBound.testWithoutException();
+                    }
+                    onAction();
+                }
+            });
+            sourceFormatBound.setToughConsumer((sourceFormat) -> {
+                DefaultConsole.this.setSourceFormat(sourceFormat);
+                if (!textArea_sourceFormat.getText().equals(sourceFormat)) {
+                    textArea_sourceFormat.setText(sourceFormat);
+                }
+                DefaultConsole.this.reloadWithoutException(); //FIXME Or should this be executed in the finish method?
+            });
+            //panel_tab_view.add(textArea_sourceFormat);
+            panel_tab_view.add(new JScrollPane(textArea_sourceFormat));
+            //TODO Test end
             tabbedPane.addTab(Standard.localize(LANGUAGE_KEY_TAB_VIEW), panel_tab_view); //TODO What if language reloads?
             dialog.add(tabbedPane, BorderLayout.CENTER);
         }
@@ -260,19 +334,21 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         @Override
         protected void showing() {
             titleBound.updateWithoutException();
+            logFormatBound.updateWithoutException();
+            sourceFormatBound.updateWithoutException();
             onAction();
         }
-    
+        
         @Override
         protected void closing() {
             resetWithoutException();
         }
-    
+        
         @Override
         public ConsoleSettings showAtConsole() {
             return show(frame);
         }
-    
+        
         @Override
         public ConsoleSettings show(Component component) {
             dialog.pack();
@@ -281,28 +357,28 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             dialog.setVisible(true);
             return this;
         }
-    
+        
         @Override
         public ConsoleSettings hide() {
             dialog.setVisible(false);
             return this;
         }
-    
+        
         @Override
         protected void onAction() {
             final boolean edited = isEdited();
             button_reset.setEnabled(edited);
             button_apply.setEnabled(edited);
         }
-    
+        
         @Override
         protected boolean isEdited() {
-            return titleBound.isDifferent();
+            return titleBound.isDifferent() || logFormatBound.isDifferent() || sourceFormatBound.isDifferent();
         }
-    
+        
         @Override
         protected boolean isNotEdited() {
-            return titleBound.isSame();
+            return titleBound.isSame() && logFormatBound.isSame() && sourceFormatBound.isSame();
         }
         
         @Override
@@ -325,6 +401,8 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         @Override
         public Boolean finish() throws Exception {
             titleBound.finish();
+            logFormatBound.finish();
+            sourceFormatBound.finish();
             return true;
         }
         
@@ -332,6 +410,12 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         public boolean reset() throws Exception {
             boolean good = true;
             if (!titleBound.reset()) {
+                good = false;
+            }
+            if (!logFormatBound.reset()) {
+                good = false;
+            }
+            if (!sourceFormatBound.reset()) {
                 good = false;
             }
             return good;
