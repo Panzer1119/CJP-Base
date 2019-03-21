@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -56,7 +57,7 @@ public class OSUtil {
     public static final long OSFUNCTION_ID_SYSTEM_INFO_MAC_OS;
     public static final long OSFUNCTION_ID_SYSTEM_INFO_CURRENT;
     
-    private static final boolean temp = true;
+    private static final AtomicBoolean LOADED_OS_FUNCTIONS = new AtomicBoolean(false);
     
     static {
         OSFUNCTION_ID_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.addOSFunction(new SystemInfo() {
@@ -185,10 +186,14 @@ public class OSUtil {
     }
     
     private static final void init() {
+        if (LOADED_OS_FUNCTIONS.get()) {
+            return;
+        }
         final Set<Class<?>> classes = ReflectionUtil.getTypesAnnotatedWith(RegisterOSFunction.class);
         for (Class<?> clazz : classes) {
             registerClassAsOSFunction(clazz);
         }
+        LOADED_OS_FUNCTIONS.set(true);
     }
     
     private static final boolean registerClassAsOSFunction(Class<?> clazz) {
@@ -212,6 +217,9 @@ public class OSUtil {
     }
     
     public static final <T extends OSFunction> T getFunction(Class<T> clazz) {
+        while (!LOADED_OS_FUNCTIONS.get()) {
+            Standard.silentError(() -> Thread.sleep(100));
+        }
         switch (CURRENT_OS) {
             case WINDOWS:
                 return WINDOWS_HELPER.getOSFunction(clazz);
@@ -229,6 +237,9 @@ public class OSUtil {
     }
     
     public static final <T extends OSFunction> T getCurrentFunction(Class<T> clazz) {
+        while (!LOADED_OS_FUNCTIONS.get()) {
+            Standard.silentError(() -> Thread.sleep(100));
+        }
         return CURRENT_OS_HELPER.getOSFunction(clazz);
     }
     
