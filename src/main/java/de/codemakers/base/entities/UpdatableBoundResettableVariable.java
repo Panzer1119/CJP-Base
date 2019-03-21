@@ -24,30 +24,8 @@ public class UpdatableBoundResettableVariable<T> extends BoundResettableVariable
     
     protected ToughSupplier<T> toughSupplier;
     
-    public UpdatableBoundResettableVariable(ToughConsumer<T> toughConsumer) {
-        this((T) null, toughConsumer);
-    }
-    
-    public UpdatableBoundResettableVariable(T current, ToughConsumer<T> toughConsumer) {
-        this(current, () -> current, toughConsumer);
-    }
-    
-    public UpdatableBoundResettableVariable(T current, T temp, ToughConsumer<T> toughConsumer) {
-        this(current, temp, () -> current, toughConsumer);
-    }
-    
     public UpdatableBoundResettableVariable(ToughSupplier<T> toughSupplier, ToughConsumer<T> toughConsumer) {
         super(toughSupplier.getWithoutException(), toughConsumer);
-        this.toughSupplier = toughSupplier;
-    }
-    
-    public UpdatableBoundResettableVariable(T current, ToughSupplier<T> toughSupplier, ToughConsumer<T> toughConsumer) {
-        super(current, toughConsumer);
-        this.toughSupplier = toughSupplier;
-    }
-    
-    public UpdatableBoundResettableVariable(T current, T temp, ToughSupplier<T> toughSupplier, ToughConsumer<T> toughConsumer) {
-        super(current, temp, toughConsumer);
         this.toughSupplier = toughSupplier;
     }
     
