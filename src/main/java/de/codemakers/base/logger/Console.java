@@ -508,6 +508,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         
         protected void showing() {
             titleBound.updateWithoutException();
+            onAction();
         }
         
         protected void closing() {
@@ -522,7 +523,6 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
             dialog.pack();
             dialog.setLocationRelativeTo(component);
             showing();
-            onAction();
             dialog.setVisible(true);
             return this;
         }
@@ -549,6 +549,10 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         @Override
         public boolean reloadLanguage() throws Exception {
             dialog.setTitle(Standard.localize(LANGUAGE_KEY_SETTINGS));
+            button_ok.setText(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
+            button_cancel.setText(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
+            button_reset.setText(new String(Standard.localize(LANGUAGE_KEY_BUTTON_RESET).getBytes(), "UTF-8")); //FIXME Why is this not working?
+            button_apply.setText(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
             dialog.invalidate();
             dialog.repaint();
             return true;
