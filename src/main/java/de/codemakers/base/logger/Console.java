@@ -391,6 +391,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         
         // Bottom Buttons
         protected final JButton button_ok = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
+        protected final JTabbedPane tabbedPane = new JTabbedPane();
         protected final JButton button_cancel = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
         protected final JButton button_reset = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_RESET));
         protected final JButton button_apply = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
@@ -433,7 +434,8 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
                     onAction();
                 }
             });
-            dialog.add(scrollPane, BorderLayout.CENTER);
+            //dialog.add(scrollPane, BorderLayout.CENTER);
+            tabbedPane.addTab(Standard.localize("Test"), scrollPane); //TODO What if language reloads?
             final JPanel panel = new JPanel();
             button_ok.addActionListener((actionEvent) -> {
                 finishWithoutException();
@@ -451,7 +453,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
                 finishWithoutException();
                 onAction();
             });
-            panel.setLayout(new FlowLayout());
+            panel.setLayout(new FlowLayout(FlowLayout.TRAILING));
             panel.add(button_ok);
             panel.add(button_cancel);
             panel.add(button_reset);
@@ -462,6 +464,8 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         private void init() {
             dialog.setResizable(false);
             dialog.setLayout(new BorderLayout());
+            tabbedPane.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+            dialog.add(tabbedPane, BorderLayout.CENTER);
         }
         
         private void initIconImage(AdvancedFile advancedFile) {
