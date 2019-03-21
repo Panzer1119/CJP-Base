@@ -535,10 +535,15 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         protected void onAction() {
             final boolean edited = isEdited();
             button_reset.setEnabled(edited);
+            button_apply.setEnabled(edited);
         }
         
         protected boolean isEdited() {
             return titleBound.isDifferent();
+        }
+    
+        protected boolean isNotEdited() {
+            return titleBound.isSame();
         }
         
         @Override
