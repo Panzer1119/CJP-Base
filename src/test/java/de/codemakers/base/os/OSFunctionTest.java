@@ -27,7 +27,7 @@ public class OSFunctionTest {
         System.out.println(OSUtil.WINDOWS_HELPER.toString());
         //final double batteryLevel_2 = OSUtil.getFunction(SystemInfo.class).getBatteryInfo().getCharge();
         //System.out.println("Battery Level 2: " + batteryLevel_2);
-        System.out.println(OSUtil.getFunction(SystemInfo.class).getBatteryInfo());
+        System.out.println(OSUtil.getFunction(SystemInfo.class).getPowerInfoWithoutException());
     }
     
 }
