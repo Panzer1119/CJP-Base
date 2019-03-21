@@ -16,6 +16,7 @@
 
 package de.codemakers.io.streams;
 
+import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Snowflake;
 
@@ -27,39 +28,45 @@ import java.io.Serializable;
 public class IncrementalStreamsTest {
     
     public static final void main(String[] args) throws Exception {
+        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
+        //Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.WARNING);
+        //Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendLocation().appendThread().appendText(": ").appendObject().finishWithoutException();
+        //Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendObject().appendNewLine().appendLocation().appendThread().appendNewLine().finishWithoutException();
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendText(": ").appendObject().appendNewLine().appendSource().appendNewLine().finishWithoutException();
         final PipedOutputStream pipedOutputStream = new PipedOutputStream();
         final PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream);
         final IncrementalObjectOutputStream<TestObject> incrementalObjectOutputStream = new IncrementalObjectOutputStream<>(pipedOutputStream);
         final IncrementalObjectInputStream<TestObject> incrementalObjectInputStream = new IncrementalObjectInputStream<>(pipedInputStream);
         new Thread(() -> {
+            Thread.currentThread().setName("RECEIVER-THREAD");
             try {
-                System.out.println("TEST started");
+                Logger.log("[RECEIVER] TEST started");
                 TestObject testObject = null;
                 while (true) {
                     testObject = incrementalObjectInputStream.readIncrementalObject();
-                    System.out.println("TEST: " + testObject);
+                    Logger.logError("[RECEIVER] TEST received: " + testObject);
                 }
-                //System.out.println("TEST stopped");
+                //Logger.log("TEST stopped");
             } catch (EOFException ignore) {
-                System.err.println("TEST EOF");
+                System.err.println("[RECEIVER] TEST EOF");
             } catch (Exception ex) {
-                System.out.println("TEST errored");
+                Logger.log("[RECEIVER] TEST errored");
                 Logger.handleError(ex);
             }
         }).start();
         /*
         new Thread(() -> {
             try {
-                System.out.println("BUFFEREDREADER started");
+                Logger.log("BUFFEREDREADER started");
                 final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pipedInputStream));
                 String line = null;
                 while ((line = bufferedReader.readLine()) != null) {
-                    System.out.println("BUFFEREDREADER: " + line);
+                    Logger.log("BUFFEREDREADER: " + line);
                 }
                 bufferedReader.close();
-                System.out.println("BUFFEREDREADER stopped");
+                Logger.log("BUFFEREDREADER stopped");
             } catch (Exception ex) {
-                System.out.println("BUFFEREDREADER errored");
+                Logger.log("BUFFEREDREADER errored");
                 Logger.handleError(ex);
             }
         }).start();
@@ -73,22 +80,33 @@ public class IncrementalStreamsTest {
         bufferedWriter.close();
         //pipedInputStream.close();
         */
-        final TestObject testObject = new TestObject();
-        incrementalObjectOutputStream.writeObject(testObject);
-        incrementalObjectOutputStream.flush();
-        Thread.sleep(1000);
-        testObject.newRandomNumber();
-        incrementalObjectOutputStream.writeObject(testObject);
-        incrementalObjectOutputStream.flush();
-        Thread.sleep(1000);
-        testObject.newRandomNumber();
-        incrementalObjectOutputStream.writeIncrementalObject(testObject, true, true);
-        incrementalObjectOutputStream.flush();
-        Thread.sleep(1000);
-        incrementalObjectOutputStream.writeIncrementalObject(testObject, true, true);
-        incrementalObjectOutputStream.flush();
-        Thread.sleep(5000);
-        incrementalObjectOutputStream.close();
+        new Thread(() -> {
+            Thread.currentThread().setName(" SENDER-THREAD ");
+            try {
+                final TestObject testObject = new TestObject();
+                Logger.log("[SENDER  ] Sending TestObject: " + testObject);
+                incrementalObjectOutputStream.writeObject(testObject);
+                incrementalObjectOutputStream.flush();
+                Thread.sleep(1000);
+                testObject.newRandomNumber();
+                Logger.log("[SENDER  ] Sending TestObject: " + testObject);
+                incrementalObjectOutputStream.writeObject(testObject);
+                incrementalObjectOutputStream.flush();
+                Thread.sleep(1000);
+                testObject.newRandomNumber();
+                Logger.log("[SENDER  ] Sending incremental TestObject: " + testObject);
+                incrementalObjectOutputStream.writeIncrementalObject(testObject, true, true);
+                incrementalObjectOutputStream.flush();
+                Thread.sleep(1000);
+                Logger.log("[SENDER  ] Sending incremental TestObject: " + testObject);
+                incrementalObjectOutputStream.writeIncrementalObject(testObject, true, true);
+                incrementalObjectOutputStream.flush();
+                Thread.sleep(5000);
+                incrementalObjectOutputStream.close();
+            } catch (Exception ex) {
+                Logger.handleError(ex);
+            }
+        }).start();
         //incrementalObjectInputStream.close();
     }
     
@@ -106,7 +124,10 @@ public class IncrementalStreamsTest {
         }
         
         public void newRandomNumber() {
-            random = Math.random();
+            final double old = random;
+            while (old == random) {
+                random = Math.random();
+            }
         }
         
         @Override
@@ -119,6 +140,10 @@ public class IncrementalStreamsTest {
             return id;
         }
         
+    }
+    
+    public static class Test {
+    
     }
     
 }

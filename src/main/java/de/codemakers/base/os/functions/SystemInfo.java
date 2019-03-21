@@ -16,8 +16,33 @@
 
 package de.codemakers.base.os.functions;
 
+import de.codemakers.base.action.ReturningAction;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughConsumer;
+
 public abstract class SystemInfo extends OSFunction {
     
-    public abstract PowerInfo getBatteryInfo();
+    public abstract PowerInfo getPowerInfo() throws Exception;
+    
+    public PowerInfo getPowerInfo(ToughConsumer<Throwable> failure) {
+        try {
+            return getPowerInfo();
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public PowerInfo getPowerInfoWithoutException() {
+        return getPowerInfo(null);
+    }
+    
+    public ReturningAction<PowerInfo> powerInfoAction() {
+        return new ReturningAction<>(this::getPowerInfo);
+    }
     
 }
