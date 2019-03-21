@@ -16,11 +16,7 @@
 
 package de.codemakers.base.os.functions;
 
-import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.util.tough.ToughConsumer;
-import de.codemakers.base.util.tough.ToughFunction;
-
-public abstract class OSFunction<T, R> implements ToughFunction<T, R> {
+public abstract class OSFunction {
     
     private final String name;
     
@@ -30,33 +26,13 @@ public abstract class OSFunction<T, R> implements ToughFunction<T, R> {
     
     public OSFunction(String name) {
         if (name == null) {
-            name = getClass().getName();
+            name = getClass().getSimpleName();
         }
         this.name = name;
     }
     
     public String getName() {
         return name;
-    }
-    
-    public ReturningAction<R> applyAction(T t) {
-        return new ReturningAction<>(() -> apply(t));
-    }
-    
-    public R apply() throws Exception {
-        return apply((T) null);
-    }
-    
-    public R apply(ToughConsumer<Throwable> failure) {
-        return apply(null, failure);
-    }
-    
-    public R applyWithoutException() {
-        return applyWithoutException(null);
-    }
-    
-    public ReturningAction<R> applyAction() {
-        return applyAction(null);
     }
     
 }
