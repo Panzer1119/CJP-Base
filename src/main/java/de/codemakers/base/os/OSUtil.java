@@ -18,12 +18,14 @@ package de.codemakers.base.os;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.*;
+import de.codemakers.base.reflection.ReflectionUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -126,13 +128,7 @@ public class OSUtil {
                             }
                             final Properties properties = new Properties();
                             properties.load(new FileReader(file_uevent));
-                            return new PowerInfo(properties.getProperty(LinuxHelper.POWER_SUPPLY_SERIAL_NUMBER),
-                                    properties.getProperty(LinuxHelper.POWER_SUPPLY_NAME),
-                                    (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_NOW)) * 1.0 / (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_FULL)) * 1.0)),
-                                    BatteryState.of(properties.getProperty(LinuxHelper.POWER_SUPPLY_STATUS)),
-                                    -1, null, -1,
-                                    null,
-                                    powerSupply, properties);
+                            return new PowerInfo(properties.getProperty(LinuxHelper.POWER_SUPPLY_SERIAL_NUMBER), properties.getProperty(LinuxHelper.POWER_SUPPLY_NAME), (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_NOW)) * 1.0 / (Long.parseLong(properties.getProperty(LinuxHelper.POWER_SUPPLY_ENERGY_FULL)) * 1.0)), BatteryState.of(properties.getProperty(LinuxHelper.POWER_SUPPLY_STATUS)), -1, null, -1, null, powerSupply, properties);
                         }
                     }
                 } catch (Exception ex) {
@@ -176,6 +172,28 @@ public class OSUtil {
                 break;
             default:
                 OSFUNCTION_ID_SYSTEM_INFO_CURRENT = -1;
+        }
+        init();
+    }
+    
+    private static void init() {
+        final Set<Class<?>> classes = ReflectionUtil.getTypesAnnotatedWith(RegisterOSFunction.class);
+        for (Class<?> clazz : classes) {
+            registerClassAsOSFunction(clazz);
+        }
+    }
+    
+    private static boolean registerClassAsOSFunction(Class<?> clazz) {
+        try {
+            final RegisterOSFunction registerOSFunction = clazz.getAnnotation(RegisterOSFunction.class);
+            final OSFunction osFunction = (OSFunction) clazz.newInstance();
+            for (OS os : registerOSFunction.supported()) {
+                os.getHelper().addOSFunction(osFunction);
+            }
+            return true;
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return false;
         }
     }
     
