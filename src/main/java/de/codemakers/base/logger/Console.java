@@ -17,9 +17,11 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.entities.BoundResettableVariable;
+import de.codemakers.base.entities.UpdatableBoundResettableVariable;
 import de.codemakers.base.util.interfaces.Closeable;
+import de.codemakers.base.util.interfaces.Finishable;
 import de.codemakers.base.util.interfaces.Reloadable;
+import de.codemakers.base.util.interfaces.Resettable;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.streams.BufferedPipedOutputStream;
@@ -377,24 +379,33 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         return pipedInputStream;
     }
     
-    public class ConsoleSettings implements LanguageReloadable {
+    public class ConsoleSettings implements Finishable<Boolean>, LanguageReloadable, Resettable {
         
         public static final String LANGUAGE_KEY_SETTINGS = "settings";
+        public static final String LANGUAGE_KEY_BUTTON_OK = "button_ok";
+        public static final String LANGUAGE_KEY_BUTTON_CANCEL = "button_cancel";
+        public static final String LANGUAGE_KEY_BUTTON_APPLY = "button_apply";
         
         protected final JDialog dialog = new JDialog(frame, true);
         
-        protected final BoundResettableVariable<String> titleBound = new BoundResettableVariable<>(frame.getTitle(), frame::setTitle); //FIXME Testing only //This is working great!
+        // Bottom Buttons
+        protected final JButton button_ok = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
+        protected final JButton button_cancel = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
+        protected final JButton button_apply = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
+        
+        protected final UpdatableBoundResettableVariable<String> titleBound = new UpdatableBoundResettableVariable<>(frame::getTitle, frame::setTitle); //FIXME Testing only //This is working great!
         
         public ConsoleSettings(AdvancedFile iconAdvancedFile) {
             init();
             initIconImage(iconAdvancedFile);
+            initListeners();
             dialog.setPreferredSize(new Dimension(600, 800)); //TODO Testing only
             reloadLanguageWithoutException();
             test(); //FIXME Testing only
         }
         
         private void test() { //FIXME Testing only
-            dialog.setLayout(new BorderLayout());
+            final boolean livePreview = true;
             final JTextArea textArea = new JTextArea();
             textArea.setText(titleBound.getCurrent());
             titleBound.setToughConsumer((title) -> {
@@ -414,25 +425,29 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
                 @Override
                 public void keyReleased(KeyEvent e) {
                     titleBound.setTemp(textArea.getText());
+                    if (livePreview) {
+                        titleBound.testWithoutException();
+                    }
                 }
             });
             dialog.add(scrollPane, BorderLayout.CENTER);
             final JPanel panel = new JPanel();
-            final JButton button_reset = new JButton("Reset");
-            final JButton button_test = new JButton("Test");
-            final JButton button_finish = new JButton("Finish");
-            button_reset.addActionListener((actionEvent) -> titleBound.resetWithoutException());
-            button_test.addActionListener((actionEvent) -> titleBound.testWithoutException());
-            button_finish.addActionListener((actionEvent) -> titleBound.finishWithoutException());
+            button_ok.addActionListener((actionEvent) -> {
+                finishWithoutException();
+                hide();
+            });
+            button_cancel.addActionListener((actionEvent) -> resetWithoutException());
+            button_apply.addActionListener((actionEvent) -> finishWithoutException());
             panel.setLayout(new FlowLayout());
-            panel.add(button_reset);
-            panel.add(button_test);
-            panel.add(button_finish);
+            panel.add(button_ok);
+            panel.add(button_cancel);
+            panel.add(button_apply);
             dialog.add(panel, BorderLayout.SOUTH);
         }
         
         private void init() {
             dialog.setResizable(false);
+            dialog.setLayout(new BorderLayout());
         }
         
         private void initIconImage(AdvancedFile advancedFile) {
@@ -443,6 +458,48 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
             }
         }
         
+        private void initListeners() {
+            dialog.addWindowListener(new WindowListener() {
+                @Override
+                public void windowOpened(WindowEvent e) {
+                }
+                
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    closing();
+                    hide();
+                }
+                
+                @Override
+                public void windowClosed(WindowEvent e) {
+                }
+                
+                @Override
+                public void windowIconified(WindowEvent e) {
+                }
+                
+                @Override
+                public void windowDeiconified(WindowEvent e) {
+                }
+                
+                @Override
+                public void windowActivated(WindowEvent e) {
+                }
+                
+                @Override
+                public void windowDeactivated(WindowEvent e) {
+                }
+            });
+        }
+        
+        protected void showing() {
+            titleBound.updateWithoutException();
+        }
+        
+        protected void closing() {
+            resetWithoutException();
+        }
+        
         public ConsoleSettings showAtConsole() {
             return show(frame);
         }
@@ -450,6 +507,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         public ConsoleSettings show(Component component) {
             dialog.pack();
             dialog.setLocationRelativeTo(component);
+            showing();
             dialog.setVisible(true);
             return this;
         }
@@ -470,6 +528,21 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         @Override
         public boolean unloadLanguage() throws Exception {
             return true;
+        }
+        
+        @Override
+        public Boolean finish() throws Exception {
+            titleBound.finish();
+            return true;
+        }
+        
+        @Override
+        public boolean reset() throws Exception {
+            boolean good = true;
+            if (!titleBound.reset()) {
+                good = false;
+            }
+            return good;
         }
         
     }

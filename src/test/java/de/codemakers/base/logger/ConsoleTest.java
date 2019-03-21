@@ -106,6 +106,13 @@ public class ConsoleTest {
                         Logger.logDebug("Setted localizer to default");
                         return true;
                     }
+                } else if (temp.startsWith("test")) {
+                    temp = temp.substring("test".length()).trim();
+                    if (temp.equalsIgnoreCase("1")) {
+                        frame.setTitle("" + Math.random());
+                        Logger.logDebug("COMMAND: \"Test 1\"");
+                        return true;
+                    }
                 }
                 //throw new NotYetImplementedRuntimeException(); //TODO Implement Command stuff
                 Logger.logWarning(String.format("Command \"%s\" does not exist", command));
