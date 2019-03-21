@@ -52,15 +52,15 @@ public class OSUtil {
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
     
-    public static final long OSFUNCTION_ID_SYSTEM_INFO_WINDOWS;
-    public static final long OSFUNCTION_ID_SYSTEM_INFO_LINUX;
-    public static final long OSFUNCTION_ID_SYSTEM_INFO_MAC_OS;
-    public static final long OSFUNCTION_ID_SYSTEM_INFO_CURRENT;
+    public static final long OS_FUNCTION_ID_SYSTEM_INFO_WINDOWS;
+    public static final long OS_FUNCTION_ID_SYSTEM_INFO_LINUX;
+    public static final long OS_FUNCTION_ID_SYSTEM_INFO_MAC_OS;
+    public static final long OS_FUNCTION_ID_SYSTEM_INFO_CURRENT;
     
     private static final AtomicBoolean LOADED_OS_FUNCTIONS = new AtomicBoolean(false);
     
     static {
-        OSFUNCTION_ID_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.addOSFunction(new SystemInfo() {
+        OS_FUNCTION_ID_SYSTEM_INFO_WINDOWS = WINDOWS_HELPER.addOSFunction(new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
                 try {
@@ -114,7 +114,7 @@ public class OSUtil {
                 }
             }
         });
-        OSFUNCTION_ID_SYSTEM_INFO_LINUX = LINUX_HELPER.addOSFunction(new SystemInfo() {
+        OS_FUNCTION_ID_SYSTEM_INFO_LINUX = LINUX_HELPER.addOSFunction(new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
                 try {
@@ -146,7 +146,7 @@ public class OSUtil {
                 return null;
             }
         });
-        OSFUNCTION_ID_SYSTEM_INFO_MAC_OS = MAC_OS_HELPER.addOSFunction(new SystemInfo() {
+        OS_FUNCTION_ID_SYSTEM_INFO_MAC_OS = MAC_OS_HELPER.addOSFunction(new SystemInfo() {
             @Override
             public PowerInfo getBatteryInfo() {
                 try {
@@ -166,21 +166,21 @@ public class OSUtil {
         });
         switch (CURRENT_OS) {
             case WINDOWS:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(WINDOWS_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_WINDOWS));
+                OS_FUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(WINDOWS_HELPER.getOSFunction(OS_FUNCTION_ID_SYSTEM_INFO_WINDOWS));
                 break;
             case MACOS:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(LINUX_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_LINUX));
+                OS_FUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(LINUX_HELPER.getOSFunction(OS_FUNCTION_ID_SYSTEM_INFO_LINUX));
                 break;
             case LINUX:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(MAC_OS_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_MAC_OS));
+                OS_FUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(MAC_OS_HELPER.getOSFunction(OS_FUNCTION_ID_SYSTEM_INFO_MAC_OS));
                 break;
             case FREEBSD:
             case SUNOS:
             case UNKNOWN:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(DEFAULT_HELPER.getOSFunction(OSFUNCTION_ID_SYSTEM_INFO_LINUX));
+                OS_FUNCTION_ID_SYSTEM_INFO_CURRENT = CURRENT_OS_HELPER.addOSFunction(DEFAULT_HELPER.getOSFunction(OS_FUNCTION_ID_SYSTEM_INFO_LINUX));
                 break;
             default:
-                OSFUNCTION_ID_SYSTEM_INFO_CURRENT = -1;
+                OS_FUNCTION_ID_SYSTEM_INFO_CURRENT = -1;
         }
         new Thread(() -> Standard.silentError(OSUtil::init)).start(); //This is here, because calling the class "Standard" directly from here causes Errors
     }
