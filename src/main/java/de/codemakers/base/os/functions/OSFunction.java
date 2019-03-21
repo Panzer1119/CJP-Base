@@ -26,7 +26,7 @@ public abstract class OSFunction {
     
     public OSFunction(String name) {
         if (name == null) {
-            name = getClass().getSimpleName();
+            name = getClass().getName();
         }
         this.name = name;
     }
