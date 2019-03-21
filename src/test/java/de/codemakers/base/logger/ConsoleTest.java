@@ -17,6 +17,7 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.io.file.AdvancedFile;
 import org.apache.commons.text.StringSubstitutor;
@@ -77,6 +78,11 @@ public class ConsoleTest {
                 textPane_output.setCaretPosition(styledDocument.getLength());
                 //TODO Testing adding LogEntry end
                 return true;
+            }
+    
+            @Override
+            protected ConsoleSettings createConsoleSettings(AdvancedFile iconAdvancedFile) {
+                throw new NotImplementedRuntimeException();
             }
     
             @Override

@@ -18,7 +18,6 @@ package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.entities.History;
-import de.codemakers.base.entities.UpdatableBoundResettableVariable;
 import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Finishable;
 import de.codemakers.base.util.interfaces.Reloadable;
@@ -144,7 +143,7 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         initIconImage(iconAdvancedFile);
         initListeners();
         initStreams();
-        consoleSettings = new ConsoleSettings(iconSettingsAdvancedFile);
+        consoleSettings = createConsoleSettings(iconSettingsAdvancedFile);
         setPreferredSize(new Dimension(1200, 600)); //TODO Testing only
         reloadWithoutException(); //TODO Good?
     }
@@ -168,6 +167,8 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
     public L getLogger() {
         return logger;
     }
+    
+    protected abstract ConsoleSettings createConsoleSettings(AdvancedFile iconAdvancedFile);
     
     /**
      * Handles input
@@ -277,7 +278,6 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
             
             @Override
             public void keyPressed(KeyEvent keyEvent) {
-                //TODO Implement this thing, where you can switch between old inputs with Arrow Keys Up and Down
                 if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
                     setInputTextField(inputHistory.previous());
                 } else if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -294,7 +294,7 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         });
         button_input.addActionListener((actionEvent) -> {
             final String input = textField_input.getText();
-            if (handleInputWithoutException(input)) {
+            if (handleInputWithoutException(input)) { //FIXME What do, when the last input is the exact same as this? Ignore the duplicate? A Set would not be useful, because maybe there is an input between 2 same inputs and then they should be both in the history? So make a toggle to enable a function that not saves the new input, if the exact last one is exact the same?
                 inputHistory.add(input);
                 textField_input.setText("");
             }
@@ -399,208 +399,23 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         return pipedInputStream;
     }
     
-    public class ConsoleSettings implements Finishable<Boolean>, LanguageReloadable, Resettable {
+    public abstract class ConsoleSettings<C extends ConsoleSettings> implements Finishable<Boolean>, LanguageReloadable, Resettable {
         
-        public static final String LANGUAGE_KEY_SETTINGS = "settings";
-        public static final String LANGUAGE_KEY_BUTTON_OK = "button_ok";
-        public static final String LANGUAGE_KEY_BUTTON_CANCEL = "button_cancel";
-        public static final String LANGUAGE_KEY_BUTTON_RESET = "button_reset";
-        public static final String LANGUAGE_KEY_BUTTON_APPLY = "button_apply";
+        protected abstract void showing();
         
-        protected final JDialog dialog = new JDialog(frame, true);
+        protected abstract void closing();
         
-        // Bottom Buttons
-        protected final JButton button_ok = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
-        protected final JTabbedPane tabbedPane = new JTabbedPane();
-        protected final JButton button_cancel = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
-        protected final JButton button_reset = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_RESET));
-        protected final JButton button_apply = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
+        public abstract C showAtConsole();
         
-        protected final UpdatableBoundResettableVariable<String> titleBound = new UpdatableBoundResettableVariable<>(frame::getTitle, frame::setTitle); //FIXME Testing only //This is working great!
+        public abstract C show(Component component);
         
-        public ConsoleSettings(AdvancedFile iconAdvancedFile) {
-            init();
-            initIconImage(iconAdvancedFile);
-            initListeners();
-            dialog.setPreferredSize(new Dimension(600, 800)); //TODO Testing only
-            reloadLanguageWithoutException();
-            test(); //FIXME Testing only
-        }
+        public abstract C hide();
         
-        private void test() { //FIXME Testing only
-            final boolean livePreview = true;
-            final JTextArea textArea = new JTextArea();
-            textArea.setText(titleBound.getCurrent());
-            titleBound.setToughConsumer((title) -> {
-                frame.setTitle(title);
-                textArea.setText(title);
-            });
-            final JScrollPane scrollPane = new JScrollPane(textArea);
-            textArea.addKeyListener(new KeyListener() {
-                @Override
-                public void keyTyped(KeyEvent keyEvent) {
-                }
-                
-                @Override
-                public void keyPressed(KeyEvent keyEvent) {
-                }
-                
-                @Override
-                public void keyReleased(KeyEvent keyEvent) {
-                    titleBound.setTemp(textArea.getText());
-                    if (livePreview) {
-                        titleBound.testWithoutException();
-                    }
-                    onAction();
-                }
-            });
-            //dialog.add(scrollPane, BorderLayout.CENTER);
-            tabbedPane.addTab(Standard.localize("Test"), scrollPane); //TODO What if language reloads?
-            final JPanel panel = new JPanel();
-            button_ok.addActionListener((actionEvent) -> {
-                finishWithoutException();
-                hide();
-            });
-            button_cancel.addActionListener((actionEvent) -> {
-                resetWithoutException();
-                hide();
-            });
-            button_reset.addActionListener((actionEvent) -> {
-                resetWithoutException();
-                onAction();
-            });
-            button_apply.addActionListener((actionEvent) -> {
-                finishWithoutException();
-                onAction();
-            });
-            panel.setLayout(new FlowLayout(FlowLayout.TRAILING));
-            panel.add(button_ok);
-            panel.add(button_cancel);
-            panel.add(button_reset);
-            panel.add(button_apply);
-            dialog.add(panel, BorderLayout.SOUTH);
-        }
+        protected abstract void onAction();
         
-        private void init() {
-            dialog.setResizable(false);
-            dialog.setLayout(new BorderLayout());
-            tabbedPane.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
-            dialog.add(tabbedPane, BorderLayout.CENTER);
-        }
+        protected abstract boolean isEdited();
         
-        private void initIconImage(AdvancedFile advancedFile) {
-            try (final InputStream inputStream = advancedFile.createInputStream()) {
-                dialog.setIconImage(ImageIO.read(inputStream));
-            } catch (Exception ex) {
-                Logger.logError("Error while loading icon for dialog", ex);
-            }
-        }
-        
-        private void initListeners() {
-            dialog.addWindowListener(new WindowListener() {
-                @Override
-                public void windowOpened(WindowEvent e) {
-                }
-                
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    closing();
-                    hide();
-                }
-                
-                @Override
-                public void windowClosed(WindowEvent e) {
-                }
-                
-                @Override
-                public void windowIconified(WindowEvent e) {
-                }
-                
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                }
-                
-                @Override
-                public void windowActivated(WindowEvent e) {
-                }
-                
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-                }
-            });
-        }
-        
-        protected void showing() {
-            titleBound.updateWithoutException();
-            onAction();
-        }
-        
-        protected void closing() {
-            resetWithoutException();
-        }
-        
-        public ConsoleSettings showAtConsole() {
-            return show(frame);
-        }
-        
-        public ConsoleSettings show(Component component) {
-            dialog.pack();
-            dialog.setLocationRelativeTo(component);
-            showing();
-            dialog.setVisible(true);
-            return this;
-        }
-        
-        public ConsoleSettings hide() {
-            dialog.setVisible(false);
-            return this;
-        }
-        
-        protected void onAction() {
-            final boolean edited = isEdited();
-            button_reset.setEnabled(edited);
-            button_apply.setEnabled(edited);
-        }
-        
-        protected boolean isEdited() {
-            return titleBound.isDifferent();
-        }
-        
-        protected boolean isNotEdited() {
-            return titleBound.isSame();
-        }
-        
-        @Override
-        public boolean reloadLanguage() throws Exception {
-            dialog.setTitle(Standard.localize(LANGUAGE_KEY_SETTINGS));
-            button_ok.setText(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
-            button_cancel.setText(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
-            button_reset.setText(new String(Standard.localize(LANGUAGE_KEY_BUTTON_RESET).getBytes(), "UTF-8")); //FIXME Why is this not working?
-            button_apply.setText(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
-            dialog.invalidate();
-            dialog.repaint();
-            return true;
-        }
-        
-        @Override
-        public boolean unloadLanguage() throws Exception {
-            return true;
-        }
-        
-        @Override
-        public Boolean finish() throws Exception {
-            titleBound.finish();
-            return true;
-        }
-        
-        @Override
-        public boolean reset() throws Exception {
-            boolean good = true;
-            if (!titleBound.reset()) {
-                good = false;
-            }
-            return good;
-        }
+        protected abstract boolean isNotEdited();
         
     }
     
