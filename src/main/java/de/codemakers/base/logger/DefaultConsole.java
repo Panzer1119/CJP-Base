@@ -23,16 +23,18 @@ import org.apache.commons.text.StringSubstitutor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DefaultConsole extends Console<AdvancedLeveledLogger> {
     
@@ -154,7 +156,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         protected final UpdatableBoundResettableVariable<String> titleBound = new UpdatableBoundResettableVariable<>(frame::getTitle, frame::setTitle); //FIXME Testing only //This is working great!
         protected final UpdatableBoundResettableVariable<String> logFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getLogFormat, DefaultConsole.this::setLogFormat); //FIXME Testing only
         protected final UpdatableBoundResettableVariable<String> sourceFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getSourceFormat, DefaultConsole.this::setSourceFormat); //FIXME Testing only
-    
+        
         protected final boolean livePreview = true; //FIXME Testing only?
         
         public DefaultConsoleSettings(AdvancedFile iconAdvancedFile) {
@@ -227,19 +229,21 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             //TODO Test start
             panel_tab_view.setLayout(new GridLayout(2, 2));
             panel_tab_view.add(new JLabel("Log Format")); //FIXME Language reloading!!!
-            final JTextArea textArea_logFormat = new JTextArea(getLogFormat());
-            textArea_logFormat.addKeyListener(new KeyListener() {
+            final JTextPane textPane_logFormat = new JTextPane();
+            final CustomDocumentFilter customDocumentFilter_1 = new CustomDocumentFilter(textPane_logFormat, Arrays.asList(Logger.LOG_FORMAT_TIMESTAMP, Logger.LOG_FORMAT_THREAD, Logger.LOG_FORMAT_SOURCE, Logger.LOG_FORMAT_LOG_LEVEL, Logger.LOG_FORMAT_OBJECT));
+            textPane_logFormat.setText(getLogFormat());
+            textPane_logFormat.addKeyListener(new KeyListener() {
                 @Override
                 public void keyTyped(KeyEvent keyEvent) {
                 }
-    
+                
                 @Override
                 public void keyPressed(KeyEvent keyEvent) {
                 }
-    
+                
                 @Override
                 public void keyReleased(KeyEvent keyEvent) {
-                    logFormatBound.setTemp(textArea_logFormat.getText());
+                    logFormatBound.setTemp(textPane_logFormat.getText());
                     if (livePreview) {
                         logFormatBound.testWithoutException();
                     }
@@ -248,27 +252,29 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             });
             logFormatBound.setToughConsumer((logFormat) -> {
                 DefaultConsole.this.setLogFormat(logFormat);
-                if (!textArea_logFormat.getText().equals(logFormat)) {
-                    textArea_logFormat.setText(logFormat);
+                if (!textPane_logFormat.getText().equals(logFormat)) {
+                    textPane_logFormat.setText(logFormat);
                 }
                 DefaultConsole.this.reloadWithoutException(); //FIXME Or should this be executed in the finish method?
             });
             //panel_tab_view.add(textArea_logFormat);
-            panel_tab_view.add(new JScrollPane(textArea_logFormat));
+            panel_tab_view.add(new JScrollPane(textPane_logFormat));
             panel_tab_view.add(new JLabel("Source Format")); //FIXME Language reloading!!!
-            final JTextArea textArea_sourceFormat = new JTextArea(getSourceFormat());
-            textArea_sourceFormat.addKeyListener(new KeyListener() {
+            final JTextPane textPane_sourceFormat = new JTextPane();
+            final CustomDocumentFilter customDocumentFilter_2 = new CustomDocumentFilter(textPane_sourceFormat, Arrays.asList("test", Logger.SOURCE_FORMAT_CLASS, Logger.SOURCE_FORMAT_METHOD, Logger.SOURCE_FORMAT_FILE, Logger.SOURCE_FORMAT_LINE));
+            textPane_sourceFormat.setText(getSourceFormat());
+            textPane_sourceFormat.addKeyListener(new KeyListener() {
                 @Override
                 public void keyTyped(KeyEvent keyEvent) {
                 }
-        
+                
                 @Override
                 public void keyPressed(KeyEvent keyEvent) {
                 }
-        
+                
                 @Override
                 public void keyReleased(KeyEvent keyEvent) {
-                    sourceFormatBound.setTemp(textArea_sourceFormat.getText());
+                    sourceFormatBound.setTemp(textPane_sourceFormat.getText());
                     if (livePreview) {
                         sourceFormatBound.testWithoutException();
                     }
@@ -277,13 +283,13 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             });
             sourceFormatBound.setToughConsumer((sourceFormat) -> {
                 DefaultConsole.this.setSourceFormat(sourceFormat);
-                if (!textArea_sourceFormat.getText().equals(sourceFormat)) {
-                    textArea_sourceFormat.setText(sourceFormat);
+                if (!textPane_sourceFormat.getText().equals(sourceFormat)) {
+                    textPane_sourceFormat.setText(sourceFormat);
                 }
                 DefaultConsole.this.reloadWithoutException(); //FIXME Or should this be executed in the finish method?
             });
             //panel_tab_view.add(textArea_sourceFormat);
-            panel_tab_view.add(new JScrollPane(textArea_sourceFormat));
+            panel_tab_view.add(new JScrollPane(textPane_sourceFormat));
             //TODO Test end
             tabbedPane.addTab(Standard.localize(LANGUAGE_KEY_TAB_VIEW), panel_tab_view); //TODO What if language reloads?
             dialog.add(tabbedPane, BorderLayout.CENTER);
@@ -419,6 +425,84 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
                 good = false;
             }
             return good;
+        }
+        
+        public class CustomDocumentFilter extends DocumentFilter {
+            
+            private final JTextPane textPane;
+            private final StyledDocument styledDocument;
+            private final StyleContext styleContext = StyleContext.getDefaultStyleContext();
+            private final AttributeSet attributeSetOrangeFont = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Color.ORANGE);
+            private final AttributeSet attributeSetRedFont = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Color.RED);
+            private final AttributeSet attributeSetBlackFont = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Color.BLACK);
+            private final List<String> tokens = new ArrayList<>();
+            
+            private final Pattern pattern_keyWords;
+            private final Pattern pattern_invalidWords = Pattern.compile("\\$\\{.*?\\}");
+            
+            public CustomDocumentFilter(JTextPane textPane, List<String> tokens) {
+                this.textPane = textPane;
+                styledDocument = textPane.getStyledDocument();
+                ((AbstractDocument) textPane.getDocument()).setDocumentFilter(this);
+                this.tokens.addAll(tokens);
+                pattern_keyWords = buildPatternKeyWords();
+            }
+            
+            @Override
+            public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+                super.remove(fb, offset, length);
+                handleTextChanged();
+            }
+            
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                super.insertString(fb, offset, string, attr);
+                handleTextChanged();
+            }
+            
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                super.replace(fb, offset, length, text, attrs);
+                handleTextChanged();
+            }
+            
+            private void handleTextChanged() {
+                SwingUtilities.invokeLater(this::updateTextStyles);
+            }
+            
+            private Pattern buildPatternKeyWords() {
+                final StringBuilder stringBuilder = new StringBuilder();
+                for (String token : tokens) {
+                    Logger.logDebug("token=\"" + token + "\"");
+                    stringBuilder.append("\\b");
+                    stringBuilder.append("\\$\\{");
+                    stringBuilder.append(token);
+                    stringBuilder.append("\\}");
+                    stringBuilder.append("\\b|");
+                }
+                if (stringBuilder.length() > 0) {
+                    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+                }
+                Logger.logDebug("stringBuilder=" + stringBuilder);
+                return Pattern.compile(stringBuilder.toString());
+            }
+            
+            private void updateTextStyles() {
+                styledDocument.setCharacterAttributes(0, textPane.getText().length(), attributeSetBlackFont, true);
+                replacePattern(pattern_invalidWords, attributeSetRedFont);
+                //replacePattern(pattern_keyWords, attributeSetOrangeFont);
+                for (String token : tokens) {
+                    replacePattern(Pattern.compile("\\$\\{" + token + "\\}"), attributeSetOrangeFont); //FIXME Improve this
+                }
+            }
+            
+            private void replacePattern(Pattern pattern, AttributeSet attributeSet) {
+                final Matcher matcher = pattern.matcher(textPane.getText());
+                while (matcher.find()) {
+                    styledDocument.setCharacterAttributes(matcher.start(), matcher.end() - matcher.start(), attributeSet, false);
+                }
+            }
+            
         }
         
     }
