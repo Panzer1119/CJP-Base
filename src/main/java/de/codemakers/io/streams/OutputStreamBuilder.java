@@ -25,10 +25,7 @@ import java.io.DataOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Objects;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterOutputStream;
+import java.util.zip.*;
 
 public class OutputStreamBuilder {
     
@@ -79,12 +76,36 @@ public class OutputStreamBuilder {
         return setOutputStream(new DeflaterOutputStream(outputStream, deflater));
     }
     
+    public OutputStreamBuilder toDeflaterOutputStream(Deflater deflater, int bufferSize) {
+        return setOutputStream(new DeflaterOutputStream(outputStream, deflater, bufferSize));
+    }
+    
     public OutputStreamBuilder toInflaterOutputStream() {
         return setOutputStream(new InflaterOutputStream(outputStream));
     }
     
     public OutputStreamBuilder toInflaterOutputStream(Inflater inflater) {
         return setOutputStream(new InflaterOutputStream(outputStream, inflater));
+    }
+    
+    public OutputStreamBuilder toInflaterOutputStream(Inflater inflater, int bufferSize) {
+        return setOutputStream(new InflaterOutputStream(outputStream, inflater, bufferSize));
+    }
+    
+    public OutputStreamBuilder toGZIPInputStream() {
+        try {
+            return setOutputStream(new GZIPOutputStream(outputStream));
+        } catch (Exception ex) {
+            throw new RethrownRuntimeException(ex);
+        }
+    }
+    
+    public OutputStreamBuilder toGZIPInputStream(int bufferSize) {
+        try {
+            return setOutputStream(new GZIPOutputStream(outputStream, bufferSize));
+        } catch (Exception ex) {
+            throw new RethrownRuntimeException(ex);
+        }
     }
     
     public OutputStreamBuilder toCipherOutputStream(Cipher cipher) {
