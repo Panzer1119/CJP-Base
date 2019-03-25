@@ -91,4 +91,9 @@ public class OutputStreamBuilder {
         return setOutputStream(new CipherOutputStream(outputStream, cipher));
     }
     
+    @Override
+    public String toString() {
+        return "OutputStreamBuilder{" + "outputStream=" + outputStream + '}';
+    }
+    
 }
