@@ -25,10 +25,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterOutputStream;
+import java.util.zip.*;
 
 public class OutputStreamConverter implements ToughFunction<OutputStream, OutputStream> {
     
@@ -101,19 +98,31 @@ public class OutputStreamConverter implements ToughFunction<OutputStream, Output
         return addOutputStreamFunction(DeflaterOutputStream::new);
     }
     
-    public OutputStreamConverter toDeflaterOutputStream(Deflater deflater) {
+    public OutputStreamConverter toDeflaterOutputStream(final Deflater deflater) {
         return addOutputStreamFunction((outputStream) -> new DeflaterOutputStream(outputStream, deflater));
+    }
+    
+    public OutputStreamConverter toDeflaterOutputStream(final Deflater deflater, final int bufferSize) {
+        return addOutputStreamFunction((outputStream) -> new DeflaterOutputStream(outputStream, deflater, bufferSize));
     }
     
     public OutputStreamConverter toInflaterOutputStream() {
         return addOutputStreamFunction(InflaterOutputStream::new);
     }
     
-    public OutputStreamConverter toInflaterOutputStream(Inflater inflater) {
+    public OutputStreamConverter toInflaterOutputStream(final Inflater inflater) {
         return addOutputStreamFunction((outputStream) -> new InflaterOutputStream(outputStream, inflater));
     }
     
-    public OutputStreamConverter toCipherOutputStream(Cipher cipher) {
+    public OutputStreamConverter toInflaterOutputStream(final Inflater inflater, final int bufferSize) {
+        return addOutputStreamFunction((outputStream) -> new InflaterOutputStream(outputStream, inflater, bufferSize));
+    }
+    
+    public OutputStreamConverter toGZIPOutputStream() {
+        return addOutputStreamFunction(GZIPOutputStream::new);
+    }
+    
+    public OutputStreamConverter toCipherOutputStream(final Cipher cipher) {
         return addOutputStreamFunction((outputStream) -> new CipherOutputStream(outputStream, cipher));
     }
     

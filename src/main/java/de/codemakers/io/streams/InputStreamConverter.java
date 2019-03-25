@@ -25,10 +25,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterInputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
+import java.util.zip.*;
 
 public class InputStreamConverter implements ToughFunction<InputStream, InputStream> {
     
@@ -101,19 +98,31 @@ public class InputStreamConverter implements ToughFunction<InputStream, InputStr
         return addInputStreamFunction(DeflaterInputStream::new);
     }
     
-    public InputStreamConverter toDeflaterInputStream(Deflater deflater) {
+    public InputStreamConverter toDeflaterInputStream(final Deflater deflater) {
         return addInputStreamFunction((inputStream) -> new DeflaterInputStream(inputStream, deflater));
+    }
+    
+    public InputStreamConverter toDeflaterInputStream(final Deflater deflater, final int bufferSize) {
+        return addInputStreamFunction((inputStream) -> new DeflaterInputStream(inputStream, deflater, bufferSize));
     }
     
     public InputStreamConverter toInflaterInputStream() {
         return addInputStreamFunction(InflaterInputStream::new);
     }
     
-    public InputStreamConverter toInflaterInputStream(Inflater inflater) {
+    public InputStreamConverter toInflaterInputStream(final Inflater inflater) {
         return addInputStreamFunction((inputStream) -> new InflaterInputStream(inputStream, inflater));
     }
     
-    public InputStreamConverter toCipherInputStream(Cipher cipher) {
+    public InputStreamConverter toInflaterInputStream(final Inflater inflater, final int bufferSize) {
+        return addInputStreamFunction((inputStream) -> new InflaterInputStream(inputStream, inflater, bufferSize));
+    }
+    
+    public InputStreamConverter toGZIPInputStream() {
+        return addInputStreamFunction(GZIPInputStream::new);
+    }
+    
+    public InputStreamConverter toCipherInputStream(final Cipher cipher) {
         return addInputStreamFunction((inputStream) -> new CipherInputStream(inputStream, cipher));
     }
     
