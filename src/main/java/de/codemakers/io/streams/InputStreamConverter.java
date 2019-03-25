@@ -58,6 +58,13 @@ public class InputStreamConverter implements ToughFunction<InputStream, InputStr
         return this;
     }
     
+    public InputStreamConverter addInputStreamFunctions(ToughFunction<InputStream, InputStream>... inputStreamFunctions) {
+        for (ToughFunction<InputStream, InputStream> inputStreamFunction : inputStreamFunctions) {
+            addInputStreamFunction(inputStreamFunction);
+        }
+        return this;
+    }
+    
     @Override
     public InputStream apply(InputStream inputStream) throws Exception {
         if (inputStreamFunction == null || inputStream == null) {

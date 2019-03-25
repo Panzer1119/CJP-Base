@@ -58,6 +58,13 @@ public class OutputStreamConverter implements ToughFunction<OutputStream, Output
         return this;
     }
     
+    public OutputStreamConverter addOutputStreamFunctions(ToughFunction<OutputStream, OutputStream>... outputStreamFunctions) {
+        for (ToughFunction<OutputStream, OutputStream> outputStreamFunction : outputStreamFunctions) {
+            addOutputStreamFunction(outputStreamFunction);
+        }
+        return this;
+    }
+    
     @Override
     public OutputStream apply(OutputStream outputStream) throws Exception {
         if (outputStreamFunction == null || outputStream == null) {
