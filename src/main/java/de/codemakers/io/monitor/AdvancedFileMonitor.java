@@ -19,6 +19,8 @@ package de.codemakers.io.monitor;
 import de.codemakers.base.util.HashUtil;
 import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.monitor.AbstractMonitor;
+import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.io.IOUtil;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.listeners.AdvancedFileChangeListener;
 
@@ -27,18 +29,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFileChangeListener {
     
+    protected static final Hasher DEFAULT_HASHER = HashUtil.createHasher64XX();
     protected static final Map<String, byte[]> HASHES = new ConcurrentHashMap<>();
     
+    protected final Map<String, byte[]> hashes;
     protected final List<AdvancedFileChangeListener> advancedFileChangeListeners = new ArrayList<>();
     protected Hasher hasher;
     protected AdvancedFile root;
     protected boolean recursive = true;
     
     public AdvancedFileMonitor(AdvancedFile root) {
-        this(root, HashUtil.createHasher64XX());
+        this(root, DEFAULT_HASHER);
     }
     
     public AdvancedFileMonitor(AdvancedFile root, Hasher hasher) {
+        this.hashes = (hasher == DEFAULT_HASHER) ? HASHES : new ConcurrentHashMap<>();
         this.root = Objects.requireNonNull(root, "root");
         this.hasher = Objects.requireNonNull(hasher, "hasher");
     }
@@ -135,6 +140,39 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
     @Override
     public String toString() {
         return "AdvancedFileMonitor{" + "period=" + period + '}';
+    }
+    
+    public static byte[] generateHashForAdvancedFile(AdvancedFile advancedFile, boolean recursive, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes) {
+        if (advancedFile.isFile()) {
+            return generateHashForFile(advancedFile, hasherToughSupplier, hashes);
+        } else {
+            return generateHashForDirectory(advancedFile, recursive, hasherToughSupplier, hashes);
+        }
+    }
+    
+    public static byte[] generateHashForFile(AdvancedFile file, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes) {
+        final byte[] hash = file.hashWithoutException(hasherToughSupplier.getWithoutException());
+        hashes.put(file.toExactString(), hash);
+        return hash;
+    }
+    
+    public static byte[] generateHashForDirectory(AdvancedFile directory, boolean recursive, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes) {
+        final Hasher hasher = hasherToughSupplier.getWithoutException();
+        final byte[] hash = new byte[hasher.getHashLength()];
+        for (AdvancedFile advancedFile : directory.listFiles(false)) {
+            if (advancedFile.isFile()) {
+                IOUtil.loadInputStreamToHasher(advancedFile.createInputStreamWithoutException(), hasher);
+            } else {
+                hasher.updateWithoutException(advancedFile.getName().getBytes());
+                if (recursive) {
+                    final byte[] temp = generateHashForDirectory(advancedFile, true, hasherToughSupplier, hashes);
+                    hasher.updateWithoutException(temp);
+                }
+            }
+        }
+        System.arraycopy(hasher.hashWithoutException(), 0, hash, 0, hash.length);
+        hashes.put(directory.toExactString(), hash);
+        return hash;
     }
     
 }
