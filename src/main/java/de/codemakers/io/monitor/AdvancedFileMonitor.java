@@ -19,6 +19,7 @@ package de.codemakers.io.monitor;
 import de.codemakers.base.util.HashUtil;
 import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.monitor.AbstractMonitor;
+import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.listeners.AdvancedFileChangeListener;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class AdvancedFileMonitor extends AbstractMonitor {
+public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFileChangeListener {
     
     protected final List<AdvancedFileChangeListener> advancedFileChangeListeners = new ArrayList<>();
     protected Hasher hasher;
@@ -73,6 +74,46 @@ public class AdvancedFileMonitor extends AbstractMonitor {
     @Override
     public String toString() {
         return "AdvancedFileMonitor{" + "period=" + period + '}';
+    }
+    
+    @Override
+    public void onFileCreated(AdvancedFile file) {
+        advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onFileCreated(file));
+    }
+    
+    @Override
+    public void onFileModified(AdvancedFile file) {
+        advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onFileModified(file));
+    }
+    
+    @Override
+    public void onFileDeleted(AdvancedFile file) {
+        advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onFileDeleted(file));
+    }
+    
+    @Override
+    public void onFileRenamed(AdvancedFile file) {
+        advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onFileRenamed(file));
+    }
+    
+    @Override
+    public void onDirectoryCreated(AdvancedFile directory) {
+        advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onDirectoryCreated(directory));
+    }
+    
+    @Override
+    public void onDirectoryModified(AdvancedFile directory) {
+        advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onDirectoryModified(directory));
+    }
+    
+    @Override
+    public void onDirectoryDeleted(AdvancedFile directory) {
+        advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onDirectoryDeleted(directory));
+    }
+    
+    @Override
+    public void onDirectoryRenamed(AdvancedFile directory) {
+        advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onDirectoryRenamed(directory));
     }
     
 }
