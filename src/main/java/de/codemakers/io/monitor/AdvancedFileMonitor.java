@@ -22,21 +22,24 @@ import de.codemakers.base.util.monitor.AbstractMonitor;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.listeners.AdvancedFileChangeListener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFileChangeListener {
     
+    protected static final Map<String, byte[]> HASHES = new ConcurrentHashMap<>();
+    
     protected final List<AdvancedFileChangeListener> advancedFileChangeListeners = new ArrayList<>();
     protected Hasher hasher;
+    protected AdvancedFile root;
+    protected boolean recursive = true;
     
-    public AdvancedFileMonitor() {
-        this(HashUtil.createHasher64XX());
+    public AdvancedFileMonitor(AdvancedFile root) {
+        this(root, HashUtil.createHasher64XX());
     }
     
-    public AdvancedFileMonitor(Hasher hasher) {
+    public AdvancedFileMonitor(AdvancedFile root, Hasher hasher) {
+        this.root = Objects.requireNonNull(root, "root");
         this.hasher = Objects.requireNonNull(hasher, "hasher");
     }
     
@@ -61,6 +64,24 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
         return this;
     }
     
+    public AdvancedFile getRoot() {
+        return root;
+    }
+    
+    private AdvancedFileMonitor setRoot(AdvancedFile root) { //TODO Make it public accessible?
+        this.root = root;
+        return this;
+    }
+    
+    public boolean isRecursive() {
+        return recursive;
+    }
+    
+    public AdvancedFileMonitor setRecursive(boolean recursive) {
+        this.recursive = recursive;
+        return this;
+    }
+    
     @Override
     public boolean start() throws Exception {
         return false;
@@ -69,11 +90,6 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
     @Override
     public boolean stop() throws Exception {
         return false;
-    }
-    
-    @Override
-    public String toString() {
-        return "AdvancedFileMonitor{" + "period=" + period + '}';
     }
     
     @Override
@@ -114,6 +130,11 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
     @Override
     public void onDirectoryRenamed(AdvancedFile directory) {
         advancedFileChangeListeners.forEach((advancedFileChangeListener) -> advancedFileChangeListener.onDirectoryRenamed(directory));
+    }
+    
+    @Override
+    public String toString() {
+        return "AdvancedFileMonitor{" + "period=" + period + '}';
     }
     
 }
