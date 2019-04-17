@@ -19,11 +19,16 @@ package de.codemakers.io.monitor;
 import de.codemakers.base.util.HashUtil;
 import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.monitor.AbstractMonitor;
+import de.codemakers.io.listeners.AdvancedFileChangeListener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class AdvancedFileMonitor extends AbstractMonitor {
     
+    protected final List<AdvancedFileChangeListener> advancedFileChangeListeners = new ArrayList<>();
     protected Hasher hasher;
     
     public AdvancedFileMonitor() {
@@ -32,6 +37,18 @@ public class AdvancedFileMonitor extends AbstractMonitor {
     
     public AdvancedFileMonitor(Hasher hasher) {
         this.hasher = Objects.requireNonNull(hasher, "hasher");
+    }
+    
+    public boolean addAdvancedFileChangeListeners(AdvancedFileChangeListener... advancedFileChangeListeners) {
+        return this.advancedFileChangeListeners.addAll(Arrays.asList(advancedFileChangeListeners));
+    }
+    
+    public boolean removeAdvancedFileChangeListeners(AdvancedFileChangeListener... advancedFileChangeListeners) {
+        return this.advancedFileChangeListeners.removeAll(Arrays.asList(advancedFileChangeListeners));
+    }
+    
+    public List<AdvancedFileChangeListener> getAdvancedFileChangeListeners() {
+        return advancedFileChangeListeners;
     }
     
     public Hasher getHasher() {
