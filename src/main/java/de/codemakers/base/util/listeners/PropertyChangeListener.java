@@ -21,7 +21,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
 @FunctionalInterface
-public interface ChangeListener<T> {
+public interface PropertyChangeListener<T> {
     
     boolean onChange(T oldValue, T newValue) throws Exception;
     
