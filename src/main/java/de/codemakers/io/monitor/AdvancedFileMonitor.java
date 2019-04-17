@@ -16,12 +16,12 @@
 
 package de.codemakers.io.monitor;
 
-import de.codemakers.base.util.HashUtil;
 import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.monitor.AbstractMonitor;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.listeners.AdvancedFileChangeListener;
+import de.codemakers.security.util.SecureHashUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFileChangeListener {
     
-    protected static final ToughSupplier<Hasher> DEFAULT_HASHER_TOUGH_SUPPLIER = () -> HashUtil.createHasher64XX();
+    protected static final ToughSupplier<Hasher> DEFAULT_HASHER_TOUGH_SUPPLIER = () -> SecureHashUtil.createHasher20SHA_1();
     protected static final Map<String, byte[]> HASHES = new ConcurrentHashMap<>();
     
     protected final AtomicBoolean running = new AtomicBoolean(false);
