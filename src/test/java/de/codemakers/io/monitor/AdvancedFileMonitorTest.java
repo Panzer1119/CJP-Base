@@ -76,7 +76,7 @@ public class AdvancedFileMonitorTest {
         Logger.log("advancedFileMonitor=" + advancedFileMonitor);
         Standard.addShutdownHook(advancedFileMonitor::stop);
         Standard.async(() -> {
-            Thread.sleep(10000);
+            Thread.sleep(20000);
             Logger.log("Exiting");
             System.exit(0);
         });
