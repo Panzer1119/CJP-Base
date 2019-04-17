@@ -20,9 +20,9 @@ import de.codemakers.base.util.HashUtil;
 import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.monitor.AbstractMonitor;
 import de.codemakers.base.util.tough.ToughSupplier;
-import de.codemakers.io.IOUtil;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.listeners.AdvancedFileChangeListener;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +36,11 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
     protected final AtomicBoolean running = new AtomicBoolean(false);
     protected Timer timer = new Timer();
     protected final Map<String, byte[]> hashes;
+    protected final Map<String, byte[]> hashes_old = new ConcurrentHashMap<>();
+    protected final Set<String> files = new HashSet<>();
+    protected final Set<String> files_old = new HashSet<>();
+    protected final Set<String> directories = new HashSet<>();
+    protected final Set<String> directories_old = new HashSet<>();
     protected final List<AdvancedFileChangeListener> advancedFileChangeListeners = new ArrayList<>();
     protected ToughSupplier<Hasher> hasherToughSupplier;
     protected AdvancedFile root;
@@ -167,7 +172,53 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
     
     @Override
     public Boolean update(Void aVoid) throws Exception {
+        hashes_old.clear();
+        hashes_old.putAll(hashes);
+        files_old.clear();
+        directories_old.clear();
+        files_old.addAll(files);
+        directories_old.addAll(directories);
+        files.clear();
+        directories.clear();
         generateHashForAdvancedFile(root);
+        for (String file_old : files_old) {
+            if (!files.contains(file_old)) {
+                //TODO Determined if it was renamed here!
+                final AdvancedFile advancedFile = new AdvancedFile(file_old);
+                onFileDeleted(advancedFile);
+            }
+        }
+        for (String directory_old : directories_old) {
+            if (!directories.contains(directory_old)) {
+                //TODO Determined if it was renamed here!
+                final AdvancedFile advancedFile = new AdvancedFile(directory_old);
+                onDirectoryDeleted(advancedFile);
+            }
+        }
+        for (String file : files) {
+            if (!files_old.contains(file)) {
+                //TODO Determined if it was renamed here!
+                final AdvancedFile advancedFile = new AdvancedFile(file);
+                onFileCreated(advancedFile);
+            }
+        }
+        for (String directory : directories) {
+            if (!directories_old.contains(directory)) {
+                //TODO Determined if it was renamed here!
+                final AdvancedFile advancedFile = new AdvancedFile(directory);
+                onDirectoryCreated(advancedFile);
+            }
+        }
+        CollectionUtils.intersection(files, files_old).forEach((file) -> {
+            if (!Arrays.equals(hashes.get(file), hashes_old.get(file))) {
+                onFileModified(new AdvancedFile(file));
+            }
+        });
+        CollectionUtils.intersection(directories, directories_old).forEach((directory) -> {
+            if (!Arrays.equals(hashes.get(directory), hashes_old.get(directory))) {
+                onDirectoryModified(new AdvancedFile(directory));
+            }
+        });
         return true;
     }
     
@@ -177,39 +228,42 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
     }
     
     public byte[] generateHashForAdvancedFile(AdvancedFile advancedFile) {
-        return generateHashForAdvancedFile(advancedFile, recursive, hasherToughSupplier, hashes);
+        return generateHashForAdvancedFile(advancedFile, recursive, hasherToughSupplier, hashes, files, directories);
     }
     
-    public static byte[] generateHashForAdvancedFile(AdvancedFile advancedFile, boolean recursive, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes) {
+    public static byte[] generateHashForAdvancedFile(AdvancedFile advancedFile, boolean recursive, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes, Set<String> files, Set<String> directories) {
         if (advancedFile.isFile()) {
-            return generateHashForFile(advancedFile, hasherToughSupplier, hashes);
+            return generateHashForFile(advancedFile, hasherToughSupplier, hashes, files);
         } else {
-            return generateHashForDirectory(advancedFile, recursive, hasherToughSupplier, hashes);
+            return generateHashForDirectory(advancedFile, recursive, hasherToughSupplier, hashes, files, directories);
         }
     }
     
-    public static byte[] generateHashForFile(AdvancedFile file, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes) {
+    public static byte[] generateHashForFile(AdvancedFile file, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes, Set<String> files) {
         final byte[] hash = file.hashWithoutException(hasherToughSupplier.getWithoutException());
         hashes.put(file.toExactString(), hash);
+        files.add(file.toExactString());
         return hash;
     }
     
-    public static byte[] generateHashForDirectory(AdvancedFile directory, boolean recursive, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes) {
+    public static byte[] generateHashForDirectory(AdvancedFile directory, boolean recursive, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes, Set<String> files, Set<String> directories) {
         final Hasher hasher = hasherToughSupplier.getWithoutException();
         final byte[] hash = new byte[hasher.getHashLength()];
         for (AdvancedFile advancedFile : directory.listFiles(false)) {
             if (advancedFile.isFile()) {
-                IOUtil.loadInputStreamToHasher(advancedFile.createInputStreamWithoutException(), hasher);
+                final byte[] temp = generateHashForFile(advancedFile, hasherToughSupplier, hashes, files);
+                hasher.updateWithoutException(temp);
             } else {
                 hasher.updateWithoutException(advancedFile.getName().getBytes());
                 if (recursive) {
-                    final byte[] temp = generateHashForDirectory(advancedFile, true, hasherToughSupplier, hashes);
+                    final byte[] temp = generateHashForDirectory(advancedFile, true, hasherToughSupplier, hashes, files, directories);
                     hasher.updateWithoutException(temp);
                 }
             }
         }
         System.arraycopy(hasher.hashWithoutException(), 0, hash, 0, hash.length);
         hashes.put(directory.toExactString(), hash);
+        directories.add(directory.toExactString());
         return hash;
     }
     
