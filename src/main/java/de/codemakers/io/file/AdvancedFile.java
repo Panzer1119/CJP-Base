@@ -419,6 +419,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
+    public String toExactString() {
+        return (extern ? PREFIX_EXTERN : PREFIX_INTERN) + getAbsolutePath();
+    }
+    
+    @Override
     public AdvancedFile getAbsoluteFile() {
         if (isAbsolute()) { // Absolute file
             return copy();

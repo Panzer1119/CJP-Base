@@ -80,6 +80,11 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
+    public String toExactString() {
+        return getAbsolutePath();
+    }
+    
+    @Override
     public ExternFile getAbsoluteFile() {
         return new ExternFile(file.getAbsoluteFile());
     }

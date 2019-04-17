@@ -44,6 +44,8 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract String getAbsolutePath();
     
+    public abstract String toExactString();
+    
     public abstract T getAbsoluteFile();
     
     public abstract T getParentFile();
