@@ -29,23 +29,27 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFileChangeListener {
     
-    protected static final Hasher DEFAULT_HASHER = HashUtil.createHasher64XX();
+    protected static final ToughSupplier<Hasher> DEFAULT_HASHER_TOUGH_SUPPLIER = () -> HashUtil.createHasher64XX();
     protected static final Map<String, byte[]> HASHES = new ConcurrentHashMap<>();
     
     protected final Map<String, byte[]> hashes;
     protected final List<AdvancedFileChangeListener> advancedFileChangeListeners = new ArrayList<>();
-    protected Hasher hasher;
+    protected ToughSupplier<Hasher> hasherToughSupplier;
     protected AdvancedFile root;
     protected boolean recursive = true;
     
     public AdvancedFileMonitor(AdvancedFile root) {
-        this(root, DEFAULT_HASHER);
+        this(root, DEFAULT_HASHER_TOUGH_SUPPLIER);
     }
     
-    public AdvancedFileMonitor(AdvancedFile root, Hasher hasher) {
-        this.hashes = (hasher == DEFAULT_HASHER) ? HASHES : new ConcurrentHashMap<>();
+    public AdvancedFileMonitor(AdvancedFile root, ToughSupplier<Hasher> hasherToughSupplier) {
+        this.hashes = (hasherToughSupplier == DEFAULT_HASHER_TOUGH_SUPPLIER) ? HASHES : new ConcurrentHashMap<>();
         this.root = Objects.requireNonNull(root, "root");
-        this.hasher = Objects.requireNonNull(hasher, "hasher");
+        this.hasherToughSupplier = Objects.requireNonNull(hasherToughSupplier, "hasherToughSupplier");
+    }
+    
+    public Map<String, byte[]> getHashes() {
+        return hashes;
     }
     
     public boolean addAdvancedFileChangeListeners(AdvancedFileChangeListener... advancedFileChangeListeners) {
@@ -60,12 +64,12 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
         return advancedFileChangeListeners;
     }
     
-    public Hasher getHasher() {
-        return hasher;
+    public ToughSupplier<Hasher> getHasherToughSupplier() {
+        return hasherToughSupplier;
     }
     
-    public AdvancedFileMonitor setHasher(Hasher hasher) {
-        this.hasher = hasher;
+    public AdvancedFileMonitor setHasherToughSupplier(ToughSupplier<Hasher> hasherToughSupplier) {
+        this.hasherToughSupplier = hasherToughSupplier;
         return this;
     }
     
