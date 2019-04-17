@@ -19,7 +19,10 @@ package de.codemakers.io.file;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.entities.data.Data;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.interfaces.Hashable;
+import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.io.IOUtil;
 import de.codemakers.io.file.exceptions.is.*;
 import de.codemakers.io.file.exceptions.isnot.*;
 import de.codemakers.security.entities.SecureData;
@@ -36,7 +39,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Decryptable, Encryptable, Serializable, Signable, Verifiable {
+public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Decryptable, Encryptable, Hashable, Serializable, Signable, Verifiable {
     
     public abstract String getName();
     
@@ -894,6 +897,11 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public TrustedSecureData toTrustedSecureData(Decryptor decryptor, Verifier verifier, byte[] signature) {
         return new TrustedSecureData(readBytesWithoutException(), decryptor, signature, verifier);
+    }
+    
+    @Override
+    public byte[] hash(Hasher hasher) throws Exception {
+        return IOUtil.hashInputStream(createInputStream(), hasher);
     }
     
 }
