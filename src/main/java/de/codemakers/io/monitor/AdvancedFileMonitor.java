@@ -200,7 +200,7 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
     
     @Override
     public String toString() {
-        return "AdvancedFileMonitor{" + "period=" + period + '}';
+        return "AdvancedFileMonitor{" + "running=" + running + ", timer=" + timer + ", hashes=" + hashes + ", hashes_old=" + hashes_old + ", files=" + files + ", files_old=" + files_old + ", directories=" + directories + ", directories_old=" + directories_old + ", advancedFileChangeListeners=" + advancedFileChangeListeners + ", hasherToughSupplier=" + hasherToughSupplier + ", root=" + root + ", recursive=" + recursive + ", period=" + period + '}';
     }
     
     public byte[] generateHashForAdvancedFile(AdvancedFile advancedFile) {
