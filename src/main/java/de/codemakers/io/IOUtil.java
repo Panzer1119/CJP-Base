@@ -59,4 +59,15 @@ public class IOUtil {
         return hasher.hashWithoutException();
     }
     
+    public static Hasher loadInputStreamToHasher(InputStream inputStream, Hasher hasher) {
+        return loadInputStreamToHasher(inputStream, STANDARD_BUFFER_SIZE, hasher);
+    }
+    
+    public static Hasher loadInputStreamToHasher(InputStream inputStream, int bufferSize, Hasher hasher) {
+        if (!processInputStream(inputStream, bufferSize, (buffer, read) -> hasher.update(buffer, 0, read))) {
+            return null;
+        }
+        return hasher;
+    }
+    
 }
