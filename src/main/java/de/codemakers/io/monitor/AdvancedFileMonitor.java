@@ -181,34 +181,10 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
         files.clear();
         directories.clear();
         generateHashForAdvancedFile(root);
-        for (String file_old : files_old) {
-            if (!files.contains(file_old)) {
-                //TODO Determined if it was renamed here!
-                final AdvancedFile advancedFile = new AdvancedFile(file_old);
-                onFileDeleted(advancedFile);
-            }
-        }
-        for (String directory_old : directories_old) {
-            if (!directories.contains(directory_old)) {
-                //TODO Determined if it was renamed here!
-                final AdvancedFile advancedFile = new AdvancedFile(directory_old);
-                onDirectoryDeleted(advancedFile);
-            }
-        }
-        for (String file : files) {
-            if (!files_old.contains(file)) {
-                //TODO Determined if it was renamed here!
-                final AdvancedFile advancedFile = new AdvancedFile(file);
-                onFileCreated(advancedFile);
-            }
-        }
-        for (String directory : directories) {
-            if (!directories_old.contains(directory)) {
-                //TODO Determined if it was renamed here!
-                final AdvancedFile advancedFile = new AdvancedFile(directory);
-                onDirectoryCreated(advancedFile);
-            }
-        }
+        CollectionUtils.removeAll(files_old, files).forEach((file) -> onFileDeleted(new AdvancedFile(file))); //TODO Determined if it was renamed here!
+        CollectionUtils.removeAll(directories_old, directories).forEach((directory) -> onDirectoryDeleted(new AdvancedFile(directory))); //TODO Determined if it was renamed here!
+        CollectionUtils.removeAll(files, files_old).forEach((file) -> onFileCreated(new AdvancedFile(file)));
+        CollectionUtils.removeAll(directories, directories_old).forEach((directory) -> onDirectoryCreated(new AdvancedFile(directory)));
         CollectionUtils.intersection(files, files_old).forEach((file) -> {
             if (!Arrays.equals(hashes.get(file), hashes_old.get(file))) {
                 onFileModified(new AdvancedFile(file));
