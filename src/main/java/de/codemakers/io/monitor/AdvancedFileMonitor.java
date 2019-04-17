@@ -26,12 +26,15 @@ import de.codemakers.io.listeners.AdvancedFileChangeListener;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFileChangeListener {
     
     protected static final ToughSupplier<Hasher> DEFAULT_HASHER_TOUGH_SUPPLIER = () -> HashUtil.createHasher64XX();
     protected static final Map<String, byte[]> HASHES = new ConcurrentHashMap<>();
     
+    protected final AtomicBoolean running = new AtomicBoolean(false);
+    protected Timer timer = new Timer();
     protected final Map<String, byte[]> hashes;
     protected final List<AdvancedFileChangeListener> advancedFileChangeListeners = new ArrayList<>();
     protected ToughSupplier<Hasher> hasherToughSupplier;
@@ -91,14 +94,35 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
         return this;
     }
     
+    public boolean isRunning() {
+        return running.get();
+    }
+    
     @Override
     public boolean start() throws Exception {
-        return false;
+        if (isRunning()) {
+            return false;
+        }
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                updateWithoutException();
+            }
+        }, 0, period);
+        running.set(true);
+        return true;
     }
     
     @Override
     public boolean stop() throws Exception {
-        return false;
+        if (!isRunning()) {
+            return false;
+        }
+        timer.cancel();
+        timer.purge();
+        timer = new Timer();
+        running.set(false);
+        return true;
     }
     
     @Override
