@@ -146,6 +146,10 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
         return "AdvancedFileMonitor{" + "period=" + period + '}';
     }
     
+    public byte[] generateHashForAdvancedFile(AdvancedFile advancedFile) {
+        return generateHashForAdvancedFile(advancedFile, recursive, hasherToughSupplier, hashes);
+    }
+    
     public static byte[] generateHashForAdvancedFile(AdvancedFile advancedFile, boolean recursive, ToughSupplier<Hasher> hasherToughSupplier, Map<String, byte[]> hashes) {
         if (advancedFile.isFile()) {
             return generateHashForFile(advancedFile, hasherToughSupplier, hashes);
