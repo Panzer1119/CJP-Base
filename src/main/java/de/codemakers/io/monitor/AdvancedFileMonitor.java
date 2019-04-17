@@ -142,6 +142,12 @@ public class AdvancedFileMonitor extends AbstractMonitor implements AdvancedFile
     }
     
     @Override
+    public Boolean update(Void aVoid) throws Exception {
+        generateHashForAdvancedFile(root);
+        return true;
+    }
+    
+    @Override
     public String toString() {
         return "AdvancedFileMonitor{" + "period=" + period + '}';
     }

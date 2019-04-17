@@ -18,8 +18,9 @@ package de.codemakers.base.util.monitor;
 
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
+import de.codemakers.base.util.interfaces.Updatable;
 
-public abstract class AbstractMonitor implements Startable, Stoppable {
+public abstract class AbstractMonitor implements Startable, Stoppable, Updatable<Boolean, Void> {
     
     protected int period = 100;
     
