@@ -41,8 +41,8 @@ public class OSUtil {
     public static final String USER_HOME = SystemProperties.getUserHome();
     public static final String USER_DIR = SystemProperties.getUserDir();
     
-    public static final AdvancedFile USER_HOME_DIRECTORY = new AdvancedFile(USER_HOME);
-    public static final AdvancedFile USER_DIR_DIRECTORY = new AdvancedFile(USER_DIR);
+    //public static final AdvancedFile USER_HOME_DIRECTORY = new AdvancedFile(USER_HOME);
+    //public static final AdvancedFile USER_DIR_DIRECTORY = new AdvancedFile(USER_DIR);
     public static final WindowsHelper WINDOWS_HELPER = new WindowsHelper();
     public static final LinuxHelper LINUX_HELPER = new LinuxHelper();
     public static final MacOSHelper MAC_OS_HELPER = new MacOSHelper();
@@ -167,11 +167,11 @@ public class OSUtil {
     }
     
     public static AdvancedFile getUserHomeDirectory() {
-        return USER_HOME_DIRECTORY;
+        return new AdvancedFile(USER_HOME);
     }
     
     public static AdvancedFile getUserCurrentDirectory() {
-        return USER_DIR_DIRECTORY;
+        return new AdvancedFile(USER_DIR);
     }
     
     public static AdvancedFile getUserDirDirectory() {
