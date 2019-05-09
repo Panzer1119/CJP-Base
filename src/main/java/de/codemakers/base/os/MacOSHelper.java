@@ -17,12 +17,16 @@
 package de.codemakers.base.os;
 
 import de.codemakers.base.os.functions.OSFunction;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class MacOSHelper implements OSHelper {
+    
+    public static final String LIBRARY = "Library";
+    public static final String APPLICATION_SUPPORT = "Application Support";
     
     AtomicLong LAST_ID = new AtomicLong(-1);
     Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
@@ -65,6 +69,16 @@ public class MacOSHelper implements OSHelper {
     @Override
     public String getLineSeparator() {
         return "\r";
+    }
+    
+    @Override
+    public AdvancedFile getUsersDirectory() {
+        return new AdvancedFile("/Users");
+    }
+    
+    @Override
+    public AdvancedFile getAppDataDirectory() {
+        return new AdvancedFile(OSUtil.getUserHomeDirectory(), LIBRARY, APPLICATION_SUPPORT);
     }
     
     @Override

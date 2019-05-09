@@ -17,6 +17,7 @@
 package de.codemakers.base.os;
 
 import de.codemakers.base.os.functions.OSFunction;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.io.File;
 import java.util.Map;
@@ -66,6 +67,16 @@ public class CurrentOSHelper implements OSHelper {
     @Override
     public String getLineSeparator() {
         return System.getProperty("line.separator");
+    }
+    
+    @Override
+    public AdvancedFile getUsersDirectory() {
+        return OSUtil.getUsersDirectory();
+    }
+    
+    @Override
+    public AdvancedFile getAppDataDirectory() {
+        return OSUtil.getAppDataDirectory();
     }
     
     @Override

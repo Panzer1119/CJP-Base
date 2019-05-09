@@ -17,6 +17,7 @@
 package de.codemakers.base.os;
 
 import de.codemakers.base.os.functions.OSFunction;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.io.File;
 import java.util.Map;
@@ -88,6 +89,16 @@ public class LinuxHelper implements OSHelper {
     @Override
     public String getLineSeparator() {
         return "\n";
+    }
+    
+    @Override
+    public AdvancedFile getUsersDirectory() {
+        return new AdvancedFile("/home");
+    }
+    
+    @Override
+    public AdvancedFile getAppDataDirectory() {
+        return new AdvancedFile(OSUtil.getUserHomeDirectory());
     }
     
     @Override

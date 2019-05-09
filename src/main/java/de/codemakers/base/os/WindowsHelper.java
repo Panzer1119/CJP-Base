@@ -16,7 +16,9 @@
 
 package de.codemakers.base.os;
 
+import de.codemakers.base.env.SystemEnvironment;
 import de.codemakers.base.os.functions.OSFunction;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.util.Map;
 import java.util.Properties;
@@ -27,8 +29,42 @@ import java.util.regex.Pattern;
 public class WindowsHelper implements OSHelper {
     
     public static final Pattern DRIVER_PATTERN = Pattern.compile("([A-Z]):\\\\(.*)");
+    public static final String APP_DATA = "AppData";
     AtomicLong LAST_ID = new AtomicLong(-1);
     Map<Long, OSFunction> OS_FUNCTIONS = new ConcurrentHashMap<>();
+    
+    public static final void process(String line_1, String line_2, Properties properties) {
+        while (true) {
+            if (line_1.isEmpty()) {
+                break;
+            }
+            final int i_1 = line_1.indexOf("  ");
+            final int i_2 = line_2.indexOf("  ");
+            if (i_1 == -1) {
+                properties.setProperty(line_1, line_2);
+                line_1 = "";
+                line_2 = "";
+            } else {
+                final String key = line_1.substring(0, i_1);
+                final String value = line_2.substring(0, i_2 < 0 ? line_2.length() : i_2);
+                int i = i_1;
+                while (i < line_1.length() && line_1.charAt(i) == ' ') {
+                    i++;
+                }
+                properties.setProperty(key, value);
+                line_1 = line_1.substring(i);
+                line_2 = line_2.substring(Math.min(line_2.length(), i));
+            }
+        }
+    }
+    
+    public static String getSystemDrive() {
+        return SystemEnvironment.getSystemDrive();
+    }
+    
+    public static AdvancedFile getSystemDriveDirectory() {
+        return new AdvancedFile(getSystemDrive());
+    }
     
     @Override
     public boolean isPathAbsolute(String path) {
@@ -74,6 +110,16 @@ public class WindowsHelper implements OSHelper {
     }
     
     @Override
+    public AdvancedFile getUsersDirectory() {
+        return new AdvancedFile(getSystemDrive(), "Users");
+    }
+    
+    @Override
+    public AdvancedFile getAppDataDirectory() {
+        return new AdvancedFile(OSUtil.getUserHomeDirectory(), APP_DATA, "Roaming");
+    }
+    
+    @Override
     public AtomicLong getIDCounter() {
         return LAST_ID;
     }
@@ -86,31 +132,6 @@ public class WindowsHelper implements OSHelper {
     @Override
     public String toString() {
         return toStringIntern();
-    }
-    
-    public static final void process(String line_1, String line_2, Properties properties) {
-        while (true) {
-            if (line_1.isEmpty()) {
-                break;
-            }
-            final int i_1 = line_1.indexOf("  ");
-            final int i_2 = line_2.indexOf("  ");
-            if (i_1 == -1) {
-                properties.setProperty(line_1, line_2);
-                line_1 = "";
-                line_2 = "";
-            } else {
-                final String key = line_1.substring(0, i_1);
-                final String value = line_2.substring(0, i_2 < 0 ? line_2.length() : i_2);
-                int i = i_1;
-                while (i < line_1.length() && line_1.charAt(i) == ' ') {
-                    i++;
-                }
-                properties.setProperty(key, value);
-                line_1 = line_1.substring(i);
-                line_2 = line_2.substring(Math.min(line_2.length(), i));
-            }
-        }
     }
     
 }
