@@ -28,12 +28,12 @@ public class SystemProperties {
     public static final String USER_DIR = "user.dir";
     public static final String USER_HOME = "user.home";
     
-    public static final String getProperty(String key) {
-        return System.getProperty(key);
+    public static final String getProperty(String name) {
+        return System.getProperty(name);
     }
     
-    public static final String getProperty(String key, String defaultValue) {
-        return System.getProperty(key, defaultValue);
+    public static final String getProperty(String name, String defaultValue) {
+        return System.getProperty(name, defaultValue);
     }
     
     public static String getOsName() {
