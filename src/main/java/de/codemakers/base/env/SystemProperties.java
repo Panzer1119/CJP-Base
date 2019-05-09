@@ -18,11 +18,15 @@ package de.codemakers.base.env;
 
 public class SystemProperties {
     
+    //OS
+    public static final String OS_NAME = "os.name";
+    public static final String OS_ARCH = "os.arch";
+    //Java
+    public static final String JAVA_VERSION = "java.version";
+    //User
     public static final String USER_NAME = "user.name";
     public static final String USER_DIR = "user.dir";
     public static final String USER_HOME = "user.home";
-    public static final String OS_NAME = "os.name";
-    public static final String OS_ARCH = "os.arch";
     
     public static final String getProperty(String key) {
         return System.getProperty(key);
@@ -30,6 +34,18 @@ public class SystemProperties {
     
     public static final String getProperty(String key, String defaultValue) {
         return System.getProperty(key, defaultValue);
+    }
+    
+    public static String getOsName() {
+        return getProperty(OS_NAME);
+    }
+    
+    public static String getOSArch() {
+        return getProperty(OS_ARCH);
+    }
+    
+    public static String getJavaVersion() {
+        return getProperty(JAVA_VERSION);
     }
     
     public static String getUserName() {
@@ -42,14 +58,6 @@ public class SystemProperties {
     
     public static String getUserHome() {
         return getProperty(USER_HOME);
-    }
-    
-    public static String getOsName() {
-        return getProperty(OS_NAME);
-    }
-    
-    public static String getOSArch() {
-        return getProperty(OS_ARCH);
     }
     
 }
