@@ -16,11 +16,53 @@
 
 package de.codemakers.base.util;
 
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ArgumentUtil {
     
-    public static String[] parseToStringArray(String args) {
-        String[] arguments = null;
-        return arguments;
+    public static final char DEFAULT_ESCAPE_CHARACTER = '\\';
+    public static final char DEFAULT_QUOTE_CHARACTER = '"';
+    public static final char DEFAULT_DELIMITER_CHARACTER = ' ';
+    
+    public static String[] parseArguments(String arguments_string) {
+        return parseArguments(arguments_string, DEFAULT_ESCAPE_CHARACTER, DEFAULT_QUOTE_CHARACTER, DEFAULT_DELIMITER_CHARACTER);
+    }
+    
+    public static String[] parseArguments(String arguments_string, char escape_char, char quote_char, char delimiter_char) {
+        final List<String> arguments = new ArrayList<>();
+        String temp = null;
+        boolean inQuote = false;
+        final char[] chars = arguments_string.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            final char c = chars[i];
+            if (c == escape_char) {
+                i++;
+                if (i >= chars.length) {
+                    throw new IndexOutOfBoundsException("Escape character is not escaping anything");
+                }
+                temp = addToTemp(temp, chars[i]);
+            } else if (c == quote_char) {
+                inQuote = !inQuote;
+            } else if (c == delimiter_char && !inQuote) {
+                arguments.add(temp);
+                temp = null;
+            } else {
+                temp = addToTemp(temp, c);
+            }
+        }
+        if (inQuote) {
+            throw new InvalidParameterException("Missing closing quotes");
+        }
+        if (temp != null) {
+            arguments.add(temp);
+        }
+        return arguments.toArray(new String[arguments.size()]);
+    }
+    
+    protected static String addToTemp(String temp, char c) {
+        return temp == null ? "" + c : temp + c;
     }
     
 }
