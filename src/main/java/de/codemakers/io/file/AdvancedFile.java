@@ -253,10 +253,18 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         if (paths.length > 0) {
             if (paths[0].startsWith(PREFIX_INTERN)) {
                 paths[0] = paths[0].substring(PREFIX_INTERN.length());
+                if (paths[0].isEmpty()) {
+                    System.arraycopy(paths, 1, paths, 0, paths.length - 1);
+                    paths = Arrays.copyOf(paths, paths.length - 1);
+                }
                 windowsSeparator = false;
                 return true;
             } else if (paths[0].startsWith(PREFIX_EXTERN)) {
                 paths[0] = paths[0].substring(PREFIX_EXTERN.length());
+                if (paths[0].isEmpty()) {
+                    System.arraycopy(paths, 1, paths, 0, paths.length - 1);
+                    paths = Arrays.copyOf(paths, paths.length - 1);
+                }
                 return false;
             }
         }
@@ -443,7 +451,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 System.arraycopy(paths_prefixes, 0, paths_, 0, paths_prefixes.length);
             }
             System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
-            return new AdvancedFile(paths_, windowsSeparator, extern, true, parent, fileProvider, clazz);
+            return new AdvancedFile(paths_, windowsSeparator, extern, true, parent, fileProvider, null);
         } else { // Relative extern file
             return new AdvancedFile(toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()), windowsSeparator, extern, true, parent, fileProvider, clazz);
             
