@@ -2,7 +2,7 @@
   <code_scheme name="Project" version="173">
     <JavaCodeStyleSettings>
       <option name="GENERATE_FINAL_LOCALS" value="true" />
-      <option name="REPLACE_INSTANCEOF" value="true" />
+      <option name="REPLACE_INSTANCEOF_AND_CAST" value="true" />
       <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
       <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
       <option name="JD_ADD_BLANK_AFTER_PARM_COMMENTS" value="true" />

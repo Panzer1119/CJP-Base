@@ -17,6 +17,7 @@
 package de.codemakers.base.os;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.env.SystemProperties;
 import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.OSFunction;
@@ -24,6 +25,7 @@ import de.codemakers.base.os.functions.RegisterOSFunction;
 import de.codemakers.base.reflection.ReflectionUtil;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,17 +34,22 @@ public class OSUtil {
     
     public static final String[] STANDARD_OS_NAMES = new String[] {"Windows", "Linux", "Mac OS", "SunOS", "FreeBSD"};
     
-    public static final String OS_NAME = System.getProperty("os.name");
-    public static final String OS_ARCH = System.getProperty("os.arch");
-    public static final String JAVA_VERSION = System.getProperty("java.version");
+    public static final String OS_NAME = SystemProperties.getOsName();
+    public static final String OS_ARCH = SystemProperties.getOSArch();
+    public static final String JAVA_VERSION = SystemProperties.getJavaVersion();
     
-    private static final OS CURRENT_OS = OS.byName(OS_NAME);
+    public static final String USER_HOME = SystemProperties.getUserHome();
+    public static final String USER_DIR = SystemProperties.getUserDir();
     
+    //public static final AdvancedFile USER_HOME_DIRECTORY = new AdvancedFile(USER_HOME);
+    //public static final AdvancedFile USER_DIR_DIRECTORY = new AdvancedFile(USER_DIR);
     public static final WindowsHelper WINDOWS_HELPER = new WindowsHelper();
     public static final LinuxHelper LINUX_HELPER = new LinuxHelper();
     public static final MacOSHelper MAC_OS_HELPER = new MacOSHelper();
     public static final OSHelper DEFAULT_HELPER = LINUX_HELPER;
     public static final CurrentOSHelper CURRENT_OS_HELPER = new CurrentOSHelper();
+    private static final OS CURRENT_OS = OS.byName(OS_NAME);
+    public static final OSHelper SYSTEM_OS_HELPER = CURRENT_OS.getHelper();
     
     private static final AtomicBoolean LOADED_OS_FUNCTIONS = new AtomicBoolean(false);
     
@@ -85,20 +92,24 @@ public class OSUtil {
         CURRENT_OS.getHelper().getOSFunctions().forEach(CURRENT_OS_HELPER::addOSFunction);
     }
     
-    public static final OSHelper getWindowsHelper() {
+    public static final WindowsHelper getWindowsHelper() {
         return WINDOWS_HELPER;
     }
     
-    public static final OSHelper getLinuxHelper() {
+    public static final LinuxHelper getLinuxHelper() {
         return LINUX_HELPER;
     }
     
-    public static final OSHelper getMacOSHelper() {
+    public static final MacOSHelper getMacOSHelper() {
         return MAC_OS_HELPER;
     }
     
-    public static final OSHelper getCurrentHelper() {
+    public static final CurrentOSHelper getCurrentHelper() {
         return CURRENT_OS_HELPER;
+    }
+    
+    public static final OSHelper getSystemOSHelper() {
+        return SYSTEM_OS_HELPER;
     }
     
     public static final OS getCurrentOS() {
@@ -153,6 +164,38 @@ public class OSUtil {
             return defaultValueSupplier == null ? null : defaultValueSupplier.getWithoutException();
         }
         return toughFunction.applyWithoutException(osFunction);
+    }
+    
+    public static AdvancedFile getUserHomeDirectory() {
+        return new AdvancedFile(USER_HOME);
+    }
+    
+    public static AdvancedFile getUserCurrentDirectory() {
+        return new AdvancedFile(USER_DIR);
+    }
+    
+    public static AdvancedFile getUserDirDirectory() {
+        return new AdvancedFile(SystemProperties.getUserDir());
+    }
+    
+    public static AdvancedFile getUsersDirectory() {
+        return SYSTEM_OS_HELPER.getUsersDirectory();
+    }
+    
+    public static String getUser() {
+        return SYSTEM_OS_HELPER.getUser();
+    }
+    
+    public static AdvancedFile getUserDirectory(String user) {
+        return SYSTEM_OS_HELPER.getUserDirectory(user);
+    }
+    
+    public static AdvancedFile getAppDataDirectory() {
+        return SYSTEM_OS_HELPER.getAppDataDirectory();
+    }
+    
+    public static AdvancedFile getAppDataSubDirectory(String name) {
+        return SYSTEM_OS_HELPER.getAppDataSubDirectory(name);
     }
     
 }

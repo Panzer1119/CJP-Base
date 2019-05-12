@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CJP-Base_release_javadoc:jar">
+    <output-path>$PROJECT_DIR$/store</output-path>
+    <root id="archive" name="CJP-Base_javadoc-v1.8.0_172-alpha.44.jar" />
+  </artifact>
+</component>

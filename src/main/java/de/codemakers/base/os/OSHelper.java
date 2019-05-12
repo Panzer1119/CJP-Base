@@ -16,7 +16,9 @@
 
 package de.codemakers.base.os;
 
+import de.codemakers.base.env.SystemProperties;
 import de.codemakers.base.os.functions.OSFunction;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,12 +42,32 @@ public interface OSHelper {
     
     String getLineSeparator();
     
+    default String getUser() {
+        return SystemProperties.getUserName();
+    }
+    
+    AdvancedFile getUsersDirectory();
+    
+    default AdvancedFile getUserDirectory(String user) {
+        return new AdvancedFile(getUsersDirectory(), user);
+    }
+    
+    default AdvancedFile getCurrentUserDirectory() {
+        return getUserDirectory(getUser());
+    }
+    
     default String toStringIntern() {
         String newLine = "";
         for (char c : getLineSeparator().toCharArray()) {
             newLine += ((int) c);
         }
         return getClass().getSimpleName() + ": fileSep = " + getFileSeparator() + ", pathSep = " + getPathSeparator() + ", newLine = " + newLine;
+    }
+    
+    AdvancedFile getAppDataDirectory();
+    
+    default AdvancedFile getAppDataSubDirectory(String name) {
+        return new AdvancedFile(getAppDataDirectory(), name);
     }
     
     AtomicLong getIDCounter();
