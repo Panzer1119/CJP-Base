@@ -21,12 +21,10 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
-public class ClosingAction<T extends Closeable> extends Action<ToughConsumer<T>, T> {
+public class ClosingAction<T extends AutoCloseable> extends Action<ToughConsumer<T>, T> {
     
     protected final ToughSupplier<T> supplier;
     
@@ -55,7 +53,7 @@ public class ClosingAction<T extends Closeable> extends Action<ToughConsumer<T>,
             if (success != null) {
                 success.acceptWithoutException(t);
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
