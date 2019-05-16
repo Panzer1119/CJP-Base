@@ -19,6 +19,7 @@ package de.codemakers.io.sql;
 import de.codemakers.base.action.ClosingAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughFunction;
 
 import java.sql.Connection;
 
@@ -73,6 +74,51 @@ public abstract class DatabaseManager {
     
     public ClosingAction<Connection> createAutoClosingConnection() {
         return new ClosingAction<>(this::createConnection);
+    }
+    
+    public <R> R useConnectionAndClose(ToughFunction<Connection, R> toughFunction) throws Exception {
+        try (final Connection connection = createConnection()) {
+            return toughFunction.apply(connection);
+        }
+    }
+    
+    public <R> R useConnectionAndClose(ToughFunction<Connection, R> toughFunction, ToughConsumer<Throwable> failure) {
+        try {
+            return useConnectionAndClose(toughFunction);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    public <R> R useConnectionAndCloseWithoutException(ToughFunction<Connection, R> toughFunction) {
+        return useConnectionAndClose(toughFunction, null);
+    }
+    
+    public void useConnectionAndClose(ToughConsumer<Connection> toughConsumer) throws Exception {
+        try (final Connection connection = createConnection()) {
+            toughConsumer.accept(connection);
+        }
+    }
+    
+    public void useConnectionAndClose(ToughConsumer<Connection> toughConsumer, ToughConsumer<Throwable> failure) {
+        try {
+            useConnectionAndClose(toughConsumer);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+        }
+    }
+    
+    public void useConnectionAndCloseWithoutException(ToughConsumer<Connection> toughConsumer) {
+        useConnectionAndClose(toughConsumer, null);
     }
     
 }
