@@ -16,14 +16,13 @@
 
 package de.codemakers.base.util;
 
+import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
 
-public abstract class Settings {
+public abstract class Settings implements Copyable {
     
     public abstract String getProperty(String key, String defaultValue);
     
@@ -83,9 +82,7 @@ public abstract class Settings {
     
     public abstract Settings direct();
     
-    public abstract List<Map.Entry<String, String>> toList();
-    
-    public abstract Settings asAutoAdd();
+    public abstract Settings enableAutoAdd();
     
     protected abstract String generateComment();
     
