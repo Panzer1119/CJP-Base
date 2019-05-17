@@ -19,6 +19,7 @@ package de.codemakers.io;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.tough.ToughBiConsumer;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 import java.io.InputStream;
 
@@ -68,6 +69,29 @@ public class IOUtil {
             return null;
         }
         return hasher;
+    }
+    
+    public static void closeQuietly(AutoCloseable autoCloseable) {
+        try {
+            autoCloseable.close();
+        } catch (Exception ex) {
+        }
+    }
+    
+    public static void close(AutoCloseable autoCloseable) {
+        try {
+            autoCloseable.close();
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+        }
+    }
+    
+    public static void close(AutoCloseable autoCloseable, ToughConsumer<Throwable> failure) {
+        try {
+            autoCloseable.close();
+        } catch (Exception ex) {
+            failure.acceptWithoutException(ex);
+        }
     }
     
 }
