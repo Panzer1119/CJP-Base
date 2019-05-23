@@ -83,6 +83,16 @@ public class DefaultSettings extends Settings {
     }
     
     @Override
+    public <T> T getProperty(String key, Class<T> clazz) {
+        return (T) getProperty(key);
+    }
+    
+    @Override
+    public String getProperty(String key) {
+        return properties.getProperty(key);
+    }
+    
+    @Override
     public String getProperty(String key, String defaultValue) {
         final String value = properties.getProperty(key);
         if (value == null) {
@@ -175,7 +185,7 @@ public class DefaultSettings extends Settings {
             if (autoSave) {
                 saveSettings();
             }
-            return getProperty(key, null) == null;
+            return getProperty(key, (String) null) == null;
         } catch (Exception ex) {
             return false;
         }
