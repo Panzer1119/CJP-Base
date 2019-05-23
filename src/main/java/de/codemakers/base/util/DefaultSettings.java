@@ -33,7 +33,6 @@ public class DefaultSettings extends Settings {
     protected final Properties properties;
     protected AdvancedFile advancedFile = null;
     protected boolean autoSave = true;
-    protected boolean autoAddProperties = false;
     
     public DefaultSettings() {
         this(new Properties());
@@ -74,15 +73,6 @@ public class DefaultSettings extends Settings {
         return this;
     }
     
-    public boolean isAutoAddProperties() {
-        return autoAddProperties;
-    }
-    
-    public DefaultSettings setAutoAddProperties(boolean autoAddProperties) {
-        this.autoAddProperties = autoAddProperties;
-        return this;
-    }
-    
     public AdvancedFile getAdvancedFile() {
         return advancedFile;
     }
@@ -96,9 +86,11 @@ public class DefaultSettings extends Settings {
     public String getProperty(String key, String defaultValue) {
         final String value = properties.getProperty(key);
         if (value == null) {
+            /* //TODO
             if (autoAddProperties) {
                 setProperty(key, defaultValue, autoSave);
             }
+            */
             return defaultValue;
         }
         return value;
@@ -271,7 +263,7 @@ public class DefaultSettings extends Settings {
     @Override
     public boolean saveSettings(OutputStream outputStream) {
         try {
-            properties.store(outputStream, generateComment());
+            properties.store(outputStream, DEFAULT_COMMENT);
             outputStream.close();
             return true;
         } catch (Exception ex) {
@@ -282,27 +274,11 @@ public class DefaultSettings extends Settings {
     }
     
     @Override
-    public DefaultSettings direct() {
-        return copy().setAutoAddProperties(false);
-    }
-    
-    @Override
-    public DefaultSettings enableAutoAdd() {
-        autoAddProperties = true;
-        return this;
-    }
-    
-    @Override
-    protected String generateComment() {
-        return DEFAULT_COMMENT;
-    }
-    
-    @Override
     public DefaultSettings copy() {
         final DefaultSettings defaultSettings = new DefaultSettings(advancedFile.copy());
         defaultSettings.setProperties(properties);
         defaultSettings.autoSave = autoSave;
-        defaultSettings.autoAddProperties = autoAddProperties;
+        //defaultSettings.autoAddProperties = autoAddProperties; //TODO
         return defaultSettings;
     }
     

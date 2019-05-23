@@ -80,10 +80,4 @@ public abstract class Settings implements Copyable {
     
     public abstract boolean saveSettings(OutputStream outputStream);
     
-    public abstract Settings direct();
-    
-    public abstract Settings enableAutoAdd();
-    
-    protected abstract String generateComment();
-    
 }
