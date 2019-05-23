@@ -64,6 +64,8 @@ public abstract class Settings implements Copyable {
     
     public abstract Object setProperty(String key, String value, boolean save);
     
+    public abstract boolean clear();
+    
     public abstract boolean loadSettings();
     
     public boolean loadSettings(AdvancedFile advancedFile) {

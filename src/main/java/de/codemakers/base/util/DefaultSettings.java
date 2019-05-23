@@ -236,6 +236,12 @@ public class DefaultSettings extends Settings {
     }
     
     @Override
+    public boolean clear() {
+        properties.clear();
+        return properties.isEmpty();
+    }
+    
+    @Override
     public boolean loadSettings() {
         return loadSettings(advancedFile);
     }
