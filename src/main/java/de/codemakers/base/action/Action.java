@@ -443,15 +443,15 @@ public abstract class Action<T extends Tough, R> {
     /**
      * Consumes directly the {@link R}
      *
-     * @param consumer The consumer callback that will be called at a convenient time for the API.
+     * @param consumer Consumer that consumes the {@link R}
      */
     public abstract void consume(ToughConsumer<R> consumer) throws Exception;
     
     /**
      * Consumes directly the {@link R}
      *
-     * @param consumer The consumer callback that will be called at a convenient time for the API.
-     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point.
+     * @param consumer Consumer that consumes the {@link R}
+     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point
      */
     public void consume(ToughConsumer<R> consumer, ToughConsumer<Throwable> failure) {
         try {
@@ -468,7 +468,7 @@ public abstract class Action<T extends Tough, R> {
     /**
      * Consumes directly the {@link R}, but without throwing an {@link java.lang.Exception}
      *
-     * @param consumer The consumer callback that will be called at a convenient time for the API.
+     * @param consumer Consumer that consumes the {@link R}
      */
     public void consumeWithoutException(ToughConsumer<R> consumer) {
         consume(consumer, null);

@@ -19,35 +19,22 @@ package de.codemakers.base.action;
 import de.codemakers.base.CJP;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
 
-import java.util.Objects;
 import java.util.concurrent.Future;
 
-public class ClosingAction<T extends AutoCloseable> extends Action<ToughConsumer<T>, T> {
-    
-    protected final ToughSupplier<T> supplier;
+public class ClosingAction<T extends AutoCloseable> extends ReturningAction<T> {
     
     public ClosingAction(ToughSupplier<T> supplier) {
-        super();
-        this.supplier = Objects.requireNonNull(supplier, "supplier may not be null!");
+        super(supplier);
     }
     
     public ClosingAction(CJP cjp, ToughSupplier<T> supplier) {
-        super(cjp);
-        this.supplier = Objects.requireNonNull(supplier, "supplier may not be null!");
+        super(cjp, supplier);
     }
     
     @Override
-    public void queue(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
-        cjp.getFixedExecutorService().submit(() -> run(success, failure));
-    }
-    
-    @Override
-    public void queueSingle(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
-        cjp.getSingleExecutorService().submit(() -> run(success, failure));
-    }
-    
     protected void run(ToughConsumer<T> success, ToughConsumer<Throwable> failure) {
         try (final T t = supplier.get(failure)) {
             if (success != null) {
@@ -76,6 +63,13 @@ public class ClosingAction<T extends AutoCloseable> extends Action<ToughConsumer
     public void consume(ToughConsumer<T> consumer) throws Exception {
         try (final T t = supplier.get()) {
             consumer.accept(t);
+        }
+    }
+    
+    @Override
+    public <R> R use(ToughFunction<T, R> function) throws Exception {
+        try (final T t = supplier.get()) {
+            return function.apply(t);
         }
     }
     

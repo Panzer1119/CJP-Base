@@ -17,7 +17,9 @@
 package de.codemakers.base.action;
 
 import de.codemakers.base.CJP;
+import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
 
 import java.util.Objects;
@@ -110,8 +112,44 @@ public class ReturningAction<T> extends Action<ToughConsumer<T>, T> {
     
     @Override
     public void consume(ToughConsumer<T> consumer) throws Exception {
-        Objects.requireNonNull(consumer);
         consumer.accept(direct());
+    }
+    
+    /**
+     * Consumes directly the {@link T} and returns an {@link R}
+     *
+     * @param function Function that uses the {@link R} and returns an {@link R}
+     */
+    public <R> R use(ToughFunction<T, R> function) throws Exception {
+        return function.apply(direct());
+    }
+    
+    /**
+     * Consumes directly the {@link T} and returns an {@link R}
+     *
+     * @param function Function that uses the {@link R} and returns an {@link R}
+     * @param failure The failure callback that will be called if the Request encounters an exception at its execution point
+     */
+    public <R> R use(ToughFunction<T, R> function, ToughConsumer<Throwable> failure) {
+        try {
+            return use(function);
+        } catch (Exception ex) {
+            if (failure != null) {
+                failure.acceptWithoutException(ex);
+            } else {
+                Logger.handleError(ex);
+            }
+            return null;
+        }
+    }
+    
+    /**
+     * Consumes directly the {@link T} and returns an {@link R}, but without throwing an {@link java.lang.Exception}
+     *
+     * @param function Function that uses the {@link R} and returns an {@link R}
+     */
+    public <R> R useWithoutException(ToughFunction<T, R> function) {
+        return use(function, null);
     }
     
 }
