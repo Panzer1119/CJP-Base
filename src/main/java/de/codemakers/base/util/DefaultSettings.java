@@ -290,4 +290,24 @@ public class DefaultSettings extends Settings {
         }
     }
     
+    @Override
+    public String toString() {
+        return "DefaultSettings{" + "properties=" + properties + ", advancedFile=" + advancedFile + ", autoSave=" + autoSave + '}';
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        final DefaultSettings that = (DefaultSettings) o;
+        return autoSave == that.autoSave && Objects.equals(properties, that.properties);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(properties, autoSave);
+    }
+    
 }
