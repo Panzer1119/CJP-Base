@@ -22,27 +22,30 @@ import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
 
 import java.sql.Connection;
+import java.util.Objects;
 
 public abstract class DatabaseManager {
     
     protected final String host;
-    protected final String database;
+    protected final int port;
     protected final String username;
     protected final String password;
+    protected final String database;
     
-    public DatabaseManager(String host, String database, String username, String password) {
+    public DatabaseManager(String host, int port, String username, String password, String database) {
         this.host = host;
-        this.database = database;
+        this.port = port;
         this.username = username;
         this.password = password;
+        this.database = database;
     }
     
     public String getHost() {
         return host;
     }
     
-    public String getDatabase() {
-        return database;
+    public int getPort() {
+        return port;
     }
     
     public String getUsername() {
@@ -51,6 +54,10 @@ public abstract class DatabaseManager {
     
     protected String getPassword() {
         return password;
+    }
+    
+    public String getDatabase() {
+        return database;
     }
     
     public abstract Connection createConnection() throws Exception;
@@ -119,6 +126,28 @@ public abstract class DatabaseManager {
     
     public void useConnectionAndCloseWithoutException(ToughConsumer<Connection> toughConsumer) {
         useConnectionAndClose(toughConsumer, null);
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        final DatabaseManager that = (DatabaseManager) other;
+        return port == that.port && Objects.equals(host, that.host) && Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(database, that.database);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(host, port, username, password, database);
+    }
+    
+    @Override
+    public String toString() {
+        return "DatabaseManager{" + "host='" + host + '\'' + ", port=" + port + ", username='" + username + '\'' + ", password.length()='" + password.length() + '\'' + ", database='" + database + '\'' + '}';
     }
     
 }
