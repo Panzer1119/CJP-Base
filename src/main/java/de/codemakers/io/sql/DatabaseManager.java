@@ -28,16 +28,16 @@ public abstract class DatabaseManager {
     
     protected final String host;
     protected final int port;
+    protected final String database;
     protected final String username;
     protected final String password;
-    protected final String database;
     
-    public DatabaseManager(String host, int port, String username, String password, String database) {
+    public DatabaseManager(String host, int port, String database, String username, String password) {
         this.host = host;
         this.port = port;
+        this.database = database;
         this.username = username;
         this.password = password;
-        this.database = database;
     }
     
     public String getHost() {
@@ -48,16 +48,16 @@ public abstract class DatabaseManager {
         return port;
     }
     
+    public String getDatabase() {
+        return database;
+    }
+    
     public String getUsername() {
         return username;
     }
     
     protected String getPassword() {
         return password;
-    }
-    
-    public String getDatabase() {
-        return database;
     }
     
     public abstract Connection createConnection() throws Exception;
@@ -137,17 +137,17 @@ public abstract class DatabaseManager {
             return false;
         }
         final DatabaseManager that = (DatabaseManager) other;
-        return port == that.port && Objects.equals(host, that.host) && Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(database, that.database);
+        return port == that.port && Objects.equals(host, that.host) && Objects.equals(database, that.database) && Objects.equals(username, that.username) && Objects.equals(password, that.password);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(host, port, username, password, database);
+        return Objects.hash(host, port, database, username, password);
     }
     
     @Override
     public String toString() {
-        return "DatabaseManager{" + "host='" + host + '\'' + ", port=" + port + ", username='" + username + '\'' + ", password.length()='" + password.length() + '\'' + ", database='" + database + '\'' + '}';
+        return "DatabaseManager{" + "host='" + host + '\'' + ", port=" + port + ", database='" + database + '\'' + ", username='" + username + '\'' + ", password.length()='" + password.length() + '\'' + '}';
     }
     
 }
