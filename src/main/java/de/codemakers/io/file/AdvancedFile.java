@@ -76,7 +76,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
-        //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()? //UPDATE Enabled this using Standard.async(), but this needs to be improved, because the first call of an AdvancedFile may takes usage of a 3rd party FileProvider, which is not yet loaded... //UPDATE Disabled this again, because if you are running ultra short tests, this is still block the process
+        //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()? //UPDATE Enabled this using Standard.async(), but this needs to be improved, because the first call of an AdvancedFile may takes usage of a 3rd party FileProvider, which is not yet loaded... //UPDATE Disabled this again, because if you are running ultra short tests, this is still blocking the process
         /*
         Standard.async(() -> {
             final Set<Class<? extends FileProvider>> fileProviders = ReflectionUtil.getSubClasses(FileProvider.class);
@@ -543,7 +543,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     boolean isFile(AdvancedFile file) {
         if (isFileProvided()) {
             try {
-                return /*FIXME*/ isFileDirect() || fileProvider.isFile(this, file, parent != null ? createInputStream() : null);
+                return fileProvider.isFile(this, file, parent != null ? createInputStream() : null);
             } catch (Exception ex) {
                 Logger.handleError(ex);
                 return false;
@@ -571,7 +571,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     boolean isDirectory(AdvancedFile file) {
         if (isFileProvided()) {
             try {
-                return /*FIXME*/ isFileDirect() || fileProvider.isDirectory(parent, file, parent != null ? createInputStream() : null);
+                return fileProvider.isDirectory(parent, file, parent != null ? createInputStream() : null);
             } catch (Exception ex) {
                 Logger.handleError(ex);
                 return false;
