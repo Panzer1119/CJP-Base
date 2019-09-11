@@ -16,7 +16,8 @@
 
 package de.codemakers.io.streams;
 
-import de.codemakers.base.Standard;
+import de.codemakers.base.util.interfaces.Closeable;
+import de.codemakers.base.util.interfaces.Resettable;
 import de.codemakers.base.util.tough.ToughFunction;
 
 import java.io.InputStream;
@@ -24,19 +25,29 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-public class PipedStream {
+public class PipedStream implements Closeable, Resettable {
     
-    protected InputStream inputStream = new PipedInputStream();
-    protected OutputStream outputStream = Standard.silentError(() -> new PipedOutputStream((PipedInputStream) inputStream));
+    protected InputStream inputStream = null;
+    protected OutputStream outputStream = null;
+    
+    public PipedStream() {
+        resetWithoutException();
+    }
     
     public <R extends InputStream> R convertInputStream(ToughFunction<InputStream, R> toughFunction) {
         final R r = toughFunction.applyWithoutException(inputStream);
+        if (r == null) {
+            throw new NullPointerException();
+        }
         inputStream = r;
         return r;
     }
     
     public <R extends OutputStream> R convertOutputStream(ToughFunction<OutputStream, R> toughFunction) {
         final R r = toughFunction.applyWithoutException(outputStream);
+        if (r == null) {
+            throw new NullPointerException();
+        }
         outputStream = r;
         return r;
     }
@@ -55,6 +66,23 @@ public class PipedStream {
     
     public OutputStream getOutputStream() {
         return outputStream;
+    }
+    
+    @Override
+    public void closeIntern() throws Exception {
+        if (inputStream != null) {
+            inputStream.close();
+        }
+        if (outputStream != null) {
+            outputStream.close();
+        }
+    }
+    
+    @Override
+    public boolean reset() throws Exception {
+        inputStream = new PipedInputStream();
+        outputStream = new PipedOutputStream((PipedInputStream) inputStream);
+        return true;
     }
     
     @Override
