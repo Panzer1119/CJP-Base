@@ -31,9 +31,13 @@ public class AudioConnectionAwaiterTest {
     
     public static void main(String[] args) throws Exception {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendLogLevel().appendText(": ").appendObject().appendNewLine().appendSource().finishWithoutException();
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendLogLevel().appendText(": ").appendObject().finishWithoutException();
         final Mixer.Info[] mixers = AudioSystem.getMixerInfo();
-        final Mixer.Info mixerInfo_input = mixers[9];
+        for (int i = 0; i < mixers.length; i++) {
+            Logger.log(String.format("%d - %s", i, mixers[i]));
+        }
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendLogLevel().appendText(": ").appendObject().appendNewLine().appendSource().finishWithoutException();
+        final Mixer.Info mixerInfo_input = mixers[6];
         final Mixer.Info mixerInfo_output = mixers[1];
         final ServerSocket serverSocket = new ServerSocket(PORT);
         Standard.addShutdownHook(serverSocket::close);
@@ -50,7 +54,7 @@ public class AudioConnectionAwaiterTest {
         audioClientTest.start();
         Logger.log("audioClientTest=" + audioClientTest);
         Standard.async(() -> {
-            Thread.sleep(10000);
+            Thread.sleep(20000);
             Logger.log("Shutting down");
             Standard.silentError(() -> {
                 audioClientTest.stop();
