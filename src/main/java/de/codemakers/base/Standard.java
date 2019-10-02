@@ -122,6 +122,15 @@ public class Standard {
         }
     }
     
+    public static final Throwable silentSleep(int millis) {
+        try {
+            Thread.sleep(millis);
+            return null;
+        } catch (Exception ex) {
+            return ex;
+        }
+    }
+    
     public static Thread addShutdownHookAsSingleThread(ToughRunnable toughRunnable) {
         Objects.requireNonNull(toughRunnable);
         final Thread thread = new Thread(toughRunnable::runWithoutException);
