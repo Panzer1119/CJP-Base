@@ -122,9 +122,18 @@ public class Standard {
         }
     }
     
-    public static final Throwable silentSleep(int millis) {
+    public static final Throwable silentSleep(long millis) {
         try {
             Thread.sleep(millis);
+            return null;
+        } catch (Exception ex) {
+            return ex;
+        }
+    }
+    
+    public static final Throwable silentSleep(long millis, int nanos) {
+        try {
+            Thread.sleep(millis, nanos);
             return null;
         } catch (Exception ex) {
             return ex;
