@@ -64,21 +64,21 @@ public class DefaultSettings extends Settings {
         return this;
     }
     
-    public boolean isAutoSave() {
-        return autoSave;
-    }
-    
-    public DefaultSettings setAutoSave(boolean autoSave) {
-        this.autoSave = autoSave;
-        return this;
-    }
-    
     public AdvancedFile getAdvancedFile() {
         return advancedFile;
     }
     
     public DefaultSettings setAdvancedFile(AdvancedFile advancedFile) {
         this.advancedFile = advancedFile;
+        return this;
+    }
+    
+    public boolean isAutoSave() {
+        return autoSave;
+    }
+    
+    public DefaultSettings setAutoSave(boolean autoSave) {
+        this.autoSave = autoSave;
         return this;
     }
     
@@ -278,8 +278,10 @@ public class DefaultSettings extends Settings {
     
     @Override
     public boolean saveSettings(OutputStream outputStream) {
+        Objects.requireNonNull(outputStream);
         try {
             properties.store(outputStream, DEFAULT_COMMENT);
+            outputStream.flush();
             outputStream.close();
             return true;
         } catch (Exception ex) {
@@ -300,9 +302,9 @@ public class DefaultSettings extends Settings {
     
     @Override
     public void set(Copyable copyable) {
-        final DefaultSettings settings = Require.clazz(copyable, DefaultSettings.class);
-        if (settings != null) {
-            setProperties(settings.properties);
+        final DefaultSettings defaultSettings = Require.clazz(copyable, DefaultSettings.class);
+        if (defaultSettings != null) {
+            setProperties(defaultSettings.properties);
         }
     }
     
@@ -312,12 +314,14 @@ public class DefaultSettings extends Settings {
     }
     
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object other) {
+        if (this == other) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (other == null || getClass() != other.getClass()) {
             return false;
-        final DefaultSettings that = (DefaultSettings) o;
+        }
+        final DefaultSettings that = (DefaultSettings) other;
         return autoSave == that.autoSave && Objects.equals(properties, that.properties);
     }
     
