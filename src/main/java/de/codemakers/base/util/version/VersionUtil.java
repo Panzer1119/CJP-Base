@@ -44,6 +44,26 @@ public class VersionUtil {
         return new Version(versionParts);
     }
     
+    public static Version createVersion(Object... versionParts) {
+        final List<VersionPart> versionParts_list = new ArrayList<>();
+        for (Object versionPart : versionParts) {
+            if (versionPart instanceof String) {
+                final String versionPartString = (String) versionPart;
+                final String temp = StringUtils.getDigits(versionPartString);
+                if (versionPartString.equals(temp)) {
+                    versionParts_list.add(new IntegerVersionPart(versionParts_list.size(), Integer.parseInt(versionPartString)));
+                } else {
+                    versionParts_list.add(new StringVersionPart(versionParts_list.size(), versionPartString));
+                }
+            } else if (versionPart instanceof Integer) {
+                versionParts_list.add(new IntegerVersionPart(versionParts_list.size(), (Integer) versionPart));
+            } else {
+                throw new IllegalArgumentException(versionPart.getClass().getSimpleName() + " is not a valid " + VersionPart.class.getSimpleName() + " type");
+            }
+        }
+        return new Version(versionParts_list);
+    }
+    
     public static int compareVersions(String version_1, String version_2) {
         return parseToVersion(version_1).compareTo(parseToVersion(version_2));
     }
