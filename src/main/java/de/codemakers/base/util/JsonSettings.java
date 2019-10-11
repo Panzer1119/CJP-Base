@@ -266,9 +266,10 @@ public class JsonSettings extends Settings {
         } else if (key.isEmpty()) {
             throw new NullPointerException("key may not be empty"); //TODO This is not really a NullPointerException?
         } else if (list == null) {
-            throw new NullPointerException("list may not be null");
-        } else if (list.isEmpty()) {
             jsonObject.remove(key);
+            return this;
+        } else if (list.isEmpty()) {
+            jsonObject.add(key, new JsonArray());
             return this;
         }
         if (toughFunction == null) {
