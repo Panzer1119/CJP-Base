@@ -17,10 +17,7 @@
 package de.codemakers.base;
 
 import de.codemakers.base.os.OSUtil;
-import de.codemakers.base.util.tough.ToughConsumer;
-import de.codemakers.base.util.tough.ToughFunction;
-import de.codemakers.base.util.tough.ToughRunnable;
-import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.base.util.tough.*;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.lang.AdvancedLocalizer;
 import de.codemakers.lang.LanguageReloader;
@@ -134,6 +131,61 @@ public class Standard {
     public static final Throwable silentSleep(long millis, int nanos) {
         try {
             Thread.sleep(millis, nanos);
+            return null;
+        } catch (Exception ex) {
+            return ex;
+        }
+    }
+    
+    public static final long DEFAULT_SLEEP_CONTROL_PERIOD = 250;
+    
+    public static final Throwable silentSleepUntil(long millis, ToughSupplier<Boolean> stopSleep) {
+        return silentSleepUntil(millis, stopSleep, DEFAULT_SLEEP_CONTROL_PERIOD);
+    }
+    
+    public static final Throwable silentSleepUntil(long millis, ToughSupplier<Boolean> stopSleep, long controlPeriod) {
+        return silentSleepWhile(millis, () -> !stopSleep.get(), controlPeriod);
+    }
+    
+    public static final Throwable silentSleepWhile(long millis, ToughSupplier<Boolean> continueSleep) {
+        return silentSleepWhile(millis, continueSleep, DEFAULT_SLEEP_CONTROL_PERIOD);
+    }
+    
+    public static final Throwable silentSleepWhile(long millis, ToughSupplier<Boolean> continueSleep, long controlPeriod) {
+        if (continueSleep == null) {
+            return silentSleep(millis);
+        }
+        try {
+            while (continueSleep.get()) {
+                Thread.sleep(controlPeriod);
+            }
+            return null;
+        } catch (Exception ex) {
+            return ex;
+        }
+    }
+    
+    public static final Throwable silentSleepUntil(long millis, ToughPredicate<Long> stopSleep) {
+        return silentSleepUntil(millis, stopSleep, DEFAULT_SLEEP_CONTROL_PERIOD);
+    }
+    
+    public static final Throwable silentSleepUntil(long millis, ToughPredicate<Long> stopSleep, long controlPeriod) {
+        return silentSleepWhile(millis, stopSleep.negate(), controlPeriod);
+    }
+    
+    public static final Throwable silentSleepWhile(long millis, ToughPredicate<Long> continueSleep) {
+        return silentSleepWhile(millis, continueSleep, DEFAULT_SLEEP_CONTROL_PERIOD);
+    }
+    
+    public static final Throwable silentSleepWhile(long millis, ToughPredicate<Long> continueSleep, long controlPeriod) {
+        if (continueSleep == null) {
+            return silentSleep(millis);
+        }
+        try {
+            final long start = System.currentTimeMillis();
+            while (continueSleep.test(System.currentTimeMillis() - start)) {
+                Thread.sleep(controlPeriod);
+            }
             return null;
         } catch (Exception ex) {
             return ex;
