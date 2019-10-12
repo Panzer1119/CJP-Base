@@ -100,19 +100,31 @@ public class TunnelOutputStream extends OutputStream {
             return outputStreams.get(id);
         }
         final OutputStream outputStream = new OutputStream() {
+            private boolean closed = false;
+            
             @Override
             public void write(int b) throws IOException {
+                if (closed) {
+                    throw new StreamClosedException("There is no " + EndableOutputStream.class.getSimpleName() + " with the id " + id);
+                }
                 TunnelOutputStream.this.write(id, b);
             }
             
             @Override
             public void flush() throws IOException {
+                if (closed) {
+                    throw new StreamClosedException("There is no " + EndableOutputStream.class.getSimpleName() + " with the id " + id);
+                }
                 TunnelOutputStream.this.flush();
             }
             
             @Override
             public void close() throws IOException {
+                if (closed) {
+                    throw new StreamClosedException("There is no " + EndableOutputStream.class.getSimpleName() + " with the id " + id);
+                }
                 TunnelOutputStream.this.outputStreams.remove(id);
+                closed = true;
             }
         };
         final EndableOutputStream endableOutputStream = new EndableOutputStream(outputStream);
