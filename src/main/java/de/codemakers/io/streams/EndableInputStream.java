@@ -16,17 +16,20 @@
 
 package de.codemakers.io.streams;
 
+import de.codemakers.io.streams.exceptions.StreamClosedException;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 public class EndableInputStream extends InputStream {
     
-    public static final byte NULL_BYTE = (byte) 0;
-    public static final int NULL_BYTE_INT = NULL_BYTE & 0xFF;
-    public static final byte ESCAPE_BYTE = Byte.MIN_VALUE;
-    public static final int ESCAPE_BYTE_INT = ESCAPE_BYTE & 0xFF;
-    public static final int CLOSED_INT = -1;
-    public static final int ENDED_INT = -2;
+    public static final int CLOSED_INT = EndableOutputStream.CLOSED_INT;
+    //
+    public static final byte ESCAPE_BYTE = EndableOutputStream.ESCAPE_BYTE;
+    public static final int ESCAPE_BYTE_INT = EndableOutputStream.ESCAPE_BYTE_INT;
+    //
+    public static final byte ENDED_BYTE = EndableOutputStream.ENDED_BYTE;
+    public static final int ENDED_BYTE_INT = EndableOutputStream.ENDED_BYTE_INT;
     
     protected final InputStream inputStream;
     
@@ -34,17 +37,13 @@ public class EndableInputStream extends InputStream {
         this.inputStream = inputStream;
     }
     
-    public int streamEnded() {
-        return ENDED_INT;
-    }
-    
     @Override
     public int read() throws IOException {
         final int temp = inputStream.read();
         if (temp == ESCAPE_BYTE_INT) {
             return inputStream.read();
-        } else if (temp == NULL_BYTE_INT) {
-            return streamEnded();
+        } else if (temp == ENDED_BYTE_INT) {
+            throw new StreamClosedException();
         }
         return temp;
     }

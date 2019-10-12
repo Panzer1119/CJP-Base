@@ -31,8 +31,8 @@ public class EndableInputStreamTest {
         final PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream);
         final EndableInputStream endableInputStream = new EndableInputStream(pipedInputStream);
         Logger.log("endableInputStream=" + endableInputStream);
-        Logger.log("EndableInputStream.NULL_BYTE=" + EndableInputStream.NULL_BYTE);
-        Logger.log("EndableInputStream.NULL_BYTE_INT=" + EndableInputStream.NULL_BYTE_INT);
+        Logger.log("EndableInputStream.ENDED_BYTE=" + EndableInputStream.ENDED_BYTE);
+        Logger.log("EndableInputStream.ENDED_BYTE_INT=" + EndableInputStream.ENDED_BYTE_INT);
         Logger.log("EndableInputStream.ESCAPE_BYTE=" + EndableInputStream.ESCAPE_BYTE);
         Logger.log("EndableInputStream.ESCAPE_BYTE_INT=" + EndableInputStream.ESCAPE_BYTE_INT);
         Standard.async(() -> {

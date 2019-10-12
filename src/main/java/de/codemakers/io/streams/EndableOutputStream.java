@@ -21,10 +21,13 @@ import java.io.OutputStream;
 
 public class EndableOutputStream extends OutputStream {
     
-    public static final byte NULL_BYTE = (byte) 0;
-    public static final int NULL_BYTE_INT = NULL_BYTE & 0xFF;
+    public static final int CLOSED_INT = -1;
+    //
     public static final byte ESCAPE_BYTE = Byte.MIN_VALUE;
     public static final int ESCAPE_BYTE_INT = ESCAPE_BYTE & 0xFF;
+    //
+    public static final byte ENDED_BYTE = -2;
+    public static final int ENDED_BYTE_INT = ENDED_BYTE & 0xFF;
     
     protected final OutputStream outputStream;
     
@@ -34,7 +37,7 @@ public class EndableOutputStream extends OutputStream {
     
     @Override
     public void write(int b) throws IOException {
-        if (b == NULL_BYTE_INT || b == ESCAPE_BYTE_INT) {
+        if (b == ESCAPE_BYTE_INT || b == ENDED_BYTE_INT) {
             outputStream.write(ESCAPE_BYTE_INT);
         }
         outputStream.write(b);
@@ -47,7 +50,7 @@ public class EndableOutputStream extends OutputStream {
     
     @Override
     public void close() throws IOException {
-        outputStream.write(NULL_BYTE_INT);
+        outputStream.write(ENDED_BYTE_INT);
         flush();
         outputStream.close();
     }
