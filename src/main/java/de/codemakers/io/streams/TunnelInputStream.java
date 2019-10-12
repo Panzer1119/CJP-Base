@@ -81,6 +81,23 @@ public class TunnelInputStream extends InputStream {
         return id;
     }
     
+    public static int getIndexFromId(byte id) {
+        return id & 0xFF;
+    }
+    
+    public static byte getIdFromIndex(int index) {
+        return (byte) index;
+    }
+    
+    private Queue<Byte> getQueue(byte id) {
+        return queues[getIndexFromId(id)];
+    }
+    
+    private TunnelInputStream setQueue(byte id, Queue<Byte> queue) {
+        queues[getIndexFromId(id)] = queue;
+        return this;
+    }
+    
     @Override
     public synchronized int read() throws IOException {
         return inputStream.read();
@@ -95,7 +112,7 @@ public class TunnelInputStream extends InputStream {
         if (!inputStreams.containsKey(id)) {
             throw new StreamClosedException("There is no " + EndableInputStream.class.getSimpleName() + " with the id " + id);
         }
-        final Queue<Byte> queue = queues[id];
+        final Queue<Byte> queue = getQueue(id);
         synchronized (inputStream) {
             while (queue.isEmpty()) {
                 readIntern();
@@ -109,10 +126,10 @@ public class TunnelInputStream extends InputStream {
         final int length = readLength();
         final byte[] buffer = new byte[length];
         read(buffer);
-        Queue<Byte> queue = queues[id];
+        Queue<Byte> queue = getQueue(id);
         if (queue == null) {
-            //TODO What if we got data for a no longer/never existing InputStream? //Create a new Queue?
-            queue = (queues[id] = new ConcurrentLinkedQueue<>()); //TODO Because getOrCreateInputStream already creates queues, but only for new InputStreams...
+            setQueue(id, new ConcurrentLinkedQueue<>()); //TODO What if we got data for a no longer/never existing InputStream? //Create a new Queue?
+            queue = getQueue(id); //TODO Because getOrCreateInputStream already creates queues, but only for new InputStreams...
         }
         for (byte b : buffer) {
             queue.add(b);
@@ -121,7 +138,7 @@ public class TunnelInputStream extends InputStream {
     }
     
     private synchronized byte readId() throws IOException {
-        return (byte) (read() & 0xFF);
+        return (byte) read();
     }
     
     private synchronized int readLength() throws IOException {
@@ -131,7 +148,7 @@ public class TunnelInputStream extends InputStream {
     }
     
     protected synchronized int available(byte id) throws IOException {
-        final Queue<Byte> queue = queues[id];
+        final Queue<Byte> queue = getQueue(id);
         if (queue == null) {
             return -1;
         }
@@ -140,9 +157,10 @@ public class TunnelInputStream extends InputStream {
     
     protected synchronized void removeInputStream(byte id) {
         inputStreams.remove(id);
-        if (queues[id] != null) {
-            queues[id].clear();
-            queues[id] = null;
+        final Queue<Byte> queue = getQueue(id);
+        if (queue != null) {
+            queue.clear();
+            setQueue(id, null);
         }
     }
     
@@ -154,7 +172,7 @@ public class TunnelInputStream extends InputStream {
         if (inputStreams.containsKey(id)) {
             return inputStreams.get(id);
         }
-        queues[id] = new ConcurrentLinkedQueue<>();
+        setQueue(id, new ConcurrentLinkedQueue<>());
         final InputStream inputStream = new InputStream() {
             private boolean closed = false;
             
