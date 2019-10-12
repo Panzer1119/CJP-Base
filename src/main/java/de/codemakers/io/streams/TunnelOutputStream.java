@@ -108,7 +108,7 @@ public class TunnelOutputStream extends OutputStream {
             write(b);
             return;
         }
-        buffers[id][bufferLengths[id]++] = (byte) b; //TODO Does this conversion work?
+        buffers[id][bufferLengths[id]++] = (byte) (b & 0xFF); //TODO Does this conversion work?
         if (bufferLengths[id] == bufferSize) {
             flushBuffer(id);
         }
@@ -119,7 +119,11 @@ public class TunnelOutputStream extends OutputStream {
             return;
         }
         writeId(id);
-        write(buffers[id], 0, bufferLengths[id]);
+        //write(buffers[id], 0, bufferLengths[id]);
+        for (int i = bufferLengths[id]; i < bufferSize; i++) {
+            buffers[id][i] = 0;
+        }
+        write(buffers[id], 0, bufferSize);
         bufferLengths[id] = 0;
     }
     
