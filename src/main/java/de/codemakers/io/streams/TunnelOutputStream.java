@@ -81,6 +81,32 @@ public class TunnelOutputStream extends OutputStream {
         return id;
     }
     
+    public static int getIndexFromId(byte id) {
+        return id & 0xFF;
+    }
+    
+    public static byte getIdFromIndex(int index) {
+        return (byte) index;
+    }
+    
+    private byte[] getBuffer(byte id) {
+        return buffers[getIndexFromId(id)];
+    }
+    
+    private TunnelOutputStream setBuffer(byte id, byte[] buffer) {
+        buffers[getIndexFromId(id)] = buffer;
+        return this;
+    }
+    
+    private int getBufferLength(byte id) {
+        return bufferLengths[getIndexFromId(id)];
+    }
+    
+    private TunnelOutputStream setBufferLength(byte id, int bufferLength) {
+        bufferLengths[getIndexFromId(id)] = bufferLength;
+        return this;
+    }
+    
     @Override
     public synchronized void write(int b) throws IOException {
         outputStream.write(b);
@@ -110,21 +136,22 @@ public class TunnelOutputStream extends OutputStream {
             write(b);
             return;
         }
-        buffers[id][bufferLengths[id]++] = (byte) (b & 0xFF); //TODO Does this conversion work?
-        if (bufferLengths[id] == bufferSize) {
+        getBuffer(id)[getBufferLength(id)] = (byte) b;
+        setBufferLength(id, getBufferLength(id) + 1);
+        if (getBufferLength(id) == bufferSize) {
             flushBuffer(id);
         }
     }
     
     protected synchronized void flushBuffer(byte id) throws IOException {
-        final int length = bufferLengths[id];
+        final int length = getBufferLength(id);
         if (length == 0) {
             return;
         }
         writeId(id);
         writeLength(length);
-        write(buffers[id], 0, length);
-        bufferLengths[id] = 0;
+        write(getBuffer(id), 0, length);
+        setBufferLength(id, 0);
     }
     
     protected synchronized void writeId(byte id) throws IOException {
@@ -137,8 +164,8 @@ public class TunnelOutputStream extends OutputStream {
     
     protected synchronized void removeOutputStream(byte id) {
         outputStreams.remove(id);
-        buffers[id] = null;
-        bufferLengths[id] = 0;
+        setBuffer(id, null);
+        setBufferLength(id, 0);
     }
     
     public EndableOutputStream createOutputStream() {
@@ -149,8 +176,8 @@ public class TunnelOutputStream extends OutputStream {
         if (outputStreams.containsKey(id)) {
             return outputStreams.get(id);
         }
-        buffers[id] = new byte[bufferSize];
-        bufferLengths[id] = 0;
+        setBuffer(id, new byte[bufferSize]);
+        setBufferLength(id, 0);
         final OutputStream outputStream = new OutputStream() {
             private boolean closed = false;
             
