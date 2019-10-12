@@ -26,11 +26,23 @@ import java.io.OutputStream;
 
 public class TunnelOutputStream extends OutputStream {
     
+    public static final int DEFAULT_BUFFER_SIZE = 256;
+    public static final int MAXIMUM_STREAMS_PER_TUNNEL = Byte.MAX_VALUE - Byte.MIN_VALUE + 1;
+    
     protected final OutputStream outputStream;
     protected final BiMap<Byte, EndableOutputStream> outputStreams = Maps.synchronizedBiMap(HashBiMap.create());
+    private final int bufferSize;
+    private final transient byte[][] buffers;
+    private final transient int[] bufferLengths = new int[MAXIMUM_STREAMS_PER_TUNNEL];
     
     public TunnelOutputStream(OutputStream outputStream) {
+        this(outputStream, DEFAULT_BUFFER_SIZE);
+    }
+    
+    public TunnelOutputStream(OutputStream outputStream, int bufferSize) {
         this.outputStream = outputStream;
+        this.bufferSize = bufferSize;
+        this.buffers = new byte[MAXIMUM_STREAMS_PER_TUNNEL][bufferSize];
     }
     
     public OutputStream getOutputStream() {
@@ -69,26 +81,56 @@ public class TunnelOutputStream extends OutputStream {
     }
     
     @Override
-    public void write(int b) throws IOException {
+    public synchronized void write(int b) throws IOException {
         outputStream.write(b);
     }
     
     @Override
-    public void flush() throws IOException {
+    public synchronized void flush() throws IOException {
         outputStream.flush();
     }
     
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         outputStream.close();
     }
     
-    protected void write(byte id, int b) throws IOException {
+    protected synchronized void write(byte id, int b) throws IOException {
         if (!outputStreams.containsKey(id)) {
             throw new StreamClosedException("There is no " + EndableOutputStream.class.getSimpleName() + " with the id " + id);
         }
+        appendToBufferOrSendAll(id, b);
+    }
+    
+    protected synchronized void appendToBufferOrSendAll(byte id, int b) throws IOException {
+        if (bufferSize == 0) {
+            writeId(id);
+            write(b);
+            return;
+        }
+        buffers[id][bufferLengths[id]++] = (byte) b; //TODO Does this conversion work?
+        if (bufferLengths[id] == bufferSize) {
+            flushBuffer(id);
+        }
+    }
+    
+    protected synchronized void flushBuffer(byte id) throws IOException {
+        if (bufferLengths[id] == 0) {
+            return;
+        }
+        writeId(id);
+        write(buffers[id], 0, bufferLengths[id]);
+        bufferLengths[id] = 0;
+    }
+    
+    protected synchronized void writeId(byte id) throws IOException {
         write(id & 0xFF);
-        write(b);
+    }
+    
+    protected synchronized void removeOutputStream(byte id) {
+        outputStreams.remove(id);
+        buffers[id] = null;
+        bufferLengths[id] = 0;
     }
     
     public EndableOutputStream getOrCreateOutputStream() {
@@ -99,11 +141,13 @@ public class TunnelOutputStream extends OutputStream {
         if (outputStreams.containsKey(id)) {
             return outputStreams.get(id);
         }
+        buffers[id] = new byte[bufferSize];
+        bufferLengths[id] = 0;
         final OutputStream outputStream = new OutputStream() {
             private boolean closed = false;
             
             @Override
-            public void write(int b) throws IOException {
+            public synchronized void write(int b) throws IOException {
                 if (closed) {
                     throw new StreamClosedException("There is no " + EndableOutputStream.class.getSimpleName() + " with the id " + id);
                 }
@@ -111,25 +155,32 @@ public class TunnelOutputStream extends OutputStream {
             }
             
             @Override
-            public void flush() throws IOException {
+            public synchronized void flush() throws IOException {
                 if (closed) {
                     throw new StreamClosedException("There is no " + EndableOutputStream.class.getSimpleName() + " with the id " + id);
                 }
+                TunnelOutputStream.this.flushBuffer(id);
                 TunnelOutputStream.this.flush();
             }
             
             @Override
-            public void close() throws IOException {
+            public synchronized void close() throws IOException {
                 if (closed) {
                     throw new StreamClosedException("There is no " + EndableOutputStream.class.getSimpleName() + " with the id " + id);
                 }
-                TunnelOutputStream.this.outputStreams.remove(id);
+                flush();
+                TunnelOutputStream.this.removeOutputStream(id);
                 closed = true;
             }
         };
         final EndableOutputStream endableOutputStream = new EndableOutputStream(outputStream);
         outputStreams.put(id, endableOutputStream);
         return endableOutputStream;
+    }
+    
+    @Override
+    public String toString() {
+        return "TunnelOutputStream{" + "outputStream=" + outputStream + ", outputStreams=" + outputStreams + ", bufferSize=" + bufferSize + '}';
     }
     
 }
