@@ -19,7 +19,6 @@ package de.codemakers.io.streams;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.ConvertUtil;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
 
@@ -92,7 +91,20 @@ public class TunnelInputStream extends InputStream {
         inputStream.close();
     }
     
-    protected synchronized byte readIntern() throws IOException {
+    protected synchronized int read(byte id) throws IOException {
+        if (!inputStreams.containsKey(id)) {
+            throw new StreamClosedException("There is no " + EndableInputStream.class.getSimpleName() + " with the id " + id);
+        }
+        final Queue<Byte> queue = queues[id];
+        synchronized (inputStream) {
+            while (queue.isEmpty()) {
+                readIntern();
+            }
+        }
+        return queue.remove();
+    }
+    
+    private synchronized byte readIntern() throws IOException {
         final byte id = readId();
         final int length = readLength();
         final byte[] buffer = new byte[length];
@@ -108,22 +120,11 @@ public class TunnelInputStream extends InputStream {
         return id;
     }
     
-    protected synchronized int read(byte id) throws IOException {
-        if (!inputStreams.containsKey(id)) {
-            throw new StreamClosedException("There is no " + EndableInputStream.class.getSimpleName() + " with the id " + id);
-        }
-        final Queue<Byte> queue = queues[id];
-        while (queue.isEmpty()) {
-            readIntern();
-        }
-        return queue.remove();
-    }
-    
-    protected synchronized byte readId() throws IOException {
+    private synchronized byte readId() throws IOException {
         return (byte) (read() & 0xFF);
     }
     
-    protected synchronized int readLength() throws IOException {
+    private synchronized int readLength() throws IOException {
         final byte[] buffer = new byte[Integer.BYTES];
         read(buffer);
         return ConvertUtil.byteArrayToInt(buffer);
