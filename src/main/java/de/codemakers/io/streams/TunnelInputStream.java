@@ -137,18 +137,6 @@ public class TunnelInputStream extends InputStream {
         return queue.size();
     }
     
-    protected synchronized long skip(byte id, long n) throws IOException {
-        final Queue<Byte> queue = queues[id];
-        if (queue == null) {
-            return 0;
-        }
-        final long remove = Math.min(queue.size(), n);
-        for (long l = 0; l < remove; l++) {
-            queue.remove();
-        }
-        return remove;
-    }
-    
     protected synchronized void removeInputStream(byte id) {
         inputStreams.remove(id);
         if (queues[id] != null) {
@@ -175,14 +163,6 @@ public class TunnelInputStream extends InputStream {
                     throw new StreamClosedException("There is no " + EndableInputStream.class.getSimpleName() + " with the id " + id);
                 }
                 return TunnelInputStream.this.read(id);
-            }
-            
-            @Override
-            public synchronized long skip(long n) throws IOException {
-                if (closed) {
-                    throw new StreamClosedException("There is no " + EndableInputStream.class.getSimpleName() + " with the id " + id);
-                }
-                return TunnelInputStream.this.skip(id, n);
             }
             
             @Override
