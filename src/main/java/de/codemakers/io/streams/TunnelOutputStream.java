@@ -137,7 +137,7 @@ public class TunnelOutputStream extends OutputStream {
         bufferLengths[id] = 0;
     }
     
-    public EndableOutputStream getOrCreateOutputStream() {
+    public EndableOutputStream createOutputStream() {
         return getOrCreateOutputStream(getNextId());
     }
     

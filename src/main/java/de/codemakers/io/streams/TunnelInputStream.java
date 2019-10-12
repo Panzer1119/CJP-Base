@@ -144,7 +144,7 @@ public class TunnelInputStream extends InputStream {
         }
     }
     
-    public synchronized EndableInputStream getOrCreateInputStream() {
+    public synchronized EndableInputStream createInputStream() {
         return getOrCreateInputStream(getNextId());
     }
     
