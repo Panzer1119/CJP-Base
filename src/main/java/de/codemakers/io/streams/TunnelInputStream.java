@@ -19,6 +19,8 @@ package de.codemakers.io.streams;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.ConvertUtil;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
 
 import java.io.IOException;
@@ -91,8 +93,9 @@ public class TunnelInputStream extends InputStream {
     }
     
     protected synchronized byte readIntern() throws IOException {
-        final byte id = (byte) (read() & 0xFF);
-        final byte[] buffer = new byte[bufferSize];
+        final byte id = readId();
+        final int length = readLength();
+        final byte[] buffer = new byte[length];
         read(buffer);
         Queue<Byte> queue = queues[id];
         if (queue == null) {
@@ -114,6 +117,16 @@ public class TunnelInputStream extends InputStream {
             readIntern();
         }
         return queue.remove();
+    }
+    
+    protected synchronized byte readId() throws IOException {
+        return (byte) (read() & 0xFF);
+    }
+    
+    protected synchronized int readLength() throws IOException {
+        final byte[] buffer = new byte[Integer.BYTES];
+        read(buffer);
+        return ConvertUtil.byteArrayToInt(buffer);
     }
     
     protected synchronized int available(byte id) throws IOException {
