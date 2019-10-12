@@ -16,6 +16,7 @@
 
 package de.codemakers.io.streams;
 
+import de.codemakers.base.Standard;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
 
 import java.io.IOException;
@@ -40,9 +41,10 @@ public class EndableInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         final int temp = inputStream.read();
-        if (temp == ESCAPE_BYTE_INT) {
+        if (temp == ESCAPE_BYTE) {
             return inputStream.read();
-        } else if (temp == ENDED_BYTE_INT) {
+        } else if (temp == ENDED_BYTE) {
+            Standard.silentError(this::close);
             throw new StreamClosedException();
         }
         return temp;

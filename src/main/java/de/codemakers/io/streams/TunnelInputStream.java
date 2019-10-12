@@ -188,4 +188,9 @@ public class TunnelInputStream extends InputStream {
         return endableInputStream;
     }
     
+    @Override
+    public String toString() {
+        return "TunnelInputStream{" + "inputStream=" + inputStream + ", inputStreams=" + inputStreams + ", bufferSize=" + bufferSize + '}';
+    }
+    
 }

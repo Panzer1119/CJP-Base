@@ -37,7 +37,7 @@ public class EndableOutputStream extends OutputStream {
     
     @Override
     public void write(int b) throws IOException {
-        if (b == ESCAPE_BYTE_INT || b == ENDED_BYTE_INT) {
+        if (((byte) b) == ESCAPE_BYTE || ((byte) b) == ENDED_BYTE) {
             outputStream.write(ESCAPE_BYTE_INT);
         }
         outputStream.write(b);
@@ -50,7 +50,7 @@ public class EndableOutputStream extends OutputStream {
     
     @Override
     public void close() throws IOException {
-        outputStream.write(ENDED_BYTE_INT);
+        outputStream.write(ENDED_BYTE);
         flush();
         outputStream.close();
     }
