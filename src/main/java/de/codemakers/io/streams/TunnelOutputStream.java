@@ -19,6 +19,7 @@ package de.codemakers.io.streams;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import de.codemakers.base.util.ConvertUtil;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
 
 import java.io.IOException;
@@ -105,6 +106,7 @@ public class TunnelOutputStream extends OutputStream {
     protected synchronized void appendToBufferOrSendAll(byte id, int b) throws IOException {
         if (bufferSize == 0) {
             writeId(id);
+            writeLength(1);
             write(b);
             return;
         }
@@ -115,20 +117,22 @@ public class TunnelOutputStream extends OutputStream {
     }
     
     protected synchronized void flushBuffer(byte id) throws IOException {
-        if (bufferLengths[id] == 0) {
+        final int length = bufferLengths[id];
+        if (length == 0) {
             return;
         }
         writeId(id);
-        //write(buffers[id], 0, bufferLengths[id]);
-        for (int i = bufferLengths[id]; i < bufferSize; i++) {
-            buffers[id][i] = 0;
-        }
-        write(buffers[id], 0, bufferSize);
+        writeLength(length);
+        write(buffers[id], 0, length);
         bufferLengths[id] = 0;
     }
     
     protected synchronized void writeId(byte id) throws IOException {
         write(id & 0xFF);
+    }
+    
+    protected synchronized void writeLength(int length) throws IOException {
+        write(ConvertUtil.intToByteArray(length));
     }
     
     protected synchronized void removeOutputStream(byte id) {
