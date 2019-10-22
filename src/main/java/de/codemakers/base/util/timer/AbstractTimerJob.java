@@ -16,9 +16,7 @@
 
 package de.codemakers.base.util.timer;
 
-import de.codemakers.base.util.tough.ToughRunnable;
-
-public abstract class AbstractTimerJob implements Comparable<AbstractTimerJob>, ToughRunnable {
+public abstract class AbstractTimerJob implements ITimerJob {
     
     final Object lock = new Object();
     
@@ -47,6 +45,12 @@ public abstract class AbstractTimerJob implements Comparable<AbstractTimerJob>, 
         this.created = created;
     }
     
+    @Override
+    public Object getLock() {
+        return lock;
+    }
+    
+    @Override
     public boolean cancel() {
         synchronized (lock) {
             boolean result = (state == TimerJobState.SCHEDULED);
@@ -55,40 +59,42 @@ public abstract class AbstractTimerJob implements Comparable<AbstractTimerJob>, 
         }
     }
     
+    @Override
     public long getCreated() {
         return created;
     }
     
+    @Override
     public TimerJobState getState() {
         return state;
     }
     
+    @Override
     public AbstractTimerJob setState(TimerJobState state) {
         this.state = state;
         return this;
     }
     
+    @Override
     public long getNextExecutionTime() {
         return nextExecutionTime;
     }
     
+    @Override
     public AbstractTimerJob setNextExecutionTime(long nextExecutionTime) {
         this.nextExecutionTime = nextExecutionTime;
         return this;
     }
     
+    @Override
     public long getPeriod() {
         return period;
     }
     
+    @Override
     public AbstractTimerJob setPeriod(long period) {
         this.period = period;
         return this;
-    }
-    
-    @Override
-    public int compareTo(AbstractTimerJob abstractTimerJob) {
-        return Long.compare(nextExecutionTime, abstractTimerJob.nextExecutionTime);
     }
     
     @Override

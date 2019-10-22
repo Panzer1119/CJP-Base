@@ -20,12 +20,13 @@ import de.codemakers.base.Standard;
 import de.codemakers.base.entities.heap.DynamicBinaryMinHeap;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
+import de.codemakers.base.util.tough.ToughRunnable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TimerJobManager implements Startable, Stoppable {
     
-    protected final DynamicBinaryMinHeap<AbstractTimerJob> timerJobs = new DynamicBinaryMinHeap<>();
+    protected final DynamicBinaryMinHeap<ITimerJob> timerJobs = new DynamicBinaryMinHeap<>();
     protected final AtomicBoolean stopRequested = new AtomicBoolean(false);
     protected long updatePeriodMillis;
     protected Thread thread;
@@ -38,22 +39,42 @@ public class TimerJobManager implements Startable, Stoppable {
         this.updatePeriodMillis = updatePeriodMillis;
     }
     
-    public void schedule(AbstractTimerJob timerJob) {
+    // -- // -- //
+    
+    public void schedule(ToughRunnable toughRunnable) {
+        schedule(new TimerJob(toughRunnable));
+    }
+    
+    public void schedule(ITimerJob timerJob) {
         schedule(timerJob, 0);
     }
     
-    public void schedule(AbstractTimerJob timerJob, long delay) {
+    public void schedule(ToughRunnable toughRunnable, long delay) {
+        schedule(new TimerJob(toughRunnable), delay);
+    }
+    
+    public void schedule(ITimerJob timerJob, long delay) {
         if (delay < 0) {
             throw new IllegalArgumentException("Negative delay.");
         }
         scheduleIntern(timerJob, System.currentTimeMillis() + delay, 0);
     }
     
-    public void scheduleAtFixedDelay(AbstractTimerJob timerJob, long period) {
+    // -- //
+    
+    public void scheduleAtFixedDelay(ToughRunnable toughRunnable, long period) {
+        scheduleAtFixedDelay(new TimerJob(toughRunnable), period);
+    }
+    
+    public void scheduleAtFixedDelay(ITimerJob timerJob, long period) {
         scheduleAtFixedDelay(timerJob, 0, period);
     }
     
-    public void scheduleAtFixedDelay(AbstractTimerJob timerJob, long delay, long period) {
+    public void scheduleAtFixedDelay(ToughRunnable toughRunnable, long delay, long period) {
+        scheduleAtFixedDelay(new TimerJob(toughRunnable), delay, period);
+    }
+    
+    public void scheduleAtFixedDelay(ITimerJob timerJob, long delay, long period) {
         if (delay < 0) {
             throw new IllegalArgumentException("Negative delay.");
         }
@@ -63,11 +84,21 @@ public class TimerJobManager implements Startable, Stoppable {
         scheduleIntern(timerJob, System.currentTimeMillis() + delay, -period);
     }
     
-    public void scheduleAtFixedRate(AbstractTimerJob timerJob, long period) {
+    // -- //
+    
+    public void scheduleAtFixedRate(ToughRunnable toughRunnable, long period) {
+        scheduleAtFixedRate(new TimerJob(toughRunnable), period);
+    }
+    
+    public void scheduleAtFixedRate(ITimerJob timerJob, long period) {
         scheduleAtFixedRate(timerJob, 0, period);
     }
     
-    public void scheduleAtFixedRate(AbstractTimerJob timerJob, long delay, long period) {
+    public void scheduleAtFixedRate(ToughRunnable toughRunnable, long delay, long period) {
+        scheduleAtFixedRate(new TimerJob(toughRunnable), delay, period);
+    }
+    
+    public void scheduleAtFixedRate(ITimerJob timerJob, long delay, long period) {
         if (delay < 0) {
             throw new IllegalArgumentException("Negative delay.");
         }
@@ -77,14 +108,16 @@ public class TimerJobManager implements Startable, Stoppable {
         scheduleIntern(timerJob, System.currentTimeMillis() + delay, period);
     }
     
-    private void scheduleIntern(AbstractTimerJob timerJob, long time, long period) {
+    //
+    
+    private void scheduleIntern(ITimerJob timerJob, long time, long period) {
         if (time < 0) {
             throw new IllegalArgumentException("Illegal execution time.");
         }
         //TODO #Timer.java what is it doing with the period?
         synchronized (timerJobs) {
             //thread.newTasksMayBeScheduled //FIXME Check if this manager has been cancelled
-            synchronized (timerJob.lock) {
+            synchronized (timerJob.getLock()) {
                 if (timerJob.getState() != TimerJobState.CREATED) {
                     throw new IllegalStateException(timerJob.getClass().getSimpleName() + " already scheduled or cancelled");
                 }
@@ -98,6 +131,8 @@ public class TimerJobManager implements Startable, Stoppable {
             }
         }
     }
+    
+    // -- // -- //
     
     public void cancel() {
         synchronized (timerJobs) {
@@ -166,7 +201,7 @@ public class TimerJobManager implements Startable, Stoppable {
     }
     
     private void runIntern() throws Exception {
-        AbstractTimerJob timerJob;
+        ITimerJob timerJob;
         boolean taskFired = false;
         synchronized (timerJobs) {
             if (timerJobs.isEmpty()) {
@@ -175,7 +210,7 @@ public class TimerJobManager implements Startable, Stoppable {
             long currentTime = -1;
             long executionTime = -1;
             timerJob = timerJobs.getMin();
-            synchronized (timerJob.lock) {
+            synchronized (timerJob.getLock()) {
                 if (timerJob.getState() == TimerJobState.CANCELLED) {
                     timerJobs.removeMin();
                     return;

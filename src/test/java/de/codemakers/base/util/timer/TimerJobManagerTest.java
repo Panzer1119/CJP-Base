@@ -55,6 +55,7 @@ public class TimerJobManagerTest {
                 final long duration = timestamp - temp_1.get() - offset;
                 System.out.println(String.format("This should be (%s), and is (%s), the difference is %d ms", ZonedDateTime.ofInstant(Instant.ofEpochMilli(temp_1.get() + offset), ZoneId.systemDefault()), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()), duration));
             }), 1000);
+            timerJobManager.schedule(() -> System.out.println("HEHE"));
         });
         Standard.async(() -> {
             Thread.sleep(20000);
