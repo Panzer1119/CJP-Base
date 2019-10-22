@@ -18,27 +18,27 @@ package de.codemakers.base.entities.heap;
 
 import java.util.Arrays;
 
-public class DynamicBinaryMaxHeap<T extends Comparable<T>> extends BinaryMaxHeap<T> {
+public class DynamicBinaryMaxHeap<E extends Comparable<E>> extends BinaryMaxHeap<E> {
     
-    public DynamicBinaryMaxHeap(Class<T> clazz) {
-        this(clazz, 10);
+    public DynamicBinaryMaxHeap() {
+        this(10);
     }
     
-    public DynamicBinaryMaxHeap(Class<T> clazz, int capacity) {
-        super(clazz, capacity);
+    public DynamicBinaryMaxHeap(int capacity) {
+        super(capacity);
     }
     
     @Override
-    public boolean add(T t) {
+    public boolean add(E e) {
         if (isFull()) {
             heap = Arrays.copyOf(heap, heap.length + 1);
         }
-        return super.add(t);
+        return super.add(e);
     }
     
     @Override
-    public T remove(int i) {
-        final T removed = super.remove(i);
+    public E remove(int i) {
+        final E removed = super.remove(i);
         if (heap.length >= 1) {
             heap = Arrays.copyOf(heap, heap.length - 1);
         }

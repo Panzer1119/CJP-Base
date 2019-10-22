@@ -16,19 +16,18 @@
 
 package de.codemakers.base.entities.heap;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
-public class BinaryMaxHeap<T extends Comparable<T>> implements Collection<T> {
+public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
     
     public static final int DIMENSION = 2;
     public static boolean CLEAR_REMOVED_INDICES = false;
     
-    protected T[] heap;
+    protected Object[] heap;
     protected int heapSize = 0;
     
-    public BinaryMaxHeap(Class<T> clazz, int capacity) {
-        heap = (T[]) Array.newInstance(clazz, capacity);
+    public BinaryMaxHeap(int capacity) {
+        heap = new Object[capacity];
     }
     
     @Override
@@ -42,8 +41,8 @@ public class BinaryMaxHeap<T extends Comparable<T>> implements Collection<T> {
     }
     
     @Override
-    public Iterator<T> iterator() {
-        return new ArrayList<>(Arrays.asList(heap)).iterator();
+    public Iterator<E> iterator() {
+        return new ArrayList<>(Arrays.asList((E[]) heap)).iterator();
     }
     
     @Override
@@ -52,15 +51,19 @@ public class BinaryMaxHeap<T extends Comparable<T>> implements Collection<T> {
     }
     
     @Override
-    public <T1> T1[] toArray(T1[] array) {
+    public <T> T[] toArray(T[] array) {
         if (array.length < heapSize) {
-            return (T1[]) Arrays.copyOf(heap, heapSize, array.getClass());
+            return (T[]) Arrays.copyOf(heap, heapSize, array.getClass());
         }
         System.arraycopy(heap, 0, array, 0, heapSize);
         if (array.length > heapSize) {
             array[heapSize] = null;
         }
         return array;
+    }
+    
+    private E heapData(int index) {
+        return (E) heap[index];
     }
     
     public boolean isFull() {
@@ -124,39 +127,39 @@ public class BinaryMaxHeap<T extends Comparable<T>> implements Collection<T> {
     }
     
     @Override
-    public boolean add(T t) {
+    public boolean add(E e) {
         if (isFull()) {
             throw new IndexOutOfBoundsException("Heap is full");
         }
-        heap[heapSize] = t;
+        heap[heapSize] = e;
         heapifyUp(heapSize);
         heapSize++;
         return true;
     }
     
     @Override
-    public boolean addAll(Collection<? extends T> collection) {
+    public boolean addAll(Collection<? extends E> collection) {
         boolean modified = false;
-        for (T t : collection) {
-            if (add(t)) {
+        for (E e : collection) {
+            if (add(e)) {
                 modified = true;
             }
         }
         return modified;
     }
     
-    public T remove(int i) {
+    public E remove(int i) {
         if (isEmpty()) {
             throw new NoSuchElementException("Heap is empty");
         }
-        final T t = heap[i];
+        final E e = heapData(i);
         heapSize--;
         heap[i] = heap[heapSize];
         if (CLEAR_REMOVED_INDICES) {
             heap[heapSize] = null;
         }
         heapifyDown(i);
-        return t;
+        return e;
     }
     
     @Override
@@ -183,8 +186,8 @@ public class BinaryMaxHeap<T extends Comparable<T>> implements Collection<T> {
     @Override
     public boolean retainAll(Collection<?> collection) {
         boolean modified = false;
-        for (T t : heap) {
-            if (!collection.contains(t) && remove(t)) {
+        for (Object o : heap) {
+            if (!collection.contains(o) && remove(o)) {
                 modified = true;
             }
         }
@@ -197,43 +200,43 @@ public class BinaryMaxHeap<T extends Comparable<T>> implements Collection<T> {
     }
     
     protected void heapifyUp(int i) {
-        T t = heap[i];
-        while (i > 0 && t.compareTo(heap[parent(i)]) > 0) {
+        E e = heapData(i);
+        while (i > 0 && e.compareTo(heapData(parent(i))) > 0) {
             heap[i] = heap[parent(i)];
             i = parent(i);
         }
-        heap[i] = t;
+        heap[i] = e;
     }
     
     protected void heapifyDown(int i) {
         int child;
-        T t = heap[i];
+        E e = heapData(i);
         while (kthChild(i, 1) < heapSize) {
             child = maxChild(i);
-            if (t.compareTo(heap[child]) < 0) {
+            if (e.compareTo(heapData(child)) < 0) {
                 heap[i] = heap[child];
             } else {
                 break;
             }
             i = child;
         }
-        heap[i] = t;
+        heap[i] = e;
     }
     
     protected int maxChild(int i) {
         final int leftChild = kthChild(i, 1);
         final int rightChild = kthChild(i, 2);
-        return heap[leftChild].compareTo(heap[rightChild]) > 0 ? leftChild : rightChild;
+        return heapData(leftChild).compareTo(heapData(rightChild)) > 0 ? leftChild : rightChild;
     }
     
-    public T getMax() {
+    public E getMax() {
         if (isEmpty()) {
             throw new NoSuchElementException("Heap is empty");
         }
-        return heap[0];
+        return heapData(0);
     }
     
-    public T removeMax() {
+    public E removeMax() {
         return remove(0);
     }
     
