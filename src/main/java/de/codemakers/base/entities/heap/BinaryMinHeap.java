@@ -70,6 +70,10 @@ public class BinaryMinHeap<E extends Comparable<E>> implements Collection<E> {
         return array;
     }
     
+    public E get(int index) {
+        return heapData(index);
+    }
+    
     private E heapData(int index) {
         return (E) heap[index];
     }
