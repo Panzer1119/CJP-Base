@@ -23,20 +23,43 @@ import de.codemakers.base.util.interfaces.Stoppable;
 import de.codemakers.base.util.tough.ToughRunnable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TimerJobManager implements Startable, Stoppable {
     
+    private static final AtomicInteger NEXT_SERIAL_NUMBER = new AtomicInteger(0);
+    
+    private static int nextGlobalSerialNumber() {
+        return NEXT_SERIAL_NUMBER.getAndIncrement();
+    }
+    
+    protected final int globalSerialNumber = nextGlobalSerialNumber();
+    protected final AtomicInteger nextSerialNumber = new AtomicInteger(0);
     protected final DynamicBinaryMinHeap<ITimerJob> timerJobs = new DynamicBinaryMinHeap<>();
     protected final AtomicBoolean stopRequested = new AtomicBoolean(false);
     protected long updatePeriodMillis;
+    protected boolean isDaemon;
     protected Thread thread;
     
     public TimerJobManager() {
-        this(100);
+        this(100, false);
+    }
+    
+    public TimerJobManager(boolean isDaemon) {
+        this(100, isDaemon);
     }
     
     public TimerJobManager(long updatePeriodMillis) {
+        this(updatePeriodMillis, false);
+    }
+    
+    public TimerJobManager(long updatePeriodMillis, boolean isDaemon) {
         this.updatePeriodMillis = updatePeriodMillis;
+        this.isDaemon = isDaemon;
+    }
+    
+    private int nextSerialNumber() {
+        return nextSerialNumber.getAndIncrement();
     }
     
     // -- // -- //
@@ -180,6 +203,15 @@ public class TimerJobManager implements Startable, Stoppable {
         return this;
     }
     
+    public boolean isDaemon() {
+        return isDaemon;
+    }
+    
+    public TimerJobManager setDaemon(boolean daemon) {
+        isDaemon = daemon;
+        return this;
+    }
+    
     @Override
     public boolean start() throws Exception {
         if (isStarted()) {
@@ -198,6 +230,8 @@ public class TimerJobManager implements Startable, Stoppable {
                 //waitIntern(); //Waiting happens in the runIntern method
             }
         });
+        thread.setName(getClass().getSimpleName() + "-" + globalSerialNumber + "-" + nextSerialNumber());
+        thread.setDaemon(isDaemon);
     }
     
     private void runIntern() throws Exception {
@@ -259,11 +293,12 @@ public class TimerJobManager implements Startable, Stoppable {
             //thread.interrupt(); //TODO ?
             thread = null;
         }
+        timerJobs.clear();
     }
     
     @Override
     public String toString() {
-        return "TimerJobManager{" + "timerJobs=" + timerJobs + ", stopRequested=" + stopRequested + ", updatePeriodMillis=" + updatePeriodMillis + ", thread=" + thread + '}';
+        return "TimerJobManager{" + "globalSerialNumber=" + globalSerialNumber + ", nextSerialNumber=" + nextSerialNumber + ", timerJobs=" + timerJobs + ", stopRequested=" + stopRequested + ", updatePeriodMillis=" + updatePeriodMillis + ", isDaemon=" + isDaemon + ", thread=" + thread + '}';
     }
     
 }

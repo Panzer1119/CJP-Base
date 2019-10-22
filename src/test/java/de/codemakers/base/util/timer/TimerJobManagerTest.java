@@ -38,6 +38,7 @@ public class TimerJobManagerTest {
                 temp_1.set(timestamp);
             }
             System.out.println("CURRENT TIME: " + ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()));
+            System.out.println("1 timerJobManager=" + timerJobManager);
         }), 1000);
         Logger.log("timerJobManager=" + timerJobManager);
         timerJobManager.startWithoutException();
@@ -47,6 +48,7 @@ public class TimerJobManagerTest {
             Thread.sleep(3750);
             timerJobManager.scheduleAtFixedRate(new TimerJob(() -> {
                 System.err.println("SECOND TIME: " + ZonedDateTime.now());
+                System.out.println("2 timerJobManager=" + timerJobManager);
             }), 1500);
             Thread.sleep(1250);
             timerJobManager.schedule(new TimerJob(() -> {
@@ -54,6 +56,7 @@ public class TimerJobManagerTest {
                 final long timestamp = System.currentTimeMillis();
                 final long duration = timestamp - temp_1.get() - offset;
                 System.out.println(String.format("This should be (%s), and is (%s), the difference is %d ms", ZonedDateTime.ofInstant(Instant.ofEpochMilli(temp_1.get() + offset), ZoneId.systemDefault()), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()), duration));
+                System.out.println("3 timerJobManager=" + timerJobManager);
             }), 1000);
             timerJobManager.schedule(() -> System.out.println("HEHE"));
         });
