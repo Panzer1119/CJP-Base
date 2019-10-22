@@ -21,15 +21,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
+public class BinaryMinHeap<E extends Comparable<E>> implements Collection<E> {
     
     public static final int DIMENSION = 2;
-    public static boolean CLEAR_REMOVED_INDICES = false;
+    public static final boolean CLEAR_REMOVED_INDICES = false;
     
     protected Object[] heap;
     protected int heapSize = 0;
     
-    public BinaryMaxHeap(int capacity) {
+    public BinaryMinHeap(int capacity) {
         this.heap = new Object[capacity];
     }
     
@@ -41,6 +41,11 @@ public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
     @Override
     public boolean isEmpty() {
         return heapSize == 0;
+    }
+    
+    @Override
+    public boolean contains(Object object) {
+        return indexOf(object) >= 0;
     }
     
     @Override
@@ -116,20 +121,6 @@ public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
     }
     
     @Override
-    public boolean contains(Object object) {
-        return indexOf(object) >= 0;
-    }
-    
-    @Override
-    public boolean containsAll(Collection<?> collection) {
-        for (Object object : collection)
-            if (!contains(object)) {
-                return false;
-            }
-        return true;
-    }
-    
-    @Override
     public boolean add(E e) {
         if (isFull()) {
             throw new IndexOutOfBoundsException("Heap is full");
@@ -138,17 +129,6 @@ public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
         heapifyUp(heapSize);
         heapSize++;
         return true;
-    }
-    
-    @Override
-    public boolean addAll(Collection<? extends E> collection) {
-        boolean modified = false;
-        for (E e : collection) {
-            if (add(e)) {
-                modified = true;
-            }
-        }
-        return modified;
     }
     
     public E remove(int i) {
@@ -173,6 +153,27 @@ public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
             return true;
         }
         return false;
+    }
+    
+    @Override
+    public boolean containsAll(Collection<?> collection) {
+        for (Object object : collection) {
+            if (!contains(object)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    @Override
+    public boolean addAll(Collection<? extends E> collection) {
+        boolean modified = false;
+        for (E e : collection) {
+            if (add(e)) {
+                modified = true;
+            }
+        }
+        return modified;
     }
     
     @Override
@@ -207,7 +208,7 @@ public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
     
     protected void heapifyUp(int i) {
         E e = heapData(i);
-        while (i > 0 && e.compareTo(heapData(parent(i))) > 0) {
+        while (i > 0 && e.compareTo(heapData(parent(i))) < 0) {
             heap[i] = heap[parent(i)];
             i = parent(i);
         }
@@ -218,8 +219,8 @@ public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
         int child;
         E e = heapData(i);
         while (kthChild(i, 1) < heapSize) {
-            child = maxChild(i);
-            if (e.compareTo(heapData(child)) < 0) {
+            child = minChild(i);
+            if (e.compareTo(heapData(child)) > 0) {
                 heap[i] = heap[child];
             } else {
                 break;
@@ -229,26 +230,26 @@ public class BinaryMaxHeap<E extends Comparable<E>> implements Collection<E> {
         heap[i] = e;
     }
     
-    protected int maxChild(int i) {
+    protected int minChild(int i) {
         final int leftChild = kthChild(i, 1);
         final int rightChild = kthChild(i, 2);
-        return heapData(leftChild).compareTo(heapData(rightChild)) > 0 ? leftChild : rightChild;
+        return heapData(leftChild).compareTo(heapData(rightChild)) < 0 ? leftChild : rightChild;
     }
     
-    public E getMax() {
+    public E getMin() {
         if (isEmpty()) {
             throw new NoSuchElementException("Heap is empty");
         }
         return heapData(0);
     }
     
-    public E removeMax() {
+    public E removeMin() {
         return remove(0);
     }
     
     @Override
     public String toString() {
-        return "BinaryMaxHeap{" + "heap=" + Arrays.toString(heap) + ", heapSize=" + heapSize + '}';
+        return "BinaryMinHeap{" + "heap=" + Arrays.toString(heap) + ", heapSize=" + heapSize + '}';
     }
     
 }
