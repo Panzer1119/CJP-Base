@@ -23,7 +23,7 @@ public class BinaryHeapTest {
     public static final void main(String[] args) throws Exception {
         BinaryMaxHeap.CLEAR_REMOVED_INDICES = true;
         final Random random = new Random();
-        final BinaryMaxHeap<Integer> integerBinaryMaxHeap = new BinaryMaxHeap<>(Integer.class, 20);
+        final BinaryMaxHeap<Integer> integerBinaryMaxHeap = new BinaryMaxHeap<>(20);
         System.out.println("integerBinaryMaxHeap -1=" + integerBinaryMaxHeap);
         for (int i = 0; i < 10; i++) {
             integerBinaryMaxHeap.add(random.nextInt());

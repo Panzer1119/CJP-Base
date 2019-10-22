@@ -22,7 +22,7 @@ public class DynamicBinaryMaxHeapTest {
     
     public static final void main(String[] args) throws Exception {
         final Random random = new Random();
-        final DynamicBinaryMaxHeap<Integer> integerDynamicBinaryMaxHeap = new DynamicBinaryMaxHeap<>(Integer.class);
+        final DynamicBinaryMaxHeap<Integer> integerDynamicBinaryMaxHeap = new DynamicBinaryMaxHeap<>();
         System.out.println("integerDynamicBinaryMaxHeap -1=" + integerDynamicBinaryMaxHeap);
         for (int i = 0; i < 15; i++) {
             integerDynamicBinaryMaxHeap.add(random.nextInt());
