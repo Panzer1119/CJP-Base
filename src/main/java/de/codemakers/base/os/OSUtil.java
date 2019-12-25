@@ -54,6 +54,10 @@ public class OSUtil {
     private static final AtomicBoolean LOADED_OS_FUNCTIONS = new AtomicBoolean(false);
     
     static {
+        //initAsync(); //FIXME Cause some problems with SpringBoot etc...
+    }
+    
+    public static final void initAsync() {
         new Thread(() -> Standard.silentError(OSUtil::init)).start(); //This is here, because calling the class "Standard" directly from here causes Errors
     }
     
