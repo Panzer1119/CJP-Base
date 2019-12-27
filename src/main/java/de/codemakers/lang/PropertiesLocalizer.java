@@ -71,7 +71,7 @@ public class PropertiesLocalizer extends Localizer {
     @Override
     public String localizeWithArguments(String name, ToughSupplier<String> defaultValueSupplier, Object... arguments) {
         final String temp = properties.getProperty(name);
-        return temp != null ? temp : defaultValueSupplier.getWithoutException();
+        return (temp != null || defaultValueSupplier == null) ? temp : defaultValueSupplier.getWithoutException();
     }
     
     @Override
