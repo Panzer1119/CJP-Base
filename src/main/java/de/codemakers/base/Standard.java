@@ -223,7 +223,7 @@ public class Standard {
     }
     
     public static Locale getLocaleEnglishUk() {
-        return LanguageUtil.getLocaleEnglishUk();
+        return LanguageUtil.getLocaleEnglishGb();
     }
     
     public static Locale getLocaleGermanDe() {
@@ -262,8 +262,8 @@ public class Standard {
         return LanguageUtil.getLocalizerEnglishUs();
     }
     
-    public static AdvancedLocalizer getLocalizerEnglishUk() {
-        return LanguageUtil.getLocalizerEnglishUk();
+    public static AdvancedLocalizer getLocalizerEnglishGb() {
+        return LanguageUtil.getLocalizerEnglishGb();
     }
     
     public static AdvancedLocalizer getLocalizerGermanDe() {

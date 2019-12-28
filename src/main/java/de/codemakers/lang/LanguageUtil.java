@@ -35,7 +35,7 @@ public class LanguageUtil {
     
     // Language + Region
     public static final Locale LOCALE_ENGLISH_US = Locale.US;
-    public static final Locale LOCALE_ENGLISH_UK = Locale.UK;
+    public static final Locale LOCALE_ENGLISH_GB = Locale.UK;
     public static final Locale LOCALE_GERMAN_DE = Locale.GERMANY;
     public static final Locale LOCALE_DEFAULT = Locale.getDefault();
     // Language
@@ -44,7 +44,7 @@ public class LanguageUtil {
     public static final Locale LOCALE_LANGUAGE_DEFAULT = Locale.forLanguageTag(LOCALE_DEFAULT.getLanguage());
     // Files
     public static final AdvancedFile FILE_ENGLISH_US = getFileByLocale(LOCALE_ENGLISH_US);
-    public static final AdvancedFile FILE_ENGLISH_UK = getFileByLocale(LOCALE_ENGLISH_UK);
+    public static final AdvancedFile FILE_ENGLISH_GB = getFileByLocale(LOCALE_ENGLISH_GB);
     public static final AdvancedFile FILE_GERMAN_DE = getFileByLocale(LOCALE_GERMAN_DE);
     public static final AdvancedFile FILE_DEFAULT = getFileByLocale(LOCALE_DEFAULT);
     
@@ -57,7 +57,7 @@ public class LanguageUtil {
     private static LanguageReloader LANGUAGE_RELOADER = DEFAULT_LANGUAGE_RELOADER;
     // AdvancedLocalizer
     private static final AdvancedLocalizer LOCALIZER_ENGLISH_US = new AdvancedLocalizer(FILE_ENGLISH_US);
-    private static final AdvancedLocalizer LOCALIZER_ENGLISH_UK = new AdvancedLocalizer(FILE_ENGLISH_UK);
+    private static final AdvancedLocalizer LOCALIZER_ENGLISH_GB = new AdvancedLocalizer(FILE_ENGLISH_GB);
     private static final AdvancedLocalizer LOCALIZER_GERMAN_DE = new AdvancedLocalizer(FILE_GERMAN_DE);
     private static final AdvancedLocalizer LOCALIZER_DEFAULT = new AdvancedLocalizer(FILE_DEFAULT);
     private static Localizer LOCALIZER = LOCALIZER_DEFAULT;
@@ -66,8 +66,8 @@ public class LanguageUtil {
         return LOCALE_ENGLISH_US;
     }
     
-    public static Locale getLocaleEnglishUk() {
-        return LOCALE_ENGLISH_UK;
+    public static Locale getLocaleEnglishGb() {
+        return LOCALE_ENGLISH_GB;
     }
     
     public static Locale getLocaleGermanDe() {
@@ -94,8 +94,8 @@ public class LanguageUtil {
         return FILE_ENGLISH_US;
     }
     
-    public static AdvancedFile getFileEnglishUk() {
-        return FILE_ENGLISH_UK;
+    public static AdvancedFile getFileEnglishGb() {
+        return FILE_ENGLISH_GB;
     }
     
     public static AdvancedFile getFileGermanDe() {
@@ -168,7 +168,7 @@ public class LanguageUtil {
     
     public static void initLocalizers() {
         getLocalizerEnglishUs().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_US.toLanguageTag(), FILE_ENGLISH_US.getAbsolutePath()), ex));
-        getLocalizerEnglishUk().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_UK.toLanguageTag(), FILE_ENGLISH_UK.getAbsolutePath()), ex));
+        getLocalizerEnglishGb().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_GB.toLanguageTag(), FILE_ENGLISH_GB.getAbsolutePath()), ex));
         getLocalizerGermanDe().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_GERMAN_DE.toLanguageTag(), FILE_GERMAN_DE.getAbsolutePath()), ex));
         getLocalizerDefault().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_DEFAULT.toLanguageTag(), FILE_DEFAULT.getAbsolutePath()), ex));
     }
@@ -177,8 +177,8 @@ public class LanguageUtil {
         return LOCALIZER_ENGLISH_US;
     }
     
-    public static AdvancedLocalizer getLocalizerEnglishUk() {
-        return LOCALIZER_ENGLISH_UK;
+    public static AdvancedLocalizer getLocalizerEnglishGb() {
+        return LOCALIZER_ENGLISH_GB;
     }
     
     public static AdvancedLocalizer getLocalizerGermanDe() {
