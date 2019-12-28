@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -215,6 +216,22 @@ public class Standard {
     
     public static ToughRunnable removeShutdownHook(int id) {
         return SHUTDOWN_HOOKS.remove(id);
+    }
+    
+    public static Locale getLocaleEnglishUs() {
+        return LanguageUtil.getLocaleEnglishUs();
+    }
+    
+    public static Locale getLocaleEnglishUk() {
+        return LanguageUtil.getLocaleEnglishUk();
+    }
+    
+    public static Locale getLocaleGermanDe() {
+        return LanguageUtil.getLocaleGermanDe();
+    }
+    
+    public static Locale getLocaleDefault() {
+        return LanguageUtil.getLocaleDefault();
     }
     
     public static LanguageReloader getDefaultLanguageReloader() {

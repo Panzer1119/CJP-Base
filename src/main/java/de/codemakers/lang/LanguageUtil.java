@@ -62,6 +62,50 @@ public class LanguageUtil {
     private static final AdvancedLocalizer LOCALIZER_DEFAULT = new AdvancedLocalizer(FILE_DEFAULT);
     private static Localizer LOCALIZER = LOCALIZER_DEFAULT;
     
+    public static Locale getLocaleEnglishUs() {
+        return LOCALE_ENGLISH_US;
+    }
+    
+    public static Locale getLocaleEnglishUk() {
+        return LOCALE_ENGLISH_UK;
+    }
+    
+    public static Locale getLocaleGermanDe() {
+        return LOCALE_GERMAN_DE;
+    }
+    
+    public static Locale getLocaleDefault() {
+        return LOCALE_DEFAULT;
+    }
+    
+    public static Locale getLocaleLanguageEnglish() {
+        return LOCALE_LANGUAGE_ENGLISH;
+    }
+    
+    public static Locale getLocaleLanguageGerman() {
+        return LOCALE_LANGUAGE_GERMAN;
+    }
+    
+    public static Locale getLocaleLanguageDefault() {
+        return LOCALE_LANGUAGE_DEFAULT;
+    }
+    
+    public static AdvancedFile getFileEnglishUs() {
+        return FILE_ENGLISH_US;
+    }
+    
+    public static AdvancedFile getFileEnglishUk() {
+        return FILE_ENGLISH_UK;
+    }
+    
+    public static AdvancedFile getFileGermanDe() {
+        return FILE_GERMAN_DE;
+    }
+    
+    public static AdvancedFile getFileDefault() {
+        return FILE_DEFAULT;
+    }
+    
     public static LanguageReloader getDefaultLanguageReloader() {
         return DEFAULT_LANGUAGE_RELOADER;
     }
@@ -111,7 +155,15 @@ public class LanguageUtil {
     }
     
     public static AdvancedFile getFileByLocale(Locale locale) {
-        return new AdvancedFile(LANG_FOLDER, locale.toLanguageTag() + "." + LANG_FILE_EXTENSION);
+        return getFileByLocale(LANG_FOLDER, locale);
+    }
+    
+    public static AdvancedFile getFileByLocale(AdvancedFile parent, Locale locale) {
+        return new AdvancedFile(parent, getFileNameByLocale(locale));
+    }
+    
+    public static String getFileNameByLocale(Locale locale) {
+        return locale.toLanguageTag() + "." + LANG_FILE_EXTENSION;
     }
     
     public static void initLocalizers() {
