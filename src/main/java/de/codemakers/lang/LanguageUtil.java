@@ -168,7 +168,7 @@ public class LanguageUtil {
     
     public static void initLocalizers() {
         getLocalizerEnglishUs().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_US.toLanguageTag(), FILE_ENGLISH_US.getAbsolutePath()), ex));
-        getLocalizerEnglishUs().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_UK.toLanguageTag(), FILE_ENGLISH_UK.getAbsolutePath()), ex));
+        getLocalizerEnglishUk().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_UK.toLanguageTag(), FILE_ENGLISH_UK.getAbsolutePath()), ex));
         getLocalizerGermanDe().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_GERMAN_DE.toLanguageTag(), FILE_GERMAN_DE.getAbsolutePath()), ex));
         getLocalizerDefault().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_DEFAULT.toLanguageTag(), FILE_DEFAULT.getAbsolutePath()), ex));
     }

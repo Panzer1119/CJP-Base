@@ -19,8 +19,10 @@ package de.codemakers.lang;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
+import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
+import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
 
 import java.io.InputStream;
 import java.util.Objects;
@@ -40,17 +42,36 @@ public class PropertiesLocalizer extends Localizer {
     
     public PropertiesLocalizer(AdvancedFile advancedFile) {
         this();
-        loadFromFile(advancedFile);
+        loadFromFileWithoutException(advancedFile);
     }
     
-    public boolean loadFromFile(AdvancedFile advancedFile) {
+    public boolean loadFromFileWithoutException(AdvancedFile advancedFile) {
+        return loadFromFile(advancedFile, null);
+    }
+    
+    public boolean loadFromFile(AdvancedFile advancedFile, ToughConsumer<Throwable> failure) {
+        try {
+            return loadFromFile(advancedFile);
+        } catch (Exception ex) {
+            if (failure == null) {
+                Logger.handleError(ex);
+            } else {
+                failure.acceptWithoutException(ex);
+            }
+            return false;
+        }
+    }
+    
+    public boolean loadFromFile(AdvancedFile advancedFile) throws Exception {
         Objects.requireNonNull(advancedFile);
+        if (!advancedFile.exists()) {
+            throw new FileIsNotExistingException(advancedFile.getAbsolutePath());
+        }
         try (final InputStream inputStream = advancedFile.createInputStream()) {
             properties.load(inputStream);
             return true;
         } catch (Exception ex) {
-            Logger.handleError(ex, "tried loading " + PropertiesLocalizer.class.getSimpleName() + " from \"" + advancedFile + "\"");
-            return false;
+            throw ex;
         }
     }
     
