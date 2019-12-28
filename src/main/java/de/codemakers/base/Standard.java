@@ -241,12 +241,20 @@ public class Standard {
         return LanguageUtil.unloadLanguageWithoutException();
     }
     
-    public static AdvancedLocalizer getEnglishLocalizer() {
-        return LanguageUtil.getEnglishLocalizer();
+    public static AdvancedLocalizer getLocalizerEnglishUs() {
+        return LanguageUtil.getLocalizerEnglishUs();
     }
     
-    public static AdvancedLocalizer getDefaultLocalizer() {
-        return LanguageUtil.getDefaultLocalizer();
+    public static AdvancedLocalizer getLocalizerEnglishUk() {
+        return LanguageUtil.getLocalizerEnglishUk();
+    }
+    
+    public static AdvancedLocalizer getLocalizerGermanDe() {
+        return LanguageUtil.getLocalizerGermanDe();
+    }
+    
+    public static AdvancedLocalizer getLocalizerDefault() {
+        return LanguageUtil.getLocalizerDefault();
     }
     
     public static <L extends Localizer> L getLocalizer() {

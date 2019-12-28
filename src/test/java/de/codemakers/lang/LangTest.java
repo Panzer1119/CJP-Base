@@ -24,6 +24,10 @@ import java.util.Locale;
 public class LangTest {
     
     public static final void main(String[] args) throws Exception {
+        if (false) {
+            test();
+            return;
+        }
         final Locale locale = Locale.getDefault();
         Logger.log("locale=" + locale);
         Logger.log("locale.getCountry()=" + locale.getCountry());
@@ -38,7 +42,7 @@ public class LangTest {
         Logger.log("locale.getVariant()=" + locale.getVariant());
         Logger.log("locale.toLanguageTag()=" + locale.toLanguageTag());
         Logger.log(Locale.forLanguageTag("en"));
-        final AdvancedLocalizer advancedLocalizer = LanguageUtil.getDefaultLocalizer();
+        final AdvancedLocalizer advancedLocalizer = LanguageUtil.getLocalizerDefault();
         Logger.log("advancedLocalizer=" + advancedLocalizer);
         Logger.log("advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH)=" + advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH));
         Logger.log("Standard.localize(\"test_123\")=" + Standard.localize("test_123"));
@@ -62,6 +66,7 @@ public class LangTest {
                 Logger.log("locale.getLanguage()=" + locale.getLanguage());
                 Logger.log("locale.getVariant()=" + locale.getVariant());
                 Logger.log("locale.toLanguageTag()=" + locale.toLanguageTag());
+                Logger.log("\n\n");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

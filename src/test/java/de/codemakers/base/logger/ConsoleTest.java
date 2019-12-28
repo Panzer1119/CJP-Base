@@ -104,11 +104,11 @@ public class ConsoleTest {
                 if (temp.startsWith("lang")) {
                     temp = temp.substring("lang".length()).trim();
                     if (temp.equalsIgnoreCase("english")) {
-                        Standard.setLocalizer(Standard.getEnglishLocalizer());
-                        Logger.logDebug("Setted localizer to english");
+                        Standard.setLocalizer(Standard.getLocalizerEnglishUs());
+                        Logger.logDebug("Setted localizer to english us");
                         return true;
                     } else if (temp.equalsIgnoreCase("default")) {
-                        Standard.setLocalizer(Standard.getDefaultLocalizer());
+                        Standard.setLocalizer(Standard.getLocalizerDefault());
                         Logger.logDebug("Setted localizer to default");
                         return true;
                     }
