@@ -27,6 +27,7 @@ import java.util.Objects;
 
 public class LanguageUtil {
     
+    // // Final values
     // Paths etc.
     public static final String LANG_PATH = "lang/";
     public static final AdvancedFile LANG_FOLDER = new AdvancedFile(Standard.MAIN_FOLDER, LANG_PATH);
@@ -39,24 +40,32 @@ public class LanguageUtil {
     public static final Locale LOCALE_DEFAULT = Locale.getDefault();
     // Language
     public static final Locale LOCALE_LANGUAGE_ENGLISH = Locale.ENGLISH;
+    public static final Locale LOCALE_LANGUAGE_GERMAN = Locale.GERMAN;
     public static final Locale LOCALE_LANGUAGE_DEFAULT = Locale.forLanguageTag(LOCALE_DEFAULT.getLanguage());
     // Files
     public static final AdvancedFile FILE_ENGLISH_US = getFileByLocale(LOCALE_ENGLISH_US);
     public static final AdvancedFile FILE_ENGLISH_UK = getFileByLocale(LOCALE_ENGLISH_UK);
     public static final AdvancedFile FILE_GERMAN_DE = getFileByLocale(LOCALE_GERMAN_DE);
+    public static final AdvancedFile FILE_DEFAULT = getFileByLocale(LOCALE_DEFAULT);
     @Deprecated
     public static final AdvancedFile LANG_FILE_ENGLISH = getLangFile(LOCALE_LANGUAGE_ENGLISH.getLanguage());
     @Deprecated
     public static final AdvancedFile LANG_FILE_DEFAULT = getLangFile(LOCALE_LANGUAGE_DEFAULT.getLanguage());
     
-    // Instances
+    // // Instances
+    // LanguageReloader
     private static final LanguageReloader DEFAULT_LANGUAGE_RELOADER = new LanguageReloader();
     private static LanguageReloader LANGUAGE_RELOADER = DEFAULT_LANGUAGE_RELOADER;
+    // AdvancedLocalizer
+    private static final AdvancedLocalizer LOCALIZER_ENGLISH_US = new AdvancedLocalizer(FILE_ENGLISH_US);
+    private static final AdvancedLocalizer LOCALIZER_ENGLISH_UK = new AdvancedLocalizer(FILE_ENGLISH_UK);
+    private static final AdvancedLocalizer LOCALIZER_GERMAN_DE = new AdvancedLocalizer(FILE_GERMAN_DE);
+    private static final AdvancedLocalizer LOCALIZER_DEFAULT = new AdvancedLocalizer(FILE_DEFAULT);
+    private static Localizer LOCALIZER = LOCALIZER_DEFAULT;
     @Deprecated
     private static final AdvancedLocalizer ENGLISH_LOCALIZER = new AdvancedLocalizer(LANG_FILE_ENGLISH);
     @Deprecated
     private static final AdvancedLocalizer DEFAULT_LOCALIZER = new AdvancedLocalizer(LANG_FILE_DEFAULT);
-    private static Localizer LOCALIZER = DEFAULT_LOCALIZER;
     
     public static LanguageReloader getDefaultLanguageReloader() {
         return DEFAULT_LANGUAGE_RELOADER;
@@ -120,10 +129,12 @@ public class LanguageUtil {
         getDefaultLocalizer().load((ex) -> Logger.logError("Failed to load language file for default language \"" + LOCALE_LANGUAGE_DEFAULT + "\"", ex));
     }
     
+    @Deprecated
     public static AdvancedLocalizer getEnglishLocalizer() {
         return ENGLISH_LOCALIZER;
     }
     
+    @Deprecated
     public static AdvancedLocalizer getDefaultLocalizer() {
         return DEFAULT_LOCALIZER;
     }
