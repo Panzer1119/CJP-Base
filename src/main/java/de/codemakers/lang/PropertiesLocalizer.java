@@ -102,12 +102,12 @@ public class PropertiesLocalizer extends Localizer {
     
     @Override
     public String getLanguageNameEnglish() {
-        return properties.getProperty(KEY_LANGUAGE_NAME_ENGLISH, getLanguageCode());
+        return properties.getProperty(KEY_LANGUAGE_NAME_ENGLISH, getLanguageTag());
     }
     
     @Override
-    public String getLanguageCode() {
-        return properties.getProperty(KEY_LANGUAGE_CODE);
+    public String getLanguageTag() {
+        return properties.getProperty(KEY_LANGUAGE_TAG);
     }
     
     @Override

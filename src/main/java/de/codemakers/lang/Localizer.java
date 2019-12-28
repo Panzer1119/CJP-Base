@@ -27,7 +27,7 @@ public abstract class Localizer implements Copyable, Loadable, Unloadable {
     
     public static final String KEY_LANGUAGE_NAME_LOCAL = "language_name_local";
     public static final String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
-    public static final String KEY_LANGUAGE_CODE = "language_code";
+    public static final String KEY_LANGUAGE_TAG = "language_tag";
     
     public abstract String localizeWithArguments(String name, String defaultValue, Object... arguments);
     
@@ -53,10 +53,10 @@ public abstract class Localizer implements Copyable, Loadable, Unloadable {
     
     public abstract String getLanguageNameEnglish();
     
-    public abstract String getLanguageCode();
+    public abstract String getLanguageTag();
     
     public Locale getLocale() {
-        return Locale.forLanguageTag(getLanguageCode());
+        return Locale.forLanguageTag(getLanguageTag());
     }
     
     public abstract boolean addLocalizer(Localizer localizer);

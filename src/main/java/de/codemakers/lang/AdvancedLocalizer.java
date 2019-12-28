@@ -95,8 +95,8 @@ public class AdvancedLocalizer extends Localizer {
     }
     
     @Override
-    public String getLanguageCode() {
-        return propertiesLocalizer.getLanguageCode();
+    public String getLanguageTag() {
+        return propertiesLocalizer.getLanguageTag();
     }
     
     @Override
