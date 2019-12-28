@@ -222,7 +222,7 @@ public class Standard {
         return LanguageUtil.getLocaleEnglishUs();
     }
     
-    public static Locale getLocaleEnglishUk() {
+    public static Locale getLocaleEnglishGb() {
         return LanguageUtil.getLocaleEnglishGb();
     }
     
