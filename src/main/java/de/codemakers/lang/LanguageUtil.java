@@ -47,10 +47,9 @@ public class LanguageUtil {
     public static final AdvancedFile FILE_ENGLISH_UK = getFileByLocale(LOCALE_ENGLISH_UK);
     public static final AdvancedFile FILE_GERMAN_DE = getFileByLocale(LOCALE_GERMAN_DE);
     public static final AdvancedFile FILE_DEFAULT = getFileByLocale(LOCALE_DEFAULT);
-    @Deprecated
-    public static final AdvancedFile LANG_FILE_ENGLISH = getLangFile(LOCALE_LANGUAGE_ENGLISH.getLanguage());
-    @Deprecated
-    public static final AdvancedFile LANG_FILE_DEFAULT = getLangFile(LOCALE_LANGUAGE_DEFAULT.getLanguage());
+    
+    // Templates etc.
+    public static final String TEMPLATE_FAILED_TO_LOAD_LOCALIZER = "Failed to load language file for %s: \"%s\"";
     
     // // Instances
     // LanguageReloader
@@ -62,10 +61,6 @@ public class LanguageUtil {
     private static final AdvancedLocalizer LOCALIZER_GERMAN_DE = new AdvancedLocalizer(FILE_GERMAN_DE);
     private static final AdvancedLocalizer LOCALIZER_DEFAULT = new AdvancedLocalizer(FILE_DEFAULT);
     private static Localizer LOCALIZER = LOCALIZER_DEFAULT;
-    @Deprecated
-    private static final AdvancedLocalizer ENGLISH_LOCALIZER = new AdvancedLocalizer(LANG_FILE_ENGLISH);
-    @Deprecated
-    private static final AdvancedLocalizer DEFAULT_LOCALIZER = new AdvancedLocalizer(LANG_FILE_DEFAULT);
     
     public static LanguageReloader getDefaultLanguageReloader() {
         return DEFAULT_LANGUAGE_RELOADER;
@@ -119,24 +114,27 @@ public class LanguageUtil {
         return new AdvancedFile(LANG_FOLDER, locale.toLanguageTag() + "." + LANG_FILE_EXTENSION);
     }
     
-    @Deprecated
-    public static AdvancedFile getLangFile(String language) {
-        return new AdvancedFile(LANG_FOLDER, language + "." + LANG_FILE_EXTENSION);
-    }
-    
     public static void initLocalizers() {
-        getEnglishLocalizer().load((ex) -> Logger.logError("Failed to load language file for english language \"" + LOCALE_LANGUAGE_ENGLISH + "\"", ex));
-        getDefaultLocalizer().load((ex) -> Logger.logError("Failed to load language file for default language \"" + LOCALE_LANGUAGE_DEFAULT + "\"", ex));
+        getLocalizerEnglishUs().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_US.toLanguageTag(), FILE_ENGLISH_US.getAbsolutePath()), ex));
+        getLocalizerEnglishUs().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_UK.toLanguageTag(), FILE_ENGLISH_UK.getAbsolutePath()), ex));
+        getLocalizerGermanDe().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_GERMAN_DE.toLanguageTag(), FILE_GERMAN_DE.getAbsolutePath()), ex));
+        getLocalizerDefault().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_DEFAULT.toLanguageTag(), FILE_DEFAULT.getAbsolutePath()), ex));
     }
     
-    @Deprecated
-    public static AdvancedLocalizer getEnglishLocalizer() {
-        return ENGLISH_LOCALIZER;
+    public static AdvancedLocalizer getLocalizerEnglishUs() {
+        return LOCALIZER_ENGLISH_US;
     }
     
-    @Deprecated
-    public static AdvancedLocalizer getDefaultLocalizer() {
-        return DEFAULT_LOCALIZER;
+    public static AdvancedLocalizer getLocalizerEnglishUk() {
+        return LOCALIZER_ENGLISH_UK;
+    }
+    
+    public static AdvancedLocalizer getLocalizerGermanDe() {
+        return LOCALIZER_GERMAN_DE;
+    }
+    
+    public static AdvancedLocalizer getLocalizerDefault() {
+        return LOCALIZER_DEFAULT;
     }
     
     public static <L extends Localizer> L getLocalizer() {
@@ -157,7 +155,7 @@ public class LanguageUtil {
     }
     
     public static String localizeWithArguments(String name, Object... arguments) {
-        return LOCALIZER.localizeWithArguments(name, () -> DEFAULT_LOCALIZER.localizeWithArguments(name, () -> ENGLISH_LOCALIZER.localizeWithArguments(name, arguments), arguments), arguments);
+        return LOCALIZER.localizeWithArguments(name, () -> LOCALIZER_DEFAULT.localizeWithArguments(name, () -> LOCALIZER_ENGLISH_US.localizeWithArguments(name, arguments), arguments), arguments);
     }
     
     public static String localize(String name, String defaultValue) {
@@ -165,7 +163,7 @@ public class LanguageUtil {
     }
     
     public static String localize(String name) {
-        return LOCALIZER.localize(name, () -> DEFAULT_LOCALIZER.localize(name, () -> ENGLISH_LOCALIZER.localize(name)));
+        return LOCALIZER.localize(name, () -> LOCALIZER_DEFAULT.localize(name, () -> LOCALIZER_ENGLISH_US.localize(name)));
     }
     
 }
