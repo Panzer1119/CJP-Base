@@ -282,6 +282,11 @@ public class JsonSettings extends Settings {
     }
     
     @Override
+    public boolean hasProperty(String key) {
+        return jsonObject.has(key);
+    }
+    
+    @Override
     public <T> T getProperty(String key, Class<T> clazz) {
         return (T) getProperty(key);
     }

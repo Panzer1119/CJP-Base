@@ -24,6 +24,8 @@ import java.io.OutputStream;
 
 public abstract class Settings implements Copyable {
     
+    public abstract boolean hasProperty(String key);
+    
     public abstract <T> T getProperty(String key, Class<T> clazz);
     
     public abstract String getProperty(String key);
