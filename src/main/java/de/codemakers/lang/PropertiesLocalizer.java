@@ -24,7 +24,6 @@ import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
 
-import java.io.InputStream;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -63,16 +62,12 @@ public class PropertiesLocalizer extends Localizer {
     }
     
     public boolean loadFromFile(AdvancedFile advancedFile) throws Exception {
-        Objects.requireNonNull(advancedFile);
+        Objects.requireNonNull(advancedFile, "advancedFile");
         if (!advancedFile.exists()) {
             throw new FileIsNotExistingException(advancedFile.getAbsolutePath());
         }
-        try (final InputStream inputStream = advancedFile.createInputStream()) {
-            properties.load(inputStream);
-            return true;
-        } catch (Exception ex) {
-            throw ex;
-        }
+        advancedFile.createInputStreamClosingAction().consume(properties::load);
+        return true;
     }
     
     public PropertiesLocalizer clear() {
@@ -133,7 +128,7 @@ public class PropertiesLocalizer extends Localizer {
     
     @Override
     public boolean load() throws Exception {
-        return false;
+        return false; //TODO Maybe save the "AdvanceFile", so we can reload it?
     }
     
     @Override
