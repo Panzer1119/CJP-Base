@@ -45,11 +45,11 @@ public abstract class Localizer implements Copyable, Loadable, Unloadable {
         return localize(name, name);
     }
     
-    public abstract String getKeyLanguageTag();
+    protected abstract String getKeyLanguageTag();
     
-    public abstract String getKeyLanguageNameEnglish();
+    protected abstract String getKeyLanguageNameEnglish();
     
-    public abstract String getKeyLanguageNameLocal();
+    protected abstract String getKeyLanguageNameLocal();
     
     public String getLanguageTag() {
         return localize(getKeyLanguageTag());

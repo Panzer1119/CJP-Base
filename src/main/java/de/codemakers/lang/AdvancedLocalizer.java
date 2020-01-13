@@ -27,29 +27,32 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AdvancedLocalizer extends Localizer {
     
-    protected AdvancedFile advancedFile;
-    protected final PropertiesLocalizer propertiesLocalizer;
+    protected final FileLocalizer fileLocalizer;
     protected final List<Localizer> localizers = new CopyOnWriteArrayList<>();
     
     public AdvancedLocalizer() {
-        this(null);
+        this(new PropertiesLocalizer());
     }
     
     public AdvancedLocalizer(AdvancedFile advancedFile) {
-        this(advancedFile, new PropertiesLocalizer());
+        this(new PropertiesLocalizer(advancedFile));
     }
     
-    protected AdvancedLocalizer(AdvancedFile advancedFile, PropertiesLocalizer propertiesLocalizer) {
-        this.advancedFile = advancedFile;
-        this.propertiesLocalizer = propertiesLocalizer;
+    protected AdvancedLocalizer(FileLocalizer fileLocalizer) {
+        this.fileLocalizer = Objects.requireNonNull(fileLocalizer, "fileLocalizer");
     }
     
     public AdvancedFile getAdvancedFile() {
-        return advancedFile;
+        return fileLocalizer.getAdvancedFile();
     }
     
-    public PropertiesLocalizer getPropertiesLocalizer() {
-        return propertiesLocalizer;
+    public AdvancedLocalizer setAdvancedFile(AdvancedFile advancedFile) {
+        fileLocalizer.setAdvancedFile(advancedFile);
+        return this;
+    }
+    
+    public FileLocalizer getFileLocalizer() {
+        return fileLocalizer;
     }
     
     public List<Localizer> getLocalizers() {
@@ -67,7 +70,7 @@ public class AdvancedLocalizer extends Localizer {
                 }
             }
         }
-        return propertiesLocalizer.localizeWithArguments(name, defaultValue, arguments);
+        return fileLocalizer.localizeWithArguments(name, defaultValue, arguments);
     }
     
     @Override
@@ -81,22 +84,37 @@ public class AdvancedLocalizer extends Localizer {
                 }
             }
         }
-        return propertiesLocalizer.localizeWithArguments(name, defaultValueSupplier, arguments);
+        return fileLocalizer.localizeWithArguments(name, defaultValueSupplier, arguments);
     }
     
     @Override
-    public String getLanguageNameLocal() {
-        return propertiesLocalizer.getLanguageNameLocal();
+    public String getKeyLanguageTag() {
+        return fileLocalizer.getKeyLanguageTag();
     }
     
     @Override
-    public String getLanguageNameEnglish() {
-        return propertiesLocalizer.getLanguageNameEnglish();
+    public String getKeyLanguageNameEnglish() {
+        return fileLocalizer.getKeyLanguageNameEnglish();
+    }
+    
+    @Override
+    public String getKeyLanguageNameLocal() {
+        return fileLocalizer.getKeyLanguageNameLocal();
     }
     
     @Override
     public String getLanguageTag() {
-        return propertiesLocalizer.getLanguageTag();
+        return fileLocalizer.getLanguageTag();
+    }
+    
+    @Override
+    public String getLanguageNameEnglish() {
+        return fileLocalizer.getLanguageNameEnglish();
+    }
+    
+    @Override
+    public String getLanguageNameLocal() {
+        return fileLocalizer.getLanguageNameLocal();
     }
     
     @Override
@@ -116,7 +134,7 @@ public class AdvancedLocalizer extends Localizer {
     
     @Override
     public AdvancedLocalizer copy() {
-        final AdvancedLocalizer advancedLocalizer = new AdvancedLocalizer(advancedFile.copy(), propertiesLocalizer.copy());
+        final AdvancedLocalizer advancedLocalizer = new AdvancedLocalizer((FileLocalizer) fileLocalizer.copy());
         advancedLocalizer.localizers.addAll(localizers);
         return advancedLocalizer;
     }
@@ -125,9 +143,9 @@ public class AdvancedLocalizer extends Localizer {
     public void set(Copyable copyable) {
         final AdvancedLocalizer advancedLocalizer = Require.clazz(copyable, AdvancedLocalizer.class);
         if (advancedLocalizer != null) {
-            advancedFile = advancedLocalizer.advancedFile;
-            propertiesLocalizer.clear();
-            propertiesLocalizer.set(advancedLocalizer.propertiesLocalizer);
+            setAdvancedFile(advancedLocalizer.getAdvancedFile());
+            fileLocalizer.unloadWithoutException();
+            fileLocalizer.set(advancedLocalizer.getFileLocalizer());
             localizers.clear();
             localizers.addAll(advancedLocalizer.localizers);
         }
@@ -136,8 +154,8 @@ public class AdvancedLocalizer extends Localizer {
     @Override
     public boolean load() throws Exception {
         boolean good = true;
-        propertiesLocalizer.clear();
-        if (!propertiesLocalizer.loadFromFile(advancedFile)) {
+        fileLocalizer.unload();
+        if (!fileLocalizer.load()) {
             good = false;
         }
         for (Localizer localizer : localizers) {
@@ -151,7 +169,7 @@ public class AdvancedLocalizer extends Localizer {
     @Override
     public boolean unload() throws Exception {
         boolean good = true;
-        if (!propertiesLocalizer.unload()) {
+        if (!fileLocalizer.unload()) {
             good = false;
         }
         for (Localizer localizer : localizers) {
@@ -164,7 +182,7 @@ public class AdvancedLocalizer extends Localizer {
     
     @Override
     public String toString() {
-        return "AdvancedLocalizer{" + "advancedFile=" + advancedFile + ", propertiesLocalizer=" + propertiesLocalizer + ", localizers=" + localizers + '}';
+        return "AdvancedLocalizer{" + "fileLocalizer=" + fileLocalizer + ", localizers=" + localizers + '}';
     }
     
 }

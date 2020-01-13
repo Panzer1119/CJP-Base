@@ -46,6 +46,7 @@ public class XMLLocalizer extends FileLocalizer {
     
     public XMLLocalizer(AdvancedFile advancedFile) {
         super(advancedFile);
+        loadWithoutException();
     }
     
     public XMLLocalizer(Document document) {
