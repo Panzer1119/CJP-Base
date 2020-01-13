@@ -65,7 +65,7 @@ public class Standard {
     public static final Map<Integer, ToughRunnable> SHUTDOWN_HOOKS = new ConcurrentHashMap<>();
     
     static {
-        LanguageUtil.initLocalizers();
+        Standard.async(LanguageUtil::initLocalizers);
         addShutdownHookAsSingleThread(() -> SHUTDOWN_HOOKS.values().forEach(ToughRunnable::runWithoutException)); //TODO Clone/Copy the values before execution? So that if a Shutdown Hook modifies #SHUTDOWN_HOOKS no unwanted behaviour is happening?
     }
     
