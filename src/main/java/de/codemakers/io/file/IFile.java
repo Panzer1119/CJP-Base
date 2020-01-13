@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file;
 
+import de.codemakers.base.action.ClosingAction;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.entities.data.Data;
 import de.codemakers.base.logger.Logger;
@@ -278,6 +279,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return new ReturningAction<>(this::createInputStream);
     }
     
+    public ClosingAction<InputStream> createInputStreamClosingAction() {
+        return new ClosingAction<>(this::createInputStream);
+    }
+    
     public abstract byte[] readBytes() throws Exception;
     
     public byte[] readBytes(ToughConsumer<Throwable> failure) {
@@ -379,6 +384,14 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public ReturningAction<OutputStream> createOutputStreamAction(boolean append) {
         return new ReturningAction<>(() -> createOutputStream(append));
+    }
+    
+    public ClosingAction<OutputStream> createOutputStreamClosingAction() {
+        return new ClosingAction<>(this::createOutputStream);
+    }
+    
+    public ClosingAction<OutputStream> createOutputStreamClosingAction(boolean append) {
+        return new ClosingAction<>(() -> createOutputStream(append));
     }
     
     public abstract boolean writeBytes(byte[] data) throws Exception;
