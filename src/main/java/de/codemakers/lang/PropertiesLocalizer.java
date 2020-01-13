@@ -27,21 +27,23 @@ import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
 import java.util.Objects;
 import java.util.Properties;
 
-public class PropertiesLocalizer extends Localizer {
+public class PropertiesLocalizer extends FileLocalizer {
     
     private final Properties properties;
+    
+    public PropertiesLocalizer(AdvancedFile advancedFile) {
+        super(advancedFile);
+        this.properties = new Properties();
+        loadWithoutException();
+    }
     
     public PropertiesLocalizer() {
         this(new Properties());
     }
     
     public PropertiesLocalizer(Properties properties) {
+        super(null);
         this.properties = Objects.requireNonNull(properties, "properties");
-    }
-    
-    public PropertiesLocalizer(AdvancedFile advancedFile) {
-        this();
-        loadFromFileWithoutException(advancedFile);
     }
     
     public boolean loadFromFileWithoutException(AdvancedFile advancedFile) {
@@ -128,7 +130,10 @@ public class PropertiesLocalizer extends Localizer {
     
     @Override
     public boolean load() throws Exception {
-        return false; //TODO Maybe save the "AdvanceFile", so we can reload it?
+        if (!hasAdvancedFile()) {
+            return false;
+        }
+        return loadFromFile(getAdvancedFile());
     }
     
     @Override
@@ -139,7 +144,7 @@ public class PropertiesLocalizer extends Localizer {
     
     @Override
     public String toString() {
-        return "PropertiesLocalizer{" + "properties=" + properties + '}';
+        return "PropertiesLocalizer{" + "properties=" + properties + ", advancedFile=" + advancedFile + '}';
     }
     
 }
