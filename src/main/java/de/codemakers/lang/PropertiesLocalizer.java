@@ -87,12 +87,12 @@ public class PropertiesLocalizer extends FileLocalizer {
     
     @Override
     public String localizeWithArguments(String name, String defaultValue, Object... arguments) {
-        return properties.getProperty(name, defaultValue);
+        return properties.getProperty(name, defaultValue); //TODO Use "arguments"!
     }
     
     @Override
     public String localizeWithArguments(String name, ToughSupplier<String> defaultValueSupplier, Object... arguments) {
-        final String temp = properties.getProperty(name);
+        final String temp = properties.getProperty(name); //TODO Use "arguments"!
         return (temp != null || defaultValueSupplier == null) ? temp : defaultValueSupplier.getWithoutException();
     }
     
