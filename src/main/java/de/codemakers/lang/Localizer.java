@@ -25,10 +25,6 @@ import java.util.Locale;
 
 public abstract class Localizer implements Copyable, Loadable, Unloadable {
     
-    public static final String KEY_LANGUAGE_NAME_LOCAL = "language_name_local";
-    public static final String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
-    public static final String KEY_LANGUAGE_TAG = "language_tag";
-    
     public abstract String localizeWithArguments(String name, String defaultValue, Object... arguments);
     
     public abstract String localizeWithArguments(String name, ToughSupplier<String> defaultValueSupplier, Object... arguments);
@@ -49,11 +45,23 @@ public abstract class Localizer implements Copyable, Loadable, Unloadable {
         return localize(name, name);
     }
     
-    public abstract String getLanguageNameLocal();
+    public abstract String getKeyLanguageTag();
     
-    public abstract String getLanguageNameEnglish();
+    public abstract String getKeyLanguageNameEnglish();
     
-    public abstract String getLanguageTag();
+    public abstract String getKeyLanguageNameLocal();
+    
+    public String getLanguageTag() {
+        return localize(getKeyLanguageTag());
+    }
+    
+    public String getLanguageNameEnglish() {
+        return localize(getKeyLanguageNameEnglish(), this::getLanguageTag);
+    }
+    
+    public String getLanguageNameLocal() {
+        return localize(getKeyLanguageNameLocal(), this::getLanguageNameEnglish);
+    }
     
     public Locale getLocale() {
         return Locale.forLanguageTag(getLanguageTag());

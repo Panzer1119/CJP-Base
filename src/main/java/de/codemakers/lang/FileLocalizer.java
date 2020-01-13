@@ -22,6 +22,10 @@ public abstract class FileLocalizer extends Localizer {
     
     protected AdvancedFile advancedFile;
     
+    public FileLocalizer() {
+        this(null);
+    }
+    
     public FileLocalizer(AdvancedFile advancedFile) {
         this.advancedFile = advancedFile;
     }

@@ -29,6 +29,10 @@ import java.util.Properties;
 
 public class PropertiesLocalizer extends FileLocalizer {
     
+    public static final String KEY_LANGUAGE_TAG = "language_tag";
+    public static final String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";
+    public static final String KEY_LANGUAGE_NAME_LOCAL = "language_name_local";
+    
     private final Properties properties;
     
     public PropertiesLocalizer(AdvancedFile advancedFile) {
@@ -42,7 +46,7 @@ public class PropertiesLocalizer extends FileLocalizer {
     }
     
     public PropertiesLocalizer(Properties properties) {
-        super(null);
+        super();
         this.properties = Objects.requireNonNull(properties, "properties");
     }
     
@@ -93,18 +97,18 @@ public class PropertiesLocalizer extends FileLocalizer {
     }
     
     @Override
-    public String getLanguageNameLocal() {
-        return properties.getProperty(KEY_LANGUAGE_NAME_LOCAL, getLanguageNameEnglish());
+    public String getKeyLanguageTag() {
+        return KEY_LANGUAGE_TAG;
     }
     
     @Override
-    public String getLanguageNameEnglish() {
-        return properties.getProperty(KEY_LANGUAGE_NAME_ENGLISH, getLanguageTag());
+    public String getKeyLanguageNameEnglish() {
+        return KEY_LANGUAGE_NAME_ENGLISH;
     }
     
     @Override
-    public String getLanguageTag() {
-        return properties.getProperty(KEY_LANGUAGE_TAG);
+    public String getKeyLanguageNameLocal() {
+        return KEY_LANGUAGE_NAME_LOCAL;
     }
     
     @Override
