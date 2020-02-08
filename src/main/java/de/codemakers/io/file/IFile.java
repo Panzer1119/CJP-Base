@@ -256,6 +256,10 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
         return new ReturningAction<>(this::createBufferedReader);
     }
     
+    public ClosingAction<BufferedReader> createBufferedReaderClosingAction() {
+        return new ClosingAction<>(this::createBufferedReader);
+    }
+    
     public abstract InputStream createInputStream() throws Exception;
     
     public InputStream createInputStream(ToughConsumer<Throwable> failure) {
@@ -345,6 +349,14 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public ReturningAction<BufferedWriter> createBufferedWriterAction(boolean append) {
         return new ReturningAction<>(() -> createBufferedWriter(append));
+    }
+    
+    public ClosingAction<BufferedWriter> createBufferedWriterClosingAction() {
+        return new ClosingAction<>(this::createBufferedWriter);
+    }
+    
+    public ClosingAction<BufferedWriter> createBufferedWriterClosingAction(boolean append) {
+        return new ClosingAction<>(() -> createBufferedWriter(append));
     }
     
     public OutputStream createOutputStream() throws Exception {
