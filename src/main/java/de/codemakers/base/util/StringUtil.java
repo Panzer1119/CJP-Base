@@ -31,6 +31,9 @@ public class StringUtil {
     public static final String REGEX_ANONYMOUS_CLASS_NAME = "(.+\\.)?(.+)\\$(\\d+)";
     public static final Pattern PATTERN_ANONYMOUS_CLASS_NAME = Pattern.compile(REGEX_ANONYMOUS_CLASS_NAME);
     
+    public static final String REG_EX_ESCAPE_NEEDING_CHARS_STRING = "<([{\\^-=$!|]})?*+.>";
+    public static final char[] REG_EX_ESCAPE_NEEDING_CHARS = REG_EX_ESCAPE_NEEDING_CHARS_STRING.toCharArray();
+    
     public static final boolean isEmpty(String string) {
         return string.isEmpty();
     }
@@ -73,6 +76,27 @@ public class StringUtil {
     
     public static String toStringOrDefault(Object object, String defaultValue) {
         return object == null ? defaultValue : "" + object;
+    }
+    
+    public static String escapePlainStringToRegExMatchString(final String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        String output = input;
+        for (char c : REG_EX_ESCAPE_NEEDING_CHARS) {
+            output = output.replaceAll("(\\" + c + ")", "\\\\$1");
+        }
+        return output;
+    }
+    
+    public static String escapePlainStringToRegExReplacementString(final String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        String output = input;
+        output = output.replaceAll("\\\\", "\\\\\\\\");
+        output = output.replaceAll("\\$", "\\\\$");
+        return output;
     }
     
     public static abstract class MapLookup<T> implements StringLookup {
