@@ -41,6 +41,8 @@ public class Standard {
     public static final PrintStream SYSTEM_ERROR_STREAM = System.err;
     public static final InputStream SYSTEM_INPUT_STREAM = System.in;
     
+    public static final Map<Integer, ToughRunnable> SHUTDOWN_HOOKS = new ConcurrentHashMap<>();
+    
     public static final URL RUNNING_JAR_URL = Standard.class.getProtectionDomain().getCodeSource().getLocation();
     public static final URI RUNNING_JAR_URI = silentError(URL::toURI, RUNNING_JAR_URL);
     public static final String RUNNING_JAR_PATH_STRING = RUNNING_JAR_URL.getPath();
@@ -61,8 +63,6 @@ public class Standard {
     public static final String LANG_PATH = LanguageUtil.LANG_PATH;
     public static final AdvancedFile LANG_FOLDER = LanguageUtil.LANG_FOLDER;
     public static final String LANG_FILE_EXTENSION = LanguageUtil.LANG_FILE_EXTENSION;
-    
-    public static final Map<Integer, ToughRunnable> SHUTDOWN_HOOKS = new ConcurrentHashMap<>();
     
     static {
         Standard.async(LanguageUtil::initLocalizers);
