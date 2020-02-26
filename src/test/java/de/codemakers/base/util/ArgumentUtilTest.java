@@ -19,7 +19,7 @@ package de.codemakers.base.util;
 import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class ArgumentUtilTest {
@@ -35,8 +35,8 @@ public class ArgumentUtilTest {
                         break;
                     }
                 } else {
-                    final String[] arguments = ArgumentUtil.parseArguments(line);
-                    Logger.log("arguments=" + Arrays.toString(arguments));
+                    final List<String> arguments = ArgumentUtil.parseArguments(line);
+                    Logger.log("arguments=" + arguments);
                 }
             }
             scanner.close();

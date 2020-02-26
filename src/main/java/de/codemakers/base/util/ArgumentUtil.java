@@ -19,6 +19,7 @@ package de.codemakers.base.util;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ArgumentUtil {
     
@@ -26,11 +27,19 @@ public class ArgumentUtil {
     public static final char DEFAULT_QUOTE_CHARACTER = '"';
     public static final char DEFAULT_DELIMITER_CHARACTER = ' ';
     
-    public static String[] parseArguments(String arguments_string) {
+    public static List<String> parseArguments(String arguments_string) {
+        return parseArguments(arguments_string, true);
+    }
+    
+    public static List<String> parseArguments(String arguments_string, boolean removeEmpty) {
         return parseArguments(arguments_string, DEFAULT_ESCAPE_CHARACTER, DEFAULT_QUOTE_CHARACTER, DEFAULT_DELIMITER_CHARACTER);
     }
     
-    public static String[] parseArguments(String arguments_string, char escape_char, char quote_char, char delimiter_char) {
+    public static List<String> parseArguments(String arguments_string, char escape_char, char quote_char, char delimiter_char) {
+        return parseArguments(arguments_string, true, escape_char, quote_char, delimiter_char);
+    }
+    
+    public static List<String> parseArguments(String arguments_string, boolean removeEmpty, char escape_char, char quote_char, char delimiter_char) {
         final List<String> arguments = new ArrayList<>();
         String temp = null;
         boolean inQuote = false;
@@ -58,7 +67,10 @@ public class ArgumentUtil {
         if (temp != null) {
             arguments.add(temp);
         }
-        return arguments.toArray(new String[arguments.size()]);
+        if (removeEmpty) {
+            arguments.removeIf(Objects::isNull);
+        }
+        return arguments;
     }
     
     protected static String addToTemp(String temp, char c) {
