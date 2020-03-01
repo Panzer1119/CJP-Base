@@ -54,14 +54,20 @@ public class EasyCryptUtil {
     static {
         //SIGNATURE_SHA256withRSA = createSignatureSHA256withRSA();
         //SIGNATURE_SHA256withECDSA = createSignatureSHA256withECDSA();
-        Random random = null;
+        Random random;
         try {
             random = SecureRandom.getInstanceStrong();
         } catch (Exception ex) {
-            random = new Random();
+            random = null;
+            Logger.logWarning("This System has no strong " + SecureRandom.class.getSimpleName() + " Instance");
         }
         if (random == null) {
-            random = new Random();
+            random = new Random() {
+                @Override
+                public String toString() {
+                    return "NOT A STRONG " + SecureRandom.class.getSimpleName() + " INSTANCE";
+                }
+            };
         }
         SECUREST_RANDOM = random;
         SECUREST_RANDOM.nextBytes(RANDOM_TEST_BYTES);
@@ -74,6 +80,10 @@ public class EasyCryptUtil {
      */
     public static final Random getSecurestRandom() {
         return SECUREST_RANDOM;
+    }
+    
+    public static final boolean isSecurestRandomStrong() {
+        return SECUREST_RANDOM instanceof SecureRandom;
     }
     
     public static final boolean hasSecureRandomInstanceStrong() {
@@ -90,7 +100,7 @@ public class EasyCryptUtil {
             public boolean usesIV() {
                 return false;
             }
-    
+            
             @Override
             public byte[] crypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
@@ -129,7 +139,7 @@ public class EasyCryptUtil {
             public boolean usesIV() {
                 return false;
             }
-    
+            
             @Override
             public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
@@ -149,7 +159,7 @@ public class EasyCryptUtil {
             public boolean usesIV() {
                 return false;
             }
-    
+            
             @Override
             public byte[] encrypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
@@ -182,7 +192,7 @@ public class EasyCryptUtil {
             public boolean usesIV() {
                 return false;
             }
-    
+            
             @Override
             public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
@@ -202,7 +212,7 @@ public class EasyCryptUtil {
             public boolean usesIV() {
                 return false;
             }
-    
+            
             @Override
             public byte[] decrypt(byte[] data, byte[] iv) throws Exception {
                 return cipher.doFinal(data);
@@ -275,17 +285,17 @@ public class EasyCryptUtil {
                 signature.update(data);
                 return signature.sign();
             }
-    
+            
             @Override
             public byte[] sign() throws Exception {
                 return signature.sign();
             }
-    
+            
             @Override
             public void update(byte[] data, int offset, int length) throws Exception {
                 signature.update(data, offset, length);
             }
-    
+            
             @Override
             public int getSignatureLength() {
                 throw new NotYetImplementedRuntimeException(); //FIXME Add this
@@ -317,17 +327,17 @@ public class EasyCryptUtil {
                 signature.update(data);
                 return signature.verify(data_signature);
             }
-    
+            
             @Override
             public boolean verify(byte[] data_signature) throws Exception {
                 return signature.verify(data_signature);
             }
-    
+            
             @Override
             public void update(byte[] data, int offset, int length) throws Exception {
                 signature.update(data, offset, length);
             }
-    
+            
             @Override
             public int getSignatureLength() {
                 throw new NotYetImplementedRuntimeException(); //FIXME Add this
@@ -529,7 +539,7 @@ public class EasyCryptUtil {
                     cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
                     return cipher.doFinal(data);
                 }
-    
+                
                 @Override
                 public Cipher createCipher(byte[] iv) {
                     try {
