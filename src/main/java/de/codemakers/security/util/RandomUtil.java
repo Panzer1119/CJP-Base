@@ -98,4 +98,26 @@ public class RandomUtil {
         return Base64.getEncoder().encodeToString(randomBytes(length));
     }
     
+    public static final String randomUrlBase64String(int length) {
+        return randomUrlBase64String(length, EasyCryptUtil.getSecurestRandom());
+    }
+    
+    public static final String randomUrlBase64String(int length, Random random) {
+        if (length < 0 || random == null) {
+            return null;
+        }
+        return Base64.getUrlEncoder().encodeToString(randomBytes(length));
+    }
+    
+    public static final String randomMimeBase64String(int length) {
+        return randomMimeBase64String(length, EasyCryptUtil.getSecurestRandom());
+    }
+    
+    public static final String randomMimeBase64String(int length, Random random) {
+        if (length < 0 || random == null) {
+            return null;
+        }
+        return Base64.getMimeEncoder().encodeToString(randomBytes(length));
+    }
+    
 }
