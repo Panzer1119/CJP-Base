@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 - 2019 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2020 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ plugins {
 }
 
 group 'de.codemakers'
-version 'v1.8.0_172-alpha.45'
+version 'v1.8.0_172-alpha.46'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
