@@ -1,6 +1,8 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
     <JavaCodeStyleSettings>
+      <option name="GENERATE_FINAL_LOCALS" value="true" />
+      <option name="REPLACE_INSTANCEOF_AND_CAST" value="true" />
       <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
       <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
       <option name="JD_ADD_BLANK_AFTER_PARM_COMMENTS" value="true" />
@@ -12,6 +14,7 @@
       <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
       <option name="SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE" value="true" />
       <option name="SPACE_BEFORE_ANNOTATION_ARRAY_INITIALIZER_LBRACE" value="true" />
+      <option name="ENUM_CONSTANTS_WRAP" value="2" />
       <indentOptions>
         <option name="KEEP_INDENTS_ON_EMPTY_LINES" value="true" />
       </indentOptions>

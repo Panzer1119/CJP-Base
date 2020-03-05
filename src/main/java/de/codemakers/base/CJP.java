@@ -1,25 +1,27 @@
 /*
- *    Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2020 Paul Hagedorn (Panzer1119)
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
  */
 
 package de.codemakers.base;
 
 import de.codemakers.base.action.Action;
 import de.codemakers.base.action.RunningAction;
+import de.codemakers.base.logger.Logger;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,12 +29,33 @@ import java.util.concurrent.TimeUnit;
 
 public class CJP {
     
-    private static final CJP CJP = new CJP(Runtime.getRuntime().availableProcessors());
-    public static final Class<?>[] CJP_LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.SystemLogger.class};
-    public static final String[] CJP_LOGGER_CLASS_NAMES = Arrays.asList(CJP_LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
+    private static Class<?>[] LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLeveledLogger.class, de.codemakers.base.logger.AdvancedLeveledSystemLogger.class, de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.LogLevel.class, de.codemakers.base.logger.SystemLogger.class};
+    private static String[] LOGGER_CLASS_NAMES = Arrays.asList(LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
+    private static final CJP CJP = createInstance();
     
     static {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownInstance()));
+        Standard.addShutdownHook(de.codemakers.base.CJP::shutdownInstance);
+    }
+    
+    public static void addLoggerClass(Class<?> clazz) {
+        Objects.requireNonNull(clazz);
+        LOGGER_CLASSES = Arrays.copyOf(LOGGER_CLASSES, LOGGER_CLASSES.length + 1);
+        LOGGER_CLASSES[LOGGER_CLASSES.length - 1] = clazz;
+        addLoggerClassName(clazz.getName());
+    }
+    
+    public static void addLoggerClassName(String className) {
+        Objects.requireNonNull(className);
+        LOGGER_CLASS_NAMES = Arrays.copyOf(LOGGER_CLASS_NAMES, LOGGER_CLASS_NAMES.length + 1);
+        LOGGER_CLASS_NAMES[LOGGER_CLASS_NAMES.length - 1] = className;
+    }
+    
+    public static Class<?>[] getLoggerClasses() {
+        return LOGGER_CLASSES;
+    }
+    
+    public static String[] getLoggerClassNames() {
+        return LOGGER_CLASS_NAMES;
     }
     
     private ExecutorService fixedExecutorService;
@@ -65,16 +88,39 @@ public class CJP {
         return CJP;
     }
     
+    public static final CJP createInstance(int fixedThreadPoolSize) {
+        return new CJP(fixedThreadPoolSize);
+    }
+    
+    public static final CJP createInstance() {
+        return createInstance(Runtime.getRuntime().availableProcessors());
+    }
+    
     public final ExecutorService getFixedExecutorService() {
         return fixedExecutorService;
+    }
+    
+    public final CJP setFixedExecutorService(ExecutorService fixedExecutorService) {
+        this.fixedExecutorService = fixedExecutorService;
+        return this;
     }
     
     public final ScheduledExecutorService getScheduledExecutorService() {
         return scheduledExecutorService;
     }
     
+    public final CJP setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+        this.scheduledExecutorService = scheduledExecutorService;
+        return this;
+    }
+    
     public final ExecutorService getSingleExecutorService() {
         return singleExecutorService;
+    }
+    
+    public final CJP setSingleExecutorService(ExecutorService singleExecutorService) {
+        this.singleExecutorService = singleExecutorService;
+        return this;
     }
     
     public final CJP stopExecutorServiceNow() {
@@ -112,7 +158,7 @@ public class CJP {
                 executorService.shutdown();
                 executorService.awaitTermination(timeout, unit);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                Logger.handleError(ex);
             }
         }
         return Math.max(0, timeout - (System.currentTimeMillis() - timestamp));

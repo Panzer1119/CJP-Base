@@ -1,5 +1,5 @@
 /*
- *     Copyright 2018 Paul Hagedorn (Panzer1119)
+ *     Copyright 2018 - 2020 Paul Hagedorn (Panzer1119)
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
-
-import java.io.PrintStream;
-import java.time.Instant;
+import de.codemakers.base.util.tough.ToughConsumer;
 
 /**
  * Standard {@link de.codemakers.base.logger.AdvancedLogger}, this implementation uses the original {@link java.lang.System} {@link java.io.PrintStream}s
@@ -27,68 +25,54 @@ import java.time.Instant;
  */
 public class AdvancedSystemLogger extends AdvancedLogger {
     
-    /**
-     * Logs an {@link java.lang.Object} using the {@link de.codemakers.base.Standard#SYSTEM_OUTPUT_STREAM}
-     *
-     * @param object {@link java.lang.Object} to get logged (e.g. a {@link java.lang.String})
-     * @param arguments Not used here
-     */
+    private ToughConsumer<LogEntry> preLogEntryToughConsumer = null; //TODO Writing LogEntries to Console?
+    private ToughConsumer<LogEntry> postLogEntryToughConsumer = null; //TODO Writing LogEntries to AdvancedFile?
+    
+    public ToughConsumer<LogEntry> getPreLogEntryToughConsumer() {
+        return preLogEntryToughConsumer;
+    }
+    
+    public AdvancedSystemLogger setPreLogEntryToughConsumer(ToughConsumer<LogEntry> preLogEntryToughConsumer) {
+        this.preLogEntryToughConsumer = preLogEntryToughConsumer;
+        return this;
+    }
+    
+    public ToughConsumer<LogEntry> getPostLogEntryToughConsumer() {
+        return postLogEntryToughConsumer;
+    }
+    
+    public AdvancedSystemLogger setPostLogEntryToughConsumer(ToughConsumer<LogEntry> postLogEntryToughConsumer) {
+        this.postLogEntryToughConsumer = postLogEntryToughConsumer;
+        return this;
+    }
+    
     @Override
-    public final void log(Object object, Object... arguments) {
-        if (arguments.length >= 1 && (arguments[0] == null || arguments[0] instanceof Instant)) {
-            if (arguments.length >= 2 && (arguments[1] == null || arguments[1] instanceof Thread)) {
-                if (arguments.length >= 3 && (arguments[2] == null || arguments[2] instanceof StackTraceElement)) {
-                    log(object, (Instant) arguments[0], (Thread) arguments[1], (StackTraceElement) arguments[2]);
-                } else {
-                    log(object, (Instant) arguments[0], (Thread) arguments[1]);
-                }
-            } else {
-                log(object, (Instant) arguments[0]);
+    protected void preFinal(LogEntry logEntry) {
+        if (preLogEntryToughConsumer != null) {
+            preLogEntryToughConsumer.acceptWithoutException(logEntry);
+        }
+    }
+    
+    @Override
+    protected void logFinal(LogEntry logEntry) { //Writing LogEntries to System.out/System.err
+        if (logEntry == null) {
+            return; //FIXME Remove this? Or is this not a performance problem?
+        }
+        if (logEntry.isBad()) {
+            Standard.SYSTEM_ERROR_STREAM.println(logEntry.formatWithoutException(this));
+            if (logEntry.hasError()) {
+                logEntry.getThrowable().printStackTrace(Standard.SYSTEM_ERROR_STREAM);
             }
         } else {
-            log(object);
+            Standard.SYSTEM_OUTPUT_STREAM.println(logEntry.formatWithoutException(this));
         }
     }
     
-    /**
-     * Logs an {@link java.lang.Object} and a {@link java.lang.Throwable} using the {@link de.codemakers.base.Standard#SYSTEM_ERROR_STREAM}
-     * <br>
-     * It uses {@link java.lang.Throwable#printStackTrace(PrintStream)} to print the Error
-     *
-     * @param object {@link java.lang.Object} to get logged (e.g. some explaining text)
-     * @param throwable Error (e.g. an {@link java.lang.Exception})
-     * @param arguments Not used here
-     */
     @Override
-    public final void logErr(Object object, Throwable throwable, Object... arguments) {
-        Standard.SYSTEM_ERROR_STREAM.println(object);
-        if (throwable != null) {
-            throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
+    protected void postFinal(LogEntry logEntry) {
+        if (postLogEntryToughConsumer != null) {
+            postLogEntryToughConsumer.acceptWithoutException(logEntry);
         }
-    }
-    
-    /**
-     * Handles an Error using the {@link de.codemakers.base.Standard#SYSTEM_ERROR_STREAM}
-     * <br>
-     * It uses {@link java.lang.Throwable#printStackTrace(PrintStream)} to print the Error
-     *
-     * @param throwable Error (e.g. an {@link java.lang.Exception})
-     */
-    @Override
-    public final void handleError(Throwable throwable) {
-        if (throwable != null) {
-            throwable.printStackTrace(Standard.SYSTEM_ERROR_STREAM);
-        }
-    }
-    
-    /**
-     * Handles the internally generated Log Messages
-     *
-     * @param object Log Message
-     */
-    @Override
-    protected final void logFinal(Object object) {
-        Standard.SYSTEM_OUTPUT_STREAM.println(object);
     }
     
 }
