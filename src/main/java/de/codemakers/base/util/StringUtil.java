@@ -78,6 +78,10 @@ public class StringUtil {
         return object == null ? defaultValue : "" + object;
     }
     
+    /**
+     * Take a look at {@link java.util.regex.Pattern#quote(String)}
+     */
+    @Deprecated
     public static String escapePlainStringToRegExMatchString(final String input) {
         if (input == null || input.isEmpty()) {
             return input;
@@ -89,6 +93,10 @@ public class StringUtil {
         return output;
     }
     
+    /**
+     * Take a look at {@link java.util.regex.Matcher#quoteReplacement(String)}
+     */
+    @Deprecated
     public static String escapePlainStringToRegExReplacementString(final String input) {
         if (input == null || input.isEmpty()) {
             return input;
@@ -102,7 +110,7 @@ public class StringUtil {
     public static abstract class MapLookup<T> implements StringLookup {
         
         private final Map<T, Object> values;
-    
+        
         public MapLookup() {
             this(new HashMap<>());
         }
@@ -110,7 +118,7 @@ public class StringUtil {
         public MapLookup(Map<T, Object> values) {
             this.values = values;
         }
-    
+        
         public int size() {
             return values.size();
         }
@@ -186,14 +194,14 @@ public class StringUtil {
     }
     
     public static class StringMapLookup extends MapLookup<String> {
-    
+        
         public StringMapLookup() {
         }
-    
+        
         public StringMapLookup(Map<String, Object> values) {
             super(values);
         }
-    
+        
         @Override
         protected String toString(String string) {
             return string;
@@ -213,7 +221,7 @@ public class StringUtil {
         return text.replaceAll(STRING_SUBSTITUTOR_TO_REPLACE, STRING_SUBSTITUTOR_REPLACEMENT);
     }
     
-    public static final String STRING_SUBSTITUTOR_TO_REPLACE = "([^\\" + StringSubstitutor.DEFAULT_ESCAPE + "]\\" + StringSubstitutor.DEFAULT_ESCAPE +")\\" + StringSubstitutor.DEFAULT_VAR_START.substring(1);
+    public static final String STRING_SUBSTITUTOR_TO_REPLACE = "([^\\" + StringSubstitutor.DEFAULT_ESCAPE + "]\\" + StringSubstitutor.DEFAULT_ESCAPE + ")\\" + StringSubstitutor.DEFAULT_VAR_START.substring(1);
     public static final String STRING_SUBSTITUTOR_REPLACEMENT = "$1\\" + StringSubstitutor.DEFAULT_VAR_START;
     
 }
