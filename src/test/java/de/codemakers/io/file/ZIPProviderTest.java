@@ -16,19 +16,97 @@
 
 package de.codemakers.io.file;
 
+import de.codemakers.base.logger.LogLevel;
+import de.codemakers.base.logger.Logger;
+
 import java.io.File;
 
 public class ZIPProviderTest {
     
     public static final void main(String[] args) {
+        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
         AdvancedFile.DEBUG = true;
-        AdvancedFile.DEBUG_TO_STRING = true;
+        AdvancedFile.DEBUG_TO_STRING = false;
         AdvancedFile.DEBUG_FILE_PROVIDER = false;
+        final AdvancedFile zipFile = new AdvancedFile("test", "1", "2", "3.zip");
+        System.out.println("zipFile=\"" + zipFile + "\"");
+        System.out.println();
+        System.out.println("zipFile.isDirectory()=" + zipFile.isDirectory());
+        System.out.println();
+        System.out.println("zipFile.listFiles(true)=" + zipFile.listFiles(true));
+        System.out.println();
+        System.out.println("zipFile.listFiles(false)=" + zipFile.listFiles(false));
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        final AdvancedFile folder_in_zipFile = new AdvancedFile(zipFile, "3.1");
+        System.out.println("folder_in_zipFile=" + folder_in_zipFile);
+        System.out.println();
+        System.out.println("folder_in_zipFile.isDirectory()=" + folder_in_zipFile.isDirectory());
+        System.out.println();
+        System.out.println("folder_in_zipFile.listFiles(true)=" + folder_in_zipFile.listFiles(true));
+        System.out.println();
+        System.out.println("folder_in_zipFile.listFiles(false)=" + folder_in_zipFile.listFiles(false));
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        final AdvancedFile zipFile_in_zipFile = new AdvancedFile(folder_in_zipFile, "3.2", "test.zip");
+        System.out.println("zipFile_in_zipFile=\"" + zipFile_in_zipFile + "\"");
+        System.out.println();
+        System.out.println("zipFile_in_zipFile.isDirectory()=" + zipFile_in_zipFile.isDirectory());
+        System.out.println();
+        System.out.println("zipFile_in_zipFile.listFiles(true)=" + zipFile_in_zipFile.listFiles(true));
+        System.out.println();
+        System.out.println("zipFile_in_zipFile.listFiles(false)=" + zipFile_in_zipFile.listFiles(false));
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        final AdvancedFile folder_in_zipFile_in_zipFile = new AdvancedFile(zipFile_in_zipFile, "test_1");
+        System.out.println("folder_in_zipFile_in_zipFile=\"" + folder_in_zipFile_in_zipFile + "\"");
+        System.out.println();
+        System.out.println("folder_in_zipFile_in_zipFile.isDirectory()=" + folder_in_zipFile_in_zipFile.isDirectory());
+        System.out.println();
+        System.out.println("folder_in_zipFile_in_zipFile.listFiles(true)=" + folder_in_zipFile_in_zipFile.listFiles(true));
+        System.out.println();
+        System.out.println("folder_in_zipFile_in_zipFile.listFiles(false)=" + folder_in_zipFile_in_zipFile.listFiles(false));
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        final AdvancedFile file_in_zipFile_in_zipFile = new AdvancedFile(zipFile_in_zipFile, "test.txt");
+        System.out.println("file_in_zipFile_in_zipFile=\"" + file_in_zipFile_in_zipFile + "\"");
+        System.out.println();
+        System.out.println("file_in_zipFile_in_zipFile.isFile()=" + file_in_zipFile_in_zipFile.isFile());
+        System.out.println();
+        System.out.println("file_in_zipFile_in_zipFile.readBytesWithoutException()=" + new String(file_in_zipFile_in_zipFile.readBytesWithoutException()));
+        if (true) {
+            return;
+        }
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
         final File file_1 = new File("test/1/2/3.zip");
-        final AdvancedFile advancedFile_file_1 = new AdvancedFile(new AdvancedFile(file_1), "3/win.txt.zip", "win.txt");
+        final AdvancedFile advancedFile_file_1 = new AdvancedFile(new AdvancedFile(file_1), "3", "win.txt.zip", "win.txt");
         System.out.println("advancedFile_file_1: " + advancedFile_file_1);
         System.out.println("advancedFile_file_1 exists: " + advancedFile_file_1.exists());
         System.out.println("advancedFile_file_1 readBytes: " + new String(advancedFile_file_1.readBytesWithoutException()));
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        final File file_2 = new File("test/1/2/3.zip");
+        final AdvancedFile advancedFile_file_2 = new AdvancedFile(new AdvancedFile(file_2), "3.1");
+        System.out.println("advancedFile_file_2: " + advancedFile_file_2);
+        System.out.println("advancedFile_file_2 exists: " + advancedFile_file_2.exists());
+        System.out.println("advancedFile_file_2 listFiles: " + advancedFile_file_2.listFilesWithoutException(true));
     }
     
 }
