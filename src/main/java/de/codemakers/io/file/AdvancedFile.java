@@ -937,7 +937,12 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     @Override
     public List<AdvancedFile> listFiles(boolean recursive) {
         checkAndErrorIfNotExisting(true);
-        checkAndErrorIfNotDirectory(true);
+        if (checkAndErrorIfNotDirectory(false)) {
+            if (fileProvider == null) {
+                checkAndErrorIfNotDirectory(true);
+            }
+            return listFiles(this, recursive);
+        }
         if (parent != null) {
             return parent.listFiles(this, recursive);
         }
@@ -983,7 +988,12 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             return listFiles(recursive);
         }
         checkAndErrorIfNotExisting(true);
-        checkAndErrorIfNotDirectory(true);
+        if (checkAndErrorIfNotDirectory(false)) {
+            if (fileProvider == null) {
+                checkAndErrorIfNotDirectory(true);
+            }
+            return listFiles(this, recursive);
+        }
         if (parent != null) {
             return parent.listFiles(this, recursive, advancedFileFilter);
         }
