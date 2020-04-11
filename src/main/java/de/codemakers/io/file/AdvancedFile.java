@@ -571,7 +571,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     boolean isDirectory(AdvancedFile file) {
         if (isFileProvided()) {
             try {
-                return fileProvider.isDirectory(parent, file, parent != null ? createInputStream() : null);
+                return fileProvider.isDirectory(this, file, parent != null ? createInputStream() : null);
             } catch (Exception ex) {
                 Logger.handleError(ex);
                 return false;
