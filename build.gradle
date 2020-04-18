@@ -19,7 +19,7 @@ plugins {
 }
 
 group 'de.codemakers'
-version 'v1.8.0_172-alpha.52'
+version 'v1.8.0_172-alpha.53'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -43,18 +43,4 @@ dependencies {
     compile group: 'org.lz4', name: 'lz4-java', version: '1.5.0'
     compile 'at.favre.lib:hkdf:1.0.2'
     testCompile group: 'junit', name: 'junit', version: '4.12'
-}
-
-version = '0.1'
-
-task fatJarAudioConnectionEstablisherTest(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'AudioConnectionEstablisherTest',
-                'Implementation-Version': version,
-                'Main-Class': 'de.codemakers.io.audio.net.AudioConnectionEstablisherTest'
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
-    with jar
 }
