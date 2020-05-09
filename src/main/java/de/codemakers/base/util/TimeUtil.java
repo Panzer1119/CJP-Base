@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util;
 
-import java.time.Instant;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Locale;
@@ -33,6 +33,9 @@ public class TimeUtil {
     public static final DateTimeFormatter ISO_LOCAL_DATE_TIME_FIXED_LENGTH_FOR_FILES = new DateTimeFormatterBuilder().parseCaseInsensitive().append(DateTimeFormatter.ISO_LOCAL_DATE).appendLiteral('T').append(ISO_TIME_FIXED_LENGTH_FOR_FILES).toFormatter(Locale.getDefault());
     public static final DateTimeFormatter ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES = new DateTimeFormatterBuilder().parseCaseInsensitive().append(ISO_LOCAL_DATE_TIME_FIXED_LENGTH_FOR_FILES).appendOffset("+HHMMss", "+0000").toFormatter(Locale.getDefault());
     public static final DateTimeFormatter ISO_OFFSET_REGION_DATE_TIME_FIXED_LENGTH_FOR_FILES = new DateTimeFormatterBuilder().parseCaseInsensitive().append(ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES).appendLiteral('[').appendZoneRegionId().appendLiteral(']').toFormatter(Locale.getDefault());
+    
+    public static final ZoneOffset ZONE_OFFSET_UTC = ZoneOffset.UTC;
+    public static final ZoneId ZONE_ID_UTC = ZoneId.ofOffset("UTC", ZONE_OFFSET_UTC);
     
     public static long getTimeFloored(long timestamp, long every, TimeUnit unit) {
         return getTimeFloored(Instant.ofEpochMilli(timestamp), every, unit).toEpochMilli();
@@ -82,6 +85,74 @@ public class TimeUtil {
                 return instant.minusMillis(instant.toEpochMilli() % unit.toMillis(every)).plusMillis(unit.toMillis(every));
         }
         return null;
+    }
+    
+    public static LocalDateTime localDateTimeOfLocalDateAndMidnight(LocalDate localDate) {
+        return localDateTimeOfLocalDateAndLocalTime(localDate, LocalTime.MIDNIGHT);
+    }
+    
+    public static LocalDateTime localDateTimeOfLocalDateAndNoon(LocalDate localDate) {
+        return localDateTimeOfLocalDateAndLocalTime(localDate, LocalTime.NOON);
+    }
+    
+    public static LocalDateTime localDateTimeOfTodayAndLocalTime(LocalTime localTime) {
+        return localDateTimeOfLocalDateAndLocalTime(LocalDate.now(), localTime);
+    }
+    
+    public static LocalDateTime localDateTimeOfLocalDateAndLocalTime(LocalDate localDate, LocalTime localTime) {
+        return LocalDateTime.of(localDate, localTime);
+    }
+    
+    public static LocalDateTime localDateTimeOfInstantZoneIdSystemDefault(Instant instant) {
+        return localDateTimeOfInstantAndZoneId(instant, systemDefaultZoneId());
+    }
+    
+    public static LocalDateTime localDateTimeOfInstantZoneIdUTC(Instant instant) {
+        return localDateTimeOfInstantAndZoneId(instant, ZONE_ID_UTC);
+    }
+    
+    public static LocalDateTime localDateTimeOfInstantAndZoneId(Instant instant, ZoneId originZoneId) {
+        return LocalDateTime.ofInstant(instant, originZoneId);
+    }
+    
+    public static LocalDate localDateOfInstantZoneIdSystemDefault(Instant instant) {
+        return localDateOfInstantAndZoneId(instant, systemDefaultZoneId());
+    }
+    
+    public static LocalDate localDateOfInstantZoneIdUTC(Instant instant) {
+        return localDateOfInstantAndZoneId(instant, ZONE_ID_UTC);
+    }
+    
+    public static LocalDate localDateOfInstantAndZoneId(Instant instant, ZoneId originZoneId) {
+        return localDateTimeOfInstantAndZoneId(instant, originZoneId).toLocalDate();
+    }
+    
+    public static LocalTime localTimeOfInstantZoneIdSystemDefault(Instant instant) {
+        return localTimeOfInstantAndZoneId(instant, systemDefaultZoneId());
+    }
+    
+    public static LocalTime localTimeOfInstantZoneIdUTC(Instant instant) {
+        return localTimeOfInstantAndZoneId(instant, ZONE_ID_UTC);
+    }
+    
+    public static LocalTime localTimeOfInstantAndZoneId(Instant instant, ZoneId originZoneId) {
+        return localDateTimeOfInstantAndZoneId(instant, originZoneId).toLocalTime();
+    }
+    
+    public static ZonedDateTime zonedDateTimeOfInstantZoneIdSystemDefault(Instant instant) {
+        return zonedDateTimeOfInstantAndZoneId(instant, systemDefaultZoneId());
+    }
+    
+    public static ZonedDateTime zonedDateTimeOfInstantZoneIdUTC(Instant instant) {
+        return zonedDateTimeOfInstantAndZoneId(instant, ZONE_ID_UTC);
+    }
+    
+    public static ZonedDateTime zonedDateTimeOfInstantAndZoneId(Instant instant, ZoneId destinationZoneId) {
+        return ZonedDateTime.ofInstant(instant, destinationZoneId);
+    }
+    
+    public static ZoneId systemDefaultZoneId() {
+        return ZoneId.systemDefault();
     }
     
 }
