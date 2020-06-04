@@ -200,6 +200,13 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name)).findFirst().orElse(null);
     }
     
+    public static final boolean couldBeProvided(AdvancedFile advancedFile) {
+        if (advancedFile == null) {
+            return false;
+        }
+        return FILE_PROVIDERS.stream().anyMatch((fileProvider) -> fileProvider.test(advancedFile));
+    }
+    
     public final boolean checkAbsoluteAndCorrect() {
         if (paths == null || paths.length == 0) {
             return false;
@@ -502,11 +509,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         return paths.length == 1;
     }
     
-    public boolean isFileProvided() {
+    protected boolean isFileProvided() {
         return fileProvider != null;
     }
     
-    public FileProvider<AdvancedFile> getFileProvider() {
+    protected FileProvider<AdvancedFile> getFileProvider() {
         return fileProvider;
     }
     
@@ -566,6 +573,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             }
             return toRealPath().closeWithoutException(Files::isDirectory);
         }
+    }
+    
+    @Override
+    public boolean mayListFiles() {
+        return isFileProvided() || isDirectory() || couldBeProvided(this);
     }
     
     boolean isDirectory(AdvancedFile file) {

@@ -70,6 +70,8 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
     
     public abstract boolean isDirectory();
     
+    public abstract boolean mayListFiles();
+    
     public abstract boolean exists();
     
     public abstract boolean isAbsolute();

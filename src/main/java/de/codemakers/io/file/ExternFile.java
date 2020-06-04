@@ -130,6 +130,11 @@ public class ExternFile extends IFile<ExternFile, ExternFileFilter> implements C
     }
     
     @Override
+    public boolean mayListFiles() {
+        return isDirectory();
+    }
+    
+    @Override
     public boolean exists() {
         return file.exists();
     }
