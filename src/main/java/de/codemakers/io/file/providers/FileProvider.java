@@ -28,9 +28,11 @@ import java.util.List;
 
 public abstract class FileProvider<T extends IFile> implements AdvancedFilenameFilter, Serializable { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetect WinRaR installations for optionally writing/editing .rar files (Make some OS function for that, so that this framework has some useful features (finding WinRaR installations platform independent))
     
-    public abstract List<T> listFiles(T parent, T file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
+    public List<T> listFiles(T parent, T file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
+        return listFiles(parent, file, recursive, inputStreamSupplier, null);
+    }
     
-    public abstract List<T> listFiles(T parent, T file, boolean recursive, AdvancedFileFilter advancedFileFilter, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
+    public abstract List<T> listFiles(T parent, T file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier, AdvancedFileFilter advancedFileFilter) throws Exception;
     
     public abstract boolean isFile(T parent, T file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
     
