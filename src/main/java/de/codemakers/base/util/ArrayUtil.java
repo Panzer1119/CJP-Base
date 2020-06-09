@@ -56,6 +56,9 @@ public class ArrayUtil {
         if (start == null || start.length == 0) {
             return true;
         }
+        if (start.length > array.length) {
+            return false;
+        }
         for (int i = 0; i < start.length; i++) {
             if (!Objects.equals(array[i], start[i])) {
                 return false;
@@ -73,6 +76,9 @@ public class ArrayUtil {
         }
         if (end == null || end.length == 0) {
             return true;
+        }
+        if (end.length > array.length) {
+            return false;
         }
         for (int i = end.length - 1; i >= 0; i--) {
             if (!Objects.equals(array[i], end[i])) {
