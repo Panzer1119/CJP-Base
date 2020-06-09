@@ -18,7 +18,9 @@ package de.codemakers.io.file.providers;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
+import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.ArrayUtil;
+import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.file.AdvancedFileFilter;
 import de.codemakers.io.file.AdvancedFilenameFilter;
@@ -69,12 +71,12 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, InputStream inputStream) throws Exception {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         final List<AdvancedFile> advancedFiles = new ArrayList<>();
         final String file_path = (file.getPath().startsWith(parent.getPath()) ? file.getPath().substring(parent.getPath().length() + (parent.getPath().length() == file.getPath().length() ? 0 : 1)) : (file.getPath().startsWith(AdvancedFile.PATH_SEPARATOR) ? file.getPath().substring(AdvancedFile.PATH_SEPARATOR.length()) : file.getPath()));
-        if (inputStream == null) {
+        if (inputStreamSupplier == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 if (recursive) {
@@ -93,7 +95,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
                 throw ex;
             }
         } else {
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+            final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get());
             try {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -119,9 +121,9 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter, InputStream inputStream) throws Exception {
+    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
         if (advancedFileFilter == null) {
-            return listFiles(parent, file, recursive, inputStream);
+            return listFiles(parent, file, recursive, inputStreamSupplier);
         } else if (advancedFileFilter instanceof AdvancedFilenameFilter) {
             //return listFiles(parent, file, recursive, (AdvancedFilenameFilter) advancedFileFilter, inputStream);
         }
@@ -129,7 +131,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         Objects.requireNonNull(file);
         final List<AdvancedFile> advancedFiles = new ArrayList<>();
         final String file_path = (file.getPath().startsWith(parent.getPath()) ? file.getPath().substring(parent.getPath().length() + 1) : (file.getPath().startsWith(AdvancedFile.PATH_SEPARATOR) ? file.getPath().substring(AdvancedFile.PATH_SEPARATOR.length()) : file.getPath()));
-        if (inputStream == null) {
+        if (inputStreamSupplier == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 if (recursive) {
@@ -148,7 +150,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
                 throw ex;
             }
         } else {
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+            final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get());
             try {
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -177,15 +179,25 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public boolean isFile(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        return !isDirectory(parent, file, inputStream);
+    public boolean isFile(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
+        final Doublet<Boolean, Boolean> doublet = existsIntern(parent, file, inputStreamSupplier);
+        if (!doublet.getA()) {
+            return false;
+        }
+        final CloseableZipEntry<?> closeableZipEntry = getCloseableZipEntry(parent, file, inputStreamSupplier.get());
+        if (closeableZipEntry == null) {
+            return false;
+        }
+        return closeableZipEntry.closeWithoutException((zipEntry) -> !zipEntry.isDirectory());
     }
     
     @Override
-    public boolean isDirectory(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        Objects.requireNonNull(parent);
-        Objects.requireNonNull(file);
-        final CloseableZipEntry<?> closeableZipEntry = getCloseableZipEntry(parent, file, inputStream);
+    public boolean isDirectory(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
+        final Doublet<Boolean, Boolean> doublet = existsIntern(parent, file, inputStreamSupplier);
+        if (!doublet.getA()) {
+            return doublet.getB();
+        }
+        final CloseableZipEntry<?> closeableZipEntry = getCloseableZipEntry(parent, file, inputStreamSupplier.get());
         if (closeableZipEntry == null) {
             return false;
         }
@@ -193,18 +205,22 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public boolean exists(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+    public boolean exists(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
+        return existsIntern(parent, file, inputStreamSupplier).getA();
+    }
+    
+    private Doublet<Boolean, Boolean> existsIntern(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        if (inputStream == null) {
+        if (inputStreamSupplier == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 final boolean exists = zipFile.getEntry(file.getPathsCollected(ZIPSeparator)) != null;
                 zipFile.close();
                 if (exists) {
-                    return true;
+                    return new Doublet<>(true, null);
                 }
-                inputStream = parent.createInputStream();
+                inputStreamSupplier = parent::createInputStream;
             } catch (Exception ex) {
                 Standard.silentError(zipFile::close);
                 throw ex;
@@ -212,9 +228,10 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         }
         final String path = file.getPathsCollected(ZIPSeparator);
         final String[] paths = file.getPaths();
-        final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get());
         try {
             boolean found = false;
+            boolean foundDirectory = true;
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 final String zipEntryPath = zipEntryToPath(zipEntry);
@@ -226,13 +243,14 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
                 final String[] zipEntryPaths = zipEntryToPaths(zipEntry);
                 if (ArrayUtil.arrayStartsWith(zipEntryPaths, paths)) {
                     found = true;
+                    foundDirectory = true;
                     zipInputStream.closeEntry();
                     break;
                 }
                 zipInputStream.closeEntry();
             }
             zipInputStream.close();
-            return found;
+            return new Doublet<>(found, foundDirectory);
         } catch (Exception ex) {
             zipInputStream.close();
             throw ex;
@@ -240,10 +258,10 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public InputStream createInputStream(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+    public InputStream createInputStream(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        if (inputStream == null) {
+        if (inputStreamSupplier == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {
                 final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(ZIPSeparator));
@@ -263,7 +281,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             }
         } else {
             final String path = file.getPathsCollected(ZIPSeparator);
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStream) {
+            final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get()) {
                 @Override
                 public void close() throws IOException {
                     super.closeEntry();
@@ -287,10 +305,10 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public byte[] readBytes(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+    public byte[] readBytes(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        if (inputStream == null) {
+        if (inputStreamSupplier == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             byte[] data;
             try {
@@ -307,7 +325,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             return data;
         } else {
             final String path = file.getPathsCollected(ZIPSeparator);
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+            final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get());
             byte[] data;
             try {
                 ZipEntry zipEntry;
@@ -337,7 +355,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         return false;
     }
     
-    public CloseableZipEntry<?> getCloseableZipEntry(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+    private CloseableZipEntry<?> getCloseableZipEntry(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
         if (inputStream == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {

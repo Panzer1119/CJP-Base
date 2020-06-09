@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file.providers;
 
+import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFileFilter;
 import de.codemakers.io.file.AdvancedFilenameFilter;
 import de.codemakers.io.file.IFile;
@@ -27,19 +28,19 @@ import java.util.List;
 
 public abstract class FileProvider<T extends IFile> implements AdvancedFilenameFilter, Serializable { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetect WinRaR installations for optionally writing/editing .rar files (Make some OS function for that, so that this framework has some useful features (finding WinRaR installations platform independent))
     
-    public abstract List<T> listFiles(T parent, T file, boolean recursive, InputStream inputStream) throws Exception;
+    public abstract List<T> listFiles(T parent, T file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
     
-    public abstract List<T> listFiles(T parent, T file, boolean recursive, AdvancedFileFilter advancedFileFilter, InputStream inputStream) throws Exception;
+    public abstract List<T> listFiles(T parent, T file, boolean recursive, AdvancedFileFilter advancedFileFilter, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
     
-    public abstract boolean isFile(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract boolean isFile(T parent, T file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
     
-    public abstract boolean isDirectory(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract boolean isDirectory(T parent, T file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
     
-    public abstract boolean exists(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract boolean exists(T parent, T file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
     
-    public abstract InputStream createInputStream(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract InputStream createInputStream(T parent, T file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
     
-    public abstract byte[] readBytes(T parent, T file, InputStream inputStream) throws Exception;
+    public abstract byte[] readBytes(T parent, T file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception;
     
     public abstract boolean canWrite(T parent, T file);
     

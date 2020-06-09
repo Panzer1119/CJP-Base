@@ -550,7 +550,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     boolean isFile(AdvancedFile file) {
         if (isFileProvided()) {
             try {
-                return fileProvider.isFile(this, file, parent != null ? createInputStream() : null);
+                return fileProvider.isFile(this, file, parent != null ? this::createInputStream : null);
             } catch (Exception ex) {
                 Logger.handleError(ex);
                 return false;
@@ -583,7 +583,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     boolean isDirectory(AdvancedFile file) {
         if (isFileProvided()) {
             try {
-                return fileProvider.isDirectory(this, file, parent != null ? createInputStream() : null);
+                return fileProvider.isDirectory(this, file, parent != null ? this::createInputStream : null);
             } catch (Exception ex) {
                 Logger.handleError(ex);
                 return false;
@@ -612,7 +612,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     boolean exists(AdvancedFile file) {
         if (isFileProvided()) {
             try {
-                return fileProvider.exists(this, file, createInputStream());
+                return fileProvider.exists(this, file, this::createInputStream);
             } catch (Exception ex) {
                 Logger.handleError(ex);
                 return false;
@@ -873,7 +873,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     InputStream createInputStream(AdvancedFile file) throws Exception {
         if (isFileProvided()) {
-            return fileProvider.createInputStream(this, file, parent != null ? createInputStream() : null);
+            return fileProvider.createInputStream(this, file, parent != null ? this::createInputStream : null);
         } else {
             throw new NotImplementedRuntimeException();
         }
@@ -897,7 +897,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     byte[] readBytes(AdvancedFile file) throws Exception {
-        return fileProvider.readBytes(this, file, parent != null ? createInputStream() : null);
+        return fileProvider.readBytes(this, file, parent != null ? this::createInputStream : null);
     }
     
     @Override
@@ -987,7 +987,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive) {
         try {
-            return fileProvider.listFiles(this, file, recursive, parent != null ? createInputStream() : null);
+            return fileProvider.listFiles(this, file, recursive, parent != null ? this::createInputStream : null);
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
@@ -1038,7 +1038,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter) {
         try {
-            return fileProvider.listFiles(this, file, recursive, advancedFileFilter, parent != null ? createInputStream() : null);
+            return fileProvider.listFiles(this, file, recursive, advancedFileFilter, parent != null ? this::createInputStream : null);
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
