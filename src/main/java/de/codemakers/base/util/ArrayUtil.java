@@ -46,6 +46,42 @@ public class ArrayUtil {
         return false;
     }
     
+    public static <T> boolean arrayStartsWith(T[] array, T[] start) {
+        if (array == null) {
+            return start == null;
+        }
+        if (array.length == 0) {
+            return start.length == 0;
+        }
+        if (start == null || start.length == 0) {
+            return true;
+        }
+        for (int i = 0; i < start.length; i++) {
+            if (!Objects.equals(array[i], start[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static <T> boolean arrayEndsWith(T[] array, T[] end) {
+        if (array == null) {
+            return end == null;
+        }
+        if (array.length == 0) {
+            return end.length == 0;
+        }
+        if (end == null || end.length == 0) {
+            return true;
+        }
+        for (int i = end.length - 1; i >= 0; i--) {
+            if (!Objects.equals(array[i], end[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public static <T> boolean matchAny(T[] array, ToughPredicate<T> predicate) {
         if (array == null || array.length == 0) {
             return false;
