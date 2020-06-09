@@ -1038,7 +1038,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     List<AdvancedFile> listFiles(AdvancedFile file, boolean recursive, AdvancedFileFilter advancedFileFilter) {
         try {
-            return fileProvider.listFiles(this, file, recursive, advancedFileFilter, parent != null ? this::createInputStream : null);
+            return fileProvider.listFiles(this, file, recursive, parent != null ? this::createInputStream : null, advancedFileFilter);
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
@@ -1153,20 +1153,20 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     }
     
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object other) {
+        if (this == other) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        final AdvancedFile that = (AdvancedFile) o;
-        return init == that.init && windowsSeparator == that.windowsSeparator && extern == that.extern && absolute == that.absolute && Arrays.equals(paths, that.paths) && Objects.equals(parent, that.parent) && Objects.equals(fileProvider, that.fileProvider) && Objects.equals(clazz, that.clazz);
+        final AdvancedFile that = (AdvancedFile) other;
+        return init == that.init && windowsSeparator == that.windowsSeparator && extern == that.extern && absolute == that.absolute && Arrays.equals(paths, that.paths) && Objects.equals(parent, that.parent) && ((fileProvider == null && that.fileProvider == null) || ((fileProvider != null && that.fileProvider != null) && Objects.equals(fileProvider.getClass(), that.fileProvider.getClass()))) && Objects.equals(clazz, that.clazz);
     }
     
     @Override
     public int hashCode() {
-        int result = Objects.hash(windowsSeparator, extern, absolute, parent, fileProvider, clazz);
+        int result = Objects.hash(windowsSeparator, extern, absolute, parent, fileProvider == null ? null : fileProvider.getClass(), clazz);
         result = 31 * result + Arrays.hashCode(paths);
         return result;
     }
