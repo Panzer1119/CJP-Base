@@ -70,56 +70,6 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
-        Objects.requireNonNull(parent);
-        Objects.requireNonNull(file);
-        final List<AdvancedFile> advancedFiles = new ArrayList<>();
-        final String file_path = file.getPath().startsWith(parent.getPath()) ? file.getPath().substring(parent.getPath().length() + (parent.getPath().length() == file.getPath().length() ? 0 : 1)) : file.getPath().startsWith(AdvancedFile.PATH_SEPARATOR) ? file.getPath().substring(AdvancedFile.PATH_SEPARATOR.length()) : file.getPath();
-        if (inputStreamSupplier == null) {
-            final ZipFile zipFile = new ZipFile(parent.getPath());
-            try {
-                if (recursive) {
-                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).filter((zipEntry) -> zipEntryToPath(zipEntry).length() > file_path.length()).forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()))));
-                } else {
-                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).filter((zipEntry) -> {
-                        final String path = zipEntryToPath(zipEntry);
-                        if (path.length() <= file_path.length()) {
-                            return false;
-                        }
-                        return !path.substring(file_path.length() + ZIPSeparator.length()).contains(ZIPSeparator);
-                    }).forEach((zipEntry) -> advancedFiles.add(new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()))));
-                }
-            } catch (Exception ex) {
-                zipFile.close();
-                throw ex;
-            }
-        } else {
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get());
-            try {
-                ZipEntry zipEntry = null;
-                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                    final String path = zipEntryToPath(zipEntry);
-                    if (!path.startsWith(file_path)) { //FIXME Test this (and in the above ZipFile streams)
-                        zipInputStream.closeEntry();
-                        continue;
-                    }
-                    if (!recursive && path.contains(ZIPSeparator)) {
-                        zipInputStream.closeEntry();
-                        continue;
-                    }
-                    advancedFiles.add(new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator())));
-                    zipInputStream.closeEntry();
-                }
-                zipInputStream.close();
-            } catch (Exception ex) {
-                zipInputStream.close();
-                throw ex;
-            }
-        }
-        return advancedFiles;
-    }
-    
-    @Override
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier, AdvancedFileFilter advancedFileFilter) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
@@ -168,75 +118,6 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             }
         }
         return advancedFiles;
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        /*
-        @Deprecated
-        if (advancedFileFilter == null) {
-            return listFiles(parent, file, recursive, inputStreamSupplier);
-        } else if (advancedFileFilter instanceof AdvancedFilenameFilter) {
-            //return listFiles(parent, file, recursive, (AdvancedFilenameFilter) advancedFileFilter, inputStream);
-        }
-        */
-        Objects.requireNonNull(parent);
-        Objects.requireNonNull(file);
-        final List<AdvancedFile> advancedFiles = new ArrayList<>();
-        final String file_path = (file.getPath().startsWith(parent.getPath()) ? file.getPath().substring(parent.getPath().length() + 1) : (file.getPath().startsWith(AdvancedFile.PATH_SEPARATOR) ? file.getPath().substring(AdvancedFile.PATH_SEPARATOR.length()) : file.getPath()));
-        if (inputStreamSupplier == null) {
-            final ZipFile zipFile = new ZipFile(parent.getPath());
-            try {
-                if (recursive) {
-                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).filter((zipEntry) -> zipEntryToPath(zipEntry).length() > file_path.length()).map((zipEntry) -> new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()))).filter(advancedFileFilter).forEach(advancedFiles::add);
-                } else {
-                    zipFile.stream().filter((zipEntry) -> zipEntry.getName().startsWith(file_path)).filter((zipEntry) -> {
-                        final String path = zipEntryToPath(zipEntry);
-                        if (path.length() <= file_path.length()) {
-                            return false;
-                        }
-                        return !path.substring(file_path.length() + ZIPSeparator.length()).contains(ZIPSeparator);
-                    }).map((zipEntry) -> new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()))).filter(advancedFileFilter).forEach(advancedFiles::add);
-                }
-                zipFile.close();
-            } catch (Exception ex) {
-                zipFile.close();
-                throw ex;
-            }
-        } else {
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get());
-            try {
-                ZipEntry zipEntry = null;
-                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                    final String path = zipEntryToPath(zipEntry);
-                    if (!path.startsWith(file_path)) { //FIXME Test this (and in the above ZipFile streams)
-                        zipInputStream.closeEntry();
-                        continue;
-                    }
-                    if (!recursive && path.contains(ZIPSeparator)) {
-                        zipInputStream.closeEntry();
-                        continue;
-                    }
-                    final AdvancedFile advancedFile = new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()));
-                    if (advancedFileFilter.test(advancedFile)) {
-                        advancedFiles.add(advancedFile);
-                    }
-                    zipInputStream.closeEntry();
-                }
-                zipInputStream.close();
-            } catch (Exception ex) {
-                zipInputStream.close();
-                throw ex;
-            }
-        }
-        return advancedFiles;
     }
     
     @Override
@@ -263,6 +144,42 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
             return false;
         }
         return closeableZipEntry.closeWithoutException(ZipEntry::isDirectory);
+    }
+    
+    private CloseableZipEntry<?> getCloseableZipEntry(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
+        if (inputStream == null) {
+            final ZipFile zipFile = new ZipFile(parent.getPath());
+            try {
+                final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(ZIPSeparator));
+                if (zipEntry == null) {
+                    throw new FileIsNotExistingException(file + " does not exist");
+                }
+                return new CloseableZipFileEntry(zipFile, zipEntry);
+            } catch (Exception ex) {
+                zipFile.close();
+                throw ex;
+            }
+        } else {
+            final String path = file.getPathsCollected(ZIPSeparator);
+            final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+            try {
+                ZipEntry zipEntry;
+                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    if (Objects.equals(path, zipEntryToPath(zipEntry))) {
+                        break;
+                    }
+                    zipInputStream.closeEntry();
+                }
+                if (zipEntry == null) {
+                    zipInputStream.close();
+                    return null;
+                }
+                return new CloseableZipInputStreamEntry(zipInputStream, zipEntry);
+            } catch (Exception ex) {
+                zipInputStream.close();
+                throw ex;
+            }
+        }
     }
     
     @Override
@@ -413,43 +330,9 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     
     @Override
     public boolean canWrite(AdvancedFile parent, AdvancedFile file) {
+        Objects.requireNonNull(parent);
+        Objects.requireNonNull(file);
         return false;
-    }
-    
-    private CloseableZipEntry<?> getCloseableZipEntry(AdvancedFile parent, AdvancedFile file, InputStream inputStream) throws Exception {
-        if (inputStream == null) {
-            final ZipFile zipFile = new ZipFile(parent.getPath());
-            try {
-                final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(ZIPSeparator));
-                if (zipEntry == null) {
-                    throw new FileIsNotExistingException(file + " does not exist");
-                }
-                return new CloseableZipFileEntry(zipFile, zipEntry);
-            } catch (Exception ex) {
-                zipFile.close();
-                throw ex;
-            }
-        } else {
-            final String path = file.getPathsCollected(ZIPSeparator);
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-            try {
-                ZipEntry zipEntry;
-                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                    if (Objects.equals(path, zipEntryToPath(zipEntry))) {
-                        break;
-                    }
-                    zipInputStream.closeEntry();
-                }
-                if (zipEntry == null) {
-                    zipInputStream.close();
-                    return null;
-                }
-                return new CloseableZipInputStreamEntry(zipInputStream, zipEntry);
-            } catch (Exception ex) {
-                zipInputStream.close();
-                throw ex;
-            }
-        }
     }
     
     @Override
@@ -464,7 +347,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
         if (data == null) {
-            data = new byte[0];
+            data = new byte[0]; //TODO zero bytes to only create that file(?) (but then you could use 'createNewFile'?!)
         }
         throw new NotYetImplementedRuntimeException();
     }
@@ -502,8 +385,8 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         if (name == null || name.isEmpty() || !name.contains(".")) {
             return false;
         }
-        final String name_lower = name.toLowerCase();
-        return name_lower.endsWith(".zip") || name_lower.endsWith(".jar"); //TODO is a ".tar" also "unzipable"? Or do i have to create another FileProvider "TARProvider"?
+        final String nameLowerCase = name.toLowerCase();
+        return nameLowerCase.endsWith(".zip") || nameLowerCase.endsWith(".jar"); //TODO is a ".tar" also "unzipable"? Or do i have to create another FileProvider "TARProvider"?
     }
     
 }
