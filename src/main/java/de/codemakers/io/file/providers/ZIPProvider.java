@@ -355,6 +355,11 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
+    public int getPriority(AdvancedFile parent, String name) {
+        return 1;
+    }
+    
+    @Override
     public boolean test(AdvancedFile parent, String name) {
         if (name == null || name.isEmpty() || !name.contains(".")) {
             return false;

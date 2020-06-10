@@ -214,6 +214,11 @@ public class JARProvider extends ZIPProvider {
     }
     
     @Override
+    public int getPriority(AdvancedFile parent, String name) {
+        return super.getPriority(parent, name) + 1;
+    }
+    
+    @Override
     public boolean test(AdvancedFile parent, String name) {
         if (name == null || name.isEmpty() || !name.contains(".")) {
             return false;

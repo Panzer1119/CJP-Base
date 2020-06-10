@@ -58,6 +58,8 @@ public abstract class FileProvider<T extends IFile> implements AdvancedFilenameF
     
     public abstract boolean mkdirs(T parent, T file) throws Exception;
     
+    public abstract int getPriority(T parent, String name);
+    
     public void processPaths(T parent, String path, List<String> paths) {
     }
     

@@ -201,7 +201,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     public static final FileProvider<AdvancedFile> getProvider(AdvancedFile parent, String name) {
         Objects.requireNonNull(name);
-        return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name)).findFirst().orElse(null);
+        return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name)).max(Comparator.comparingInt((fileProvider) -> fileProvider.getPriority(parent, name))).orElse(null);
     }
     
     public static final boolean couldBeProvided(AdvancedFile advancedFile) {
