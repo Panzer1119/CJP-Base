@@ -29,6 +29,7 @@ import de.codemakers.io.file.exceptions.FileProviderDoesNotSupportWriteOperation
 import de.codemakers.io.file.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.exceptions.isnot.RelativeClassIsNotNullException;
 import de.codemakers.io.file.providers.FileProvider;
+import de.codemakers.io.file.providers.JARProvider;
 import de.codemakers.io.file.providers.ZIPProvider;
 import de.codemakers.security.interfaces.Decryptor;
 import de.codemakers.security.interfaces.Encryptor;
@@ -68,6 +69,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     public static final List<FileProvider<AdvancedFile>> FILE_PROVIDERS = new CopyOnWriteArrayList<>();
     public static final ZIPProvider ZIP_PROVIDER = new ZIPProvider();
+    public static final JARProvider JAR_PROVIDER = new JARProvider();
     
     public static boolean DEBUG = false;
     public static boolean DEBUG_TO_STRING = false;
@@ -76,6 +78,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     static {
         FILE_PROVIDERS.add(ZIP_PROVIDER);
+        FILE_PROVIDERS.add(JAR_PROVIDER);
         //FIXME Disabled this, because it may causes very long loading times of this class. Maybe just do this in another Thread with Standard.async()? //UPDATE Enabled this using Standard.async(), but this needs to be improved, because the first call of an AdvancedFile may takes usage of a 3rd party FileProvider, which is not yet loaded... //UPDATE Disabled this again, because if you are running ultra short tests, this is still blocking the process
         /*
         Standard.async(() -> {
