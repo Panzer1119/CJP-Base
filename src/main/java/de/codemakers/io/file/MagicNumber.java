@@ -48,7 +48,7 @@ public class MagicNumber implements Predicate<InputStream> {
     /**
      * Tape Archive
      */
-    public static final MagicNumber TAR = ofString("ustar").addExtensions("TAR");
+    public static final MagicNumber TAR = ofString("ustar", 257).addExtensions("TAR");
     /**
      * bzip2 compressed archive
      */
