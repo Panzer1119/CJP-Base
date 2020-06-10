@@ -19,14 +19,13 @@ package de.codemakers.io.file.providers;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.IFile;
 import de.codemakers.io.file.filters.AdvancedFileFilter;
-import de.codemakers.io.file.filters.AdvancedFilenameFilter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class FileProvider<T extends IFile> implements AdvancedFilenameFilter, Serializable { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetect WinRaR installations for optionally writing/editing .rar files (Make some OS function for that, so that this framework has some useful features (finding WinRaR installations platform independent))
+public abstract class FileProvider<T extends IFile> implements Serializable { //TODO Make some "RARProvider", which can at least read/list .rar files, and maybe autodetect WinRaR installations for optionally writing/editing .rar files (Make some OS function for that, so that this framework has some useful features (finding WinRaR installations platform independent))
     
     public List<T> listFiles(T parent, T file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
         return listFiles(parent, file, recursive, inputStreamSupplier, null);
@@ -57,6 +56,12 @@ public abstract class FileProvider<T extends IFile> implements AdvancedFilenameF
     public abstract boolean mkdir(T parent, T file) throws Exception;
     
     public abstract boolean mkdirs(T parent, T file) throws Exception;
+    
+    public boolean test(T file) {
+        return test((T) file.getParentFile(), file.getName(), file, file.exists());
+    }
+    
+    public abstract boolean test(T parent, String name, T file, boolean exists);
     
     public abstract int getPriority(T parent, String name);
     

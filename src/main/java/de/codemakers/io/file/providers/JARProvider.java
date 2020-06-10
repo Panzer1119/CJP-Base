@@ -10,6 +10,7 @@ import de.codemakers.io.file.closeable.CloseableZipFileEntry;
 import de.codemakers.io.file.closeable.CloseableZipInputStreamEntry;
 import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
 import de.codemakers.io.file.filters.AdvancedFileFilter;
+import de.codemakers.io.file.filters.MagicNumberFileFilter;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -101,8 +102,8 @@ public class JARProvider extends ZIPProvider {
     @Override
     public boolean isFile(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
         final Doublet<Boolean, Boolean> doublet = existsIntern(parent, file, inputStreamSupplier);
-        if (!doublet.getA()) {
-            return false;
+        if (!doublet.getA() || doublet.getB() != null) {
+            return !doublet.getB();
         }
         final CloseableZipEntry<?> closeableZipEntry = getCloseableZipEntry(parent, file, inputStreamSupplier);
         if (closeableZipEntry == null) {
@@ -219,7 +220,10 @@ public class JARProvider extends ZIPProvider {
     }
     
     @Override
-    public boolean test(AdvancedFile parent, String name) {
+    public boolean test(AdvancedFile parent, String name, AdvancedFile file, boolean exists) {
+        if (exists) {
+            return MagicNumberFileFilter.ALL_JARS.test(file);
+        }
         if (name == null || name.isEmpty() || !name.contains(".")) {
             return false;
         }

@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file.providers;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
@@ -24,6 +25,7 @@ import de.codemakers.io.file.closeable.CloseableZipFileEntry;
 import de.codemakers.io.file.closeable.CloseableZipInputStreamEntry;
 import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
 import de.codemakers.io.file.filters.AdvancedFileFilter;
+import de.codemakers.io.file.filters.MagicNumberFileFilter;
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
@@ -360,7 +362,10 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     }
     
     @Override
-    public boolean test(AdvancedFile parent, String name) {
+    public boolean test(AdvancedFile parent, String name, AdvancedFile file, boolean exists) {
+        if (exists) {
+            return MagicNumberFileFilter.ALL_ZIPS.test(file);
+        }
         if (name == null || name.isEmpty() || !name.contains(".")) {
             return false;
         }

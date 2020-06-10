@@ -44,6 +44,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -199,9 +200,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         this.init = true;
     }
     
-    public static final FileProvider<AdvancedFile> getProvider(AdvancedFile parent, String name) {
+    public static final FileProvider<AdvancedFile> getProvider(AdvancedFile parent, String name, AdvancedFile file, boolean exists) {
         Objects.requireNonNull(name);
-        return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name)).max(Comparator.comparingInt((fileProvider) -> fileProvider.getPriority(parent, name))).orElse(null);
+        return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name, file, exists)).max(Comparator.comparingInt((fileProvider) -> fileProvider.getPriority(parent, name))).orElse(null);
     }
     
     public static final boolean couldBeProvided(AdvancedFile advancedFile) {
@@ -370,11 +371,15 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         final List<String> temp = new ArrayList<>();
         for (String p : paths_) {
             temp.add(p);
-            name += FILE_SEPARATOR_DEFAULT_STRING;
+            if (!name.isEmpty()) {
+                name += FILE_SEPARATOR_DEFAULT_STRING;
+            }
             name += p;
-            final FileProvider<AdvancedFile> fileProvider = getProvider(parent, name.substring(1));
+            final AdvancedFile advancedFile = new AdvancedFile(name.split(Matcher.quoteReplacement(FILE_SEPARATOR_DEFAULT_STRING)), windowsSeparator, extern, absolute, parent, null, clazz);
+            final boolean exists = advancedFile.exists();
+            final FileProvider<AdvancedFile> fileProvider = (!exists || advancedFile.isFile()) ? getProvider(parent, name, advancedFile, exists) : null;
             if (fileProvider != null) {
-                fileProvider.processPaths(parent, name.substring(1), temp);
+                fileProvider.processPaths(parent, name, temp);
                 parent = new AdvancedFile(temp.toArray(new String[0]), windowsSeparator, extern, absolute, parent, fileProvider, clazz);
                 clazz = null;
                 temp.clear();

@@ -21,6 +21,9 @@ public class MagicNumberFileFilterTest {
     @BeforeAll
     public void setup() {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINER);
+        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendLogLevel().appendText(": ").appendObject().appendNewLine().appendSource().finishWithoutException();
+        //AdvancedFile.DEBUG = true;
+        //AdvancedFile.DEBUG_TO_STRING = true;
     }
     
     @Test
@@ -53,12 +56,44 @@ public class MagicNumberFileFilterTest {
     
     @Test
     public void test3() {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
         final AdvancedFile jarFile = new AdvancedFile("test", "DummyMod.jar");
         Logger.logDebug("jarFile='" + jarFile + "'");
         assertTrue(jarFile.exists());
         assertTrue(jarFile.isFile());
         Logger.logDebug("MagicNumberFileFilter.ALL_JARS=" + MagicNumberFileFilter.ALL_JARS);
         assertTrue(MagicNumberFileFilter.ALL_JARS.test(jarFile));
+        System.out.println();
+        System.out.println();
+        Logger.logDebug("jarFile.listFiles(true)=" + jarFile.listFiles(true));
+        System.out.println();
+        System.out.println();
+        Logger.logDebug("jarFile.listFiles(false)=" + jarFile.listFiles(false));
+    }
+    
+    @Test
+    public void test4() {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        final AdvancedFile jarFile = new AdvancedFile("test", "DummyModWithoutDotJar");
+        Logger.logDebug("jarFile='" + jarFile + "'");
+        assertTrue(jarFile.exists());
+        assertTrue(jarFile.isFile());
+        Logger.logDebug("MagicNumberFileFilter.ALL_JARS=" + MagicNumberFileFilter.ALL_JARS);
+        assertTrue(MagicNumberFileFilter.ALL_JARS.test(jarFile));
+        System.out.println();
+        System.out.println();
+        Logger.logDebug("jarFile.listFiles(true)=" + jarFile.listFiles(true));
+        System.out.println();
+        System.out.println();
+        Logger.logDebug("jarFile.listFiles(false)=" + jarFile.listFiles(false));
     }
     
 }
