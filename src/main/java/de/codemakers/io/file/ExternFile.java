@@ -17,6 +17,7 @@
 package de.codemakers.io.file;
 
 import de.codemakers.base.util.interfaces.Convertable;
+import de.codemakers.io.file.filters.ExternFileFilter;
 import de.codemakers.security.interfaces.Decryptor;
 import de.codemakers.security.interfaces.Encryptor;
 

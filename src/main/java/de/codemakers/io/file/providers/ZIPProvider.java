@@ -19,11 +19,11 @@ package de.codemakers.io.file.providers;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
-import de.codemakers.io.file.AdvancedFileFilter;
 import de.codemakers.io.file.closeable.CloseableZipEntry;
 import de.codemakers.io.file.closeable.CloseableZipFileEntry;
 import de.codemakers.io.file.closeable.CloseableZipInputStreamEntry;
 import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
+import de.codemakers.io.file.filters.AdvancedFileFilter;
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;

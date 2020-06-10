@@ -17,9 +17,9 @@
 package de.codemakers.io.file.providers;
 
 import de.codemakers.base.util.tough.ToughSupplier;
-import de.codemakers.io.file.AdvancedFileFilter;
-import de.codemakers.io.file.AdvancedFilenameFilter;
 import de.codemakers.io.file.IFile;
+import de.codemakers.io.file.filters.AdvancedFileFilter;
+import de.codemakers.io.file.filters.AdvancedFilenameFilter;
 
 import java.io.InputStream;
 import java.io.OutputStream;

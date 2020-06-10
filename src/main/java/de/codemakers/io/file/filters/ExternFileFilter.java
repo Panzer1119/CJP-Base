@@ -14,10 +14,12 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file;
+package de.codemakers.io.file.filters;
+
+import de.codemakers.io.file.ExternFile;
 
 import java.util.function.Predicate;
 
 @FunctionalInterface
-public interface AdvancedFileFilter extends Predicate<AdvancedFile> {
+public interface ExternFileFilter extends Predicate<ExternFile> {
 }

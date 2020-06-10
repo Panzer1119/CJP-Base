@@ -28,6 +28,7 @@ import de.codemakers.io.file.exceptions.FileNotUniqueSeparatorRuntimeException;
 import de.codemakers.io.file.exceptions.FileProviderDoesNotSupportWriteOperationsRuntimeException;
 import de.codemakers.io.file.exceptions.is.RelativeClassIsNullException;
 import de.codemakers.io.file.exceptions.isnot.RelativeClassIsNotNullException;
+import de.codemakers.io.file.filters.AdvancedFileFilter;
 import de.codemakers.io.file.providers.FileProvider;
 import de.codemakers.io.file.providers.JARProvider;
 import de.codemakers.io.file.providers.ZIPProvider;

@@ -5,11 +5,11 @@ import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.ArrayUtil;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
-import de.codemakers.io.file.AdvancedFileFilter;
 import de.codemakers.io.file.closeable.CloseableZipEntry;
 import de.codemakers.io.file.closeable.CloseableZipFileEntry;
 import de.codemakers.io.file.closeable.CloseableZipInputStreamEntry;
 import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
+import de.codemakers.io.file.filters.AdvancedFileFilter;
 
 import java.io.InputStream;
 import java.util.ArrayList;

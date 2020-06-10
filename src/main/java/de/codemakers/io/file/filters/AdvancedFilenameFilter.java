@@ -14,7 +14,9 @@
  *     limitations under the License.
  */
 
-package de.codemakers.io.file;
+package de.codemakers.io.file.filters;
+
+import de.codemakers.io.file.AdvancedFile;
 
 @FunctionalInterface
 public interface AdvancedFilenameFilter extends AdvancedFileFilter {
