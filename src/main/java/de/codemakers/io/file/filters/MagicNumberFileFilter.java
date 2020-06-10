@@ -11,6 +11,10 @@ import java.util.function.Predicate;
 
 public class MagicNumberFileFilter implements Predicate<IFile<?, ?>> {
     
+    public static final MagicNumberFileFilter ALL_JARS = new MagicNumberFileFilter(MagicNumber.getAllJars());
+    public static final MagicNumberFileFilter ALL_TARS = new MagicNumberFileFilter(MagicNumber.getAllTars());
+    public static final MagicNumberFileFilter ALL_ZIPS = new MagicNumberFileFilter(MagicNumber.getAllZips());
+    
     private final List<MagicNumber> magicNumbers = new ArrayList<>();
     
     public MagicNumberFileFilter(MagicNumber... magicNumbers) {

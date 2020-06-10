@@ -57,10 +57,8 @@ public class MagicNumberFileFilterTest {
         Logger.logDebug("jarFile='" + jarFile + "'");
         assertTrue(jarFile.exists());
         assertTrue(jarFile.isFile());
-        //TODO
-        final MagicNumberFileFilter magicNumberFileFilter1 = new MagicNumberFileFilter(MagicNumber.getAllJars());
-        Logger.logDebug("magicNumberFileFilter1=" + magicNumberFileFilter1);
-        assertTrue(magicNumberFileFilter1.test(jarFile));
+        Logger.logDebug("MagicNumberFileFilter.ALL_JARS=" + MagicNumberFileFilter.ALL_JARS);
+        assertTrue(MagicNumberFileFilter.ALL_JARS.test(jarFile));
     }
     
 }
