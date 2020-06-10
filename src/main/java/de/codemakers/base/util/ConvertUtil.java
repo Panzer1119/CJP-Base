@@ -194,4 +194,51 @@ public class ConvertUtil {
         return output;
     }
     
+    public static String byteToHex(byte b) {
+        return new String(new char[] {Character.forDigit((b >> 4) & 0xF, 16), Character.forDigit(b & 0xF, 16)});
+    }
+    
+    public static String byteArrayToHexString(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
+        if (bytes.length == 0) {
+            return "";
+        }
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (byte b : bytes) {
+            stringBuilder.append(byteToHex(b));
+        }
+        return stringBuilder.toString();
+    }
+    
+    private static int charToDigit(char c, int radix) {
+        final int digit = Character.digit(c, radix);
+        if (digit == -1) {
+            throw new IllegalArgumentException("Invalid Base " + radix + " Character");
+        }
+        return digit;
+    }
+    
+    public static byte hexToByte(String hex) {
+        return (byte) ((charToDigit(hex.charAt(0), 16) << 4) + charToDigit(hex.charAt(1), 16));
+    }
+    
+    public static byte[] hexStringToByteArray(String hexString) {
+        if (hexString == null) {
+            return null;
+        }
+        if (hexString.isEmpty()) {
+            return new byte[0];
+        }
+        if (hexString.length() % 2 == 1) {
+            throw new IllegalArgumentException("Invalid hexadecimal String supplied");
+        }
+        final byte[] bytes = new byte[hexString.length() / 2];
+        for (int i = 0; i < hexString.length(); i += 2) {
+            bytes[i / 2] = hexToByte(hexString.substring(i, i + 2));
+        }
+        return bytes;
+    }
+    
 }
