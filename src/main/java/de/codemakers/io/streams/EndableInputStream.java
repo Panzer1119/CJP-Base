@@ -44,7 +44,7 @@ public class EndableInputStream extends InputStream {
         if (temp == ESCAPE_BYTE) {
             return inputStream.read();
         } else if (temp == ENDED_BYTE) {
-            Standard.silentError(this::close);
+            Standard.silentClose(this);
             throw new StreamClosedException();
         }
         return temp;

@@ -24,6 +24,7 @@ import de.codemakers.lang.LanguageReloader;
 import de.codemakers.lang.LanguageUtil;
 import de.codemakers.lang.Localizer;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -48,7 +49,7 @@ public class Standard {
     public static final String RUNNING_JAR_PATH_STRING = RUNNING_JAR_URL.getPath();
     public static final boolean RUNNING_JAR_IS_JAR = RUNNING_JAR_URL.getPath().toLowerCase().endsWith(".jar");
     public static final File RUNNING_JAR_FILE = new File(RUNNING_JAR_URL.getPath());
-    public static final AdvancedFile RUNNING_JAR_ADVANCED_FILE = new AdvancedFile(RUNNING_JAR_URL.getPath());
+    public static final AdvancedFile RUNNING_JAR_ADVANCED_FILE = new AdvancedFile(new File(RUNNING_JAR_URI));
     
     public static final String MAIN_PATH = "/de/codemakers/";
     public static final AdvancedFile MAIN_FOLDER = new AdvancedFile(AdvancedFile.PREFIX_INTERN + MAIN_PATH);
@@ -86,6 +87,10 @@ public class Standard {
     
     public static Thread toughThread(ToughRunnable toughRunnable) {
         return new Thread(toughRunnable::runWithoutException);
+    }
+    
+    public static final Throwable silentClose(Closeable closeable) {
+        return silentError(closeable::close);
     }
     
     public static final Throwable silentError(ToughRunnable toughRunnable) {

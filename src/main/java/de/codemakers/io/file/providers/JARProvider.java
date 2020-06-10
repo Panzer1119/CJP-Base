@@ -178,7 +178,7 @@ public class JARProvider extends ZIPProvider {
                 }
                 inputStreamSupplier = parent::createInputStream;
             } catch (Exception ex) {
-                Standard.silentError(zipFile::close);
+                Standard.silentClose(zipFile);
                 throw ex;
             }
         }

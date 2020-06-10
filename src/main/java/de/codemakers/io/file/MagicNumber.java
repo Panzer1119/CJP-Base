@@ -201,7 +201,7 @@ public class MagicNumber implements Predicate<InputStream> {
             inputStream.close();
             return equals(bytes);
         } catch (Exception ex) {
-            Standard.silentError(inputStream::close);
+            Standard.silentClose(inputStream);
             Logger.handleError(ex);
             return false;
         }

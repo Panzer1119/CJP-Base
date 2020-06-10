@@ -183,7 +183,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
                 zipFile.close();
                 return exists;
             } catch (Exception ex) {
-                zipFile.close();
+                Standard.silentClose(zipFile);
                 throw ex;
             }
         } else {

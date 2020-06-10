@@ -122,7 +122,7 @@ public class OSUtil {
     
     public static final <T extends OSFunction> T getFunction(Class<T> clazz) {
         while (!LOADED_OS_FUNCTIONS.get()) {
-            Standard.silentError(() -> Thread.sleep(100));
+            Standard.silentSleep(100);
         }
         switch (CURRENT_OS) {
             case WINDOWS:
@@ -142,7 +142,7 @@ public class OSUtil {
     
     public static final <T extends OSFunction> T getCurrentFunction(Class<T> clazz) {
         while (!LOADED_OS_FUNCTIONS.get()) {
-            Standard.silentError(() -> Thread.sleep(100));
+            Standard.silentSleep(100);
         }
         return CURRENT_OS_HELPER.getOSFunction(clazz);
     }
