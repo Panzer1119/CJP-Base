@@ -106,6 +106,7 @@ public class Standard {
         try {
             toughConsumer.accept(input);
         } catch (Exception ex) {
+            //Nothing
         }
     }
     

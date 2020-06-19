@@ -75,6 +75,7 @@ public class IOUtil {
         try {
             autoCloseable.close();
         } catch (Exception ex) {
+            //Nothing
         }
     }
     

@@ -99,6 +99,7 @@ public class ProcessingOutputStream extends FilterOutputStream {
             try {
                 flush();
             } catch (Exception ex) {
+                //Nothing
             }
             outputStream.close();
             closed = true;

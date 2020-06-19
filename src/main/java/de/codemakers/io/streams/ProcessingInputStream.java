@@ -174,6 +174,7 @@ public class ProcessingInputStream extends FilterInputStream {
                 try {
                     processor.doFinal();
                 } catch (Exception ex) {
+                    //Nothing
                 }
             }
             outputStart = 0;
