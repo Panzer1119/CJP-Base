@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -73,49 +74,60 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
     public List<AdvancedFile> listFiles(AdvancedFile parent, AdvancedFile file, boolean recursive, ToughSupplier<InputStream> inputStreamSupplier, AdvancedFileFilter advancedFileFilter) throws Exception {
         Objects.requireNonNull(parent);
         Objects.requireNonNull(file);
-        final List<AdvancedFile> advancedFiles = new ArrayList<>();
         final String path = parent.equals(file) ? "" : file.getPathsCollected(ZIP_SEPARATOR);
         final int pathLength = path.isEmpty() ? -1 : path.length();
         if (inputStreamSupplier == null) {
-            final ZipFile zipFile = new ZipFile(parent.getPath());
-            try {
-                if (advancedFileFilter == null) {
-                    zipFile.stream().filter((zipEntry) -> {
-                        final String zipEntryPath = zipEntryToPath(zipEntry);
-                        return zipEntryPath.length() > pathLength && (recursive || !zipEntryPath.substring(pathLength + ZIP_SEPARATOR_LENGTH).contains(ZIP_SEPARATOR)) && zipEntryPath.startsWith(path);
-                    }).map((zipEntry) -> new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()))).forEach(advancedFiles::add);
-                } else {
-                    zipFile.stream().filter((zipEntry) -> {
-                        final String zipEntryPath = zipEntryToPath(zipEntry);
-                        return zipEntryPath.length() > pathLength && (recursive || !zipEntryPath.substring(pathLength + ZIP_SEPARATOR_LENGTH).contains(ZIP_SEPARATOR)) && zipEntryPath.startsWith(path);
-                    }).map((zipEntry) -> new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()))).filter(advancedFileFilter).forEach(advancedFiles::add);
-                }
-                zipFile.close();
-            } catch (Exception ex) {
-                zipFile.close();
-                throw ex;
-            }
+            return listFiles(parent, recursive, advancedFileFilter, path, pathLength);
         } else {
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get());
-            try {
-                ZipEntry zipEntry;
-                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                    final String zipEntryPath = zipEntryToPath(zipEntry);
-                    if (zipEntryPath.length() <= pathLength || (!recursive && zipEntryPath.substring(pathLength + ZIP_SEPARATOR_LENGTH).contains(ZIP_SEPARATOR)) || !zipEntryPath.startsWith(path)) {
-                        zipInputStream.closeEntry();
-                        continue;
-                    }
-                    final AdvancedFile advancedFile = new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()));
-                    if (advancedFileFilter == null || advancedFileFilter.test(advancedFile)) {
-                        advancedFiles.add(advancedFile);
-                    }
+            return listFiles(parent, recursive, inputStreamSupplier.get(), advancedFileFilter, path, pathLength);
+        }
+    }
+    
+    protected List<AdvancedFile> listFiles(AdvancedFile parent, boolean recursive, AdvancedFileFilter advancedFileFilter, String path, int pathLength) throws Exception {
+        final List<AdvancedFile> advancedFiles = new ArrayList<>();
+        final ZipFile zipFile = new ZipFile(parent.getPath());
+        try {
+            streamFiles(zipFile, parent, recursive, advancedFileFilter, path, pathLength).forEach(advancedFiles::add);
+            zipFile.close();
+        } catch (Exception ex) {
+            zipFile.close();
+            throw ex;
+        }
+        return advancedFiles;
+    }
+    
+    private Stream<AdvancedFile> streamFiles(ZipFile zipFile, AdvancedFile parent, boolean recursive, AdvancedFileFilter advancedFileFilter, String path, int pathLength) {
+        final Stream<AdvancedFile> stream = zipFile.stream().filter((zipEntry) -> {
+            final String zipEntryPath = zipEntryToPath(zipEntry);
+            return zipEntryPath.length() > pathLength && (recursive || !zipEntryPath.substring(pathLength + ZIP_SEPARATOR_LENGTH).contains(ZIP_SEPARATOR)) && zipEntryPath.startsWith(path);
+        }).map((zipEntry) -> new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator())));
+        if (advancedFileFilter != null) {
+            return stream.filter(advancedFileFilter);
+        }
+        return stream;
+    }
+    
+    protected List<AdvancedFile> listFiles(AdvancedFile parent, boolean recursive, InputStream inputStream, AdvancedFileFilter advancedFileFilter, String path, int pathLength) throws Exception {
+        final List<AdvancedFile> advancedFiles = new ArrayList<>();
+        final ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        try {
+            ZipEntry zipEntry;
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                final String zipEntryPath = zipEntryToPath(zipEntry);
+                if (zipEntryPath.length() <= pathLength || (!recursive && zipEntryPath.substring(pathLength + ZIP_SEPARATOR_LENGTH).contains(ZIP_SEPARATOR)) || !zipEntryPath.startsWith(path)) {
                     zipInputStream.closeEntry();
+                    continue;
                 }
-                zipInputStream.close();
-            } catch (Exception ex) {
-                zipInputStream.close();
-                throw ex;
+                final AdvancedFile advancedFile = new AdvancedFile(parent, false, zipEntryToPath(zipEntry, parent.getSeparator()));
+                if (advancedFileFilter == null || advancedFileFilter.test(advancedFile)) {
+                    advancedFiles.add(advancedFile);
+                }
+                zipInputStream.closeEntry();
             }
+            zipInputStream.close();
+        } catch (Exception ex) {
+            zipInputStream.close();
+            throw ex;
         }
         return advancedFiles;
     }
