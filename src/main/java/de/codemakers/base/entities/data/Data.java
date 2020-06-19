@@ -25,7 +25,7 @@ import java.util.Objects;
 
 public class Data implements ByteSerializable, Copyable {
     
-    protected byte[] data = null;
+    protected byte[] data;
     
     public Data(byte[] data) {
         this.data = data;
@@ -66,14 +66,14 @@ public class Data implements ByteSerializable, Copyable {
     }
     
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(object instanceof Data)) {
             return false;
         }
-        final Data that = (Data) o;
+        final Data that = (Data) object;
         return Arrays.equals(data, that.data);
     }
     

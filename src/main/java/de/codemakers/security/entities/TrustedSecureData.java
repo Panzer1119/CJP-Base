@@ -159,14 +159,14 @@ public class TrustedSecureData extends SecureData implements Signable, Verifiabl
     }
     
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(object instanceof TrustedSecureData)) {
             return false;
         }
-        final TrustedSecureData that = (TrustedSecureData) o;
+        final TrustedSecureData that = (TrustedSecureData) object;
         return Arrays.equals(data, that.data) && Arrays.equals(signature, that.signature);
     }
     

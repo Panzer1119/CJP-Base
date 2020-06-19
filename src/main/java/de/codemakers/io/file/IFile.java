@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class IFile<T extends IFile, P extends Predicate<T>> implements Decryptable, Encryptable, Hashable, Serializable, Signable, Verifiable {
+public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> implements Decryptable, Encryptable, Hashable, Serializable, Signable, Verifiable {
     
     public abstract String getName();
     
@@ -810,9 +810,18 @@ public abstract class IFile<T extends IFile, P extends Predicate<T>> implements 
             return true;
         }
         if (object instanceof IFile) {
-            return getPath().equals(((IFile) object).getPath());
+            return Objects.equals(getPath(), ((IFile<?, ?>) object).getPath());
         }
         return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        final String path = getPath();
+        if (path == null) {
+            return super.hashCode();
+        }
+        return path.hashCode();
     }
     
     @Override

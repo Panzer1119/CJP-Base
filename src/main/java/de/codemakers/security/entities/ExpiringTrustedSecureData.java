@@ -219,14 +219,14 @@ public class ExpiringTrustedSecureData extends TrustedSecureData {
     }
     
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(object instanceof ExpiringTrustedSecureData)) {
             return false;
         }
-        final ExpiringTrustedSecureData that = (ExpiringTrustedSecureData) o;
+        final ExpiringTrustedSecureData that = (ExpiringTrustedSecureData) object;
         return Arrays.equals(data, that.data) && Arrays.equals(signature, that.signature) && Objects.equals(timestamp, that.timestamp);
     }
     
