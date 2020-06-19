@@ -22,7 +22,6 @@ import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Finishable;
 import de.codemakers.base.util.interfaces.Reloadable;
 import de.codemakers.base.util.interfaces.Resettable;
-import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.streams.BufferedPipedOutputStream;
 import de.codemakers.io.streams.PipedInputStream;
@@ -389,11 +388,14 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         Standard.getDefaultLanguageReloader().removeLanguageReloadable(this);
     }
     
+    /*
+    //Do not use this, but if we need that?
     @Override
     protected void finalize() throws Throwable {
         Standard.useWhenNotNull(Standard.removeShutdownHook(shutdownHookId), ToughRunnable::runWithoutException);
         super.finalize();
     }
+    */
     
     public InputStream getInputStream() {
         return pipedInputStream;

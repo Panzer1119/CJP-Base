@@ -66,12 +66,12 @@ public class DoubleEvaluator extends Evaluator<Double> {
                     result.set((double) temp.getObject());
                     last = temp.getObject();
                 } else {
-                
+                    //What?
                 }
             } else if (temp.getObject() instanceof String) {
-            
+                //What?
             } else if (temp.getObject() instanceof LinkedObject) {
-            
+                //What?
             } else {
                 throw new InvalidParameterException("\"" + temp.getObject() + "\" is invalid");
             }

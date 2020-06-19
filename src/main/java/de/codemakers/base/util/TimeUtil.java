@@ -58,8 +58,9 @@ public class TimeUtil {
             case HOURS:
             case DAYS:
                 return instant.minusMillis(instant.toEpochMilli() % unit.toMillis(every));
+            default:
+                return null;
         }
-        return null;
     }
     
     public static long getTimeCeiled(long timestamp, long every, TimeUnit unit) {
@@ -83,8 +84,9 @@ public class TimeUtil {
             case HOURS:
             case DAYS:
                 return instant.minusMillis(instant.toEpochMilli() % unit.toMillis(every)).plusMillis(unit.toMillis(every));
+            default:
+                return null;
         }
-        return null;
     }
     
     public static LocalDateTime localDateTimeOfLocalDateAndMidnight(LocalDate localDate) {
