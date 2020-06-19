@@ -150,7 +150,7 @@ public class ZIPProvider extends FileProvider<AdvancedFile> {
         return closeableZipEntry.closeWithoutException(ZipEntry::isDirectory);
     }
     
-    private CloseableZipEntry<?> getCloseableZipEntry(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
+    protected CloseableZipEntry<?> getCloseableZipEntry(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
         if (inputStreamSupplier == null) {
             final ZipFile zipFile = new ZipFile(parent.getPath());
             try {

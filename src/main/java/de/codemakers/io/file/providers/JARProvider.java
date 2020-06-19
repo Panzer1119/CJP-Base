@@ -6,9 +6,6 @@ import de.codemakers.base.util.ArrayUtil;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.file.closeable.CloseableZipEntry;
-import de.codemakers.io.file.closeable.CloseableZipFileEntry;
-import de.codemakers.io.file.closeable.CloseableZipInputStreamEntry;
-import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
 import de.codemakers.io.file.filters.AdvancedFileFilter;
 import de.codemakers.io.file.filters.MagicNumberFileFilter;
 
@@ -94,42 +91,6 @@ public class JARProvider extends ZIPProvider {
             return false;
         }
         return closeableZipEntry.closeWithoutException(ZipEntry::isDirectory);
-    }
-    
-    private CloseableZipEntry<?> getCloseableZipEntry(AdvancedFile parent, AdvancedFile file, ToughSupplier<InputStream> inputStreamSupplier) throws Exception {
-        if (inputStreamSupplier == null) {
-            final ZipFile zipFile = new ZipFile(parent.getPath());
-            try {
-                final ZipEntry zipEntry = zipFile.getEntry(file.getPathsCollected(ZIP_SEPARATOR));
-                if (zipEntry == null) {
-                    throw new FileIsNotExistingException(file + " does not exist");
-                }
-                return new CloseableZipFileEntry(zipFile, zipEntry);
-            } catch (Exception ex) {
-                zipFile.close();
-                throw ex;
-            }
-        } else {
-            final String path = file.getPathsCollected(ZIP_SEPARATOR);
-            final ZipInputStream zipInputStream = new ZipInputStream(inputStreamSupplier.get());
-            try {
-                ZipEntry zipEntry;
-                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                    if (Objects.equals(path, zipEntryToPath(zipEntry))) {
-                        break;
-                    }
-                    zipInputStream.closeEntry();
-                }
-                if (zipEntry == null) {
-                    zipInputStream.close();
-                    return null;
-                }
-                return new CloseableZipInputStreamEntry(zipInputStream, zipEntry);
-            } catch (Exception ex) {
-                zipInputStream.close();
-                throw ex;
-            }
-        }
     }
     
     @Override
