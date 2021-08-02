@@ -74,7 +74,7 @@ public class TunnelStreamTest {
     }
     
     private static void test() throws Exception {
-        final String lineSeparator = java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
+        final String lineSeparator = System.getProperty("line.separator");
         Logger.logDebug("lineSeparator=" + lineSeparator);
         Logger.logDebug("lineSeparator=" + Arrays.toString(lineSeparator.getBytes()));
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
