@@ -30,10 +30,10 @@ package de.codemakers;/*
  *    limitations under the License.
  */
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ReceiverTest {
-
+    
     @Test
     public final void receiving() throws Exception {
         System.out.println("My ID: " + JarCommunicator.ID);
@@ -41,5 +41,5 @@ public class ReceiverTest {
         JarCommunicator.addListener((data) -> System.out.println(String.format("[%d -> %d]: %s", data.getSourceID(), data.getTargetID(), data.getObject())));
         Thread.sleep(15000);
     }
-
+    
 }

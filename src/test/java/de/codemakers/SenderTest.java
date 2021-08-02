@@ -30,10 +30,10 @@ package de.codemakers;/*
  *    limitations under the License.
  */
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SenderTest {
-
+    
     @Test
     public final void sending() throws Exception {
         JarCommunicator.init();
@@ -41,5 +41,5 @@ public class SenderTest {
         JarCommunicator.send(1522950630012L, "Test-Data");
         Thread.sleep(2000);
     }
-
+    
 }
