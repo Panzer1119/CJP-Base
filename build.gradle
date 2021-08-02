@@ -5,10 +5,7 @@ plugins {
 }
 
 group 'de.codemakers'
-version 'v1.8.0_172-alpha.58'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+version '0.16.0'
 
 repositories {
     mavenCentral()
@@ -29,4 +26,16 @@ dependencies {
     implementation group: 'org.lz4', name: 'lz4-java', version: '1.5.0'
     implementation 'at.favre.lib:hkdf:1.0.2'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.2'
+}
+
+compileJava {
+    options.release = 16
+}
+
+test {
+    useJUnitPlatform()
+}
+
+shadowJar {
+    getDestinationDirectory().set(new File(projectDir, "./dist"))
 }
