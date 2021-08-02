@@ -12,20 +12,34 @@ repositories {
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/com.google.guava/guava
-    implementation group: 'com.google.guava', name: 'guava', version: '11.0.2'
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
-    // https://mvnrepository.com/artifact/commons-io/commons-io
-    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
-    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.6'
+    // Logging
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    // Extending
+    // Apache
     // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
-    implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
-    implementation "org.reflections:reflections:0.9.11"
-    implementation 'net.openhft:zero-allocation-hashing:0.8'
-    implementation group: 'org.lz4', name: 'lz4-java', version: '1.5.0'
-    implementation 'at.favre.lib:hkdf:1.0.2'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.2'
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-text
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+    // https://mvnrepository.com/artifact/commons-codec/commons-codec
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    // Google
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.7'
+    // Other
+    implementation "org.reflections:reflections:0.9.12"
+    implementation 'net.openhft:zero-allocation-hashing:0.15'
+    implementation group: 'org.lz4', name: 'lz4-java', version: '1.8.0'
+    implementation 'at.favre.lib:hkdf:1.1.0'
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0-M1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0-M1'
 }
 
 compileJava {
