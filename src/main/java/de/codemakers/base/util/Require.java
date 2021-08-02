@@ -16,8 +16,6 @@
 
 package de.codemakers.base.util;
 
-import com.sun.org.apache.bcel.internal.classfile.ClassFormatException;
-
 public class Require {
     
     public static final <T> T clazz(Object object, Class<T> clazz) {
@@ -30,7 +28,7 @@ public class Require {
         }
         final boolean match = clazz.isAssignableFrom(object.getClass());
         if (!match) {
-            throw new ClassFormatException(message);
+            throw new ClassCastException(message);
         }
         return (T) object;
     }
