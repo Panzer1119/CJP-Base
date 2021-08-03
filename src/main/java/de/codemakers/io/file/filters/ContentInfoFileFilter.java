@@ -22,7 +22,6 @@ import de.codemakers.io.file.IFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,13 +47,9 @@ public class ContentInfoFileFilter implements Predicate<IFile<?, ?>> {
         if (iFile == null || !iFile.exists() || !iFile.isFile()) {
             return false;
         }
-        try {
-            final ContentInfo contentInfo = FileUtil.CONTENT_INFO_UTIL.findMatch(iFile.createInputStreamWithoutException());
-            return contentInfos.contains(contentInfo);
-        } catch (IOException e) {
-            logger.error("Error while testing for file for ContentInfo: " + iFile, e);
-            return false;
-        }
+        return FileUtil.findMatch(iFile.createInputStreamWithoutException())
+                .map(contentInfos::contains)
+                .orElse(false);
     }
     
     @Override

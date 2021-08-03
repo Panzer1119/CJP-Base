@@ -36,6 +36,7 @@ public class FileUtil {
         try {
             return Optional.ofNullable(CONTENT_INFO_UTIL.findMatch(filePath));
         } catch (IOException e) {
+            logger.error("Error while testing for ContentInfo on filePath: " + filePath, e);
             return Optional.empty();
         }
     }
@@ -44,6 +45,7 @@ public class FileUtil {
         try {
             return Optional.ofNullable(CONTENT_INFO_UTIL.findMatch(file));
         } catch (IOException e) {
+            logger.error("Error while testing for ContentInfo on file: " + file, e);
             return Optional.empty();
         }
     }
@@ -52,6 +54,7 @@ public class FileUtil {
         try {
             return Optional.ofNullable(CONTENT_INFO_UTIL.findMatch(inputStream));
         } catch (IOException e) {
+            logger.error("Error while testing for ContentInfo", e);
             return Optional.empty();
         }
     }
