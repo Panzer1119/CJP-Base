@@ -16,16 +16,28 @@
 
 package de.codemakers.database.hibernate;
 
+import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.base.util.tough.ToughPredicate;
+import de.codemakers.database.connectors.DatabaseConnector;
+import de.codemakers.database.minio.MinIOConnector;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 public class HibernateUtil {
+    
+    private static final Logger logger = LogManager.getLogger(HibernateUtil.class);
     
     public static StandardServiceRegistryBuilder createStandardServiceRegistryBuilder(Properties properties) {
         Objects.requireNonNull(properties);
@@ -57,6 +69,56 @@ public class HibernateUtil {
     public static SessionFactory createSessionFactory(Metadata metadata) {
         Objects.requireNonNull(metadata);
         return metadata.buildSessionFactory();
+    }
+    
+    public static boolean useSession(DatabaseConnector databaseConnector, ToughPredicate<Session> sessionConsumer) {
+        return useSession(databaseConnector, sessionConsumer, false);
+    }
+    
+    public static boolean useSession(DatabaseConnector databaseConnector, ToughPredicate<Session> sessionConsumer, boolean silent) {
+        Objects.requireNonNull(databaseConnector);
+        Objects.requireNonNull(sessionConsumer);
+        final Session session = databaseConnector.getOrOpenSession();
+        synchronized (databaseConnector.getLock()) {
+            final Transaction transaction = session.beginTransaction();
+            try {
+                final Boolean result = sessionConsumer.test(session);
+                transaction.commit();
+                return result;
+            } catch (Exception e) {
+                if (!silent) {
+                    logger.error("Error while using Session", e);
+                }
+                return false;
+            } finally {
+                transaction.rollback();
+            }
+        }
+    }
+    
+    public static <R> Optional<R> processSession(DatabaseConnector databaseConnector, ToughFunction<Session, R> sessionFunction) {
+        return processSession(databaseConnector, sessionFunction, false);
+    }
+    
+    public static <R> Optional<R> processSession(DatabaseConnector databaseConnector, ToughFunction<Session, R> sessionFunction, boolean silent) {
+        Objects.requireNonNull(databaseConnector);
+        Objects.requireNonNull(sessionFunction);
+        final Session session = databaseConnector.getOrOpenSession();
+        synchronized (databaseConnector.getLock()) {
+            final Transaction transaction = session.beginTransaction();
+            try {
+                final R result = sessionFunction.apply(session);
+                transaction.commit();
+                return Optional.ofNullable(result);
+            } catch (Exception e) {
+                if (!silent) {
+                    logger.error("Error while processing Session", e);
+                }
+            } finally {
+                transaction.rollback();
+            }
+            return Optional.empty();
+        }
     }
     
 }
