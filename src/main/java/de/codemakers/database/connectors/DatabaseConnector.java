@@ -17,6 +17,8 @@
 package de.codemakers.database.connectors;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.database.entities.IEntity;
 import de.codemakers.database.hibernate.HibernateUtil;
 import org.hibernate.Session;
@@ -110,5 +112,21 @@ public abstract class DatabaseConnector {
             }
         }
     }
-
+    
+    public void useSession(ToughConsumer<Session> sessionConsumer) {
+        HibernateUtil.useSession(this, sessionConsumer);
+    }
+    
+    public void useSession(ToughConsumer<Session> sessionConsumer, boolean silent) {
+        HibernateUtil.useSession(this, sessionConsumer, silent);
+    }
+    
+    public <R> Optional<R> processSession(ToughFunction<Session, R> sessionFunction) {
+        return HibernateUtil.processSession(this, sessionFunction);
+    }
+    
+    public <R> Optional<R> processSession(ToughFunction<Session, R> sessionFunction, boolean silent) {
+        return HibernateUtil.processSession(this, sessionFunction, silent);
+    }
+    
 }
