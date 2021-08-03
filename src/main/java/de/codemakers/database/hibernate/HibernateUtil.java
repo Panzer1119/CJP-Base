@@ -192,19 +192,15 @@ public class HibernateUtil {
         useSession(databaseConnector, session -> session.delete(object));
     }
     
-    public static synchronized <T extends IEntity<Integer, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<Integer, Optional<T>> entityGetterFunction) {
-        return addOrUpgradeById(databaseConnector, entity, entityGetterFunction, Integer.class);
+    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction) {
+        return addOrUpgradeById(databaseConnector, entity, entityGetterFunction, IEntity::getId);
     }
     
-    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz) {
-        return addOrUpgradeById(databaseConnector, entity, entityGetterFunction, idClazz, IEntity::getId);
+    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction, Function<T, I> idGetterFunction) {
+        return addOrUpgrade(databaseConnector, entity, entityGetterFunction, idGetterFunction);
     }
     
-    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz, Function<T, I> idGetterFunction) {
-        return addOrUpgrade(databaseConnector, entity, entityGetterFunction, idClazz, idGetterFunction);
-    }
-    
-    public static synchronized <I, M, T extends IEntity<I, T>> Optional<T> addOrUpgrade(DatabaseConnector databaseConnector, T entity, Function<M, Optional<T>> entityGetterFunction, Class<M> middleClazz, Function<T, M> middleGetterFunction) {
+    public static synchronized <I, M, T extends IEntity<I, T>> Optional<T> addOrUpgrade(DatabaseConnector databaseConnector, T entity, Function<M, Optional<T>> entityGetterFunction, Function<T, M> middleGetterFunction) {
         Objects.requireNonNull(entity, "entity may not be null");
         Objects.requireNonNull(entityGetterFunction, "entityGetterFunction may not be null");
         Objects.requireNonNull(middleGetterFunction, "middleGetterFunction may not be null");
