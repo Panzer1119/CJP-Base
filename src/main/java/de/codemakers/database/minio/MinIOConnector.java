@@ -18,6 +18,7 @@ package de.codemakers.database.minio;
 
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.database.connectors.ObjectStorageConnector;
+import de.codemakers.io.IOUtil;
 import io.minio.*;
 import io.minio.errors.*;
 import org.apache.logging.log4j.LogManager;
@@ -79,6 +80,7 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
     @Override
     public boolean writeObject(String bucket, String object, byte[] data) {
         checkParameter(bucket, object);
+        Objects.requireNonNull(data, "data may not be null");
         try {
             return connector.putObject(PutObjectArgs.builder()
                     .bucket(bucket)
@@ -94,6 +96,7 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
     @Override
     public boolean writeObject(String bucket, String object, InputStream inputStream) {
         checkParameter(bucket, object);
+        Objects.requireNonNull(inputStream, "inputStream may not be null");
         try {
             return connector.putObject(PutObjectArgs.builder()
                     .bucket(bucket)
@@ -103,6 +106,8 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException e) {
             logger.error(String.format("Error while writing \"%s\" from InputStream to \"%s\"", object, bucket), e);
             return false;
+        } finally {
+            IOUtil.closeQuietly(inputStream);
         }
     }
     
