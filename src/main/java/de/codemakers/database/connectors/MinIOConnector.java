@@ -32,7 +32,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.Optional;
 
-public class MinIOConnector extends ObjectStorageConnector<MinioClient, GetObjectResponse> {
+public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStream> {
     
     private static final Logger logger = LogManager.getLogger(MinIOConnector.class);
     
@@ -54,26 +54,25 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, GetObjec
     @Override
     public Optional<byte[]> readObjectBytes(String bucket, String object) {
         checkParameter(bucket, object);
-        return readObject(bucket, object, GetObjectResponse::readAllBytes);
+        return readObject(bucket, object, InputStream::readAllBytes);
     }
     
     @Override
     public Optional<InputStream> readObject(String bucket, String object) {
         checkParameter(bucket, object);
-        return Optional.empty();
-    }
-    
-    @Override
-    public <R> Optional<R> readObject(String bucket, String object, ToughFunction<GetObjectResponse, R> converter) {
-        checkParameter(bucket, object);
-        Objects.requireNonNull(converter, "converter may not be null");
-        try {
-            final GetObjectResponse response = connector.getObject(GetObjectArgs.builder().bucket(bucket).object(object).build());
-            return Optional.ofNullable(converter.applyWithoutException(response));
+        try (final GetObjectResponse response = connector.getObject(GetObjectArgs.builder().bucket(bucket).object(object).build())) {
+            return Optional.ofNullable(response);
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException e) {
             logger.error(String.format("Error while getting \"%s\" from \"%s\"", object, bucket), e);
             return Optional.empty();
         }
+    }
+    
+    @Override
+    public <R> Optional<R> readObject(String bucket, String object, ToughFunction<InputStream, R> converter) {
+        checkParameter(bucket, object);
+        Objects.requireNonNull(converter, "converter may not be null");
+        return readObject(bucket, object).map(converter::applyWithoutException);
     }
     
     @Override
