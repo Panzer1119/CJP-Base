@@ -1,9 +1,5 @@
 # CJP-Base
 
-[![CodeFactor](https://www.codefactor.io/repository/github/panzer1119/cjp-base/badge)](https://www.codefactor.io/repository/github/panzer1119/cjp-base)
-
-[![Release](https://jitpack.io/v/Panzer1119/CJP-Base.svg)](https://jitpack.io/#Panzer1119/CJP-Base)
-
 [![Quality Gate Status](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=alert_status)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
 
 [![Bugs](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=bugs)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
