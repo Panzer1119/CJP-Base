@@ -71,25 +71,23 @@ public class HibernateUtil {
         return metadata.buildSessionFactory();
     }
     
-    public static boolean useSession(DatabaseConnector databaseConnector, ToughPredicate<Session> sessionConsumer) {
-        return useSession(databaseConnector, sessionConsumer, false);
+    public static void useSession(DatabaseConnector databaseConnector, ToughConsumer<Session> sessionConsumer) {
+        useSession(databaseConnector, sessionConsumer, false);
     }
     
-    public static boolean useSession(DatabaseConnector databaseConnector, ToughPredicate<Session> sessionConsumer, boolean silent) {
+    public static void useSession(DatabaseConnector databaseConnector, ToughConsumer<Session> sessionConsumer, boolean silent) {
         Objects.requireNonNull(databaseConnector);
         Objects.requireNonNull(sessionConsumer);
         final Session session = databaseConnector.getOrOpenSession();
         synchronized (databaseConnector.getLock()) {
             final Transaction transaction = session.beginTransaction();
             try {
-                final Boolean result = sessionConsumer.test(session);
+                sessionConsumer.accept(session);
                 transaction.commit();
-                return result;
             } catch (Exception e) {
                 if (!silent) {
                     logger.error("Error while using Session", e);
                 }
-                return false;
             } finally {
                 transaction.rollback();
             }
