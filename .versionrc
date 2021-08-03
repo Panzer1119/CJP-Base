@@ -1,0 +1,22 @@
+{
+  "packageFiles": [
+    {
+      "filename": "build.gradle",
+      "type": "gradle"
+    }
+  ],
+  "bumpFiles": [
+    {
+      "filename": "build.gradle",
+      "type": "gradle"
+    },
+    {
+      "filename": "src/main/java/de/codemakers/base/CJP.java",
+      "updater": "java-version-updater.js"
+    },
+    {
+      "filename": "sonar-project.properties",
+      "updater": "sonar-version-updater.js"
+    }
+  ]
+}
