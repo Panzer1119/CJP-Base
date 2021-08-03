@@ -19,6 +19,7 @@ package de.codemakers.database.connectors;
 import de.codemakers.base.Standard;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.base.util.tough.ToughTriConsumer;
 import de.codemakers.database.entities.IEntity;
 import de.codemakers.database.hibernate.HibernateUtil;
 import org.hibernate.Session;
@@ -27,7 +28,12 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.query.Query;
+import org.hibernate.query.criteria.HibernateCriteriaBuilder;
+import org.hibernate.query.criteria.JpaCriteriaQuery;
 
+import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Function;
@@ -127,6 +133,34 @@ public abstract class DatabaseConnector {
     
     public <R> Optional<R> processSession(ToughFunction<Session, R> sessionFunction, boolean silent) {
         return HibernateUtil.processSession(this, sessionFunction, silent);
+    }
+    
+    public <T> Optional<T> processCriteriaQuerySingleResult(Class<T> clazz, ToughTriConsumer<HibernateCriteriaBuilder, JpaCriteriaQuery<T>, Root<T>> triConsumer) {
+        return HibernateUtil.processCriteriaQuerySingleResult(this, clazz, triConsumer);
+    }
+    
+    public <T> Optional<List<T>> processCriteriaQuery(Class<T> clazz, ToughTriConsumer<HibernateCriteriaBuilder, JpaCriteriaQuery<T>, Root<T>> triConsumer) {
+        return HibernateUtil.processCriteriaQuery(this, clazz, triConsumer);
+    }
+    
+    public <T, R> Optional<R> processCriteriaQuery(Class<T> clazz, ToughTriConsumer<HibernateCriteriaBuilder, JpaCriteriaQuery<T>, Root<T>> triConsumer, Function<Query<T>, R> resultMapper) {
+        return HibernateUtil.processCriteriaQuery(this, clazz, triConsumer, resultMapper);
+    }
+    
+    public <T> Optional<T> get(Class<T> clazz, Object id) {
+        return HibernateUtil.get(this, clazz, id);
+    }
+    
+    public <T> Optional<List<T>> getAll(Class<T> clazz) {
+        return HibernateUtil.getAll(this, clazz);
+    }
+    
+    public <T> Optional<T> getWhere(Class<T> clazz, String column, String value) {
+        return HibernateUtil.getWhere(this, clazz, column, value);
+    }
+    
+    public <T> Optional<List<T>> getAllWhere(Class<T> clazz, String column, String value) {
+        return HibernateUtil.getAllWhere(this, clazz, column, value);
     }
     
     public void add(Object object) {
