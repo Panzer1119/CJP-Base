@@ -131,4 +131,17 @@ public class HibernateUtil {
         useSession(databaseConnector, session -> session.update(object));
     }
     
+    /**
+     * Either save(Object) or update(Object) the given instance, depending upon resolution of the unsaved-value checks (see the manual for discussion of unsaved-value checking).
+     *
+     * @param object a transient or detached instance containing new or updated state
+     */
+    public static void addOrSet(DatabaseConnector databaseConnector, Object object) {
+        useSession(databaseConnector, (session) -> session.saveOrUpdate(object));
+    }
+    
+    public static void delete(DatabaseConnector databaseConnector, Object object) {
+        useSession(databaseConnector, (session) -> session.delete(object));
+    }
+    
 }
