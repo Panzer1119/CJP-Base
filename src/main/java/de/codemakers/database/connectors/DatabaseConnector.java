@@ -82,12 +82,6 @@ public abstract class DatabaseConnector {
         return session;
     }
     
-    private void setSession(Session session) {
-        synchronized (lock) {
-            this.session = session;
-        }
-    }
-    
     public Session getOrOpenSession() {
         synchronized (lock) {
             if (session == null || !session.isOpen()) {
