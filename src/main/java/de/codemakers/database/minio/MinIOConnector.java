@@ -14,9 +14,10 @@
  *    limitations under the License.
  */
 
-package de.codemakers.database.connectors;
+package de.codemakers.database.minio;
 
 import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.database.connectors.ObjectStorageConnector;
 import io.minio.*;
 import io.minio.errors.*;
 import org.apache.logging.log4j.LogManager;
