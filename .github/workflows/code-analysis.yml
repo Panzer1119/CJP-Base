@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  Build-and-Analyze:
+  Code-Analysis:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
