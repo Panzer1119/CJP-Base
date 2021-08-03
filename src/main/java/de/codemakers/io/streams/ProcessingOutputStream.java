@@ -35,7 +35,7 @@ public class ProcessingOutputStream extends FilterOutputStream {
      * underlying output stream.
      *
      * @param outputStream the underlying output stream to be assigned to
-     * the field <tt>this.out</tt> for later use, or
+     * the field {@code this.out} for later use, or
      * <code>null</code> if this instance is to be
      * created without an underlying stream.
      */
@@ -49,7 +49,7 @@ public class ProcessingOutputStream extends FilterOutputStream {
      *
      * @param outputStream the underlying output stream to be assigned to
      * @param processor Processor
-     * the field <tt>this.out</tt> for later use, or
+     * the field {@code this.out} for later use, or
      * <code>null</code> if this instance is to be
      * created without an underlying stream.
      */

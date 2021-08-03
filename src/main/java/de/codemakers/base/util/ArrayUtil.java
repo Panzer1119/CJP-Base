@@ -32,7 +32,7 @@ public class ArrayUtil {
      * @param t Object to search for
      * @param <T> Type of the Array and Object
      *
-     * @return <tt>true</tt> if the Array contains the Object
+     * @return {@code true} if the Array contains the Object
      */
     public static <T> boolean arrayContains(T[] array, T t) {
         if (array == null || array.length == 0) {

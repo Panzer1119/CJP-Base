@@ -27,7 +27,7 @@ public interface EventListener<T extends Event> {
      *
      * @param event Event
      *
-     * @return return <tt>true</tt> if the event should get consumed
+     * @return return {@code true} if the event should get consumed
      *
      * @throws Exception Error
      */
