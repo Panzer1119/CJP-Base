@@ -23,6 +23,11 @@ dependencies {
     // Extending
     // CJP
     implementation group: 'de.codemakers', name: 'cjp-base', version: '0.16.4'
+    // Hibernate
+    // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
+    implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.0.0.Alpha8'
+    // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-envers
+    implementation group: 'org.hibernate.orm', name: 'hibernate-envers', version: '6.0.0.Alpha8'
     // JDBC
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.26'
