@@ -90,7 +90,7 @@ public abstract class DatabaseConnector {
     
     public Session getOrOpenSession() {
         synchronized (lock) {
-            if (session == null || !session.isOpen()) { //TODO Verify that this works as intended
+            if (session == null || !session.isOpen()) {
                 session = openSession();
             }
             return session;
