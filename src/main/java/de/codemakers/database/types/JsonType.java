@@ -61,7 +61,7 @@ public class JsonType<T extends Serializable> implements UserType<T> {
     }
     
     @Override
-    public int hashCode(Object x) throws HibernateException {
+    public int hashCode(Object x) {
         return Objects.hashCode(x);
     }
     
@@ -132,4 +132,5 @@ public class JsonType<T extends Serializable> implements UserType<T> {
     public Object replace(Object original, Object target, Object owner) {
         return deepCopy(original);
     }
+    
 }
