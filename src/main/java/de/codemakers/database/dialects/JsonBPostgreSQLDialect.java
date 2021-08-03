@@ -20,6 +20,9 @@ import org.hibernate.dialect.PostgreSQLDialect;
 
 import java.sql.Types;
 
+/**
+ * Enables the PostgreSQL Type JSONB
+ */
 public class JsonBPostgreSQLDialect extends PostgreSQLDialect {
     
     public JsonBPostgreSQLDialect() {
