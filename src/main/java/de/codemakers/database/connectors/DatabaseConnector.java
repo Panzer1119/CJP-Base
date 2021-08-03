@@ -141,4 +141,17 @@ public abstract class DatabaseConnector {
         HibernateUtil.set(this, object);
     }
     
+    /**
+     * Either save(Object) or update(Object) the given instance, depending upon resolution of the unsaved-value checks (see the manual for discussion of unsaved-value checking).
+     *
+     * @param object a transient or detached instance containing new or updated state
+     */
+    public void addOrSet(Object object) {
+        HibernateUtil.addOrSet(this, object);
+    }
+    
+    public void delete(Object object) {
+        HibernateUtil.delete(this, object);
+    }
+    
 }
