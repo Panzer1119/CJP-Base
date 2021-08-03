@@ -6,6 +6,7 @@ import de.codemakers.base.util.ConvertUtil;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.file.MagicNumber;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -26,6 +27,7 @@ public class MagicNumberFileFilterTest {
         //AdvancedFile.DEBUG_TO_STRING = true;
     }
     
+    @Disabled
     @Test
     public void test1() {
         final String hexString1 = "57696E5A6970".toLowerCase();
@@ -41,6 +43,7 @@ public class MagicNumberFileFilterTest {
         assertEquals("PKLITE", MagicNumber.ofHexString("50 4B 4C 49 54 45").getMagicNumberString());
     }
     
+    @Disabled
     @Test
     public void test2() {
         final AdvancedFile jarFile = new AdvancedFile("test", "DummyMod.jar");
@@ -54,6 +57,7 @@ public class MagicNumberFileFilterTest {
         Logger.logDebug("magicNumbers2=" + magicNumbers2.stream().map(Objects::toString).collect(Collectors.joining("\n", "\n", "\n")));
     }
     
+    @Disabled
     @Test
     public void test3() {
         System.out.println();
@@ -75,6 +79,7 @@ public class MagicNumberFileFilterTest {
         Logger.logDebug("jarFile.listFiles(false)=" + jarFile.listFiles(false));
     }
     
+    @Disabled
     @Test
     public void test4() {
         System.out.println();

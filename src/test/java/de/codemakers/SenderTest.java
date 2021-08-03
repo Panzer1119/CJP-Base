@@ -30,10 +30,12 @@ package de.codemakers;/*
  *    limitations under the License.
  */
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SenderTest {
     
+    @Disabled
     @Test
     public final void sending() throws Exception {
         JarCommunicator.init();

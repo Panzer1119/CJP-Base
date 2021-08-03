@@ -30,10 +30,12 @@ package de.codemakers;/*
  *    limitations under the License.
  */
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class ReceiverTest {
     
+    @Disabled
     @Test
     public final void receiving() throws Exception {
         System.out.println("My ID: " + JarCommunicator.ID);
