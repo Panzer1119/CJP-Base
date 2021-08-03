@@ -83,7 +83,7 @@ public class HibernateProperties {
     public static Properties createSubstitutedProperties(Properties template, Properties substitutions) {
         final Properties properties = new Properties();
         properties.putAll(template);
-        properties.stringPropertyNames().forEach((key) -> substitute(properties, key, substitutions));
+        properties.stringPropertyNames().forEach(key -> substitute(properties, key, substitutions));
         return properties;
     }
     
