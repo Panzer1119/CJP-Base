@@ -144,4 +144,36 @@ public class HibernateUtil {
         useSession(databaseConnector, (session) -> session.delete(object));
     }
     
+    public static synchronized <T extends IEntity<Integer, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<Integer, Optional<T>> entityGetterFunction) {
+        return addOrUpgradeById(databaseConnector, entity, entityGetterFunction, Integer.class);
+    }
+    
+    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz) {
+        return addOrUpgradeById(databaseConnector, entity, entityGetterFunction, idClazz, IEntity::getId);
+    }
+    
+    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz, Function<T, I> idGetterFunction) {
+        return addOrUpgrade(databaseConnector, entity, entityGetterFunction, idClazz, idGetterFunction);
+    }
+    
+    public static synchronized <I, M, T extends IEntity<I, T>> Optional<T> addOrUpgrade(DatabaseConnector databaseConnector, T entity, Function<M, Optional<T>> entityGetterFunction, Class<M> middleClazz, Function<T, M> middleGetterFunction) {
+        Objects.requireNonNull(entity, "entity may not be null");
+        Objects.requireNonNull(entityGetterFunction, "entityGetterFunction may not be null");
+        Objects.requireNonNull(middleGetterFunction, "middleGetterFunction may not be null");
+        final M m1 = middleGetterFunction.apply(entity);
+        Objects.requireNonNull(m1, "m1 may not be null");
+        final Optional<T> existingEntity = entityGetterFunction.apply(m1);
+        if (existingEntity.isEmpty()) {
+            add(databaseConnector, entity);
+            final M m2 = middleGetterFunction.apply(entity);
+            Objects.requireNonNull(m2, "m2 may not be null");
+            return entityGetterFunction.apply(m2);
+        }
+        entity.fillExisting(existingEntity.get());
+        set(databaseConnector, existingEntity.get());
+        final M m3 = middleGetterFunction.apply(entity);
+        Objects.requireNonNull(m3, "m3 may not be null");
+        return existingEntity;
+    }
+    
 }
