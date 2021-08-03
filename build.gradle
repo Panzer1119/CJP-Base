@@ -56,6 +56,39 @@ shadowJar {
 }
 
 publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'cjp-base'
+            from components.java
+            //artifact shadowJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'CJP-Base'
+                description = 'Base Library of the CJP Library (Codemakers Java Plus)'
+                url = 'https://github.com/Panzer1119/CJP-Base'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'https://apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'panzer1119'
+                        name = 'Paul Hagedorn'
+                        email = 'panzer1119@gmail.com'
+                    }
+                }
+            }
+        }
+    }
     repositories {
         maven {
             name = "customRepository"
