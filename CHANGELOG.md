@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/Panzer1119/CJP-Database/compare/v0.1.1...v0.1.2) (2021-08-03)
+
+
+### Bug Fixes
+
+* create private constructor in HibernateUtil.java to hide the implicit public one ([c18188b](https://github.com/Panzer1119/CJP-Database/commit/c18188b30f970393c436f46a2ef80fddc2b927fe))
+* remove unused class parameter from addOrUpgradeById methods ([0297eef](https://github.com/Panzer1119/CJP-Database/commit/0297eef56a215ee01515f2373545a90fcafa73cf))
+
 ### [0.1.1](https://github.com/Panzer1119/CJP-Database/compare/v0.1.0...v0.1.1) (2021-08-03)
 
 
