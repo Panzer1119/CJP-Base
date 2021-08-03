@@ -134,7 +134,7 @@ public class HibernateUtil {
     }
     
     public static <T, R> Optional<R> processCriteriaQuery(DatabaseConnector databaseConnector, Class<T> clazz, ToughTriConsumer<HibernateCriteriaBuilder, JpaCriteriaQuery<T>, Root<T>> triConsumer, Function<Query<T>, R> resultMapper) {
-        return processSession(databaseConnector, (session) -> {
+        return processSession(databaseConnector, session -> {
             final HibernateCriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             final JpaCriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(clazz);
             final Root<T> root = criteriaQuery.from(clazz);
@@ -147,7 +147,7 @@ public class HibernateUtil {
     }
     
     public static <T> Optional<T> get(DatabaseConnector databaseConnector, Class<T> clazz, Object id) {
-        return processSession(databaseConnector, (session) -> session.get(clazz, id));
+        return processSession(databaseConnector, session -> session.get(clazz, id));
     }
     
     public static <T> Optional<List<T>> getAll(DatabaseConnector databaseConnector, Class<T> clazz) {
@@ -182,11 +182,11 @@ public class HibernateUtil {
      * @param object a transient or detached instance containing new or updated state
      */
     public static void addOrSet(DatabaseConnector databaseConnector, Object object) {
-        useSession(databaseConnector, (session) -> session.saveOrUpdate(object));
+        useSession(databaseConnector, session -> session.saveOrUpdate(object));
     }
     
     public static void delete(DatabaseConnector databaseConnector, Object object) {
-        useSession(databaseConnector, (session) -> session.delete(object));
+        useSession(databaseConnector, session -> session.delete(object));
     }
     
     public static synchronized <T extends IEntity<Integer, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<Integer, Optional<T>> entityGetterFunction) {
