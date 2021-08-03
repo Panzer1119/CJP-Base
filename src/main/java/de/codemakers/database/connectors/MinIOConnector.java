@@ -22,6 +22,7 @@ import io.minio.errors.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -32,6 +33,8 @@ import java.util.Optional;
 public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStream> {
     
     private static final Logger logger = LogManager.getLogger(MinIOConnector.class);
+    
+    public static final long DEFAULT_PART_SIZE = ObjectWriteArgs.MIN_MULTIPART_SIZE * 20;
     
     protected MinIOConnector(MinioClient connector) {
         super(connector);
@@ -75,13 +78,31 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
     @Override
     public boolean writeObject(String bucket, String object, byte[] data) {
         checkParameter(bucket, object);
-        return false;
+        try {
+            return connector.putObject(PutObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(object)
+                    .stream(new ByteArrayInputStream(data), data.length, -1)
+                    .build()) != null;
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException e) {
+            logger.error(String.format("Error while writing \"%s\" to \"%s\"", object, bucket), e);
+            return false;
+        }
     }
     
     @Override
     public boolean writeObject(String bucket, String object, InputStream inputStream) {
         checkParameter(bucket, object);
-        return false;
+        try {
+            return connector.putObject(PutObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(object)
+                    .stream(inputStream, -1, DEFAULT_PART_SIZE)
+                    .build()) != null;
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException e) {
+            logger.error(String.format("Error while writing \"%s\" from InputStream to \"%s\"", object, bucket), e);
+            return false;
+        }
     }
     
     @Override
