@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id "com.github.johnrengelman.shadow" version "7.0.0"
     id "com.github.ben-manes.versions" version "0.39.0"
+    id 'maven-publish'
 }
 
 group 'de.codemakers'
@@ -52,4 +53,19 @@ test {
 
 shadowJar {
     getDestinationDirectory().set(new File(projectDir, "./dist"))
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "customRepository"
+            def releasesRepoUrl = System.getenv("MAVEN_URL_RELEASES")
+            def snapshotsRepoUrl = System.getenv("MAVEN_URL_SNAPSHOTS")
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
 }
