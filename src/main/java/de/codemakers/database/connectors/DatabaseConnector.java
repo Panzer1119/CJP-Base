@@ -154,4 +154,20 @@ public abstract class DatabaseConnector {
         HibernateUtil.delete(this, object);
     }
     
+    public <T extends IEntity<Integer, T>> Optional<T> addOrUpgradeById(T entity, Function<Integer, Optional<T>> entityGetterFunction) {
+        return HibernateUtil.addOrUpgradeById(this, entity, entityGetterFunction);
+    }
+    
+    public <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz) {
+        return HibernateUtil.addOrUpgradeById(this, entity, entityGetterFunction, idClazz);
+    }
+    
+    public <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz, Function<T, I> idGetterFunction) {
+        return HibernateUtil.addOrUpgradeById(this, entity, entityGetterFunction, idClazz, idGetterFunction);
+    }
+    
+    public <I, M, T extends IEntity<I, T>> Optional<T> addOrUpgrade(T entity, Function<M, Optional<T>> entityGetterFunction, Class<M> middleClazz, Function<T, M> middleGetterFunction) {
+        return HibernateUtil.addOrUpgrade(this, entity, entityGetterFunction, middleClazz, middleGetterFunction);
+    }
+    
 }
