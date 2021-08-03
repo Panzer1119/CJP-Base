@@ -100,14 +100,26 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
     public boolean copyObject(String srcBucket, String srcObject, String destBucket, String destObject) {
         checkParameter(srcBucket, srcObject);
         checkParameter(destBucket, destObject);
-        return false;
+        try {
+            return connector.copyObject(CopyObjectArgs.builder()
+                    .source(CopySource.builder().bucket(srcBucket).object(srcObject).build())
+                    .bucket(destBucket)
+                    .object(destObject)
+                    .build()) != null;
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException e) {
+            logger.error(String.format("Error while copying \"%s\" from \"%s\" to \"%s\" as \"%s\"", srcObject, srcBucket, destBucket, destObject), e);
+            return false;
+        }
     }
     
     @Override
     public boolean moveObject(String srcBucket, String srcObject, String destBucket, String destObject) {
         checkParameter(srcBucket, srcObject);
         checkParameter(destBucket, destObject);
-        return false;
+        if (!copyObject(srcBucket, srcObject, destBucket, destObject)) {
+            return false;
+        }
+        return removeObject(srcBucket, srcObject);
     }
     
 }
