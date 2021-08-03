@@ -18,9 +18,9 @@ package de.codemakers.database.hibernate;
 
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
-import de.codemakers.base.util.tough.ToughPredicate;
+import de.codemakers.base.util.tough.ToughTriConsumer;
 import de.codemakers.database.connectors.DatabaseConnector;
-import de.codemakers.database.minio.MinIOConnector;
+import de.codemakers.database.entities.IEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -30,10 +30,16 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.query.Query;
+import org.hibernate.query.criteria.HibernateCriteriaBuilder;
+import org.hibernate.query.criteria.JpaCriteriaQuery;
 
+import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Function;
 
 public class HibernateUtil {
     
@@ -117,6 +123,45 @@ public class HibernateUtil {
             }
             return Optional.empty();
         }
+    }
+    
+    public static <T> Optional<T> processCriteriaQuerySingleResult(DatabaseConnector databaseConnector, Class<T> clazz, ToughTriConsumer<HibernateCriteriaBuilder, JpaCriteriaQuery<T>, Root<T>> triConsumer) {
+        return processCriteriaQuery(databaseConnector, clazz, triConsumer, Query::getSingleResult);
+    }
+    
+    public static <T> Optional<List<T>> processCriteriaQuery(DatabaseConnector databaseConnector, Class<T> clazz, ToughTriConsumer<HibernateCriteriaBuilder, JpaCriteriaQuery<T>, Root<T>> triConsumer) {
+        return processCriteriaQuery(databaseConnector, clazz, triConsumer, Query::getResultList);
+    }
+    
+    public static <T, R> Optional<R> processCriteriaQuery(DatabaseConnector databaseConnector, Class<T> clazz, ToughTriConsumer<HibernateCriteriaBuilder, JpaCriteriaQuery<T>, Root<T>> triConsumer, Function<Query<T>, R> resultMapper) {
+        return processSession(databaseConnector, (session) -> {
+            final HibernateCriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            final JpaCriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(clazz);
+            final Root<T> root = criteriaQuery.from(clazz);
+            criteriaQuery.select(root);
+            if (triConsumer != null) {
+                triConsumer.accept(criteriaBuilder, criteriaQuery, root);
+            }
+            return resultMapper.apply(session.createQuery(criteriaQuery));
+        });
+    }
+    
+    public static <T> Optional<T> get(DatabaseConnector databaseConnector, Class<T> clazz, Object id) {
+        return processSession(databaseConnector, (session) -> session.get(clazz, id));
+    }
+    
+    public static <T> Optional<List<T>> getAll(DatabaseConnector databaseConnector, Class<T> clazz) {
+        return processCriteriaQuery(databaseConnector, clazz, null);
+    }
+    
+    public static <T> Optional<T> getWhere(DatabaseConnector databaseConnector, Class<T> clazz, String column, String value) {
+        return processCriteriaQuerySingleResult(databaseConnector, clazz, (criteriaBuilder, criteriaQuery, root) -> criteriaQuery.where(criteriaBuilder
+                .equal(root.get(column), value)));
+    }
+    
+    public static <T> Optional<List<T>> getAllWhere(DatabaseConnector databaseConnector, Class<T> clazz, String column, String value) {
+        return processCriteriaQuery(databaseConnector, clazz, (criteriaBuilder, criteriaQuery, root) -> criteriaQuery.where(criteriaBuilder.equal(root
+                .get(column), value)));
     }
     
     public static boolean add(DatabaseConnector databaseConnector, Object object) {
