@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class CJP {
     
     public static final String PROJECT_NAME = "CJP-Base";
-    public static final String VERSION = "0.16.2";
+    public static final String VERSION = "0.16.3";
     
     private static Class<?>[] LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLeveledLogger.class, de.codemakers.base.logger.AdvancedLeveledSystemLogger.class, de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.LogLevel.class, de.codemakers.base.logger.SystemLogger.class};
     private static String[] LOGGER_CLASS_NAMES = Arrays.asList(LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
