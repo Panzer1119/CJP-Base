@@ -19,8 +19,6 @@ package de.codemakers.io.file.filters;
 import com.j256.simplemagic.ContentInfo;
 import de.codemakers.io.file.FileUtil;
 import de.codemakers.io.file.IFile;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +27,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ContentInfoFileFilter implements Predicate<IFile<?, ?>> {
-    
-    private static final Logger logger = LogManager.getLogger(ContentInfoFileFilter.class);
     
     private final List<ContentInfo> contentInfos = new ArrayList<>();
     
