@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.4](https://github.com/Panzer1119/CJP-Base/compare/v0.16.3...v0.16.4) (2021-08-03)
+
+
+### Features
+
+* create UUIDUtil.java ([4f5f3ba](https://github.com/Panzer1119/CJP-Base/commit/4f5f3bae2e32af6caf9a95eeec5b5e52f2a804f1))
+
 ### [0.16.3](https://github.com/Panzer1119/CJP-Base/compare/v0.16.2...v0.16.3) (2021-08-03)
 
 
