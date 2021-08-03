@@ -56,7 +56,7 @@ public abstract class DatabaseConnector {
     
     protected <I, T extends IEntity<I, ?>> void initData(T entity, Function<I, Optional<T>> function) {
         if (function.apply(entity.getId()).isEmpty()) {
-            //HibernateUtil.add(this, entity); //TODO
+            HibernateUtil.add(this, entity);
         }
     }
     
