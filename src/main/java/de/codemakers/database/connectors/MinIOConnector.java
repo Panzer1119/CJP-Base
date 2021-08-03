@@ -17,10 +17,7 @@
 package de.codemakers.database.connectors;
 
 import de.codemakers.base.util.tough.ToughFunction;
-import io.minio.GetObjectArgs;
-import io.minio.GetObjectResponse;
-import io.minio.MinioClient;
-import io.minio.StatObjectArgs;
+import io.minio.*;
 import io.minio.errors.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,7 +87,13 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
     @Override
     public boolean removeObject(String bucket, String object) {
         checkParameter(bucket, object);
-        return false;
+        try {
+            connector.removeObject(RemoveObjectArgs.builder().bucket(bucket).object(object).build());
+            return true;
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException e) {
+            logger.error(String.format("Error while removing \"%s\" from \"%s\"", object, bucket), e);
+            return false;
+        }
     }
     
     @Override
