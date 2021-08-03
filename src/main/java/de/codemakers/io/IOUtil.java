@@ -16,14 +16,20 @@
 
 package de.codemakers.io;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.tough.ToughBiConsumer;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 public class IOUtil {
+    
+    private static final Logger logger = LogManager.getLogger(IOUtil.class);
     
     public static final int STANDARD_BUFFER_SIZE = 1024;
     
@@ -43,8 +49,8 @@ public class IOUtil {
             }
             inputStream.close();
             return true;
-        } catch (Exception ex) {
-            Logger.handleError(ex);
+        } catch (Exception e) {
+            logger.error("Error while processing InputStream", e);
             return false;
         }
     }
@@ -82,17 +88,42 @@ public class IOUtil {
     public static void close(AutoCloseable autoCloseable) {
         try {
             autoCloseable.close();
-        } catch (Exception ex) {
-            Logger.handleError(ex);
+        } catch (Exception e) {
+            logger.error("Error while closing AutoCloseable: " + autoCloseable, e);
         }
     }
     
     public static void close(AutoCloseable autoCloseable, ToughConsumer<Throwable> failure) {
         try {
             autoCloseable.close();
-        } catch (Exception ex) {
-            failure.acceptWithoutException(ex);
+        } catch (Exception e) {
+            failure.acceptWithoutException(e);
         }
+    }
+    
+    public static Optional<byte[]> toByteArray(InputStream inputStream) {
+        if (inputStream == null) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.ofNullable(IOUtils.toByteArray(inputStream));
+        } catch (IOException e) {
+            logger.warn("IOException while reading InputStream", e);
+            return Optional.empty();
+        }
+    }
+    
+    public static Optional<InputStream> getResourceAsStream(String name) {
+        return Optional.ofNullable(IOUtil.class.getResourceAsStream(name));
+    }
+    
+    public static Optional<byte[]> readResource(String name) {
+        return getResourceAsStream(name).flatMap(IOUtil::toByteArray);
+    }
+    
+    public static Optional<String> readResourceToString(String name) {
+        return getResourceAsStream(name).flatMap(IOUtil::toByteArray)
+                .map(String::new);
     }
     
 }
