@@ -17,6 +17,8 @@
 package de.codemakers.database.types;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
@@ -30,6 +32,8 @@ import java.sql.Types;
 import java.util.Objects;
 
 public class JsonType<T extends Serializable> implements UserType<T> {
+    
+    private static final Logger logger = LogManager.getLogger(JsonType.class);
     
     private final Class<T> type;
     
@@ -52,7 +56,7 @@ public class JsonType<T extends Serializable> implements UserType<T> {
     }
     
     @Override
-    public boolean equals(Object x, Object y) throws HibernateException {
+    public boolean equals(Object x, Object y) {
         return Objects.equals(x, y);
     }
     
@@ -67,11 +71,12 @@ public class JsonType<T extends Serializable> implements UserType<T> {
         if (cellContent == null) {
             return null;
         }
+        final ObjectMapper mapper = new ObjectMapper();
         try {
-            final ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(cellContent.getBytes(StandardCharsets.UTF_8), returnedClass());
-        } catch (Exception e) {
-            throw new RuntimeException(String.format("Failed to convert String to %s: %s", returnedClass().getName(), e.getMessage()), e);
+        } catch (IOException e) {
+            logger.error(String.format("Failed to convert String to %s", returnedClass().getName()), e);
+            return null;
         }
     }
     
@@ -81,19 +86,19 @@ public class JsonType<T extends Serializable> implements UserType<T> {
             preparedStatement.setNull(index, Types.OTHER);
             return;
         }
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final StringWriter stringWriter = new StringWriter();
         try {
-            final ObjectMapper objectMapper = new ObjectMapper();
-            final StringWriter stringWriter = new StringWriter();
             objectMapper.writeValue(stringWriter, value);
             stringWriter.flush();
             preparedStatement.setObject(index, stringWriter.toString(), Types.OTHER);
-        } catch (Exception e) {
-            throw new RuntimeException(String.format("Failed to convert %s to String: %s", returnedClass().getName(), e.getMessage()), e);
+        } catch (IOException e) {
+            logger.error(String.format("Failed to convert %s to String", returnedClass().getName()), e);
         }
     }
     
     @Override
-    public Object deepCopy(Object value) throws HibernateException {
+    public Object deepCopy(Object value) {
         try {
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             final ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
@@ -114,17 +119,17 @@ public class JsonType<T extends Serializable> implements UserType<T> {
     }
     
     @Override
-    public Serializable disassemble(Object value) throws HibernateException {
+    public Serializable disassemble(Object value) {
         return (Serializable) deepCopy(value);
     }
     
     @Override
-    public Object assemble(Serializable cached, Object owner) throws HibernateException {
+    public Object assemble(Serializable cached, Object owner) {
         return deepCopy(cached);
     }
     
     @Override
-    public Object replace(Object original, Object target, Object owner) throws HibernateException {
+    public Object replace(Object original, Object target, Object owner) {
         return deepCopy(original);
     }
 }
