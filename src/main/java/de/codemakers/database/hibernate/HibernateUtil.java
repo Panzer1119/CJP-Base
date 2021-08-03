@@ -45,6 +45,9 @@ public class HibernateUtil {
     
     private static final Logger logger = LogManager.getLogger(HibernateUtil.class);
     
+    private HibernateUtil() {
+    }
+    
     public static StandardServiceRegistryBuilder createStandardServiceRegistryBuilder(Properties properties) {
         Objects.requireNonNull(properties);
         final StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder();
