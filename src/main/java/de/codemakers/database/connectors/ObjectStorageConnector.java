@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class ObjectStorageConnector<C> {
+public abstract class ObjectStorageConnector<C, T> {
     
     private static final Logger logger = LogManager.getLogger(ObjectStorageConnector.class);
     
@@ -49,7 +49,7 @@ public abstract class ObjectStorageConnector<C> {
     
     public abstract Optional<InputStream> readObject(String bucket, String object);
     
-    public abstract <T, R> Optional<R> readObject(String bucket, String object, ToughFunction<T, R> converter);
+    public abstract <R> Optional<R> readObject(String bucket, String object, ToughFunction<T, R> converter);
     
     public abstract boolean writeObject(String bucket, String object, byte[] data);
     
