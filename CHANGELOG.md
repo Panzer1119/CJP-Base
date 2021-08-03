@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.5](https://github.com/Panzer1119/CJP-Base/compare/v0.16.4...v0.16.5) (2021-08-03)
+
+
+### Features
+
+* add getResourceAsStream methods to IOUtil.java ([042a8ad](https://github.com/Panzer1119/CJP-Base/commit/042a8addbcf33fe910d325c3c750bc78c49dd7d4))
+
 ### [0.16.4](https://github.com/Panzer1119/CJP-Base/compare/v0.16.3...v0.16.4) (2021-08-03)
 
 
