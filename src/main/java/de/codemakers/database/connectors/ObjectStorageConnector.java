@@ -38,6 +38,11 @@ public abstract class ObjectStorageConnector<C> {
         return connector;
     }
     
+    protected void checkParameter(String bucket, String object) {
+        Objects.requireNonNull(bucket, "bucket may not be null");
+        Objects.requireNonNull(object, "object may not be null");
+    }
+    
     public abstract boolean existsObject(String bucket, String object);
     
     public abstract Optional<byte[]> readObjectBytes(String bucket, String object);
