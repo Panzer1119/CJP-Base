@@ -17,16 +17,12 @@
 package de.codemakers.database.connectors;
 
 import de.codemakers.base.util.tough.ToughFunction;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
 
 public abstract class ObjectStorageConnector<C, T> {
-    
-    private static final Logger logger = LogManager.getLogger(ObjectStorageConnector.class);
     
     protected final C connector;
     
