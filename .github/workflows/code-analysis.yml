@@ -33,4 +33,4 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST }}
-        run: ./gradlew build sonarqube --info
+        run: ./gradlew dependencyUpdates -Drevision=release -DoutputFormatter=html -DreportfileName=dependency-check-report -DoutputDir=build/dependencyUpdates && ./gradlew build sonarqube --info
