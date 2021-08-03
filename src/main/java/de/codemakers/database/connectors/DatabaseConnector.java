@@ -16,6 +16,7 @@
 
 package de.codemakers.database.connectors;
 
+import de.codemakers.base.Standard;
 import de.codemakers.database.entities.IEntity;
 import de.codemakers.database.hibernate.HibernateUtil;
 import org.hibernate.Session;
@@ -34,6 +35,7 @@ public abstract class DatabaseConnector {
     
     private final Object lock = new Object();
     private final SessionFactory sessionFactory;
+    private final int shutdownHookId = Standard.addShutdownHook(this::closeAll);
     private Session session = null;
     
     public DatabaseConnector(Class<?>[] annotatedClasses, Properties properties) {
@@ -48,7 +50,6 @@ public abstract class DatabaseConnector {
     private void init() {
         initDefaultData();
         closeSession();
-        //Utils.addShutdownHook(this::closeAll); //TODO
     }
     
     protected abstract void initDefaultData();
@@ -91,6 +92,7 @@ public abstract class DatabaseConnector {
     protected void closeAll() {
         closeSession();
         closeSessionFactory();
+        Standard.removeShutdownHook(shutdownHookId);
     }
     
     private void closeSessionFactory() {
