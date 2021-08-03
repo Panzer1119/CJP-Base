@@ -119,4 +119,16 @@ public class HibernateUtil {
         }
     }
     
+    public static boolean add(DatabaseConnector databaseConnector, Object object) {
+        return processSession(databaseConnector, session -> session.save(object)).isPresent();
+    }
+    
+    public static boolean add(DatabaseConnector databaseConnector, Object object, boolean silent) {
+        return processSession(databaseConnector, session -> session.save(object), silent).isPresent();
+    }
+    
+    public static void set(DatabaseConnector databaseConnector, Object object) {
+        useSession(databaseConnector, session -> session.update(object));
+    }
+    
 }
