@@ -55,7 +55,7 @@ public abstract class ObjectStorageConnector<C, T> {
     
     public abstract boolean writeObject(String bucket, String object, InputStream inputStream);
     
-    public abstract boolean deleteObject(String bucket, String object);
+    public abstract boolean removeObject(String bucket, String object);
     
     public boolean copyObject(String srcBucket, String srcObject, String destObject) {
         return copyObject(srcBucket, srcObject, srcBucket, destObject);

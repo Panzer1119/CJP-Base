@@ -88,7 +88,7 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
     }
     
     @Override
-    public boolean deleteObject(String bucket, String object) {
+    public boolean removeObject(String bucket, String object) {
         checkParameter(bucket, object);
         return false;
     }
