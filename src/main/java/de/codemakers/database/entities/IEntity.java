@@ -16,9 +16,9 @@
 
 package de.codemakers.database.entities;
 
-public interface IEntity<ID, T extends IEntity<ID, ?>> {
+public interface IEntity<I, T extends IEntity<I, ?>> {
     
-    ID getId();
+    I getId();
     
     void fillExisting(T existingEntity);
     
