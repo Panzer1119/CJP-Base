@@ -36,7 +36,7 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
     
     private static final Logger logger = LogManager.getLogger(MinIOConnector.class);
     
-    public static final long DEFAULT_PART_SIZE = ObjectWriteArgs.MIN_MULTIPART_SIZE * 20;
+    public static final int DEFAULT_PART_SIZE = ObjectWriteArgs.MIN_MULTIPART_SIZE * 20;
     
     protected MinIOConnector(MinioClient connector) {
         super(connector);
