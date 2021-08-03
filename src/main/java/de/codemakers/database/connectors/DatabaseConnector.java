@@ -129,4 +129,16 @@ public abstract class DatabaseConnector {
         return HibernateUtil.processSession(this, sessionFunction, silent);
     }
     
+    public void add(Object object) {
+        HibernateUtil.add(this, object);
+    }
+    
+    public void add(Object object, boolean silent) {
+        HibernateUtil.add(this, object, silent);
+    }
+    
+    public void set(Object object) {
+        HibernateUtil.set(this, object);
+    }
+    
 }
