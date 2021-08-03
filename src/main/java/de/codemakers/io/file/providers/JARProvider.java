@@ -16,6 +16,7 @@
 
 package de.codemakers.io.file.providers;
 
+import com.j256.simplemagic.ContentInfoUtil;
 import de.codemakers.base.Standard;
 import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.ArrayUtil;
@@ -23,7 +24,7 @@ import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.file.closeable.CloseableZipEntry;
 import de.codemakers.io.file.filters.AdvancedFileFilter;
-import de.codemakers.io.file.filters.MagicNumberFileFilter;
+import de.codemakers.io.file.filters.ContentInfoFileFilter;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class JARProvider extends ZIPProvider {
+    
+    public static final ContentInfoFileFilter FILE_FILTER_JAR = new ContentInfoFileFilter(ContentInfoUtil.findExtensionMatch("jar"));
     
     @Override
     protected List<AdvancedFile> listFiles(AdvancedFile parent, boolean recursive, AdvancedFileFilter advancedFileFilter, String path, int pathLength) throws Exception {
@@ -170,7 +173,7 @@ public class JARProvider extends ZIPProvider {
     @Override
     public boolean test(AdvancedFile parent, String name, AdvancedFile file, boolean exists) {
         if (exists) {
-            return MagicNumberFileFilter.ALL_JARS.test(file);
+            return FILE_FILTER_JAR.test(file);
         }
         if (name == null || name.isEmpty() || !name.contains(".")) {
             return false;

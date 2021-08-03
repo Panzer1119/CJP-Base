@@ -16,29 +16,31 @@
 
 package de.codemakers.io.file.filters;
 
+import com.j256.simplemagic.ContentInfo;
+import de.codemakers.io.file.FileUtil;
 import de.codemakers.io.file.IFile;
-import de.codemakers.io.file.MagicNumber;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class MagicNumberFileFilter implements Predicate<IFile<?, ?>> {
+public class ContentInfoFileFilter implements Predicate<IFile<?, ?>> {
     
-    public static final MagicNumberFileFilter ALL_JARS = new MagicNumberFileFilter(MagicNumber.getAllJars());
-    public static final MagicNumberFileFilter ALL_TARS = new MagicNumberFileFilter(MagicNumber.getAllTars());
-    public static final MagicNumberFileFilter ALL_ZIPS = new MagicNumberFileFilter(MagicNumber.getAllZips());
+    private static final Logger logger = LogManager.getLogger(ContentInfoFileFilter.class);
     
-    private final List<MagicNumber> magicNumbers = new ArrayList<>();
+    private final List<ContentInfo> contentInfos = new ArrayList<>();
     
-    public MagicNumberFileFilter(MagicNumber... magicNumbers) {
-        this(Arrays.asList(magicNumbers));
+    public ContentInfoFileFilter(ContentInfo... contentInfos) {
+        this(Arrays.asList(contentInfos));
     }
     
-    public MagicNumberFileFilter(Collection<MagicNumber> magicNumbers) {
-        this.magicNumbers.addAll(magicNumbers);
+    public ContentInfoFileFilter(Collection<ContentInfo> contentInfos) {
+        this.contentInfos.addAll(contentInfos);
     }
     
     @Override
@@ -46,12 +48,18 @@ public class MagicNumberFileFilter implements Predicate<IFile<?, ?>> {
         if (iFile == null || !iFile.exists() || !iFile.isFile()) {
             return false;
         }
-        return magicNumbers.stream().anyMatch((magicNumber) -> magicNumber.test(iFile.createInputStreamWithoutException()));
+        try {
+            final ContentInfo contentInfo = FileUtil.CONTENT_INFO_UTIL.findMatch(iFile.createInputStreamWithoutException());
+            return contentInfos.contains(contentInfo);
+        } catch (IOException e) {
+            logger.error("Error while testing for file for ContentInfo: " + iFile, e);
+            return false;
+        }
     }
     
     @Override
     public String toString() {
-        return "MagicNumberFileFilter{" + "magicNumbers=" + magicNumbers + '}';
+        return "MagicNumberFileFilter{" + "contentInfos=" + contentInfos + '}';
     }
     
 }
