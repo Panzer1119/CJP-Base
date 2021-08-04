@@ -21,6 +21,7 @@ import de.codemakers.io.file.AdvancedFile;
 
 import java.io.Serializable;
 import java.util.Base64;
+import java.util.Optional;
 
 /**
  * Java Object Serialized File Set
@@ -37,20 +38,15 @@ public class JOSFileSet<E extends Serializable> extends AbstractFileSet<E> {
     
     @Override
     public E toElement(String line) {
-        try {
-            return SerializationUtil.bytesToObject(Base64.getDecoder().decode(line), (Class<E>) null);
-        } catch (Exception ex) {
-            return null;
-        }
+        final byte[] data = Base64.getDecoder().decode(line);
+        final Optional<E> optional = SerializationUtil.bytesToObject(data);
+        return optional.orElse(null);
     }
     
     @Override
     public String fromElement(E e) {
-        try {
-            return Base64.getEncoder().encodeToString(SerializationUtil.objectToBytes(e));
-        } catch (Exception ex) {
-            return null;
-        }
+        final Optional<byte[]> optional = SerializationUtil.objectToBytes(e);
+        return optional.map(Base64.getEncoder()::encodeToString).orElse(null);
     }
     
 }
