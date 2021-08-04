@@ -40,7 +40,6 @@ import java.util.function.Function;
 
 public abstract class DatabaseConnector {
     
-    
     private final Object lock = new Object();
     private final SessionFactory sessionFactory;
     private final int shutdownHookId = Standard.addShutdownHook(this::closeAll);
