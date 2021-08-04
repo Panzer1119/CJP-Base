@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/Panzer1119/CJP-Database/compare/v0.1.3...v0.1.4) (2021-08-04)
+
+
+### Bug Fixes
+
+* edit addOrUpgradeById methods in DatabaseConnector.java and HibernateUtil.java ([934e657](https://github.com/Panzer1119/CJP-Database/commit/934e657ab3c17e6ec1e477147bd52074245c0619))
+
 ### [0.1.3](https://github.com/Panzer1119/CJP-Database/compare/v0.1.2...v0.1.3) (2021-08-04)
 
 ### [0.1.2](https://github.com/Panzer1119/CJP-Database/compare/v0.1.1...v0.1.2) (2021-08-03)
