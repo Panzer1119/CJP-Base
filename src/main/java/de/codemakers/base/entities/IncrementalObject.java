@@ -31,17 +31,17 @@ public class IncrementalObject<T extends Serializable> extends IncrementalData {
     }
     
     public IncrementalObject(T object) {
-        super(object == null ? null : SerializationUtil.objectToBytesWithoutException(object));
+        super(object == null ? null : SerializationUtil.objectToBytes(object).orElseThrow());
         this.object = object;
     }
     
     public DeltaData changeObject(T object) {
-        return changeData(object == null ? null : SerializationUtil.objectToBytesWithoutException(object));
+        return changeData(object == null ? null : SerializationUtil.objectToBytes(object).orElseThrow());
     }
     
     public T getObject() {
         if (object == null && data != null) {
-            object = (T) SerializationUtil.bytesToObjectWithoutException(data);
+            object = (T) SerializationUtil.objectToBytes(data).orElseThrow();
         }
         return object;
     }
@@ -50,7 +50,7 @@ public class IncrementalObject<T extends Serializable> extends IncrementalData {
     public IncrementalObject<T> incrementData(DeltaData deltaData) {
         super.incrementData(deltaData);
         final byte[] temp = getData();
-        object = temp == null ? null : (T) SerializationUtil.bytesToObjectWithoutException(temp);
+        object = temp == null ? null : (T) SerializationUtil.objectToBytes(temp).orElseThrow();
         return this;
     }
     
