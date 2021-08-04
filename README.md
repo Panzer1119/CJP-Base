@@ -2,15 +2,15 @@
 
 [![Quality Gate Status](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=alert_status)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Database)
 
-[![Bugs](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=bugs)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Database)
+[![Bugs](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=bugs)](https://sonarqube.codemakers.de/project/issues?id=de.codemakers%3ACJP-Database&resolved=false&sinceLeakPeriod=false&types=BUG)
 
-[![Vulnerabilities](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=vulnerabilities)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Database)
+[![Vulnerabilities](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=vulnerabilities)](https://sonarqube.codemakers.de/project/issues?id=de.codemakers%3ACJP-Database&resolved=false&sinceLeakPeriod=false&types=VULNERABILITY)
 
-[![Code Smells](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=code_smells)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Database)
+[![Code Smells](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=code_smells)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Database&resolved=false&sinceLeakPeriod=false&types=CODE_SMELL)
 
-[![Duplicated Lines (%)](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=duplicated_lines_density)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Database)
+[![Duplicated Lines (%)](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=duplicated_lines_density)](https://sonarqube.codemakers.de/component_measures?id=de.codemakers%3ACJP-Database&metric=duplicated_lines_density&view=list)
 
-[![Lines of Code](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=ncloc)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Database)
+[![Lines of Code](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Database&metric=ncloc)](https://sonarqube.codemakers.de/component_measures?id=de.codemakers%3ACJP-Database&metric=ncloc&view=list)
 
 Base Library of the CJP Library (Codemakers Java Plus)
 
