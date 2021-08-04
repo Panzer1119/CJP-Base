@@ -38,7 +38,7 @@ public class MinIOConnector extends ObjectStorageConnector<MinioClient, InputStr
     
     public static final int DEFAULT_PART_SIZE = ObjectWriteArgs.MIN_MULTIPART_SIZE * 20;
     
-    protected MinIOConnector(MinioClient connector) {
+    public MinIOConnector(MinioClient connector) {
         super(connector);
     }
     
