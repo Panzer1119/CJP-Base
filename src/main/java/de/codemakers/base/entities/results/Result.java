@@ -22,12 +22,16 @@ import de.codemakers.base.util.interfaces.ByteSerializable;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.SerializationUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.util.Objects;
 import java.util.Optional;
 
 public class Result implements ByteSerializable, Copyable {
+    
+    private static final Logger logger = LogManager.getLogger(Result.class);
     
     protected boolean successful;
     protected Throwable throwable;
@@ -109,43 +113,53 @@ public class Result implements ByteSerializable, Copyable {
     }
     
     @Override
-    public byte[] toBytes() throws Exception {
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-        dataOutputStream.writeBoolean(successful);
-        final Optional<byte[]> optional = throwable == null ? Optional.empty() : SerializationUtil.objectToBytes(throwable);
-        if (optional.isEmpty()) {
-            return null;
+    public Optional<byte[]> toBytes() {
+        try {
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            dataOutputStream.writeBoolean(successful);
+            final Optional<byte[]> optional = throwable == null ? Optional.empty() : SerializationUtil.objectToBytes(throwable);
+            if (optional.isEmpty()) {
+                return Optional.empty();
+            }
+            final byte[] data = optional.get();
+            dataOutputStream.writeInt(arrayLength(data));
+            if (throwable != null) {
+                dataOutputStream.write(data);
+            }
+            dataOutputStream.flush();
+            return Optional.of(byteArrayOutputStream.toByteArray());
+        } catch (IOException e) {
+            logger.error("Error while converting Result to bytes", e);
+            return Optional.empty();
         }
-        final byte[] data = optional.get();
-        dataOutputStream.writeInt(arrayLength(data));
-        if (throwable != null) {
-            dataOutputStream.write(data);
-        }
-        dataOutputStream.flush();
-        return byteArrayOutputStream.toByteArray();
     }
     
     @Override
-    public boolean fromBytes(byte[] bytes) throws Exception {
-        Objects.requireNonNull(bytes);
-        final DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(bytes));
-        successful = dataInputStream.readBoolean();
-        final int length = dataInputStream.readInt();
-        if (length >= 0) {
-            final byte[] temp = new byte[length];
-            final int read = dataInputStream.read(temp);
-            if (read == -1 || read != length) {
-                return false;
+    public boolean fromBytes(byte[] bytes) {
+        try {
+            Objects.requireNonNull(bytes);
+            final DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(bytes));
+            successful = dataInputStream.readBoolean();
+            final int length = dataInputStream.readInt();
+            if (length >= 0) {
+                final byte[] temp = new byte[length];
+                final int read = dataInputStream.read(temp);
+                if (read == -1 || read != length) {
+                    return false;
+                }
+                final Optional<Serializable> optional = SerializationUtil.bytesToObject(temp);
+                if (optional.isEmpty()) {
+                    return false;
+                }
+                throwable = Require.clazz(optional.get(), Throwable.class);
             }
-            final Optional<Serializable> optional = SerializationUtil.bytesToObject(temp);
-            if (optional.isEmpty()) {
-                return false;
-            }
-            throwable = Require.clazz(optional.get(), Throwable.class);
+            dataInputStream.close();
+            return true;
+        } catch (IOException e) {
+            logger.error("Error while converting bytes to Result", e);
+            return false;
         }
-        dataInputStream.close();
-        return true;
     }
     
 }
