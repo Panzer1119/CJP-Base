@@ -39,13 +39,14 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class JarCommunicator {
-
+    
     public static final long ID = System.currentTimeMillis();
-
+    
     private static final int PORT = 7484;
     private static DatagramSocket DATAGRAM_SERVER_SOCKET;
     private static DatagramSocket DATAGRAM_CLIENT_SOCKET;
@@ -60,18 +61,18 @@ public class JarCommunicator {
     private static final int SERVER_START_RETRY_TIME = 50;
     private static final int CLIENT_START_RETRY_TIME = 100;
     private static final int BUFFER_SIZE = 1024;
-
+    
     static {
         try {
             DATAGRAM_CLIENT_SOCKET = new DatagramSocket();
         } catch (SocketException ex) {
             ex.printStackTrace();
         }
-        if (initServer(0,0)) {
+        if (initServer(0, 0)) {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownServer()));
         }
     }
-
+    
     public static final void init() {
         /*
         try {
@@ -81,13 +82,17 @@ public class JarCommunicator {
         }
         */
     }
-
+    
     public static final boolean send(long id, Serializable object) {
         try {
             if (DATAGRAM_CLIENT_SOCKET == null) {
                 return false;
             }
-            final byte[] buffer = SerializationUtil.objectToBytes(object);
+            final Optional<byte[]> optional = SerializationUtil.objectToBytes(object);
+            if (optional.isEmpty()) {
+                return false;
+            }
+            final byte[] buffer = optional.get();
             final DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getLocalHost(), PORT);
             DATAGRAM_CLIENT_SOCKET.send(packet);
             return true;
@@ -96,16 +101,16 @@ public class JarCommunicator {
             return false;
         }
     }
-
+    
     public static final boolean addListener(Consumer<JarNetData> consumer) {
         return LISTENERS.add(consumer);
     }
-
+    
     public static final boolean clearListeners() {
         LISTENERS.clear();
         return true;
     }
-
+    
     private static final boolean initServer(int start_tries, int start_test_tries) {
         if (start_tries > MAX_SERVER_START_TRIES) {
             System.err.println("Could not start the " + JarCommunicator.class.getSimpleName() + " server on port " + PORT);
@@ -125,7 +130,11 @@ public class JarCommunicator {
                         DATAGRAM_SERVER_SOCKET.receive(packet);
                         final Thread thread = new Thread(() -> {
                             try {
-                                trigger((JarNetData) SerializationUtil.bytesToObject(packet.getData()));
+                                final Optional<Serializable> optional = SerializationUtil.bytesToObject(packet.getData());
+                                if (optional.isEmpty()) {
+                                    return;
+                                }
+                                trigger((JarNetData) optional.get());
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -156,7 +165,7 @@ public class JarCommunicator {
             return initServer(++start_tries, start_test_tries);
         }
     }
-
+    
     private static final boolean initClient(int start_tries) {
         /*
         if (start_tries > MAX_CLIENT_START_TRIES) {
@@ -195,7 +204,7 @@ public class JarCommunicator {
         */
         return false;
     }
-
+    
     private static final boolean shutdownServer() {
         if (DATAGRAM_SERVER_SOCKET == null) {
             return false;
@@ -211,7 +220,7 @@ public class JarCommunicator {
             return false;
         }
     }
-
+    
     private static final boolean trigger(JarNetData data) {
         try {
             if (ID == data.target_id) {
@@ -229,78 +238,78 @@ public class JarCommunicator {
             return false;
         }
     }
-
+    
     private static class JarSocket {
-
+        
         private final Long id;
         private final Socket socket;
         private final ObjectOutputStream oos;
         private final ObjectInputStream ois;
-
+        
         public JarSocket(Long id, Socket socket, ObjectOutputStream oos, ObjectInputStream ois) {
             this.id = id;
             this.socket = socket;
             this.oos = oos;
             this.ois = ois;
         }
-
+        
         public final Long getID() {
             return id;
         }
-
+        
         public final Socket getSocket() {
             return socket;
         }
-
+        
         public final ObjectOutputStream getOOS() {
             return oos;
         }
-
+        
         public final ObjectInputStream getOIS() {
             return ois;
         }
-
+        
         public final void sendObject(JarNetData data) throws Exception {
             if (oos != null) {
                 oos.writeObject(data);
             }
         }
-
+        
     }
-
+    
     public static class JarNetData implements Serializable {
-
+        
         private final long source_id;
         private final long target_id;
         private final Serializable object;
-
+        
         public JarNetData(long source_id, long target_id, Serializable object) {
             this.source_id = source_id;
             this.target_id = target_id;
             this.object = object;
         }
-
+        
         public final long getSourceID() {
             return source_id;
         }
-
+        
         public final long getTargetID() {
             return target_id;
         }
-
+        
         public final Serializable getObject() {
             return object;
         }
-
+        
         public final <T> T getData() {
             return (T) object;
         }
-
+        
         @Override
         public final String toString() {
             return "JarNetData{" + "source_id=" + source_id + ", target_id=" + target_id + ", object=" + object + '}';
         }
-
+        
     }
-
+    
 }
