@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/Panzer1119/CJP-Database/compare/v0.1.4...v0.1.5) (2021-08-04)
+
+
+### Bug Fixes
+
+* make MinIOConnector.java constructor public ([efb9451](https://github.com/Panzer1119/CJP-Database/commit/efb94519e5af2db6b8ce2abe570d5ea8f56db9ca))
+
 ### [0.1.4](https://github.com/Panzer1119/CJP-Database/compare/v0.1.3...v0.1.4) (2021-08-04)
 
 
