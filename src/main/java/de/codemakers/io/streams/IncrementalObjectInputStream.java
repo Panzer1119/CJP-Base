@@ -47,7 +47,8 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
                     System.out.println("RECEIVED DATA 2: " + objectHolder.getObject());
                     System.out.println("RECEIVED DATA 3: " + objectHolder.getObject().getObject());
                     System.out.println("DATA BEFORE: " + incrementalObjects.get(objectHolder.getId()));
-                    incrementalObjects.get(objectHolder.getId()).set(objectHolder.getObject()); //FIXME Why is this not working?! This is receiving the state it had before, even if it was not sent...
+                    incrementalObjects.get(objectHolder.getId())
+                            .set(objectHolder.getObject()); //FIXME Why is this not working?! This is receiving the state it had before, even if it was not sent...
                     System.out.println("DATA AFTER : " + incrementalObjects.get(objectHolder.getId()));
                 } else {
                     incrementalObjects.put(objectHolder.getId(), objectHolder.getObject());
@@ -59,8 +60,12 @@ public class IncrementalObjectInputStream<T extends Serializable> extends Object
                 if (incrementalObject == null) {
                     throw new NullPointerException(objectHolder.getObject().getClass() + " is not in incrementalObjects");
                 }
-                System.out.println("REAL SIZE BIG: " + SerializationUtil.objectToBytesWithoutException(new ObjectHolder<>(incrementalObject)).length * Byte.SIZE);
-                System.out.println("REAL SIZE SMALL: " + SerializationUtil.objectToBytesWithoutException(objectHolder).length * Byte.SIZE);
+                System.out.println("REAL SIZE BIG: " + SerializationUtil.objectToBytes(new ObjectHolder<>(incrementalObject))
+                        .map(data -> data.length)
+                        .orElse(-1) * Byte.SIZE);
+                System.out.println("REAL SIZE SMALL: " + SerializationUtil.objectToBytes(objectHolder)
+                        .map(data -> data.length)
+                        .orElse(-1) * Byte.SIZE);
                 System.out.println("Normal Size: " + incrementalObject.getData().length * Byte.SIZE);
                 System.out.println("RECEIVED DELTA DATA size: " + objectHolder.getObject().getBitSize());
                 System.out.println("RECEIVED DELTA DATA: " + objectHolder.getObject());

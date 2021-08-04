@@ -68,7 +68,7 @@ public class IncrementalObjectOutputStream<T extends Serializable> extends Objec
             incrementalObject.changeObject((T) object);
             System.out.println("FORCE RESEND: " + object);
             System.out.println("FORCE RESEND: " + incrementalObject);
-            System.out.println("FORCE RESEND: " + SerializationUtil.bytesToObjectWithoutException(incrementalObject.getData()));
+            System.out.println("FORCE RESEND: " + SerializationUtil.bytesToObject(incrementalObject.getData()).orElse(null));
             System.out.println("FORCE RESEND: " + incrementalObject.getObject());
             objectOutputStream.writeObject(new ObjectHolder<>(id, incrementalObject)); //FIXME Why is this not working?!
         } else {
