@@ -90,15 +90,19 @@ public class HibernateUtil {
         final Session session = databaseConnector.getOrOpenSession();
         synchronized (databaseConnector.getLock()) {
             final Transaction transaction = session.beginTransaction();
+            boolean rollback = false;
             try {
                 sessionConsumer.accept(session);
                 transaction.commit();
             } catch (Exception e) {
+                rollback = true;
                 if (!silent) {
                     logger.error("Error while using Session", e);
                 }
             } finally {
-                transaction.rollback();
+                if (rollback) {
+                    transaction.rollback();
+                }
             }
         }
     }
@@ -113,16 +117,20 @@ public class HibernateUtil {
         final Session session = databaseConnector.getOrOpenSession();
         synchronized (databaseConnector.getLock()) {
             final Transaction transaction = session.beginTransaction();
+            boolean rollback = false;
             try {
                 final R result = sessionFunction.apply(session);
                 transaction.commit();
                 return Optional.ofNullable(result);
             } catch (Exception e) {
+                rollback = true;
                 if (!silent) {
                     logger.error("Error while processing Session", e);
                 }
             } finally {
-                transaction.rollback();
+                if (rollback) {
+                    transaction.rollback();
+                }
             }
             return Optional.empty();
         }
