@@ -20,15 +20,25 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.io.SerializationUtil;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class AbstractEndpointTest {
     
-    public static final void main(String[] args) throws Exception {
-        final AbstractEndpoint abstractEndpoint_1 = new AbstractEndpoint() {};
+    public static void main(String[] args) throws Exception {
+        final AbstractEndpoint abstractEndpoint_1 = new AbstractEndpoint() {
+        };
         Logger.log("abstractEndpoint_1=" + abstractEndpoint_1);
-        final byte[] bytes = SerializationUtil.objectToBytes(abstractEndpoint_1);
+        final Optional<byte[]> optionalBytes = SerializationUtil.objectToBytes(abstractEndpoint_1);
+        if (optionalBytes.isEmpty()) {
+            return;
+        }
+        final byte[] bytes = optionalBytes.get();
         Logger.log("bytes=" + Arrays.toString(bytes));
-        final AbstractEndpoint abstractEndpoint_2 = SerializationUtil.bytesToObject(bytes, AbstractEndpoint.class);
+        final Optional<AbstractEndpoint> optionalSerializable = SerializationUtil.bytesToObject(bytes);
+        if (optionalSerializable.isEmpty()) {
+            return;
+        }
+        final AbstractEndpoint abstractEndpoint_2 = optionalSerializable.get();
         Logger.log("abstractEndpoint_2=" + abstractEndpoint_2);
     }
     
