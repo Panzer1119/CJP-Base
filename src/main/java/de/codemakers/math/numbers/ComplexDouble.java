@@ -23,6 +23,7 @@ import de.codemakers.math.MathUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.Optional;
 
 public class ComplexDouble implements ByteSerializable, Copyable {
     
@@ -216,7 +217,8 @@ public class ComplexDouble implements ByteSerializable, Copyable {
     
     public final ComplexDouble atan() {
         final double temp = absSquared();
-        return new ComplexDouble((re == 0.0 ? (Math.abs(im) <= 1.0 ? 0.0 : ((Math.PI / 2.0) * Math.signum(im))) : ((Math.atan((temp - 1.0) / (2.0 * re)) + ((Math.PI / 2.0) * Math.signum(re))) / 2.0)), MathUtil.atanh((2.0 * im) / (temp + 1.0)) / 2.0);
+        return new ComplexDouble((re == 0.0 ? (Math.abs(im) <= 1.0 ? 0.0 : ((Math.PI / 2.0) * Math.signum(im))) : ((Math.atan((temp - 1.0) / (2.0 * re)) + ((Math.PI / 2.0) * Math
+                .signum(re))) / 2.0)), MathUtil.atanh((2.0 * im) / (temp + 1.0)) / 2.0);
     }
     
     public final ComplexDouble tanh() {
@@ -298,11 +300,11 @@ public class ComplexDouble implements ByteSerializable, Copyable {
     }
     
     @Override
-    public byte[] toBytes() {
+    public Optional<byte[]> toBytes() {
         final ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 2);
         byteBuffer.putDouble(re);
         byteBuffer.putDouble(im);
-        return byteBuffer.array();
+        return Optional.of(byteBuffer.array());
     }
     
     @Override
