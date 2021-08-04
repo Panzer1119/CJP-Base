@@ -16,75 +16,34 @@
 
 package de.codemakers.base.util.interfaces;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.Require;
-import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.SerializationUtil;
 
 import java.io.Serializable;
-import java.util.Base64;
+import java.util.Optional;
 
 public interface ByteSerializable extends Serializable {
     
     byte NOT_NULL = 64;
     byte NULL = -64;
     
-    default byte[] toBytes() throws Exception {
+    default Optional<byte[]> toBytes() {
         return SerializationUtil.objectToBytes(this);
     }
     
-    default byte[] toBytes(ToughConsumer<Throwable> failure) {
-        try {
-            return toBytes();
-        } catch (Exception ex) {
-            if (failure != null) {
-                failure.acceptWithoutException(ex);
-            } else {
-                Logger.handleError(ex);
+    default boolean fromBytes(byte[] bytes) {
+        if (bytes != null && this instanceof Copyable copyable) {
+            final Optional<Serializable> optional = SerializationUtil.bytesToObject(bytes);
+            if (optional.isEmpty()) {
+                return false;
             }
-            return null;
-        }
-    }
-    
-    default byte[] toBytesWithoutException() {
-        return toBytes(null);
-    }
-    
-    default String toBytesASBase64String() {
-        final byte[] bytes = toBytesWithoutException();
-        return bytes == null ? null : Base64.getEncoder().encodeToString(bytes);
-    }
-    
-    default boolean fromBytes(byte[] bytes) throws Exception {
-        if (bytes != null && this instanceof Copyable) {
-            final Copyable copyable = Require.clazz(SerializationUtil.bytesToObject(bytes), Copyable.class);
-            if (copyable != null) {
-                ((Copyable) this).set(copyable);
+            final Copyable otherCopyable = Require.clazz(optional.get(), Copyable.class);
+            if (otherCopyable != null) {
+                copyable.set(otherCopyable);
                 return true;
             }
         }
         return false;
-    }
-    
-    default boolean fromBytes(byte[] bytes, ToughConsumer<Throwable> failure) {
-        try {
-            return fromBytes(bytes);
-        } catch (Exception ex) {
-            if (failure != null) {
-                failure.acceptWithoutException(ex);
-            } else {
-                Logger.handleError(ex);
-            }
-            return false;
-        }
-    }
-    
-    default boolean fromBytesWithoutException(byte[] bytes) {
-        return fromBytes(bytes, null);
-    }
-    
-    default boolean fromBytesAsBase64String(String bytes) {
-        return fromBytesWithoutException(bytes == null ? null : Base64.getDecoder().decode(bytes));
     }
     
     default byte resolveNull(Object object) {
