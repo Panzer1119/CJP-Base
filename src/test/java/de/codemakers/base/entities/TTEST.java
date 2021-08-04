@@ -22,13 +22,18 @@ import de.codemakers.base.entities.data.IncrementalData;
 import de.codemakers.base.entities.data.KeepingIncrementalData;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class TTEST {
     
-    public static final void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         final Data data_1 = new Data("Test".getBytes());
         System.out.println("data_1=" + data_1);
-        final byte[] temp_1 = data_1.toBytes();
+        final Optional<byte[]> optional_1 = data_1.toBytes();
+        if (optional_1.isEmpty()) {
+            return;
+        }
+        final byte[] temp_1 = optional_1.get();
         System.out.println("temp_1=" + Arrays.toString(temp_1));
         final Data data_2 = new Data(null);
         System.out.println("data_2=" + data_2);
@@ -41,7 +46,11 @@ public class TTEST {
         //
         final IncrementalData incrementalData_1 = new IncrementalData("Test".getBytes());
         System.out.println("incrementalData_1=" + incrementalData_1);
-        final byte[] temp_2 = incrementalData_1.toBytes();
+        final Optional<byte[]> optional_2 = incrementalData_1.toBytes();
+        if (optional_2.isEmpty()) {
+            return;
+        }
+        final byte[] temp_2 = optional_2.get();
         System.out.println("temp=" + Arrays.toString(temp_2));
         final IncrementalData incrementalData_2 = new IncrementalData(null);
         System.out.println("incrementalData_2=" + incrementalData_2);
@@ -58,7 +67,11 @@ public class TTEST {
         System.out.println("keepingIncrementalData_1=" + keepingIncrementalData_1);
         keepingIncrementalData_1.incrementData(deltaData);
         System.out.println("keepingIncrementalData_1=" + keepingIncrementalData_1);
-        final byte[] temp_3 = keepingIncrementalData_1.toBytes();
+        final Optional<byte[]> optional_3 = keepingIncrementalData_1.toBytes();
+        if (optional_3.isEmpty()) {
+            return;
+        }
+        final byte[] temp_3 = optional_3.get();
         System.out.println("temp_3=" + Arrays.toString(temp_3));
         final KeepingIncrementalData keepingIncrementalData_2 = new KeepingIncrementalData(null);
         System.out.println("keepingIncrementalData_2=" + keepingIncrementalData_2);
