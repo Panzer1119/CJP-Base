@@ -18,19 +18,25 @@ package de.codemakers.base.entities.data;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.Require;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.io.SerializationUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class KeepingIncrementalData extends IncrementalData {
+    
+    private static final Logger logger = LogManager.getLogger(IncrementalData.class);
     
     private final BiMap<Long, DeltaData> deltaDatas = HashBiMap.create();
     
@@ -124,14 +130,12 @@ public class KeepingIncrementalData extends IncrementalData {
             return this;
         }
         final Long version_min = deltaDatas.keySet().stream().min(Long::compareTo).orElse(null);
-        if (version_min != null) {
-            if (version_min == getVersion()) {
-                return this;
-            } else if (version_min < getVersion()) {
-                decrement(getVersion() - version_min);
-            } else {
-                throw new UnsupportedOperationException("The minimum Version can not be greater then the current version");
-            }
+        if (version_min == getVersion()) {
+            return this;
+        } else if (version_min < getVersion()) {
+            decrement(getVersion() - version_min);
+        } else {
+            throw new UnsupportedOperationException("The minimum Version can not be greater then the current version");
         }
         return this;
     }
@@ -141,14 +145,12 @@ public class KeepingIncrementalData extends IncrementalData {
             return this;
         }
         final Long version_max = deltaDatas.keySet().stream().max(Long::compareTo).orElse(null);
-        if (version_max != null) {
-            if (version_max == getVersion()) {
-                return this;
-            } else if (version_max > getVersion()) {
-                increment(version_max - getVersion());
-            } else {
-                throw new UnsupportedOperationException("The maximum Version can not be smaller then the current version");
-            }
+        if (version_max == getVersion()) {
+            return this;
+        } else if (version_max > getVersion()) {
+            increment(version_max - getVersion());
+        } else {
+            throw new UnsupportedOperationException("The maximum Version can not be smaller then the current version");
         }
         return this;
     }
@@ -228,11 +230,16 @@ public class KeepingIncrementalData extends IncrementalData {
         if (!deltaDatas.isEmpty()) {
             deltaDatas.values().forEach((deltaData) -> {
                 try {
-                    final byte[] temp = SerializationUtil.objectToBytes(deltaData);
-                    dataOutputStream.writeInt(temp.length);
-                    dataOutputStream.write(temp);
-                } catch (Exception ex) {
-                    Logger.handleError(ex);
+                    final Optional<byte[]> optional = SerializationUtil.objectToBytes(deltaData);
+                    if (optional.isEmpty()) {
+                        logger.warn("Could not serialize deltaData");
+                        return;
+                    }
+                    final byte[] data = optional.get();
+                    dataOutputStream.writeInt(data.length);
+                    dataOutputStream.write(data);
+                } catch (IOException e) {
+                    logger.error("Error while writing deltaData to dataOutputStream", e);
                 }
             });
         }
@@ -258,11 +265,17 @@ public class KeepingIncrementalData extends IncrementalData {
                 temp = byteBuffer.getInt();
                 final byte[] bytes_ = new byte[temp];
                 byteBuffer.get(bytes_);
-                final DeltaData deltaData = Require.clazz(SerializationUtil.bytesToObject(bytes_), DeltaData.class);
+                final Optional<Serializable> optional = SerializationUtil.bytesToObject(bytes_);
+                if (optional.isEmpty()) {
+                    errored = false;
+                    logger.warn("Could not deserialize bytes_");
+                    break;
+                }
+                final DeltaData deltaData = Require.clazz(optional.get(), DeltaData.class);
                 deltaDatas.put(deltaData.getVersion(), deltaData);
-            } catch (Exception ex) {
+            } catch (Exception e) {
                 errored = true;
-                Logger.handleError(ex);
+                logger.error("Error while deserializing deltaData", e);
             }
         }
         return !errored;
