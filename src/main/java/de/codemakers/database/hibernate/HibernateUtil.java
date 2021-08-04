@@ -193,14 +193,18 @@ public class HibernateUtil {
     }
     
     public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction) {
-        return addOrUpgradeById(databaseConnector, entity, entityGetterFunction, IEntity::getId);
+        return addOrUpgradeById(databaseConnector, entity, entityGetterFunction, null);
     }
     
-    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction, Function<T, I> idGetterFunction) {
-        return addOrUpgrade(databaseConnector, entity, entityGetterFunction, idGetterFunction);
+    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz) {
+        return addOrUpgradeById(databaseConnector, entity, entityGetterFunction, idClazz, IEntity::getId);
     }
     
-    public static synchronized <I, M, T extends IEntity<I, T>> Optional<T> addOrUpgrade(DatabaseConnector databaseConnector, T entity, Function<M, Optional<T>> entityGetterFunction, Function<T, M> middleGetterFunction) {
+    public static synchronized <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(DatabaseConnector databaseConnector, T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz, Function<T, I> idGetterFunction) {
+        return addOrUpgrade(databaseConnector, entity, entityGetterFunction, idGetterFunction, idClazz);
+    }
+    
+    public static synchronized <I, M, T extends IEntity<I, T>> Optional<T> addOrUpgrade(DatabaseConnector databaseConnector, T entity, Function<M, Optional<T>> entityGetterFunction, Function<T, M> middleGetterFunction, Class<M> middleClazz) {
         Objects.requireNonNull(entity, "entity may not be null");
         Objects.requireNonNull(entityGetterFunction, "entityGetterFunction may not be null");
         Objects.requireNonNull(middleGetterFunction, "middleGetterFunction may not be null");

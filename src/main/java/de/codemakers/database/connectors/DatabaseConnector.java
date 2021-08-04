@@ -185,12 +185,16 @@ public abstract class DatabaseConnector {
         return HibernateUtil.addOrUpgradeById(this, entity, entityGetterFunction);
     }
     
-    public <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(T entity, Function<I, Optional<T>> entityGetterFunction, Function<T, I> idGetterFunction) {
-        return HibernateUtil.addOrUpgradeById(this, entity, entityGetterFunction, idGetterFunction);
+    public <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz) {
+        return HibernateUtil.addOrUpgradeById(this, entity, entityGetterFunction, idClazz);
     }
     
-    public <I, M, T extends IEntity<I, T>> Optional<T> addOrUpgrade(T entity, Function<M, Optional<T>> entityGetterFunction, Function<T, M> middleGetterFunction) {
-        return HibernateUtil.addOrUpgrade(this, entity, entityGetterFunction, middleGetterFunction);
+    public <I, T extends IEntity<I, T>> Optional<T> addOrUpgradeById(T entity, Function<I, Optional<T>> entityGetterFunction, Class<I> idClazz, Function<T, I> idGetterFunction) {
+        return HibernateUtil.addOrUpgradeById(this, entity, entityGetterFunction, idClazz, idGetterFunction);
+    }
+    
+    public <I, M, T extends IEntity<I, T>> Optional<T> addOrUpgrade(T entity, Function<M, Optional<T>> entityGetterFunction, Class<M> middleClazz, Function<T, M> middleGetterFunction) {
+        return HibernateUtil.addOrUpgrade(this, entity, entityGetterFunction, middleGetterFunction, middleClazz);
     }
     
 }
