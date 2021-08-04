@@ -17,13 +17,16 @@
 package de.codemakers.database.types;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -99,18 +102,10 @@ public class JsonType<T extends Serializable> implements UserType<T> {
     
     @Override
     public Object deepCopy(Object value) {
-        try {
-            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            objectOutputStream.writeObject(value);
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            byteArrayOutputStream.close();
-            final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            return new ObjectInputStream(byteArrayInputStream).readObject();
-        } catch (ClassNotFoundException | IOException e) {
-            throw new HibernateException(e);
+        if (value instanceof Serializable serializable) {
+            return SerializationUtils.clone(serializable);
         }
+        throw new HibernateException("value is not Serializable");
     }
     
     @Override
