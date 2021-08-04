@@ -21,6 +21,7 @@ import de.codemakers.base.util.interfaces.Copyable;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Optional;
 
 public class DirectDeltaData extends HashedDeltaData {
     
@@ -133,7 +134,7 @@ public class DirectDeltaData extends HashedDeltaData {
     }
     
     @Override
-    public byte[] toBytes() throws Exception {
+    public Optional<byte[]> toBytes() {
         final ByteBuffer byteBuffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE + 1 + (data_new == null ? 0 : data_new.length) + 1 + (hash == null ? 0 : hash.length) + 1 + (indices == null ? 0 : indices.length));
         byteBuffer.putLong(version);
         byteBuffer.putInt(length);
@@ -149,11 +150,11 @@ public class DirectDeltaData extends HashedDeltaData {
         if (indices != null) {
             byteBuffer.put(indices);
         }
-        return byteBuffer.array();
+        return Optional.of(byteBuffer.array());
     }
     
     @Override
-    public boolean fromBytes(byte[] bytes) throws Exception {
+    public boolean fromBytes(byte[] bytes) {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         this.version = byteBuffer.getLong();
         this.length = byteBuffer.getInt();

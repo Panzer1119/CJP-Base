@@ -23,6 +23,7 @@ import de.codemakers.base.util.interfaces.Version;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Optional;
 
 public abstract class DeltaData implements ByteSerializable, Copyable, Version {
     
@@ -113,7 +114,7 @@ public abstract class DeltaData implements ByteSerializable, Copyable, Version {
     }
     
     @Override
-    public byte[] toBytes() throws Exception {
+    public Optional<byte[]> toBytes() {
         final ByteBuffer byteBuffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE + 1 + (data_new == null ? 0 : data_new.length));
         byteBuffer.putLong(version);
         byteBuffer.putInt(length);
@@ -121,11 +122,11 @@ public abstract class DeltaData implements ByteSerializable, Copyable, Version {
         if (data_new != null) {
             byteBuffer.put(data_new);
         }
-        return byteBuffer.array();
+        return Optional.of(byteBuffer.array());
     }
     
     @Override
-    public boolean fromBytes(byte[] bytes) throws Exception {
+    public boolean fromBytes(byte[] bytes) {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         this.version = byteBuffer.getLong();
         this.length = byteBuffer.getInt();

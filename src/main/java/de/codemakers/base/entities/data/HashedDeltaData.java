@@ -23,6 +23,7 @@ import de.codemakers.security.util.SecureHashUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Optional;
 
 public abstract class HashedDeltaData extends DeltaData {
     
@@ -131,7 +132,7 @@ public abstract class HashedDeltaData extends DeltaData {
     }
     
     @Override
-    public byte[] toBytes() throws Exception {
+    public Optional<byte[]> toBytes() {
         final ByteBuffer byteBuffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE + 1 + (data_new == null ? 0 : data_new.length) + 1 + (hash == null ? 0 : hash.length));
         byteBuffer.putLong(version);
         byteBuffer.putInt(length);
@@ -143,11 +144,11 @@ public abstract class HashedDeltaData extends DeltaData {
         if (hash != null) {
             byteBuffer.put(hash);
         }
-        return byteBuffer.array();
+        return Optional.of(byteBuffer.array());
     }
     
     @Override
-    public boolean fromBytes(byte[] bytes) throws Exception {
+    public boolean fromBytes(byte[] bytes) {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         this.version = byteBuffer.getLong();
         this.length = byteBuffer.getInt();

@@ -22,6 +22,7 @@ import de.codemakers.base.util.interfaces.Copyable;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Data implements ByteSerializable, Copyable {
     
@@ -55,12 +56,12 @@ public class Data implements ByteSerializable, Copyable {
     }
     
     @Override
-    public byte[] toBytes() throws Exception {
-        return getData();
+    public Optional<byte[]> toBytes() {
+        return Optional.ofNullable(getData());
     }
     
     @Override
-    public boolean fromBytes(byte[] bytes) throws Exception {
+    public boolean fromBytes(byte[] bytes) {
         setData(bytes);
         return true;
     }

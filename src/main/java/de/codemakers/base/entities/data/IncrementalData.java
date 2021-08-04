@@ -25,6 +25,7 @@ import de.codemakers.security.util.SecureHashUtil;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class IncrementalData extends Data implements Version {
@@ -106,18 +107,18 @@ public class IncrementalData extends Data implements Version {
     }
     
     @Override
-    public byte[] toBytes() throws Exception {
+    public Optional<byte[]> toBytes() {
         final ByteBuffer byteBuffer = ByteBuffer.allocate((Long.SIZE + Integer.SIZE) / Byte.SIZE + (data == null ? 0 : data.length));
         byteBuffer.putLong(version.get());
         byteBuffer.putInt(arrayLength(data));
         if (data != null) {
             byteBuffer.put(data);
         }
-        return byteBuffer.array();
+        return Optional.of(byteBuffer.array());
     }
     
     @Override
-    public boolean fromBytes(byte[] bytes) throws Exception {
+    public boolean fromBytes(byte[] bytes) {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         this.version.set(byteBuffer.getLong());
         final int temp = byteBuffer.getInt();

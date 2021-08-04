@@ -36,7 +36,7 @@ import java.util.Optional;
 
 public class KeepingIncrementalData extends IncrementalData {
     
-    private static final Logger logger = LogManager.getLogger(IncrementalData.class);
+    private static final Logger logger = LogManager.getLogger(KeepingIncrementalData.class);
     
     private final BiMap<Long, DeltaData> deltaDatas = HashBiMap.create();
     
@@ -219,36 +219,41 @@ public class KeepingIncrementalData extends IncrementalData {
     }
     
     @Override
-    public byte[] toBytes() throws Exception {
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-        dataOutputStream.writeLong(version.get());
-        dataOutputStream.writeInt(arrayLength(data));
-        if (data != null) {
-            dataOutputStream.write(data);
-        }
-        if (!deltaDatas.isEmpty()) {
-            deltaDatas.values().forEach((deltaData) -> {
-                try {
-                    final Optional<byte[]> optional = SerializationUtil.objectToBytes(deltaData);
-                    if (optional.isEmpty()) {
-                        logger.warn("Could not serialize deltaData");
-                        return;
+    public Optional<byte[]> toBytes() {
+        try {
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            dataOutputStream.writeLong(version.get());
+            dataOutputStream.writeInt(arrayLength(data));
+            if (data != null) {
+                dataOutputStream.write(data);
+            }
+            if (!deltaDatas.isEmpty()) {
+                deltaDatas.values().forEach((deltaData) -> {
+                    try {
+                        final Optional<byte[]> optional = SerializationUtil.objectToBytes(deltaData);
+                        if (optional.isEmpty()) {
+                            logger.warn("Could not serialize deltaData");
+                            return;
+                        }
+                        final byte[] data = optional.get();
+                        dataOutputStream.writeInt(data.length);
+                        dataOutputStream.write(data);
+                    } catch (IOException e) {
+                        logger.error("Error while writing deltaData to dataOutputStream", e);
                     }
-                    final byte[] data = optional.get();
-                    dataOutputStream.writeInt(data.length);
-                    dataOutputStream.write(data);
-                } catch (IOException e) {
-                    logger.error("Error while writing deltaData to dataOutputStream", e);
-                }
-            });
+                });
+            }
+            dataOutputStream.flush();
+            return Optional.of(byteArrayOutputStream.toByteArray());
+        } catch (IOException e) {
+            logger.error("Error while converting KeepingIncrementalData to bytes", e);
+            return Optional.empty();
         }
-        dataOutputStream.flush();
-        return byteArrayOutputStream.toByteArray();
     }
     
     @Override
-    public boolean fromBytes(byte[] bytes) throws Exception {
+    public boolean fromBytes(byte[] bytes) {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         this.version.set(byteBuffer.getLong());
         int temp = byteBuffer.getInt();
