@@ -17,93 +17,51 @@
 package de.codemakers.io;
 
 import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.logger.Logger;
-import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.util.Optional;
 
 public class SerializationUtil {
     
-    public static byte[] objectToBytes(Serializable serializable) throws Exception {
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(serializable);
-        objectOutputStream.close();
-        return byteArrayOutputStream.toByteArray();
-    }
+    private static final Logger logger = LogManager.getLogger(SerializationUtil.class);
     
-    public static byte[] objectToBytes(Serializable serializable, ToughConsumer<Throwable> failure) {
+    public static Optional<byte[]> objectToBytes(Serializable serializable) {
         try {
-            return objectToBytes(serializable);
-        } catch (Exception ex) {
-            if (failure != null) {
-                failure.acceptWithoutException(ex);
-            } else {
-                Logger.handleError(ex);
-            }
-            return null;
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            objectOutputStream.writeObject(serializable);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            byteArrayOutputStream.close();
+            return Optional.of(byteArrayOutputStream.toByteArray());
+        } catch (IOException e) {
+            logger.error("Error while serializing object to bytes", e);
+            return Optional.empty();
         }
     }
     
-    public static byte[] objectToBytesWithoutException(Serializable serializable) {
-        return objectToBytes(serializable, null);
-    }
-    
-    public static ReturningAction<byte[]> objectToBytesAction(Serializable serializable) {
+    public static ReturningAction<Optional<byte[]>> objectToBytesAction(Serializable serializable) {
         return new ReturningAction<>(() -> objectToBytes(serializable));
     }
     
-    public static Serializable bytesToObject(byte[] data) throws Exception {
-        final ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
-        final Serializable serializable = (Serializable) objectInputStream.readObject();
-        objectInputStream.close();
-        return serializable;
-    }
-    
-    public static Serializable bytesToObject(byte[] data, ToughConsumer<Throwable> failure) {
+    public static <R extends Serializable> Optional<R> bytesToObject(byte[] data) {
         try {
-            return bytesToObject(data);
-        } catch (Exception ex) {
-            if (failure != null) {
-                failure.acceptWithoutException(ex);
-            } else {
-                Logger.handleError(ex);
-            }
-            return null;
+            final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+            final ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            final Object object = objectInputStream.readObject();
+            objectInputStream.close();
+            byteArrayInputStream.close();
+            return Optional.ofNullable((R) object);
+        } catch (IOException | ClassNotFoundException e) {
+            logger.error("Error while serializing object from bytes", e);
+            return Optional.empty();
         }
     }
     
-    public static Serializable bytesToObjectWithoutException(byte[] data) {
-        return bytesToObject(data, (ToughConsumer<Throwable>) null);
-    }
-    
-    public static ReturningAction<Serializable> bytesToObjectAction(byte[] data) {
+    public static <R extends Serializable> ReturningAction<Optional<R>> bytesToObjectAction(byte[] data) {
         return new ReturningAction<>(() -> bytesToObject(data));
-    }
-    
-    public static <T> T bytesToObject(byte[] data, Class<T> clazz) throws Exception {
-        return (T) bytesToObject(data);
-    }
-    
-    public static <T> T bytesToObject(byte[] data, Class<T> clazz, ToughConsumer<Throwable> failure) {
-        try {
-            return bytesToObject(data, clazz);
-        } catch (Exception ex) {
-            if (failure != null) {
-                failure.acceptWithoutException(ex);
-            } else {
-                Logger.handleError(ex);
-            }
-            return null;
-        }
-    }
-    
-    public static <T> T bytesToObjectWithoutException(byte[] data, Class<T> clazz) {
-        return bytesToObject(data, clazz, null);
-    }
-    
-    public static <T> ReturningAction<T> bytesToObjectAction(byte[] data, Class<T> clazz) {
-        return new ReturningAction<>(() -> bytesToObject(data, clazz));
     }
     
 }
