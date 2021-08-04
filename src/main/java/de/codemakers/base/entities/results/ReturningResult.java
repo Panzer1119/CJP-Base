@@ -24,6 +24,7 @@ import de.codemakers.io.SerializationUtil;
 
 import java.io.*;
 import java.util.Objects;
+import java.util.Optional;
 
 public class ReturningResult<T> extends Result {
     
@@ -158,15 +159,23 @@ public class ReturningResult<T> extends Result {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         dataOutputStream.writeBoolean(successful);
-        byte[] temp = throwable == null ? null : SerializationUtil.objectToBytes(throwable);
-        dataOutputStream.writeInt(arrayLength(temp));
-        if (throwable != null) {
-            dataOutputStream.write(temp);
+        Optional<byte[]> optional = throwable == null ? Optional.empty() : SerializationUtil.objectToBytes(throwable);
+        if (optional.isEmpty()) {
+            return null;
         }
-        temp = result == null ? null : SerializationUtil.objectToBytes((Serializable) result);
-        dataOutputStream.writeInt(arrayLength(temp));
+        byte[] data = optional.get();
+        dataOutputStream.writeInt(arrayLength(data));
+        if (throwable != null) {
+            dataOutputStream.write(data);
+        }
+        optional = result == null ? Optional.empty() : SerializationUtil.objectToBytes((Serializable) result);
+        if (optional.isEmpty()) {
+            return null;
+        }
+        data = optional.get();
+        dataOutputStream.writeInt(arrayLength(data));
         if (result != null) {
-            dataOutputStream.write(temp);
+            dataOutputStream.write(data);
         }
         dataOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
@@ -180,14 +189,28 @@ public class ReturningResult<T> extends Result {
         int length = dataInputStream.readInt();
         if (length >= 0) {
             final byte[] temp = new byte[length];
-            dataInputStream.read(temp);
-            throwable = Require.clazz(SerializationUtil.bytesToObject(temp), Throwable.class);
+            final int read = dataInputStream.read(temp);
+            if (read == -1 || read != length) {
+                return false;
+            }
+            final Optional<Serializable> optional = SerializationUtil.bytesToObject(temp);
+            if (optional.isEmpty()) {
+                return false;
+            }
+            throwable = Require.clazz(optional.get(), Throwable.class);
         }
         length = dataInputStream.readInt();
         if (length >= 0) {
             final byte[] temp = new byte[length];
-            dataInputStream.read(temp);
-            result = (T) SerializationUtil.bytesToObject(temp);
+            final int read = dataInputStream.read(temp);
+            if (read == -1 || read != length) {
+                return false;
+            }
+            final Optional<Serializable> optional = SerializationUtil.bytesToObject(temp);
+            if (optional.isEmpty()) {
+                return false;
+            }
+            result = (T) optional.get();
         }
         dataInputStream.close();
         return true;

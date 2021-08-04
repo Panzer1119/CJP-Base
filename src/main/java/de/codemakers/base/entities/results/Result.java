@@ -23,11 +23,9 @@ import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.io.SerializationUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Result implements ByteSerializable, Copyable {
     
@@ -115,10 +113,14 @@ public class Result implements ByteSerializable, Copyable {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         dataOutputStream.writeBoolean(successful);
-        final byte[] temp = throwable == null ? null : SerializationUtil.objectToBytes(throwable);
-        dataOutputStream.writeInt(arrayLength(temp));
+        final Optional<byte[]> optional = throwable == null ? Optional.empty() : SerializationUtil.objectToBytes(throwable);
+        if (optional.isEmpty()) {
+            return null;
+        }
+        final byte[] data = optional.get();
+        dataOutputStream.writeInt(arrayLength(data));
         if (throwable != null) {
-            dataOutputStream.write(temp);
+            dataOutputStream.write(data);
         }
         dataOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
@@ -132,8 +134,15 @@ public class Result implements ByteSerializable, Copyable {
         final int length = dataInputStream.readInt();
         if (length >= 0) {
             final byte[] temp = new byte[length];
-            dataInputStream.read(temp);
-            throwable = Require.clazz(SerializationUtil.bytesToObject(temp), Throwable.class);
+            final int read = dataInputStream.read(temp);
+            if (read == -1 || read != length) {
+                return false;
+            }
+            final Optional<Serializable> optional = SerializationUtil.bytesToObject(temp);
+            if (optional.isEmpty()) {
+                return false;
+            }
+            throwable = Require.clazz(optional.get(), Throwable.class);
         }
         dataInputStream.close();
         return true;
