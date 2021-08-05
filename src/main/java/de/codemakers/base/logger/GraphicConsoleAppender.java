@@ -17,6 +17,7 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -50,7 +51,7 @@ public class GraphicConsoleAppender extends AbstractAppender { //FIXME Use Stand
         @Override
         public GraphicConsoleAppender build() {
             final String consoleName = getConsoleName();
-            final Console<?> console = Standard.getConsoleByName(consoleName);
+            final Console console = Standard.getConsoleByName(consoleName);
             if (console == null) {
                 //TODO Throw error?
             }
@@ -73,9 +74,9 @@ public class GraphicConsoleAppender extends AbstractAppender { //FIXME Use Stand
         return new Builder<B>().asBuilder();
     }
     
-    private final Console<?> console;
+    private final Console console;
     
-    public GraphicConsoleAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties, Console<?> console) {
+    public GraphicConsoleAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties, Console console) {
         super(name, filter, layout, ignoreExceptions, properties);
         this.console = Objects.requireNonNull(console);
     }
@@ -83,26 +84,11 @@ public class GraphicConsoleAppender extends AbstractAppender { //FIXME Use Stand
     @Override
     public void append(LogEvent logEvent) {
         final Instant timestamp = Instant.ofEpochMilli(logEvent.getInstant().getEpochMillisecond());
-        final LogLevel logLevel = switch (logEvent.getLevel().intLevel()) {
-            case 0 -> null;
-            case 100, 200 -> LogLevel.ERROR;
-            case 300 -> LogLevel.WARNING;
-            case 340 -> LogLevel.COMMAND;
-            case 350 -> LogLevel.INPUT;
-            case 400 -> LogLevel.INFO;
-            case 500 -> LogLevel.DEBUG;
-            case 600 -> LogLevel.FINE;
-            case Integer.MAX_VALUE -> LogLevel.FINEST;
-            default -> throw new IllegalStateException("Unexpected value: " + logEvent.getLevel().intLevel());
-        };
-        if (logLevel == null) {
-            return;
-        }
         final long threadId = logEvent.getThreadId();
         final Thread thread = getThreadById(threadId);
-        final boolean bad = logLevel.isBad();
         final Message message = logEvent.getMessage();
-        console.logEntries.add(new LeveledLogEntry(message.getFormattedMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), bad, logLevel));
+        final Level level = logEvent.getLevel();
+        console.logEntries.add(new LeveledLogEntry(message.getFormattedMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), level));
         console.reloadWithoutException();
     }
     

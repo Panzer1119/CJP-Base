@@ -16,136 +16,33 @@
 
 package de.codemakers.base.logger;
 
-import java.awt.*;
+import org.apache.logging.log4j.Level;
+
+import java.util.Comparator;
 import java.util.stream.Stream;
 
-@Deprecated
-public enum LogLevel {
-    FINEST(false, 7, Color.WHITE, Color.LIGHT_GRAY),
-    FINER(false, 6, Color.WHITE, Color.GRAY),
-    FINE(false, 5, Color.WHITE, Color.DARK_GRAY),
-    DEBUG(false, 4, Color.WHITE, Color.DARK_GRAY),
-    INFO(false, 3, Color.WHITE, Color.BLACK),
-    INPUT(false, 2, Color.WHITE, Color.BLUE),
-    COMMAND(false, 1, Color.WHITE, Color.MAGENTA),
-    WARNING(true, 0, Color.WHITE, Color.ORANGE),
-    ERROR(true, -1, Color.WHITE, Color.RED);
+public final class LogLevel {
     
-    public static final int MINIMUM_NAME_LENGTH = Stream.of(values()).map(LogLevel::name).map(String::length).sorted().findFirst().orElse(-1);
-    public static final int MAXIMUM_NAME_LENGTH = Stream.of(values()).map(LogLevel::name).map(String::length).sorted().skip(values().length - 1).findFirst().orElse(-1);
-    public static final int MINIMUM_LEVEL = Stream.of(values()).map(LogLevel::getLevel).sorted().findFirst().orElse(Integer.MAX_VALUE);
-    public static final int MAXIMUM_LEVEL = Stream.of(values()).map(LogLevel::getLevel).sorted().skip(values().length - 1).findFirst().orElse(Integer.MIN_VALUE);
-    public static final String LANGUAGE_KEY_PREFIX = "log_level_";
+    public static final Level OFF = Level.OFF;
+    public static final Level FATAL = Level.FATAL;
+    public static final Level ERROR = Level.ERROR;
+    public static final Level WARN = Level.WARN;
+    public static final Level COMMAND = Level.forName("COMMAND", 340);
+    public static final Level INPUT = Level.forName("INPUT", 350);
+    public static final Level INFO = Level.INFO;
+    public static final Level DEBUG = Level.DEBUG;
+    public static final Level FINE = Level.forName("FINE", 540);
+    public static final Level FINER = Level.forName("FINER", 550);
+    public static final Level FINEST = Level.forName("FINEST", 560);
+    public static final Level TRACE = Level.TRACE;
+    public static final Level ALL = Level.ALL;
     
-    private final boolean isBad;
-    /**
-     * The higher the level the less important is this LogLevel
-     */
-    private final int level;
-    private Color colorBackground;
-    private Color colorForeground;
-    private final String nameLowerCase = name().toLowerCase();
-    private final String unlocalizedName = LANGUAGE_KEY_PREFIX + nameLowerCase;
-    private transient String nameLeft = null;
-    private transient String nameRight = null;
-    private transient String nameMid = null;
+    public static final Level[] LEVELS = {OFF, FATAL, ERROR, WARN, COMMAND, INPUT, INFO, DEBUG, FINE, FINER, FINEST, TRACE, ALL};
+    public static final Level MINIMUM_LEVEL = Stream.of(LEVELS).min(Comparator.comparing(Level::intLevel)).orElse(Level.OFF);
+    public static final Level MAXIMUM_LEVEL = Stream.of(LEVELS).max(Comparator.comparing(Level::intLevel)).orElse(Level.ALL);
     
-    LogLevel(boolean isBad, int level, Color colorBackground, Color colorForeground) {
-        this.isBad = isBad;
-        this.level = level;
-        this.colorBackground = colorBackground;
-        this.colorForeground = colorForeground;
-    }
-    
-    public boolean isBad() {
-        return isBad;
-    }
-    
-    public int getLevel() {
-        return level;
-    }
-    
-    public Color getColorBackground() {
-        return colorBackground;
-    }
-    
-    public LogLevel setColorBackground(Color colorBackground) {
-        this.colorBackground = colorBackground;
-        return this;
-    }
-    
-    public Color getColorForeground() {
-        return colorForeground;
-    }
-    
-    public LogLevel setColorForeground(Color colorForeground) {
-        this.colorForeground = colorForeground;
-        return this;
-    }
-    
-    public boolean isThisLevelLessImportant(LogLevel logLevel) {
-        return level > logLevel.level;
-    }
-    
-    public boolean isThisLevelLessImportantOrEqual(LogLevel logLevel) {
-        return level >= logLevel.level;
-    }
-    
-    public boolean isLevelEqual(LogLevel logLevel) {
-        return level == logLevel.level;
-    }
-    
-    public boolean isThisLevelMoreImportantOrEqual(LogLevel logLevel) {
-        return level <= logLevel.level;
-    }
-    
-    public boolean isThisLevelMoreImportant(LogLevel logLevel) {
-        return level < logLevel.level;
-    }
-    
-    public String toText() {
-        return name().toUpperCase().substring(0, 1) + name().toLowerCase().substring(1);
-    }
-    
-    public String getNameLeft() {
-        if (nameLeft == null) {
-            nameLeft = name();
-            while (nameLeft.length() < MAXIMUM_NAME_LENGTH) {
-                nameLeft += " ";
-            }
-        }
-        return nameLeft;
-    }
-    
-    public String getNameRight() {
-        if (nameRight == null) {
-            nameRight = name();
-            while (nameRight.length() < MAXIMUM_NAME_LENGTH) {
-                nameRight = " " + nameRight;
-            }
-        }
-        return nameRight;
-    }
-    
-    public String getNameMid() {
-        if (nameMid == null) {
-            nameMid = name();
-            while (nameMid.length() < MAXIMUM_NAME_LENGTH) {
-                nameMid += " ";
-                if (nameMid.length() < MAXIMUM_NAME_LENGTH) {
-                    nameMid = " " + nameMid;
-                }
-            }
-        }
-        return nameMid;
-    }
-    
-    public String getNameLowerCase() {
-        return nameLowerCase;
-    }
-    
-    public String getUnlocalizedName() {
-        return unlocalizedName;
+    private LogLevel() {
+        //Nothing
     }
     
 }

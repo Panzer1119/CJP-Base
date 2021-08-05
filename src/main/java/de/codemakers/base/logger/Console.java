@@ -27,7 +27,9 @@ import de.codemakers.io.streams.BufferedPipedOutputStream;
 import de.codemakers.io.streams.PipedInputStream;
 import de.codemakers.io.streams.PipedOutputStream;
 import de.codemakers.lang.LanguageReloadable;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -45,9 +47,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class Console<L extends ILogger> implements Closeable, LanguageReloadable, Reloadable {
+public abstract class Console implements Closeable, LanguageReloadable, Reloadable {
     
-    private static final org.apache.logging.log4j.Logger loggerTODO = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String DEFAULT_ICON = "application_xp_terminal.png";
     public static final String DEFAULT_ICON_SETTINGS = "gear_in.png";
@@ -74,10 +76,9 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
     
     public static final String DEFAULT_FONT_NAME = "Courier New";
     
-    protected final L logger; //FIXME Or should the logger provide the LogEntries???
     protected final List<LeveledLogEntry> logEntries = new CopyOnWriteArrayList<>(); //FIXME Save them here?
-    protected final Map<LogLevel, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
-    protected final Set<LogLevel> displayedLogLevels = new CopyOnWriteArraySet<>();
+    protected final Map<Level, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
+    protected final Set<Level> displayedLogLevels = new CopyOnWriteArraySet<>();
     
     protected final JFrame frame = new JFrame(Standard.localize(LANGUAGE_KEY_CONSOLE)); //FIXME Language/Localization stuff?! //Reloading Language??
     protected final JMenuBar menuBar = new JMenuBar();
@@ -93,21 +94,23 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
     protected final JMenu menu_view = new JMenu(Standard.localize(LANGUAGE_KEY_VIEW));
     //Output
     protected final JLabel label_displayedLogLevels = new JLabel(Standard.localize(LANGUAGE_KEY_DISPLAYED_LOG_LEVELS)); //FIXME Language/Localization stuff?! //Reloading Language??
-    protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.values()).map((logLevel) -> {
-        final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(Standard.localize(logLevel.getUnlocalizedName())); //FIXME Language/Localization stuff?! //Reloading Language??
-        checkBoxMenuItem.setSelected(Logger.getDefaultAdvancedLeveledLogger().getMinimumLogLevel().isThisLevelLessImportantOrEqual(logLevel));
-        logLevelDisplayStatus.put(logLevel, checkBoxMenuItem.isSelected());
+    protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.LEVELS).map((level) -> {
+        final LogLevelStyle logLevelStyle = LogLevelStyle.ofLevel(level);
+        final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(Standard.localize(logLevelStyle.getLangKey())); //FIXME Language/Localization stuff?! //Reloading Language??
+        //checkBoxMenuItem.setSelected(Logger.getDefaultAdvancedLeveledLogger().getMinimumLogLevel().isThisLevelLessImportantOrEqual(level));
+        //TODO Where to set/determine from what level should be shown?
+        logLevelDisplayStatus.put(level, checkBoxMenuItem.isSelected());
         if (checkBoxMenuItem.isSelected()) {
-            displayedLogLevels.add(logLevel);
+            displayedLogLevels.add(level);
         } else {
-            displayedLogLevels.remove(logLevel);
+            displayedLogLevels.remove(level);
         }
         checkBoxMenuItem.addActionListener((actionEvent) -> {
-            logLevelDisplayStatus.put(logLevel, checkBoxMenuItem.isSelected());
+            logLevelDisplayStatus.put(level, checkBoxMenuItem.isSelected());
             if (checkBoxMenuItem.isSelected()) {
-                displayedLogLevels.add(logLevel);
+                displayedLogLevels.add(level);
             } else {
-                displayedLogLevels.remove(logLevel);
+                displayedLogLevels.remove(level);
             }
             reloadWithoutException();
         });
@@ -134,13 +137,11 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
     
     protected final History<String> inputHistory = new History<>();
     
-    public Console(L logger) {
-        this(logger, DEFAULT_ICON_FILE, DEFAULT_ICON_SETTINGS_FILE);
+    public Console() {
+        this(DEFAULT_ICON_FILE, DEFAULT_ICON_SETTINGS_FILE);
     }
     
-    public Console(L logger, AdvancedFile iconAdvancedFile, AdvancedFile iconSettingsAdvancedFile) {
-        super();
-        this.logger = logger;
+    public Console(AdvancedFile iconAdvancedFile, AdvancedFile iconSettingsAdvancedFile) {
         init();
         initIconImage(iconAdvancedFile);
         initListeners();
@@ -166,10 +167,6 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         pipedOutputStream.flush();
     }
     
-    public L getLogger() {
-        return logger;
-    }
-    
     protected abstract ConsoleSettings createConsoleSettings(AdvancedFile iconAdvancedFile);
     
     /**
@@ -187,7 +184,7 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         try {
             return handleInput(input);
         } catch (Exception ex) {
-            loggerTODO.error("Error while handling input \"" + input + "\"", ex);
+            logger.error("Error while handling input \"" + input + "\"", ex);
             return true;
         }
     }
@@ -203,9 +200,9 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         menuItem_exit.setText(Standard.localize(LANGUAGE_KEY_EXIT));
         menu_view.setText(Standard.localize(LANGUAGE_KEY_VIEW));
         label_displayedLogLevels.setText(Standard.localize(LANGUAGE_KEY_DISPLAYED_LOG_LEVELS));
-        final LogLevel[] logLevels = LogLevel.values();
-        for (int i = 0; i < logLevels.length; i++) {
-            checkBoxMenuItems_logLevels[i].setText(Standard.localize(logLevels[i].getUnlocalizedName()));
+        final LogLevelStyle[] logLevelStyles = LogLevelStyle.values();
+        for (int i = 0; i < logLevelStyles.length; i++) {
+            checkBoxMenuItems_logLevels[i].setText(Standard.localize(logLevelStyles[i].getLangKey()));
         }
         label_display.setText(Standard.localize(LANGUAGE_KEY_DISPLAY));
         checkBoxMenuItem_displayTimestamp.setText(Standard.localize(LANGUAGE_KEY_TIMESTAMP));
@@ -343,7 +340,7 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         try (final InputStream inputStream = advancedFile.createInputStream()) {
             frame.setIconImage(ImageIO.read(inputStream));
         } catch (Exception ex) {
-            loggerTODO.error("Error while loading icon for frame", ex);
+            logger.error("Error while loading icon for frame", ex);
         }
     }
     
@@ -356,7 +353,7 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
     }
     
     protected List<LeveledLogEntry> getLogEntriesFilteredByLogLevel() {
-        return logEntries.stream().filter((leveledLogEntry) -> leveledLogEntry.getLogLevel() == null || displayedLogLevels.contains(leveledLogEntry.getLogLevel())).collect(Collectors.toList());
+        return logEntries.stream().filter((entry) -> entry.getLevel() == null || displayedLogLevels.contains(entry.getLevel())).collect(Collectors.toList());
     }
     
     protected JFrame getFrame() {

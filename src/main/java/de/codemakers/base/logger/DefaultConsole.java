@@ -19,8 +19,9 @@ package de.codemakers.base.logger;
 import de.codemakers.base.Standard;
 import de.codemakers.base.entities.UpdatableBoundResettableVariable;
 import de.codemakers.io.file.AdvancedFile;
-import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -32,52 +33,25 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DefaultConsole extends Console<AdvancedLeveledLogger> {
+public class DefaultConsole extends Console {
     
-    private static final org.apache.logging.log4j.Logger loggerTODO = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
     
     public DefaultConsole() {
-        this(Logger.getDefaultAdvancedLeveledLogger());
-    }
-    
-    public DefaultConsole(AdvancedLeveledLogger logger) {
-        super(logger);
+        super();
     }
     
     public DefaultConsole(AdvancedFile iconAdvancedFile, AdvancedFile iconSettingsAdvancedFile) {
-        this(Logger.getDefaultAdvancedLeveledLogger(), iconAdvancedFile, iconSettingsAdvancedFile);
-    }
-    
-    public DefaultConsole(AdvancedLeveledLogger logger, AdvancedFile iconAdvancedFile, AdvancedFile iconSettingsAdvancedFile) {
-        super(logger, iconAdvancedFile, iconSettingsAdvancedFile);
+        super(iconAdvancedFile, iconSettingsAdvancedFile);
     }
     
     @Override
     protected ConsoleSettings createConsoleSettings(AdvancedFile iconAdvancedFile) {
         return new DefaultConsoleSettings(iconAdvancedFile);
-    }
-    
-    protected String getLogFormat() {
-        return logger.getLogFormat();
-    }
-    
-    protected DefaultConsole setLogFormat(String logFormat) {
-        logger.setLogFormat(logFormat);
-        return this;
-    }
-    
-    protected String getSourceFormat() {
-        return logger.getSourceFormat();
-    }
-    
-    protected DefaultConsole setSourceFormat(String sourceFormat) {
-        logger.setSourceFormat(sourceFormat);
-        return this;
     }
     
     @Override
@@ -87,9 +61,11 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         styledDocument.remove(0, styledDocument.getLength()); //TODO Good? Because when there are too many LogEntries, this could cause lag
         final Style style = styledDocument.addStyle("LogEntryStyle", null);
         for (LeveledLogEntry logEntry : logEntries) {
-            StyleConstants.setBackground(style, logEntry.getLogLevel() == null ? Color.WHITE : logEntry.getLogLevel().getColorBackground());
-            StyleConstants.setForeground(style, logEntry.getLogLevel() == null ? Color.BLACK : logEntry.getLogLevel().getColorForeground());
-            styledDocument.insertString(styledDocument.getLength(), StringSubstitutor.replace(logger.getLogFormat(), logger.createValueMap(logEntry)) + "\n", style);
+            final Level level = logEntry.getLevel();
+            final LogLevelStyle logLevelStyle = LogLevelStyle.ofLevel(level);
+            StyleConstants.setBackground(style, logLevelStyle.getColorBackground());
+            StyleConstants.setForeground(style, logLevelStyle.getColorForeground());
+            styledDocument.insertString(styledDocument.getLength(), logEntry.formatWithoutException(null) + "\n", style);
         }
         textPane_output.setCaretPosition(styledDocument.getLength());
         return true;
@@ -108,34 +84,36 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         return true;
     }
     
-    protected boolean runCommand(final String command) throws Exception {
-        Logger.log(command, LogLevel.COMMAND);
+    protected boolean runCommand(final String command) {
+        logger.log(LogLevel.COMMAND, command);
         String temp = command.substring("/".length()).trim();
         if (temp.startsWith("lang")) {
             temp = temp.substring("lang".length()).trim();
             if (temp.equalsIgnoreCase("english")) {
                 Standard.setLocalizer(Standard.getLocalizerEnglishUs());
-                loggerTODO.debug("Setted localizer to english us");
+                logger.debug("Setted localizer to english us");
                 return true;
             } else if (temp.equalsIgnoreCase("default")) {
                 Standard.setLocalizer(Standard.getLocalizerDefault());
-                loggerTODO.debug("Setted localizer to default");
+                logger.debug("Setted localizer to default");
                 return true;
             }
         } else if (temp.startsWith("test")) {
             temp = temp.substring("test".length()).trim();
             if (temp.equalsIgnoreCase("1")) {
                 frame.setTitle("" + Math.random());
-                loggerTODO.debug("COMMAND: \"Test 1\"");
+                logger.debug("COMMAND: \"Test 1\"");
                 return true;
             }
         }
         //throw new NotYetImplementedRuntimeException(); //TODO Implement Command stuff
-        loggerTODO.warn(String.format("Command \"%s\" does not exist", command));
+        logger.warn(String.format("Command \"%s\" does not exist", command));
         return false;
     }
     
     public class DefaultConsoleSettings extends ConsoleSettings {
+    
+        private static final Logger logger = LogManager.getLogger();
         
         public static final String LANGUAGE_KEY_SETTINGS = "settings";
         public static final String LANGUAGE_KEY_TAB_GENERAL = "general";
@@ -157,8 +135,8 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         protected final JButton button_apply = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
         
         protected final UpdatableBoundResettableVariable<String> titleBound = new UpdatableBoundResettableVariable<>(frame::getTitle, frame::setTitle); //FIXME Testing only //This is working great!
-        protected final UpdatableBoundResettableVariable<String> logFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getLogFormat, DefaultConsole.this::setLogFormat); //FIXME Testing only
-        protected final UpdatableBoundResettableVariable<String> sourceFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getSourceFormat, DefaultConsole.this::setSourceFormat); //FIXME Testing only
+        //protected final UpdatableBoundResettableVariable<String> logFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getLogFormat, DefaultConsole.this::setLogFormat); //FIXME Testing only
+        //protected final UpdatableBoundResettableVariable<String> sourceFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getSourceFormat, DefaultConsole.this::setSourceFormat); //FIXME Testing only
         
         protected final boolean livePreview = true; //FIXME Testing only?
         
@@ -233,6 +211,8 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             panel_tab_view.setLayout(new GridLayout(2, 2));
             panel_tab_view.add(new JLabel("Log Format")); //FIXME Language reloading!!!
             final JTextPane textPane_logFormat = new JTextPane();
+            /*
+            //TODO
             final CustomDocumentFilter customDocumentFilter_1 = new CustomDocumentFilter(textPane_logFormat, Arrays.asList(Logger.LOG_FORMAT_TIMESTAMP, Logger.LOG_FORMAT_THREAD, Logger.LOG_FORMAT_SOURCE, Logger.LOG_FORMAT_LOG_LEVEL, Logger.LOG_FORMAT_OBJECT));
             textPane_logFormat.setText(getLogFormat());
             textPane_logFormat.addKeyListener(new KeyListener() {
@@ -260,10 +240,13 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
                 }
                 DefaultConsole.this.reloadWithoutException(); //FIXME Or should this be executed in the finish method?
             });
+            */
             //panel_tab_view.add(textArea_logFormat);
             panel_tab_view.add(new JScrollPane(textPane_logFormat));
             panel_tab_view.add(new JLabel("Source Format")); //FIXME Language reloading!!!
             final JTextPane textPane_sourceFormat = new JTextPane();
+            /*
+            //TODO
             final CustomDocumentFilter customDocumentFilter_2 = new CustomDocumentFilter(textPane_sourceFormat, Arrays.asList("test", Logger.SOURCE_FORMAT_CLASS, Logger.SOURCE_FORMAT_METHOD, Logger.SOURCE_FORMAT_FILE, Logger.SOURCE_FORMAT_LINE));
             textPane_sourceFormat.setText(getSourceFormat());
             textPane_sourceFormat.addKeyListener(new KeyListener() {
@@ -291,6 +274,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
                 }
                 DefaultConsole.this.reloadWithoutException(); //FIXME Or should this be executed in the finish method?
             });
+            */
             //panel_tab_view.add(textArea_sourceFormat);
             panel_tab_view.add(new JScrollPane(textPane_sourceFormat));
             //TODO Test end
@@ -302,7 +286,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             try (final InputStream inputStream = advancedFile.createInputStream()) {
                 dialog.setIconImage(ImageIO.read(inputStream));
             } catch (Exception ex) {
-                loggerTODO.error("Error while loading icon for dialog", ex);
+                logger.error("Error while loading icon for dialog", ex);
             }
         }
         
@@ -343,8 +327,8 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         @Override
         protected void showing() {
             titleBound.updateWithoutException();
-            logFormatBound.updateWithoutException();
-            sourceFormatBound.updateWithoutException();
+            //logFormatBound.updateWithoutException();
+            //sourceFormatBound.updateWithoutException();
             onAction();
         }
         
@@ -382,12 +366,12 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         
         @Override
         protected boolean isEdited() {
-            return titleBound.isDifferent() || logFormatBound.isDifferent() || sourceFormatBound.isDifferent();
+            return titleBound.isDifferent()/* || logFormatBound.isDifferent() || sourceFormatBound.isDifferent()*/;
         }
         
         @Override
         protected boolean isNotEdited() {
-            return titleBound.isSame() && logFormatBound.isSame() && sourceFormatBound.isSame();
+            return titleBound.isSame()/* && logFormatBound.isSame() && sourceFormatBound.isSame()*/;
         }
         
         @Override
@@ -410,8 +394,8 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
         @Override
         public Boolean finish() throws Exception {
             titleBound.finish();
-            logFormatBound.finish();
-            sourceFormatBound.finish();
+            //logFormatBound.finish();
+            //sourceFormatBound.finish();
             return true;
         }
         
@@ -421,12 +405,16 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             if (!titleBound.reset()) {
                 good = false;
             }
+            /*
             if (!logFormatBound.reset()) {
                 good = false;
             }
+            */
+            /*
             if (!sourceFormatBound.reset()) {
                 good = false;
             }
+            */
             return good;
         }
         
@@ -476,7 +464,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             private Pattern buildPatternKeyWords() {
                 final StringBuilder stringBuilder = new StringBuilder();
                 for (String token : tokens) {
-                    loggerTODO.debug("token=\"" + token + "\"");
+                    logger.debug("token=\"" + token + "\"");
                     stringBuilder.append("\\b");
                     stringBuilder.append("\\$\\{");
                     stringBuilder.append(token);
@@ -486,7 +474,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
                 if (stringBuilder.length() > 0) {
                     stringBuilder.deleteCharAt(stringBuilder.length() - 1);
                 }
-                loggerTODO.debug("stringBuilder=" + stringBuilder);
+                logger.debug("stringBuilder=" + stringBuilder);
                 return Pattern.compile(stringBuilder.toString());
             }
             

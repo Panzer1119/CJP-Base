@@ -16,43 +16,23 @@
 
 package de.codemakers.base.logger;
 
+import org.apache.logging.log4j.Level;
+
 import java.time.Instant;
 import java.util.Objects;
 
 @Deprecated
 public class LeveledLogEntry extends LogEntry {
     
-    protected final LogLevel logLevel; //LogLevel
+    protected final Level level;
     
-    public LeveledLogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement) {
-        this(object, timestamp, thread, stackTraceElement, LogLevel.INFO);
-    }
-    
-    public LeveledLogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, LogLevel logLevel) {
-        super(object, timestamp, thread, stackTraceElement);
-        this.logLevel = logLevel;
-    }
-    
-    public LeveledLogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, Throwable throwable) {
-        this(object, timestamp, thread, stackTraceElement, throwable, LogLevel.INFO);
-    }
-    
-    public LeveledLogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, Throwable throwable, LogLevel logLevel) {
+    public LeveledLogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, Throwable throwable, Level level) {
         super(object, timestamp, thread, stackTraceElement, throwable);
-        this.logLevel = logLevel;
+        this.level = level;
     }
     
-    public LeveledLogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, Throwable throwable, boolean bad) {
-        this(object, timestamp, thread, stackTraceElement, throwable, bad, LogLevel.INFO);
-    }
-    
-    public LeveledLogEntry(Object object, Instant timestamp, Thread thread, StackTraceElement stackTraceElement, Throwable throwable, boolean bad, LogLevel logLevel) {
-        super(object, timestamp, thread, stackTraceElement, throwable, bad);
-        this.logLevel = logLevel;
-    }
-    
-    public LogLevel getLogLevel() {
-        return logLevel;
+    public Level getLevel() {
+        return level;
     }
     
     @Override
@@ -60,24 +40,23 @@ public class LeveledLogEntry extends LogEntry {
         if (this == object) {
             return true;
         }
-        if (object == null || !(object instanceof LeveledLogEntry)) {
+        if (!(object instanceof final LeveledLogEntry leveledLogEntry)) {
             return false;
         }
         if (!super.equals(object)) {
             return false;
         }
-        final LeveledLogEntry leveledLogEntry = (LeveledLogEntry) object;
-        return logLevel == leveledLogEntry.logLevel;
+        return level == leveledLogEntry.level;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), logLevel);
+        return Objects.hash(super.hashCode(), level);
     }
     
     @Override
     public String toString() {
-        return "LeveledLogEntry{" + "logLevel=" + logLevel + ", object=" + object + ", timestamp=" + timestamp + ", thread=" + thread + ", stackTraceElement=" + stackTraceElement + ", throwable=" + throwable + ", bad=" + bad + '}';
+        return "LeveledLogEntry{" + "level=" + level + ", object=" + object + ", timestamp=" + timestamp + ", thread=" + thread + ", stackTraceElement=" + stackTraceElement + ", throwable=" + throwable + '}';
     }
     
 }

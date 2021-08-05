@@ -67,7 +67,7 @@ public class Standard {
     public static final AdvancedFile LANG_FOLDER = LanguageUtil.LANG_FOLDER;
     public static final String LANG_FILE_EXTENSION = LanguageUtil.LANG_FILE_EXTENSION;
     
-    private static final Map<String, Console<?>> CONSOLES = new ConcurrentHashMap<>();
+    private static final Map<String, Console> CONSOLES = new ConcurrentHashMap<>();
     
     static {
         Standard.async(LanguageUtil::initLocalizers);
@@ -326,7 +326,7 @@ public class Standard {
         toughConsumer.acceptWithoutException(t);
     }
     
-    public static Console<?> getConsoleByName(String name) {
+    public static Console getConsoleByName(String name) {
         if (!CONSOLES.containsKey(name)) {
             CONSOLES.put(name, new DefaultConsole());
         }
