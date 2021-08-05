@@ -20,6 +20,7 @@ import de.codemakers.base.Standard;
 import de.codemakers.base.entities.UpdatableBoundResettableVariable;
 import de.codemakers.io.file.AdvancedFile;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.LogManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -37,6 +38,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DefaultConsole extends Console<AdvancedLeveledLogger> {
+    
+    private static final org.apache.logging.log4j.Logger loggerTODO = LogManager.getLogger();
     
     public DefaultConsole() {
         this(Logger.getDefaultAdvancedLeveledLogger());
@@ -112,23 +115,23 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             temp = temp.substring("lang".length()).trim();
             if (temp.equalsIgnoreCase("english")) {
                 Standard.setLocalizer(Standard.getLocalizerEnglishUs());
-                Logger.logDebug("Setted localizer to english us");
+                loggerTODO.debug("Setted localizer to english us");
                 return true;
             } else if (temp.equalsIgnoreCase("default")) {
                 Standard.setLocalizer(Standard.getLocalizerDefault());
-                Logger.logDebug("Setted localizer to default");
+                loggerTODO.debug("Setted localizer to default");
                 return true;
             }
         } else if (temp.startsWith("test")) {
             temp = temp.substring("test".length()).trim();
             if (temp.equalsIgnoreCase("1")) {
                 frame.setTitle("" + Math.random());
-                Logger.logDebug("COMMAND: \"Test 1\"");
+                loggerTODO.debug("COMMAND: \"Test 1\"");
                 return true;
             }
         }
         //throw new NotYetImplementedRuntimeException(); //TODO Implement Command stuff
-        Logger.logWarning(String.format("Command \"%s\" does not exist", command));
+        loggerTODO.warn(String.format("Command \"%s\" does not exist", command));
         return false;
     }
     
@@ -299,7 +302,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             try (final InputStream inputStream = advancedFile.createInputStream()) {
                 dialog.setIconImage(ImageIO.read(inputStream));
             } catch (Exception ex) {
-                Logger.logError("Error while loading icon for dialog", ex);
+                loggerTODO.error("Error while loading icon for dialog", ex);
             }
         }
         
@@ -473,7 +476,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
             private Pattern buildPatternKeyWords() {
                 final StringBuilder stringBuilder = new StringBuilder();
                 for (String token : tokens) {
-                    Logger.logDebug("token=\"" + token + "\"");
+                    loggerTODO.debug("token=\"" + token + "\"");
                     stringBuilder.append("\\b");
                     stringBuilder.append("\\$\\{");
                     stringBuilder.append(token);
@@ -483,7 +486,7 @@ public class DefaultConsole extends Console<AdvancedLeveledLogger> {
                 if (stringBuilder.length() > 0) {
                     stringBuilder.deleteCharAt(stringBuilder.length() - 1);
                 }
-                Logger.logDebug("stringBuilder=" + stringBuilder);
+                loggerTODO.debug("stringBuilder=" + stringBuilder);
                 return Pattern.compile(stringBuilder.toString());
             }
             

@@ -27,6 +27,7 @@ import de.codemakers.io.streams.BufferedPipedOutputStream;
 import de.codemakers.io.streams.PipedInputStream;
 import de.codemakers.io.streams.PipedOutputStream;
 import de.codemakers.lang.LanguageReloadable;
+import org.apache.logging.log4j.LogManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -45,6 +46,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class Console<L extends ILogger> implements Closeable, LanguageReloadable, Reloadable {
+    
+    private static final org.apache.logging.log4j.Logger loggerTODO = LogManager.getLogger();
     
     public static final String DEFAULT_ICON = "application_xp_terminal.png";
     public static final String DEFAULT_ICON_SETTINGS = "gear_in.png";
@@ -184,7 +187,7 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         try {
             return handleInput(input);
         } catch (Exception ex) {
-            Logger.logError("Error while handling input \"" + input + "\"", ex);
+            loggerTODO.error("Error while handling input \"" + input + "\"", ex);
             return true;
         }
     }
@@ -340,7 +343,7 @@ public abstract class Console<L extends ILogger> implements Closeable, LanguageR
         try (final InputStream inputStream = advancedFile.createInputStream()) {
             frame.setIconImage(ImageIO.read(inputStream));
         } catch (Exception ex) {
-            Logger.logError("Error while loading icon for frame", ex);
+            loggerTODO.error("Error while loading icon for frame", ex);
         }
     }
     
