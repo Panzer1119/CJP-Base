@@ -22,15 +22,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @FunctionalInterface
-public interface Formattable<T> {
+public interface Formattable<F> {
     
     Logger logger = LogManager.getLogger();
     
-    String format(T t) throws Exception;
+    String format(F format) throws Exception;
     
-    default String format(T t, ToughConsumer<Throwable> failure) {
+    default String format(F format, ToughConsumer<Throwable> failure) {
         try {
-            return format(t);
+            return format(format);
         } catch (Exception ex) {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
@@ -41,12 +41,12 @@ public interface Formattable<T> {
         }
     }
     
-    default String formatWithoutException(T t) {
-        return format(t, null);
+    default String formatWithoutException(F format) {
+        return format(format, null);
     }
     
-    default ReturningAction<String> formatAction(T t) {
-        return new ReturningAction<>(() -> format(t));
+    default ReturningAction<String> formatAction(F format) {
+        return new ReturningAction<>(() -> format(format));
     }
     
 }
