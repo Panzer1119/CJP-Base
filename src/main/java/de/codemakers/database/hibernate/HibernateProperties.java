@@ -120,26 +120,50 @@ public class HibernateProperties {
         this.substitutions = substitutions;
     }
     
-    public Properties createProperties() {
+    public Properties getBasic() {
+        return basic;
+    }
+    
+    public Properties getSubstitutions() {
+        return basic;
+    }
+    
+    public Properties create() {
         if (!substitutions.containsKey(KEY_PORT)) {
             if (!basic.containsKey(KEY_DEFAULT_PORT)) {
                 throw new IllegalArgumentException("Missing port definition and default port definition");
             }
-            substitutions.setProperty(KEY_PORT, basic.getProperty(KEY_DEFAULT_PORT));
+            setSubstitution(KEY_PORT, getBasicProperty(KEY_DEFAULT_PORT));
         }
         final Properties substitutedProperties = createSubstitutedProperties(basic, substitutions);
         checkDefaultValues(substitutedProperties);
         return substitutedProperties;
     }
     
-    public HibernateProperties setDialect(Class<? extends Dialect> dialect) {
-        basic.setProperty(KEY_HIBERNATE_DIALECT, dialect.getName());
+    public HibernateProperties setBasicProperty(String key, String value) {
+        basic.setProperty(key, value);
         return this;
     }
     
-    public HibernateProperties setHost(String host) {
-        substitutions.setProperty(KEY_HOST, host);
+    public String getBasicProperty(String key) {
+        return basic.getProperty(key);
+    }
+    
+    public HibernateProperties setDialect(Class<? extends Dialect> dialect) {
+        return setBasicProperty(KEY_HIBERNATE_DIALECT, dialect.getName());
+    }
+    
+    public HibernateProperties setSubstitution(String key, String value) {
+        substitutions.setProperty(key, value);
         return this;
+    }
+    
+    public String getSubstitution(String key) {
+        return substitutions.getProperty(key);
+    }
+    
+    public HibernateProperties setHost(String host) {
+        return setSubstitution(KEY_HOST, host);
     }
     
     public HibernateProperties setPort(Integer port) {
@@ -149,23 +173,19 @@ public class HibernateProperties {
             }
             port = Integer.parseInt(basic.getProperty(KEY_PORT));
         }
-        substitutions.setProperty(KEY_PORT, "" + port);
-        return this;
+        return setSubstitution(KEY_PORT, "" + port);
     }
     
     public HibernateProperties setDatabase(String database) {
-        substitutions.setProperty(KEY_DATABASE, database);
-        return this;
+        return setSubstitution(KEY_DATABASE, database);
     }
     
     public HibernateProperties setUsername(String username) {
-        substitutions.setProperty(KEY_USERNAME, username);
-        return this;
+        return setSubstitution(KEY_USERNAME, username);
     }
     
     public HibernateProperties setPassword(String password) {
-        substitutions.setProperty(KEY_PASSWORD, password);
-        return this;
+        return setSubstitution(KEY_PASSWORD, password);
     }
     
 }
