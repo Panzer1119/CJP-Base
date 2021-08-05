@@ -26,7 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.InputStream;
 
-//FIXME This is crap?! Maybe i need to create a completely new JFrameManager class...
+//FIXME This is crap?! Maybe i need to create a completely new JFrameManager class... //Is this still true (post rework-logging) 2021-08-06?
 public class JFrameManager extends JFrame {
     
     private static final Logger logger = LogManager.getLogger();
