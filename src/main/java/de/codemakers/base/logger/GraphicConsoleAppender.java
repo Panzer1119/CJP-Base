@@ -82,7 +82,6 @@ public class GraphicConsoleAppender extends AbstractAppender {
     
     @Override
     public void append(LogEvent logEvent) {
-        System.out.println("Append: " + logEvent); //REMOVE DEBUG Test
         final Instant timestamp = Instant.ofEpochMilli(logEvent.getInstant().getEpochMillisecond());
         int levelTemp = (logEvent.getLevel().intLevel() / 100) - 3;
         if (levelTemp == 1) {
@@ -99,6 +98,7 @@ public class GraphicConsoleAppender extends AbstractAppender {
         final Thread thread = getThreadById(threadId);
         final boolean bad = logLevel != null && logLevel.isBad();
         console.logEntries.add(new LeveledLogEntry(logEvent.getMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), bad, logLevel));
+        console.reloadWithoutException();
     }
     
     public static Thread getThreadById(long id) {
