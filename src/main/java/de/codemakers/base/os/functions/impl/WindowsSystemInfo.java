@@ -16,8 +16,6 @@
 
 package de.codemakers.base.os.functions.impl;
 
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OS;
 import de.codemakers.base.os.WindowsHelper;
 import de.codemakers.base.os.functions.*;
@@ -68,8 +66,9 @@ public class WindowsSystemInfo extends SystemInfo {
     
     @Override
     public PowerInfo getPowerInfo() throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
-        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec(COMMAND_POWER_INFO).getInputStream()));
+        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Runtime.getRuntime()
+                .exec(COMMAND_POWER_INFO)
+                .getInputStream()));
         final String line_1 = bufferedReader.readLine();
         bufferedReader.readLine();
         final String line_2 = bufferedReader.readLine();
@@ -115,7 +114,10 @@ public class WindowsSystemInfo extends SystemInfo {
                 batteryState = BatteryState.UNKNOWN;
                 break;
         }
-        return new PowerInfo(properties.getProperty(POWER_INFO_BATTERY_DEVICE_ID, POWER_INFO_BATTERY_DEVICE_ID), properties.getProperty(POWER_INFO_BATTERY_NAME, POWER_INFO_BATTERY_NAME), Double.parseDouble(properties.getProperty(POWER_INFO_BATTERY_ESTIMATED_CHARGE_REMAINING, "0.0")) * 0.01, batteryState, Integer.parseInt(properties.getProperty(POWER_INFO_BATTERY_ESTIMATED_RUN_TIME, "0")), TimeUnit.MINUTES, properties.getProperty(POWER_INFO_BATTERY_TIME_TO_FULL_CHARGE, "").isEmpty() ? -1 : Integer.parseInt(properties.getProperty(POWER_INFO_BATTERY_TIME_TO_FULL_CHARGE, "0")), TimeUnit.MINUTES, PowerSupply.BATTERY, properties);
+        return new PowerInfo(properties.getProperty(POWER_INFO_BATTERY_DEVICE_ID, POWER_INFO_BATTERY_DEVICE_ID), properties.getProperty(POWER_INFO_BATTERY_NAME, POWER_INFO_BATTERY_NAME), Double
+                .parseDouble(properties.getProperty(POWER_INFO_BATTERY_ESTIMATED_CHARGE_REMAINING, "0.0")) * 0.01, batteryState, Integer.parseInt(properties
+                .getProperty(POWER_INFO_BATTERY_ESTIMATED_RUN_TIME, "0")), TimeUnit.MINUTES, properties.getProperty(POWER_INFO_BATTERY_TIME_TO_FULL_CHARGE, "")
+                .isEmpty() ? -1 : Integer.parseInt(properties.getProperty(POWER_INFO_BATTERY_TIME_TO_FULL_CHARGE, "0")), TimeUnit.MINUTES, PowerSupply.BATTERY, properties);
     }
     
 }
