@@ -17,8 +17,12 @@
 package de.codemakers.io.audio;
 
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public interface IAudioTest {
+    
+    Logger logger = LogManager.getLogger();
     
     void init() throws Exception;
     

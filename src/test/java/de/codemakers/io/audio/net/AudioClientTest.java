@@ -22,6 +22,8 @@ import de.codemakers.base.util.interfaces.Stoppable;
 import de.codemakers.io.audio.AudioReceiverTest;
 import de.codemakers.io.audio.AudioSenderTest;
 import de.codemakers.io.audio.IAudioTest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -32,6 +34,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class AudioClientTest implements IAudioTest, Closeable, Startable, Stoppable {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final AudioFormat AUDIO_FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
     
