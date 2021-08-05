@@ -21,6 +21,8 @@ import de.codemakers.base.util.tough.Tough;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.base.util.tough.ToughSupplier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -34,7 +36,9 @@ import java.util.function.Supplier;
  * @param <T> Type Input
  * @param <R> Type Output
  */
-public abstract class Action<T extends Tough, R> {
+public abstract class Action<T extends Tough<?, ?>, R> {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     protected final CJP cjp;
     

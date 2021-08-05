@@ -18,9 +18,9 @@ package de.codemakers.base;
 
 import de.codemakers.base.action.Action;
 import de.codemakers.base.action.RunningAction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,36 +28,15 @@ import java.util.concurrent.TimeUnit;
 
 public class CJP {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final String PROJECT_NAME = "CJP-Base";
     public static final String VERSION = "0.16.6";
     
-    private static Class<?>[] LOGGER_CLASSES = new Class<?>[] {de.codemakers.base.logger.AdvancedLeveledLogger.class, de.codemakers.base.logger.AdvancedLeveledSystemLogger.class, de.codemakers.base.logger.AdvancedLogger.class, de.codemakers.base.logger.AdvancedSystemLogger.class, de.codemakers.base.logger.ILogger.class, de.codemakers.base.logger.Logger.class, de.codemakers.base.logger.LogLevel.class, de.codemakers.base.logger.SystemLogger.class};
-    private static String[] LOGGER_CLASS_NAMES = Arrays.asList(LOGGER_CLASSES).stream().map(Class::getName).toArray(String[]::new);
     private static final CJP CJP = createInstance();
     
     static {
         Standard.addShutdownHook(de.codemakers.base.CJP::shutdownInstance);
-    }
-    
-    public static void addLoggerClass(Class<?> clazz) {
-        Objects.requireNonNull(clazz);
-        LOGGER_CLASSES = Arrays.copyOf(LOGGER_CLASSES, LOGGER_CLASSES.length + 1);
-        LOGGER_CLASSES[LOGGER_CLASSES.length - 1] = clazz;
-        addLoggerClassName(clazz.getName());
-    }
-    
-    public static void addLoggerClassName(String className) {
-        Objects.requireNonNull(className);
-        LOGGER_CLASS_NAMES = Arrays.copyOf(LOGGER_CLASS_NAMES, LOGGER_CLASS_NAMES.length + 1);
-        LOGGER_CLASS_NAMES[LOGGER_CLASS_NAMES.length - 1] = className;
-    }
-    
-    public static Class<?>[] getLoggerClasses() {
-        return LOGGER_CLASSES;
-    }
-    
-    public static String[] getLoggerClassNames() {
-        return LOGGER_CLASS_NAMES;
     }
     
     private ExecutorService fixedExecutorService;

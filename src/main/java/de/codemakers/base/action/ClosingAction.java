@@ -20,10 +20,14 @@ import de.codemakers.base.CJP;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Future;
 
 public class ClosingAction<T extends AutoCloseable> extends ReturningAction<T> {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public ClosingAction(ToughSupplier<T> supplier) {
         super(supplier);

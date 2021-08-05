@@ -20,6 +20,8 @@ import de.codemakers.base.CJP;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -30,6 +32,8 @@ import java.util.concurrent.Future;
  * @param <T> Type input
  */
 public class ReturningAction<T> extends Action<ToughConsumer<T>, T> {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     protected final ToughSupplier<T> supplier;
     
