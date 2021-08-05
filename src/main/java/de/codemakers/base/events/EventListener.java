@@ -17,9 +17,13 @@
 package de.codemakers.base.events;
 
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @FunctionalInterface
 public interface EventListener<T extends Event> {
+    
+    Logger logger = LogManager.getLogger();
     
     /**
      * Triggered if an Event has occurred

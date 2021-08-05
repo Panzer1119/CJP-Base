@@ -19,11 +19,15 @@ package de.codemakers.base.util;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class Waiter {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final long STANDARD_SLEEP_TIME_MILLIS = 10;
     

@@ -22,6 +22,8 @@ import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.IOUtil;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class JsonSettings extends Settings {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final Gson GSON = new GsonBuilder().create();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();

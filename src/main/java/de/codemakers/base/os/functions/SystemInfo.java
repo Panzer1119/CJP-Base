@@ -18,8 +18,12 @@ package de.codemakers.base.os.functions;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class SystemInfo extends OSFunction {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public abstract PowerInfo getPowerInfo() throws Exception;
     

@@ -19,6 +19,8 @@ package de.codemakers.base.util;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.io.IOUtil;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,6 +28,8 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class DefaultSettings extends Settings {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String DEFAULT_COMMENT = "Changed on:";
     
