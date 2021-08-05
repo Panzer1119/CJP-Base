@@ -21,11 +21,15 @@ import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.exceptions.NotSupportedRuntimeException;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.IOUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Cipher;
 import java.io.InputStream;
 
 public interface Signer extends Cryptor {
+    
+    Logger logger = LogManager.getLogger();
     
     @Override
     default boolean usesIV() {

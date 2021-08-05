@@ -19,6 +19,8 @@ package de.codemakers.security.interfaces;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.exceptions.NotSupportedRuntimeException;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -29,6 +31,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface Cryptor {
+    
+    Logger logger = LogManager.getLogger();
     
     boolean usesIV();
     

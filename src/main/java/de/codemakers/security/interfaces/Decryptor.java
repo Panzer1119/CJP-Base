@@ -18,8 +18,12 @@ package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public interface Decryptor extends Cryptor {
+    
+    Logger logger = LogManager.getLogger();
     
     byte[] decrypt(byte[] data, byte[] iv) throws Exception;
     

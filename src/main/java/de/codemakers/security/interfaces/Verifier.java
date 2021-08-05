@@ -21,10 +21,14 @@ import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.util.tough.ToughBiPredicate;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.IOUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 
 public interface Verifier extends ToughBiPredicate<byte[], byte[]> {
+    
+    Logger logger = LogManager.getLogger();
     
     @Override
     default Boolean test(byte[] data, byte[] data_signature) throws Exception {

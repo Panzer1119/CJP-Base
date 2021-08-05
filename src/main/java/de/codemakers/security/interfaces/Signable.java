@@ -18,8 +18,12 @@ package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public interface Signable {
+    
+    Logger logger = LogManager.getLogger();
     
     byte[] sign(Signer signer) throws Exception;
     

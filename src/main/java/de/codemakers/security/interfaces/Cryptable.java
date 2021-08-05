@@ -19,11 +19,15 @@ package de.codemakers.security.interfaces;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.interfaces.Streamable;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
 public interface Cryptable extends Streamable {
+    
+    Logger logger = LogManager.getLogger();
     
     byte[] crypt(Cryptor cryptor) throws Exception;
     
