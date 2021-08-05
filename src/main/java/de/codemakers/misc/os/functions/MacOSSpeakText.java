@@ -16,21 +16,24 @@
 
 package de.codemakers.misc.os.functions;
 
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
 //@RegisterOSFunction(supported = {OS.MACOS}) //FIXME This does not work
 public class MacOSSpeakText extends SpeakText {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     protected static final String FORMAT = "osascript -e 'say \"%s\"'";
     
     @Override
     public boolean speak(String text) throws Exception {
         final String temp = String.format(FORMAT, text);
-        Logger.logDebug("temp=" + temp);
+        logger.debug("temp=" + temp);
         final Process process = Runtime.getRuntime().exec(temp);
-        Logger.logDebug("process=" + process);
+        logger.debug("process=" + process);
         return process.waitFor((int) (text.length() * 0.5 + 5), TimeUnit.SECONDS);
     }
     

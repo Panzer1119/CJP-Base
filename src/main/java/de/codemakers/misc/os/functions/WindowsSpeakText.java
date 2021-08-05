@@ -16,10 +16,11 @@
 
 package de.codemakers.misc.os.functions;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OS;
 import de.codemakers.base.os.functions.RegisterOSFunction;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.io.File;
@@ -27,12 +28,14 @@ import java.io.File;
 @RegisterOSFunction(supported = {OS.WINDOWS})
 public class WindowsSpeakText extends SpeakText {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     protected static final String FORMAT = "dim fname\nset voice=createobject(\"sapi.spvoice\")\nvoice.speak(\"%s\")";
     
     @Override
     public boolean speak(String text) throws Exception {
         if (!Desktop.isDesktopSupported()) {
-            Logger.logWarning("Desktop is not supported");
+            logger.warn("Desktop is not supported");
             return false;
         }
         final String temp = String.format(FORMAT, text);

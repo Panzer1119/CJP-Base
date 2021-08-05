@@ -17,7 +17,6 @@
 package de.codemakers.io.file;
 
 import de.codemakers.base.exceptions.NotImplementedRuntimeException;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OS;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.Require;
@@ -35,6 +34,8 @@ import de.codemakers.io.file.providers.ZIPProvider;
 import de.codemakers.security.interfaces.Decryptor;
 import de.codemakers.security.interfaces.Encryptor;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.URI;
@@ -49,6 +50,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implements Convertable<ExternFile>, Copyable {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String FILE_SEPARATOR_WINDOWS_STRING = OSUtil.WINDOWS_HELPER.getFileSeparator();
     public static final String FILE_SEPARATOR_DEFAULT_STRING = OSUtil.DEFAULT_HELPER.getFileSeparator();
@@ -92,7 +95,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                         FILE_PROVIDERS.add(fileProvider_);
                     }
                     if (DEBUG) {
-                        Logger.logDebug("Successfully auto registered FileProvider: " + fileProvider_);
+                        logger.debug("Successfully auto registered FileProvider: " + fileProvider_);
                     }
                 } catch (Exception ex) {
                     logger.error(ex);
@@ -202,7 +205,10 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
     
     public static final FileProvider<AdvancedFile> getProvider(AdvancedFile parent, String name, AdvancedFile file, boolean exists) {
         Objects.requireNonNull(name);
-        return FILE_PROVIDERS.stream().filter((fileProvider) -> fileProvider.test(parent, name, file, exists)).max(Comparator.comparingInt((fileProvider) -> fileProvider.getPriority(parent, name))).orElse(null);
+        return FILE_PROVIDERS.stream()
+                .filter((fileProvider) -> fileProvider.test(parent, name, file, exists))
+                .max(Comparator.comparingInt((fileProvider) -> fileProvider.getPriority(parent, name)))
+                .orElse(null);
     }
     
     public static final boolean couldBeProvided(AdvancedFile advancedFile) {
@@ -385,11 +391,11 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 temp.clear();
                 name = "";
                 if (DEBUG_FILE_PROVIDER) {
-                    Logger.logDebug("FOUND A  FILE PROVIDER FOR: \"" + p + "\": " + fileProvider);
+                    logger.debug("FOUND A  FILE PROVIDER FOR: \"" + p + "\": " + fileProvider);
                 }
             } else {
                 if (DEBUG_FILE_PROVIDER) {
-                    Logger.logDebug("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
+                    logger.debug("FOUND NO FILE PROVIDER FOR: \"" + p + "\"");
                 }
             }
         }
@@ -469,7 +475,8 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             System.arraycopy(paths, 0, paths_, paths_prefixes.length, paths.length);
             return new AdvancedFile(paths_, windowsSeparator, extern, true, parent, fileProvider, null);
         } else { // Relative extern file
-            return new AdvancedFile(toFile().getAbsolutePath().split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()), windowsSeparator, extern, true, parent, fileProvider, clazz);
+            return new AdvancedFile(toFile().getAbsolutePath()
+                    .split(OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()), windowsSeparator, extern, true, parent, fileProvider, clazz);
             
         }
     }
@@ -982,9 +989,21 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 final Path myPath = closeablePath.getData();
                 final int myPath_length = myPath.toString().length();
                 if (recursive) {
-                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
+                    Files.walk(myPath)
+                            .skip(1)
+                            .map((path_) -> path_.toString().substring(myPath_length + 1))
+                            .map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_)
+                            .map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX))
+                            .map((path_) -> new AdvancedFile(this, false, path_))
+                            .forEach(advancedFiles::add);
                 } else {
-                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
+                    Files.walk(myPath, 1)
+                            .skip(1)
+                            .map((path_) -> path_.toString().substring(myPath_length + 1))
+                            .map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_)
+                            .map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX))
+                            .map((path_) -> new AdvancedFile(this, false, path_))
+                            .forEach(advancedFiles::add);
                 }
             } catch (Exception ex) {
                 logger.error(ex);
@@ -1033,9 +1052,23 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 final Path myPath = closeablePath.getData();
                 final int myPath_length = myPath.toString().length();
                 if (recursive) {
-                    Files.walk(myPath).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, true, path_)).filter(advancedFileFilter).forEach(advancedFiles::add);
+                    Files.walk(myPath)
+                            .skip(1)
+                            .map((path_) -> path_.toString().substring(myPath_length + 1))
+                            .map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_)
+                            .map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX))
+                            .map((path_) -> new AdvancedFile(this, true, path_))
+                            .filter(advancedFileFilter)
+                            .forEach(advancedFiles::add);
                 } else {
-                    Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, true, path_)).filter(advancedFileFilter).forEach(advancedFiles::add);
+                    Files.walk(myPath, 1)
+                            .skip(1)
+                            .map((path_) -> path_.toString().substring(myPath_length + 1))
+                            .map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_)
+                            .map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX))
+                            .map((path_) -> new AdvancedFile(this, true, path_))
+                            .filter(advancedFileFilter)
+                            .forEach(advancedFiles::add);
                 }
             } catch (Exception ex) {
                 logger.error(ex);
@@ -1170,7 +1203,9 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             return false;
         }
         final AdvancedFile that = (AdvancedFile) other;
-        return init == that.init && windowsSeparator == that.windowsSeparator && extern == that.extern && absolute == that.absolute && Arrays.equals(paths, that.paths) && Objects.equals(parent, that.parent) && ((fileProvider == null && that.fileProvider == null) || ((fileProvider != null && that.fileProvider != null) && Objects.equals(fileProvider.getClass(), that.fileProvider.getClass()))) && Objects.equals(clazz, that.clazz);
+        return init == that.init && windowsSeparator == that.windowsSeparator && extern == that.extern && absolute == that.absolute && Arrays.equals(paths, that.paths) && Objects
+                .equals(parent, that.parent) && ((fileProvider == null && that.fileProvider == null) || ((fileProvider != null && that.fileProvider != null) && Objects
+                .equals(fileProvider.getClass(), that.fileProvider.getClass()))) && Objects.equals(clazz, that.clazz);
     }
     
     @Override

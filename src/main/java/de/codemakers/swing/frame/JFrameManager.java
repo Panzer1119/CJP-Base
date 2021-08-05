@@ -17,10 +17,11 @@
 package de.codemakers.swing.frame;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.StringUtil;
 import de.codemakers.io.file.AdvancedFile;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 
 //FIXME This is crap?! Maybe i need to create a completely new JFrameManager class...
 public class JFrameManager extends JFrame {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String TITLE_FORMAT_NAME = "name";
     public static final String TITLE_FORMAT_VAR_NAME = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_NAME + StringSubstitutor.DEFAULT_VAR_END;
@@ -86,8 +89,12 @@ public class JFrameManager extends JFrame {
     }
     
     public void updateTitle() {
-        titleFormatValues.put(TITLE_FORMAT_PREFIX, queue_prefix.stream().map(StringUtil::toString).collect(Collectors.joining(DEFAULT_PREFIX_OR_SUFFIX_DELIMITER, "", " ")));
-        titleFormatValues.put(TITLE_FORMAT_SUFFIX, queue_suffix.stream().map(StringUtil::toString).collect(Collectors.joining(DEFAULT_PREFIX_OR_SUFFIX_DELIMITER, " ", "")));
+        titleFormatValues.put(TITLE_FORMAT_PREFIX, queue_prefix.stream()
+                .map(StringUtil::toString)
+                .collect(Collectors.joining(DEFAULT_PREFIX_OR_SUFFIX_DELIMITER, "", " ")));
+        titleFormatValues.put(TITLE_FORMAT_SUFFIX, queue_suffix.stream()
+                .map(StringUtil::toString)
+                .collect(Collectors.joining(DEFAULT_PREFIX_OR_SUFFIX_DELIMITER, " ", "")));
         setTitle(StringSubstitutor.replace(titleFormat, titleFormatValues));
     }
     
@@ -99,7 +106,7 @@ public class JFrameManager extends JFrame {
         try (final InputStream inputStream = advancedFile.createInputStream()) {
             setIconImage(ImageIO.read(inputStream));
         } catch (Exception ex) {
-            Logger.logError("Error while loading icon", ex);
+            logger.error("Error while loading icon", ex);
         }
     }
     

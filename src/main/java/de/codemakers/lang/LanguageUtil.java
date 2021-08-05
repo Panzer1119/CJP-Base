@@ -18,14 +18,17 @@ package de.codemakers.lang;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Locale;
 import java.util.Objects;
 
 public class LanguageUtil {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     // // Final values
     // Paths etc.
@@ -167,10 +170,10 @@ public class LanguageUtil {
     }
     
     public static void initLocalizers() {
-        getLocalizerEnglishUs().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_US.toLanguageTag(), FILE_ENGLISH_US.getAbsolutePath()), ex));
-        getLocalizerEnglishGb().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_GB.toLanguageTag(), FILE_ENGLISH_GB.getAbsolutePath()), ex));
-        getLocalizerGermanDe().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_GERMAN_DE.toLanguageTag(), FILE_GERMAN_DE.getAbsolutePath()), ex));
-        getLocalizerDefault().load((ex) -> Logger.logError(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_DEFAULT.toLanguageTag(), FILE_DEFAULT.getAbsolutePath()), ex));
+        getLocalizerEnglishUs().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_US.toLanguageTag(), FILE_ENGLISH_US.getAbsolutePath()), ex));
+        getLocalizerEnglishGb().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_GB.toLanguageTag(), FILE_ENGLISH_GB.getAbsolutePath()), ex));
+        getLocalizerGermanDe().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_GERMAN_DE.toLanguageTag(), FILE_GERMAN_DE.getAbsolutePath()), ex));
+        getLocalizerDefault().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_DEFAULT.toLanguageTag(), FILE_DEFAULT.getAbsolutePath()), ex));
     }
     
     public static AdvancedLocalizer getLocalizerEnglishUs() {

@@ -19,18 +19,21 @@ package de.codemakers.base.os;
 import de.codemakers.base.Standard;
 import de.codemakers.base.env.SystemProperties;
 import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.OSFunction;
 import de.codemakers.base.os.functions.RegisterOSFunction;
 import de.codemakers.base.reflection.ReflectionUtil;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OSUtil {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String[] STANDARD_OS_NAMES = new String[] {"Windows", "Linux", "Mac OS", "SunOS", "FreeBSD"};
     
@@ -77,11 +80,13 @@ public class OSUtil {
         try {
             final RegisterOSFunction registerOSFunction = clazz.getAnnotation(RegisterOSFunction.class);
             final OSFunction osFunction = (OSFunction) clazz.newInstance();
-            Logger.log(String.format("[%s]: Registering %s: \"%s\" as %s (Annotation: \"%s\")", OSUtil.class.getSimpleName(), OSFunction.class.getSimpleName(), osFunction, osFunction.getClass().getSuperclass().getName(), registerOSFunction), LogLevel.FINEST);
+            logger.log(LogLevel.FINEST, String.format("[%s]: Registering %s: \"%s\" as %s (Annotation: \"%s\")", OSUtil.class.getSimpleName(), OSFunction.class
+                    .getSimpleName(), osFunction, osFunction.getClass().getSuperclass().getName(), registerOSFunction));
             for (OS os : registerOSFunction.supported()) {
                 os.getHelper().addOSFunction(osFunction);
             }
-            Logger.log(String.format("[%s]: Registered %s: \"%s\" as %s (Annotation: \"%s\")", OSUtil.class.getSimpleName(), OSFunction.class.getSimpleName(), osFunction, osFunction.getClass().getSuperclass().getName(), registerOSFunction), LogLevel.FINER);
+            logger.log(LogLevel.FINER, String.format("[%s]: Registered %s: \"%s\" as %s (Annotation: \"%s\")", OSUtil.class.getSimpleName(), OSFunction.class
+                    .getSimpleName(), osFunction, osFunction.getClass().getSuperclass().getName(), registerOSFunction));
             return true;
         } catch (Exception ex) {
             logger.error(ex);

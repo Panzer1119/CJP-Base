@@ -16,15 +16,18 @@
 
 package de.codemakers.base.util;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.StringResolver;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PropertiesStringResolver implements StringResolver {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String DEFAULT_TAG_START = ":";
     public static final String DEFAULT_TAG_END = ":";
@@ -110,7 +113,7 @@ public class PropertiesStringResolver implements StringResolver {
             }
             final Matcher matcher = Pattern.compile(Pattern.quote(tagStart) + ".*" + Pattern.quote(tagEnd)).matcher(output);
             if (matcher.find()) {
-                Logger.logWarning(String.format("Could not fully resolve the String \"%s\", only resolved it to \"%s\"", input, output)); //DEBUG
+                logger.warn(String.format("Could not fully resolve the String \"%s\", only resolved it to \"%s\"", input, output)); //DEBUG
                 return null;
             }
         }

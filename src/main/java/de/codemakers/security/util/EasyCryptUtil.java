@@ -17,7 +17,6 @@
 package de.codemakers.security.util;
 
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.ConvertUtil;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughPredicate;
@@ -25,6 +24,8 @@ import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.security.entities.TrustedSecureData;
 import de.codemakers.security.interfaces.Signer;
 import de.codemakers.security.interfaces.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -39,6 +40,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class EasyCryptUtil {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String ALGORITHM_AES = AESCryptUtil.ALGORITHM_AES;
     public static final String ALGORITHM_RSA = RSACryptUtil.ALGORITHM_RSA;
@@ -59,7 +62,7 @@ public class EasyCryptUtil {
             random = SecureRandom.getInstanceStrong();
         } catch (Exception ex) {
             random = null;
-            Logger.logWarning("This System has no strong " + SecureRandom.class.getSimpleName() + " Instance");
+            logger.warn("This System has no strong " + SecureRandom.class.getSimpleName() + " Instance", ex);
         }
         if (random == null) {
             random = new Random() {
@@ -464,7 +467,8 @@ public class EasyCryptUtil {
         if (!isValid(timestamp, verifier)) {
             return true;
         }
-        return timeTester == null || !timeTester.testWithoutException(ConvertUtil.byteArrayToLong(decryptor != null ? timestamp.decryptWithoutException(decryptor) : timestamp.getData()));
+        return timeTester == null || !timeTester.testWithoutException(ConvertUtil.byteArrayToLong(decryptor != null ? timestamp.decryptWithoutException(decryptor) : timestamp
+                .getData()));
     }
     
     public static final ToughPredicate<Long> createTimePredicateOfMaximumErrorAndLockedTimestamp(long max_time_error, TimeUnit unit) {

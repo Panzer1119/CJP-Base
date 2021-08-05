@@ -16,7 +16,11 @@
 
 package de.codemakers.base.util.tough;
 
+import org.apache.logging.log4j.LogManager;
+
 public interface Tough<T, R> {
+    
+    org.apache.logging.log4j.Logger logger = LogManager.getLogger();
 
     R action(T t) throws Exception;
 
