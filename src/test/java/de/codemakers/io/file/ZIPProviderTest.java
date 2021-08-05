@@ -16,15 +16,16 @@
 
 package de.codemakers.io.file;
 
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
 public class ZIPProviderTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final void main(String[] args) {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
         AdvancedFile.DEBUG = true;
         AdvancedFile.DEBUG_TO_STRING = false;
         AdvancedFile.DEBUG_FILE_PROVIDER = false;
