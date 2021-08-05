@@ -85,20 +85,11 @@ public class GraphicConsoleAppender extends AbstractAppender { //FIXME Use Stand
     public void append(LogEvent logEvent) {
         final Instant timestamp = Instant.ofEpochMilli(logEvent.getInstant().getEpochMillisecond());
         final long threadId = logEvent.getThreadId();
-        final Thread thread = getThreadById(threadId);
+        final Thread thread = Standard.getThread(threadId);
         final Message message = logEvent.getMessage();
         final Level level = logEvent.getLevel();
         console.logEntries.add(new LeveledLogEntry(message.getFormattedMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), level));
         console.reloadWithoutException();
-    }
-    
-    public static Thread getThreadById(long id) {
-        for (Thread thread : Thread.getAllStackTraces().keySet()) {
-            if (thread.getId() == id) {
-                return thread;
-            }
-        }
-        return null;
     }
     
 }

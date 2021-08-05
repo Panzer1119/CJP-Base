@@ -333,4 +333,25 @@ public class Standard {
         return CONSOLES.get(name);
     }
     
+    public static Thread getThread(long id) {
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            if (thread.getId() == id) {
+                return thread;
+            }
+        }
+        return null;
+    }
+    
+    public static Thread getThread(String name) {
+        if (name == null) {
+            return null;
+        }
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            if (Objects.equals(name,thread.getName())) {
+                return thread;
+            }
+        }
+        return null;
+    }
+    
 }
