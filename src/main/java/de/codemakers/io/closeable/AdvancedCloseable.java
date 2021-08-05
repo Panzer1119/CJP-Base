@@ -20,12 +20,16 @@ import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.exceptions.CJPRuntimeException;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     private final T closeable;
     private final D data;

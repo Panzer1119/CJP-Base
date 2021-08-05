@@ -29,6 +29,8 @@ import de.codemakers.security.entities.SecureData;
 import de.codemakers.security.entities.TrustedSecureData;
 import de.codemakers.security.interfaces.*;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.URI;
@@ -40,6 +42,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> implements Decryptable, Encryptable, Hashable, Serializable, Signable, Verifiable {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public abstract String getName();
     

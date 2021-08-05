@@ -20,6 +20,8 @@ import de.codemakers.base.util.Waiter;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -29,6 +31,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class RedirectingStream<I extends InputStream, O extends OutputStream> implements Closeable, Startable, Stoppable {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     protected final I inputStream;
     protected final O outputStream;
