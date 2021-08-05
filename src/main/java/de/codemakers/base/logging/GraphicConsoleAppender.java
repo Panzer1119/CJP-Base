@@ -34,7 +34,15 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Plugin(name = GraphicConsoleAppender.PLUGIN_NAME, category = "Core", elementType = Appender.ELEMENT_TYPE, printObject = true)
-public class GraphicConsoleAppender extends AbstractAppender { //FIXME Use Standard. original system out streams für log4j2-test.xml? und dann fang den System.out new ab um ihn auch zu loggen
+public class GraphicConsoleAppender extends AbstractAppender {
+    
+    /*
+    //TODO FIXME
+    Für log4j2-test.xml und log4j2.xml ConsoleAppender austauschen mit einem eigenen, da als target SYSTEM_OUT oder SYSTEM_ERR benutzt wird
+    wo er aber auf System.out oder System.err vermutlich zurückgreift und das sollte ja von uns verändert worden sein, um alle System.out.println...
+    abzufangen.
+    Also einen eigenen ConsoleAppender machen, der die echten/originalen System.out und System.err aus Standard benutzt.
+     */
     
     public static final String PLUGIN_NAME = "GraphicConsole";
     
@@ -88,6 +96,7 @@ public class GraphicConsoleAppender extends AbstractAppender { //FIXME Use Stand
         final Thread thread = Standard.getThread(threadId);
         final Message message = logEvent.getMessage();
         final Level level = logEvent.getLevel();
+        //FIXME Pass the logEvent directly AFTER CLONING/COPYING IT!!!
         console.logEntries.add(new LeveledLogEntry(message.getFormattedMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), level));
         console.reloadWithoutException();
     }
