@@ -17,15 +17,18 @@
 package de.codemakers.swing.frame;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 
 public class JFrameManagerTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final void main(String[] args) throws Exception {
         final JFrameManager frameManager = new JFrameManager("Test Name", "0.0");
-        Logger.log("frameManager=" + frameManager);
+        logger.info("frameManager=" + frameManager);
         frameManager.setDefaultSettings();
         frameManager.setPreferredSize(new Dimension(600, 300));
         frameManager.show(null);

@@ -17,11 +17,14 @@
 package de.codemakers.lang;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Locale;
 
 public class LangTest {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final void main(String[] args) throws Exception {
         if (false) {
@@ -29,44 +32,44 @@ public class LangTest {
             return;
         }
         final Locale locale = Locale.getDefault();
-        Logger.log("locale=" + locale);
-        Logger.log("locale.getCountry()=" + locale.getCountry());
-        Logger.log("locale.getDisplayCountry()=" + locale.getDisplayCountry());
-        Logger.log("locale.getDisplayLanguage()=" + locale.getDisplayLanguage());
-        Logger.log("locale.getDisplayName()=" + locale.getDisplayName());
-        Logger.log("locale.getDisplayScript()=" + locale.getDisplayScript());
-        Logger.log("locale.getDisplayVariant()=" + locale.getDisplayVariant());
-        Logger.log("locale.getISO3Country()=" + locale.getISO3Country());
-        Logger.log("locale.getISO3Language()=" + locale.getISO3Language());
-        Logger.log("locale.getLanguage()=" + locale.getLanguage());
-        Logger.log("locale.getVariant()=" + locale.getVariant());
-        Logger.log("locale.toLanguageTag()=" + locale.toLanguageTag());
-        Logger.log(Locale.forLanguageTag("en"));
+        logger.info("locale=" + locale);
+        logger.info("locale.getCountry()=" + locale.getCountry());
+        logger.info("locale.getDisplayCountry()=" + locale.getDisplayCountry());
+        logger.info("locale.getDisplayLanguage()=" + locale.getDisplayLanguage());
+        logger.info("locale.getDisplayName()=" + locale.getDisplayName());
+        logger.info("locale.getDisplayScript()=" + locale.getDisplayScript());
+        logger.info("locale.getDisplayVariant()=" + locale.getDisplayVariant());
+        logger.info("locale.getISO3Country()=" + locale.getISO3Country());
+        logger.info("locale.getISO3Language()=" + locale.getISO3Language());
+        logger.info("locale.getLanguage()=" + locale.getLanguage());
+        logger.info("locale.getVariant()=" + locale.getVariant());
+        logger.info("locale.toLanguageTag()=" + locale.toLanguageTag());
+        logger.info(Locale.forLanguageTag("en"));
         final AdvancedLocalizer advancedLocalizer = LanguageUtil.getLocalizerDefault();
-        Logger.log("advancedLocalizer=" + advancedLocalizer);
-        //Logger.log("advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH)=" + advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH));
-        Logger.log("Standard.localize(\"test_123\")=" + Standard.localize("test_123"));
-        Logger.log("Standard.localize(\"test_123\", null)=" + Standard.localize("test_123", null));
-        Logger.log("Standard.localize(\"test_123\")=" + Standard.localize("test_1234"));
+        logger.info("advancedLocalizer=" + advancedLocalizer);
+        //logger.info("advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH)=" + advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH));
+        logger.info("Standard.localize(\"test_123\")=" + Standard.localize("test_123"));
+        logger.info("Standard.localize(\"test_123\", null)=" + Standard.localize("test_123", null));
+        logger.info("Standard.localize(\"test_123\")=" + Standard.localize("test_1234"));
         //test();
     }
     
     private static void test() {
         for (Locale locale : Locale.getAvailableLocales()) {
             try {
-                Logger.log("locale=" + locale);
-                Logger.log("locale.getCountry()=" + locale.getCountry());
-                Logger.log("locale.getDisplayCountry()=" + locale.getDisplayCountry());
-                Logger.log("locale.getDisplayLanguage()=" + locale.getDisplayLanguage());
-                Logger.log("locale.getDisplayName()=" + locale.getDisplayName());
-                Logger.log("locale.getDisplayScript()=" + locale.getDisplayScript());
-                Logger.log("locale.getDisplayVariant()=" + locale.getDisplayVariant());
-                Logger.log("locale.getISO3Country()=" + locale.getISO3Country());
-                Logger.log("locale.getISO3Language()=" + locale.getISO3Language());
-                Logger.log("locale.getLanguage()=" + locale.getLanguage());
-                Logger.log("locale.getVariant()=" + locale.getVariant());
-                Logger.log("locale.toLanguageTag()=" + locale.toLanguageTag());
-                Logger.log("\n\n");
+                logger.info("locale=" + locale);
+                logger.info("locale.getCountry()=" + locale.getCountry());
+                logger.info("locale.getDisplayCountry()=" + locale.getDisplayCountry());
+                logger.info("locale.getDisplayLanguage()=" + locale.getDisplayLanguage());
+                logger.info("locale.getDisplayName()=" + locale.getDisplayName());
+                logger.info("locale.getDisplayScript()=" + locale.getDisplayScript());
+                logger.info("locale.getDisplayVariant()=" + locale.getDisplayVariant());
+                logger.info("locale.getISO3Country()=" + locale.getISO3Country());
+                logger.info("locale.getISO3Language()=" + locale.getISO3Language());
+                logger.info("locale.getLanguage()=" + locale.getLanguage());
+                logger.info("locale.getVariant()=" + locale.getVariant());
+                logger.info("locale.toLanguageTag()=" + locale.toLanguageTag());
+                logger.info("\n\n");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

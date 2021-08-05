@@ -16,9 +16,10 @@
 
 package de.codemakers.security.entities;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.security.managers.ExpiringTrustedSecureDataManager;
 import de.codemakers.security.util.EasyCryptUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -30,81 +31,82 @@ import java.util.concurrent.TimeUnit;
 
 public class ExpiringTrustedSecureDataTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendSource().appendText(": ").appendObject().finishWithoutException();
-        Logger.log(ExpiringTrustedSecureDataTest.class.getName());
+        logger.info(ExpiringTrustedSecureDataTest.class.getName());
         final ExpiringTrustedSecureDataManager expiringTrustedSecureDataManager = new ExpiringTrustedSecureDataManager(5, TimeUnit.SECONDS);
-        Logger.log(expiringTrustedSecureDataManager);
+        logger.info(expiringTrustedSecureDataManager);
         expiringTrustedSecureDataManager.start();
-        Logger.log(expiringTrustedSecureDataManager);
+        logger.info(expiringTrustedSecureDataManager);
         final String text_1 = "This is a sentence!";
-        Logger.log(text_1);
+        logger.info(text_1);
         final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        Logger.log(keyPairGenerator);
+        logger.info(keyPairGenerator);
         keyPairGenerator.initialize(1024, SecureRandom.getInstanceStrong());
-        Logger.log(keyPairGenerator);
+        logger.info(keyPairGenerator);
         final KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        Logger.log(keyPair);
+        logger.info(keyPair);
         final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-        Logger.log(keyGenerator);
+        logger.info(keyGenerator);
         keyGenerator.init(256, SecureRandom.getInstanceStrong());
-        Logger.log(keyGenerator);
+        logger.info(keyGenerator);
         final SecretKey secretKey = keyGenerator.generateKey();
-        Logger.log(secretKey);
+        logger.info(secretKey);
         final ExpiringTrustedSecureData expiringTrustedSecureData = new ExpiringTrustedSecureData(text_1.getBytes(), EasyCryptUtil.encryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.signerOfSHA512withRSA(keyPair.getPrivate()));
-        Logger.log(expiringTrustedSecureData);
+        logger.info(expiringTrustedSecureData);
         //expiringTrustedSecureData.createTimestamp(EasyCryptUtil.signerOfSHA256withRSA(keyPair.getPrivate()));
         expiringTrustedSecureData.createTimestamp(EasyCryptUtil.encryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.signerOfSHA512withRSA(keyPair.getPrivate()));
-        Logger.log(expiringTrustedSecureData);
-        Logger.log("=========================================================================================");
+        logger.info(expiringTrustedSecureData);
+        logger.info("=========================================================================================");
         final ExpiringTrustedSecureData expiringTrustedSecureData_c_1 = expiringTrustedSecureData.copy();
-        Logger.log(expiringTrustedSecureData_c_1);
+        logger.info(expiringTrustedSecureData_c_1);
         //if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_1, EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic()))) {
         if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_1, EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic()))) {
-            Logger.log("ACCEPTED 1");
-            Logger.log("VALID 1: " + expiringTrustedSecureData_c_1.verifyWithoutException(EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic())));
-            Logger.log(new String(expiringTrustedSecureData_c_1.getData()));
+            logger.info("ACCEPTED 1");
+            logger.info("VALID 1: " + expiringTrustedSecureData_c_1.verifyWithoutException(EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic())));
+            logger.info(new String(expiringTrustedSecureData_c_1.getData()));
             final String text_2 = new String(expiringTrustedSecureData_c_1.decryptWithoutException(EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey)));
-            Logger.log("1: " + text_2);
+            logger.info("1: " + text_2);
         } else {
-            Logger.log("REJECTED 1");
+            logger.info("REJECTED 1");
         }
-        Logger.log("=========================================================================================");
-        Logger.log(expiringTrustedSecureDataManager);
-        Logger.log("=========================================================================================");
+        logger.info("=========================================================================================");
+        logger.info(expiringTrustedSecureDataManager);
+        logger.info("=========================================================================================");
         final ExpiringTrustedSecureData expiringTrustedSecureData_c_2 = expiringTrustedSecureData.copy();
-        Logger.log(expiringTrustedSecureData_c_2);
+        logger.info(expiringTrustedSecureData_c_2);
         /*
-        Logger.log("=========================================================================================");
-        Logger.log("=========================================================================================");
-        Logger.log("=========================================================================================");
-        Logger.log(expiringTrustedSecureDataManager);
+        logger.info("=========================================================================================");
+        logger.info("=========================================================================================");
+        logger.info("=========================================================================================");
+        logger.info(expiringTrustedSecureDataManager);
         */
         Thread.sleep(6000);
         /*
-        Logger.log(expiringTrustedSecureDataManager);
-        Logger.log("=========================================================================================");
-        Logger.log("=========================================================================================");
-        Logger.log("=========================================================================================");
+        logger.info(expiringTrustedSecureDataManager);
+        logger.info("=========================================================================================");
+        logger.info("=========================================================================================");
+        logger.info("=========================================================================================");
         */
         //if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_2, EasyCryptUtil.verifierOfSHA256withRSA(keyPair.getPublic()))) {
         if (expiringTrustedSecureDataManager.acceptExpiringTrustedSecureData(expiringTrustedSecureData_c_2, EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey), EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic()))) {
-            Logger.log("ACCEPTED 2");
-            Logger.log("VALID 2: " + expiringTrustedSecureData_c_2.verifyWithoutException(EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic())));
-            Logger.log(new String(expiringTrustedSecureData_c_2.getData()));
+            logger.info("ACCEPTED 2");
+            logger.info("VALID 2: " + expiringTrustedSecureData_c_2.verifyWithoutException(EasyCryptUtil.verifierOfSHA512withRSA(keyPair.getPublic())));
+            logger.info(new String(expiringTrustedSecureData_c_2.getData()));
             final String text_2 = new String(expiringTrustedSecureData_c_2.decryptWithoutException(EasyCryptUtil.decryptorOfCipher(Cipher.getInstance("AES"), secretKey)));
-            Logger.log("2: " + text_2);
+            logger.info("2: " + text_2);
         } else {
-            Logger.log("REJECTED 2");
+            logger.info("REJECTED 2");
         }
-        Logger.log("=========================================================================================");
-        Logger.log(expiringTrustedSecureDataManager);
-        Logger.log("==========================================");
+        logger.info("=========================================================================================");
+        logger.info(expiringTrustedSecureDataManager);
+        logger.info("==========================================");
         expiringTrustedSecureDataManager.stop();
-        Logger.log(expiringTrustedSecureDataManager);
-        Logger.log("==========================================");
+        logger.info(expiringTrustedSecureDataManager);
+        logger.info("==========================================");
         expiringTrustedSecureDataManager.clear();
-        Logger.log(expiringTrustedSecureDataManager);
+        logger.info(expiringTrustedSecureDataManager);
     }
     
 }

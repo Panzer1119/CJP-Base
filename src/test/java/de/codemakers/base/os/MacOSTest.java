@@ -17,17 +17,18 @@
 package de.codemakers.base.os;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.misc.os.functions.SpeakText;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 public class MacOSTest {
     
-    public static final void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINER);
+    private static final Logger logger = LogManager.getLogger();
+    
+    public static void main(String[] args) throws Exception {
         final ProcessBuilder processBuilder = new ProcessBuilder("osascript -e 'say \"Hello World!\"'");
         //final ProcessBuilder processBuilder = new ProcessBuilder("clear");
         final Process process = processBuilder.start();
@@ -62,8 +63,8 @@ public class MacOSTest {
             return;
         }
         final SpeakText speakText = OSUtil.getFunction(SpeakText.class);
-        Logger.logDebug("Test 1: " + speakText.speak("Hello World!"));
-        Logger.logDebug("Test 2: " + speakText.speak("Second Test, how are you today?"));
+        logger.debug("Test 1: " + speakText.speak("Hello World!"));
+        logger.debug("Test 2: " + speakText.speak("Second Test, how are you today?"));
     }
     
 }

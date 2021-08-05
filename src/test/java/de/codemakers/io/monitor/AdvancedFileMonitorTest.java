@@ -17,67 +17,68 @@
 package de.codemakers.io.monitor;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.listeners.AdvancedFileChangeListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class AdvancedFileMonitorTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINER);
         final AdvancedFile root = new AdvancedFile(args[0]);
-        Logger.log("root=" + root);
+        logger.info("root=" + root);
         final AdvancedFileMonitor advancedFileMonitor = new AdvancedFileMonitor(root);
-        Logger.log("advancedFileMonitor=" + advancedFileMonitor);
+        logger.info("advancedFileMonitor=" + advancedFileMonitor);
         advancedFileMonitor.addAdvancedFileChangeListeners(new AdvancedFileChangeListener() {
             @Override
             public void onFileCreated(AdvancedFile file) {
-                Logger.logDebug("onFileCreated:" + file);
+                logger.debug("onFileCreated:" + file);
             }
-    
+            
             @Override
             public void onFileModified(AdvancedFile file) {
-                Logger.logDebug("onFileModified:" + file);
+                logger.debug("onFileModified:" + file);
             }
-    
+            
             @Override
             public void onFileDeleted(AdvancedFile file) {
-                Logger.logDebug("onFileDeleted:" + file);
+                logger.debug("onFileDeleted:" + file);
             }
-    
+            
             @Override
             public void onFileRenamed(AdvancedFile file) {
-                Logger.logDebug("onFileRenamed:" + file);
+                logger.debug("onFileRenamed:" + file);
             }
-    
+            
             @Override
             public void onDirectoryCreated(AdvancedFile directory) {
-                Logger.logDebug("onDirectoryCreated:" + directory);
+                logger.debug("onDirectoryCreated:" + directory);
             }
-    
+            
             @Override
             public void onDirectoryModified(AdvancedFile directory) {
-                Logger.logDebug("onDirectoryModified:" + directory);
+                logger.debug("onDirectoryModified:" + directory);
             }
-    
+            
             @Override
             public void onDirectoryDeleted(AdvancedFile directory) {
-                Logger.logDebug("onDirectoryDeleted:" + directory);
+                logger.debug("onDirectoryDeleted:" + directory);
             }
-    
+            
             @Override
             public void onDirectoryRenamed(AdvancedFile directory) {
-                Logger.logDebug("onDirectoryRenamed:" + directory);
+                logger.debug("onDirectoryRenamed:" + directory);
             }
         });
-        Logger.log("advancedFileMonitor=" + advancedFileMonitor);
+        logger.info("advancedFileMonitor=" + advancedFileMonitor);
         advancedFileMonitor.start();
-        Logger.log("advancedFileMonitor=" + advancedFileMonitor);
+        logger.info("advancedFileMonitor=" + advancedFileMonitor);
         Standard.addShutdownHook(advancedFileMonitor::stop);
         Standard.async(() -> {
             Thread.sleep(20000);
-            Logger.log("Exiting");
+            logger.info("Exiting");
             System.exit(0);
         });
     }

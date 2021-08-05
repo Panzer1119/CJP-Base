@@ -31,7 +31,7 @@ import java.util.TimerTask;
 
 public class GraphicConsoleAppenderTest {
     
-    private static final Logger logger = LogManager.getLogger(GraphicConsoleAppenderTest.class);
+    private static final Logger logger = LogManager.getLogger();
     
     @Test
     void test() throws InterruptedException {

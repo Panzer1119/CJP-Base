@@ -16,19 +16,19 @@
 
 package de.codemakers.base.env;
 
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EnvTest {
     
-    public static final void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendSource().appendText(": ").appendObject().finishWithoutException();
+    private static final Logger logger = LogManager.getLogger();
+    
+    public static void main(String[] args) throws Exception {
         final AdvancedFile appData = OSUtil.getAppDataDirectory();
-        Logger.log("appData=" + appData);
-        Logger.log("appData.exists()=" + appData.exists());
+        logger.info("appData=" + appData);
+        logger.info("appData.exists()=" + appData.exists());
     }
     
 }

@@ -16,31 +16,34 @@
 
 package de.codemakers.base.entities;
 
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 
 public class RingBufferTest {
     
-    public static final void main(String[] args) throws Exception {
+    private static final Logger logger = LogManager.getLogger();
+    
+    public static void main(String[] args) throws Exception {
         final RingBuffer ringBuffer = new RingBuffer(Integer.class, 5);
-        Logger.log("ringBuffer=" + ringBuffer);
-        Logger.log("ringBuffer.toArray=" + Arrays.toString(ringBuffer.toArray()));
-        Logger.log("ringBuffer.isEmpty=" + ringBuffer.isEmpty());
-        Logger.log("==============================================");
+        logger.info("ringBuffer=" + ringBuffer);
+        logger.info("ringBuffer.toArray=" + Arrays.toString(ringBuffer.toArray()));
+        logger.info("ringBuffer.isEmpty=" + ringBuffer.isEmpty());
+        logger.info("==============================================");
         for (int i = 0; i < 11; i++) {
             ringBuffer.add(i);
-            Logger.log("ringBuffer=" + ringBuffer);
-            Logger.log("ringBuffer.toArray=" + Arrays.toString(ringBuffer.toArray()));
-            Logger.log("ringBuffer.isEmpty=" + ringBuffer.isEmpty());
-            Logger.log("==============================================");
+            logger.info("ringBuffer=" + ringBuffer);
+            logger.info("ringBuffer.toArray=" + Arrays.toString(ringBuffer.toArray()));
+            logger.info("ringBuffer.isEmpty=" + ringBuffer.isEmpty());
+            logger.info("==============================================");
         }
         for (int i = 0; i < 5; i++) {
-            Logger.log("ringBuffer.remove=" + ringBuffer.remove());
-            Logger.log("ringBuffer=" + ringBuffer);
-            Logger.log("ringBuffer.toArray=" + Arrays.toString(ringBuffer.toArray()));
-            Logger.log("ringBuffer.isEmpty=" + ringBuffer.isEmpty());
-            Logger.log("==============================================");
+            logger.info("ringBuffer.remove=" + ringBuffer.remove());
+            logger.info("ringBuffer=" + ringBuffer);
+            logger.info("ringBuffer.toArray=" + Arrays.toString(ringBuffer.toArray()));
+            logger.info("ringBuffer.isEmpty=" + ringBuffer.isEmpty());
+            logger.info("==============================================");
         }
     }
     

@@ -17,14 +17,17 @@
 package de.codemakers.base.util;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class ArgumentUtilTest {
     
-    public static final void main(String[] args) throws Exception {
+    private static final Logger logger = LogManager.getLogger();
+    
+    public static void main(String[] args) throws Exception {
         Standard.async(() -> {
             final Scanner scanner = new Scanner(System.in);
             while (scanner.hasNextLine()) {
@@ -36,7 +39,7 @@ public class ArgumentUtilTest {
                     }
                 } else {
                     final List<String> arguments = ArgumentUtil.parseArguments(line);
-                    Logger.log("arguments=" + arguments);
+                    logger.info("arguments=" + arguments);
                 }
             }
             scanner.close();

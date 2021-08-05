@@ -16,30 +16,33 @@
 
 package de.codemakers.base.entities;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.io.SerializationUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Optional;
 
 public class AbstractEndpointTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static void main(String[] args) throws Exception {
         final AbstractEndpoint abstractEndpoint_1 = new AbstractEndpoint() {
         };
-        Logger.log("abstractEndpoint_1=" + abstractEndpoint_1);
+        logger.info("abstractEndpoint_1=" + abstractEndpoint_1);
         final Optional<byte[]> optionalBytes = SerializationUtil.objectToBytes(abstractEndpoint_1);
         if (optionalBytes.isEmpty()) {
             return;
         }
         final byte[] bytes = optionalBytes.get();
-        Logger.log("bytes=" + Arrays.toString(bytes));
+        logger.info("bytes=" + Arrays.toString(bytes));
         final Optional<AbstractEndpoint> optionalSerializable = SerializationUtil.bytesToObject(bytes);
         if (optionalSerializable.isEmpty()) {
             return;
         }
         final AbstractEndpoint abstractEndpoint_2 = optionalSerializable.get();
-        Logger.log("abstractEndpoint_2=" + abstractEndpoint_2);
+        logger.info("abstractEndpoint_2=" + abstractEndpoint_2);
     }
     
 }

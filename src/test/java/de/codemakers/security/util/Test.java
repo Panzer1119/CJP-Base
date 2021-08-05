@@ -16,8 +16,9 @@
 
 package de.codemakers.security.util;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.security.interfaces.Signer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -26,22 +27,24 @@ import java.util.Arrays;
 
 public class Test {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final void main(String[] args) throws Exception {
-        Logger.log("Test");
+        logger.info("Test");
         final KeyPairGenerator keyPairGenerator = EllipticCurveUtil.createKeyPairGeneratorEC(SecureRandom.getInstanceStrong(), EllipticCurveUtil.KEYSIZE_ECC_521);
         final KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        Logger.log("keyPair=" + keyPair);
-        Logger.log("keyPair.getPrivate()=" + keyPair.getPrivate());
-        Logger.log("keyPair.getPublic()=" + keyPair.getPublic());
-        Logger.log("keyPair.getPrivate().getAlgorithm()=" + keyPair.getPrivate().getAlgorithm());
-        Logger.log("keyPair.getPublic().getAlgorithm()=" + keyPair.getPublic().getAlgorithm());
+        logger.info("keyPair=" + keyPair);
+        logger.info("keyPair.getPrivate()=" + keyPair.getPrivate());
+        logger.info("keyPair.getPublic()=" + keyPair.getPublic());
+        logger.info("keyPair.getPrivate().getAlgorithm()=" + keyPair.getPrivate().getAlgorithm());
+        logger.info("keyPair.getPublic().getAlgorithm()=" + keyPair.getPublic().getAlgorithm());
         final Signer signer = EasyCryptUtil.signerOfSHA256withECDSA(keyPair.getPrivate());
-        Logger.log("signer=" + signer);
-        Logger.log("signed:" + Arrays.toString(signer.sign("test".getBytes())));
-        Logger.log("signed.length  :" + signer.sign("test".getBytes()).length);
-        Logger.log("signed.length*8:" + (signer.sign("test".getBytes()).length * 8));
+        logger.info("signer=" + signer);
+        logger.info("signed:" + Arrays.toString(signer.sign("test".getBytes())));
+        logger.info("signed.length  :" + signer.sign("test".getBytes()).length);
+        logger.info("signed.length*8:" + (signer.sign("test".getBytes()).length * 8));
         final boolean success = EasyCryptUtil.publicKeyCanVerifyDataSignedWithPrivateKeyECDSA(keyPair.getPrivate(), keyPair.getPublic());
-        Logger.log("success=" + success);
+        logger.info("success=" + success);
     }
     
 }

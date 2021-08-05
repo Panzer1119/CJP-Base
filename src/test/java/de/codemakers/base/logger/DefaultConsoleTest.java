@@ -19,6 +19,7 @@ package de.codemakers.base.logger;
 import de.codemakers.base.Standard;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -29,6 +30,8 @@ import java.time.ZonedDateTime;
 
 public class DefaultConsoleTest {
     
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
+    
     public static final AdvancedFile LOG_FOLDER = new AdvancedFile("test/logs");
     public static final AdvancedFile LOG_FILE;
     public static final BufferedWriter BUFFERED_WRITER_LOG_FILE;
@@ -38,7 +41,7 @@ public class DefaultConsoleTest {
         LOG_FILE = new AdvancedFile(LOG_FOLDER, "log_" + ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES) + ".txt");
         BUFFERED_WRITER_LOG_FILE = LOG_FILE.createBufferedWriterWithoutException(false);
         Standard.addShutdownHook(() -> {
-            Logger.log("Closing BUFFERED_WRITER_LOG_FILE");
+            logger.info("Closing BUFFERED_WRITER_LOG_FILE");
             BUFFERED_WRITER_LOG_FILE.flush();
             BUFFERED_WRITER_LOG_FILE.close();
         });
@@ -60,7 +63,7 @@ public class DefaultConsoleTest {
             final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                Logger.log(line, LogLevel.INPUT);
+                logger.log(LogLevel.INPUT, line);
             }
             bufferedReader.close();
         });
@@ -76,7 +79,7 @@ public class DefaultConsoleTest {
             console.reloadWithoutException();
         };
         */
-        Logger.log("defaultConsole=" + defaultConsole);
+        logger.info("defaultConsole=" + defaultConsole);
         defaultConsole.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //FIXME Testing only
         defaultConsole.menuItem_exit.addActionListener((actionEvent) -> System.exit(1)); //FIXME Testing only
         defaultConsole.menuItem_settings.addActionListener((actionEvent) -> defaultConsole.consoleSettings.showAtConsole()); //FIXME Testing only

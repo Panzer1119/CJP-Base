@@ -17,11 +17,11 @@
 package de.codemakers.base.util;
 
 
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.lang.LanguageUtil;
 import de.codemakers.lang.XMLLocalizer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -30,32 +30,33 @@ import java.io.StringReader;
 
 public class XMLUtilTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
         if (false) {
-            Logger.logDebug("XMLUtil.DOCUMENT_BUILDER=" + XMLUtil.DOCUMENT_BUILDER);
-            Logger.log("args[0]=" + args[0]);
+            logger.debug("XMLUtil.DOCUMENT_BUILDER=" + XMLUtil.DOCUMENT_BUILDER);
+            logger.info("args[0]=" + args[0]);
             final Document document = XMLUtil.parseToMemory(new InputSource(new StringReader(args[0])));
-            Logger.log("document=" + document);
+            logger.info("document=" + document);
             final Element root = document.getDocumentElement();
-            Logger.log("root=" + root);
+            logger.info("root=" + root);
             final String test_tagName = root.getTagName();
-            Logger.log("test_tagName=" + test_tagName);
+            logger.info("test_tagName=" + test_tagName);
             final String test_attributeName = root.getAttribute("name");
-            Logger.log("test_attributeName=" + test_attributeName);
+            logger.info("test_attributeName=" + test_attributeName);
             final String test_textContent = root.getTextContent();
-            Logger.log("test_textContent=" + test_textContent);
+            logger.info("test_textContent=" + test_textContent);
         }
         final AdvancedFile langFile = new AdvancedFile(LanguageUtil.LANG_FOLDER, "de-DE.xml");
-        Logger.log("langFile=" + langFile);
-        Logger.log("langFile.exists()=" + langFile.exists());
+        logger.info("langFile=" + langFile);
+        logger.info("langFile.exists()=" + langFile.exists());
         final XMLLocalizer xmlLocalizer = new XMLLocalizer(langFile);
-        Logger.log("xmlLocalizer=" + xmlLocalizer);
-        Logger.log("xmlLocalizer.getLanguageTag()=" + xmlLocalizer.getLanguageTag());
-        Logger.log("xmlLocalizer.getLanguageNameEnglish()=" + xmlLocalizer.getLanguageNameEnglish());
-        Logger.log("xmlLocalizer.getLanguageNameLocal()=" + xmlLocalizer.getLanguageNameLocal());
-        Logger.log("xmlLocalizer=" + xmlLocalizer);
-        Logger.log("xmlLocalizer.localize(\"test_sentence\")=" + xmlLocalizer.localize("test_sentence"));
+        logger.info("xmlLocalizer=" + xmlLocalizer);
+        logger.info("xmlLocalizer.getLanguageTag()=" + xmlLocalizer.getLanguageTag());
+        logger.info("xmlLocalizer.getLanguageNameEnglish()=" + xmlLocalizer.getLanguageNameEnglish());
+        logger.info("xmlLocalizer.getLanguageNameLocal()=" + xmlLocalizer.getLanguageNameLocal());
+        logger.info("xmlLocalizer=" + xmlLocalizer);
+        logger.info("xmlLocalizer.localize(\"test_sentence\")=" + xmlLocalizer.localize("test_sentence"));
     }
     
 }

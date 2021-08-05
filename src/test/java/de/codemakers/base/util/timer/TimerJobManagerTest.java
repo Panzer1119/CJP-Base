@@ -17,8 +17,8 @@
 package de.codemakers.base.util.timer;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -27,11 +27,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TimerJobManagerTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static void main(String[] args) {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
         final AtomicLong temp_1 = new AtomicLong(-1);
         final TimerJobManager timerJobManager = new TimerJobManager();
-        Logger.log("timerJobManager=" + timerJobManager);
+        logger.info("timerJobManager=" + timerJobManager);
         timerJobManager.scheduleAtFixedRate(new TimerJob(() -> {
             final long timestamp = System.currentTimeMillis();
             if (temp_1.get() == -1) {
@@ -40,10 +41,10 @@ public class TimerJobManagerTest {
             System.out.println("CURRENT TIME: " + ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()));
             System.out.println("1 timerJobManager=" + timerJobManager);
         }), 1000);
-        Logger.log("timerJobManager=" + timerJobManager);
+        logger.info("timerJobManager=" + timerJobManager);
         timerJobManager.startWithoutException();
         Standard.addShutdownHook(timerJobManager::stop);
-        Logger.log("timerJobManager=" + timerJobManager);
+        logger.info("timerJobManager=" + timerJobManager);
         Standard.async(() -> {
             Thread.sleep(3750);
             timerJobManager.scheduleAtFixedRate(new TimerJob(() -> {
@@ -55,7 +56,8 @@ public class TimerJobManagerTest {
                 final long offset = 3750 + 1250 + 1000;
                 final long timestamp = System.currentTimeMillis();
                 final long duration = timestamp - temp_1.get() - offset;
-                System.out.println(String.format("This should be (%s), and is (%s), the difference is %d ms", ZonedDateTime.ofInstant(Instant.ofEpochMilli(temp_1.get() + offset), ZoneId.systemDefault()), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()), duration));
+                System.out.println(String.format("This should be (%s), and is (%s), the difference is %d ms", ZonedDateTime.ofInstant(Instant.ofEpochMilli(temp_1
+                        .get() + offset), ZoneId.systemDefault()), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()), duration));
                 System.out.println("3 timerJobManager=" + timerJobManager);
             }), 1000);
             timerJobManager.schedule(() -> System.out.println("HEHE"));

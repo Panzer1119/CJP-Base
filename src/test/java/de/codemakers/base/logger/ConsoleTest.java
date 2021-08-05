@@ -21,6 +21,7 @@ import de.codemakers.base.exceptions.NotImplementedRuntimeException;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.io.file.AdvancedFile;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.LogManager;
 
 import javax.swing.*;
 import javax.swing.text.Style;
@@ -36,6 +37,8 @@ import java.util.List;
 
 public class ConsoleTest {
     
+    private static final org.apache.logging.log4j.Logger loggerTODO = LogManager.getLogger();
+    
     public static final AdvancedFile LOG_FOLDER = new AdvancedFile("test/logs");
     public static final AdvancedFile LOG_FILE;
     public static final BufferedWriter BUFFERED_WRITER_LOG_FILE;
@@ -45,7 +48,7 @@ public class ConsoleTest {
         LOG_FILE = new AdvancedFile(LOG_FOLDER, "log_" + ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES) + ".txt");
         BUFFERED_WRITER_LOG_FILE = LOG_FILE.createBufferedWriterWithoutException(false);
         Standard.addShutdownHook(() -> {
-            Logger.log("Closing BUFFERED_WRITER_LOG_FILE");
+            loggerTODO.info("Closing BUFFERED_WRITER_LOG_FILE");
             BUFFERED_WRITER_LOG_FILE.flush();
             BUFFERED_WRITER_LOG_FILE.close();
         });
@@ -62,9 +65,9 @@ public class ConsoleTest {
         final Console<AdvancedLeveledLogger> console = new Console<AdvancedLeveledLogger>(Logger.getDefaultAdvancedLeveledLogger()) {
             @Override
             public boolean reload() throws Exception {
-                //Logger.log("Reload requested", LogLevel.WARNING);
-                //Logger.log("getLogEntries()=" + getLogEntries(), LogLevel.DEBUG);
-                //Logger.log("getLogEntriesFilteredByLogLevel()=" + getLogEntriesFilteredByLogLevel(), LogLevel.DEBUG);
+                //loggerTODO.info(LogLevel.WARNING, "Reload requested");
+                //loggerTODO.info(LogLevel.DEBUG, "getLogEntries()=" + getLogEntries());
+                //loggerTODO.info(LogLevel.DEBUG, "getLogEntriesFilteredByLogLevel()=" + getLogEntriesFilteredByLogLevel());
                 //TODO Testing adding LogEntry start
                 final List<LeveledLogEntry> logEntries = getLogEntriesFilteredByLogLevel();
                 final StyledDocument styledDocument = textPane_output.getStyledDocument();
@@ -93,35 +96,35 @@ public class ConsoleTest {
                 if (input.startsWith("/")) {
                     return runCommand(input);
                 }
-                //Logger.log(input, LogLevel.INPUT);
+                //loggerTODO.info(LogLevel.INPUT, input);
                 write((input + "\n").getBytes());
                 return true;
             }
             
             protected boolean runCommand(final String command) throws Exception {
-                Logger.log(command, LogLevel.COMMAND);
+                loggerTODO.log(LogLevel.COMMAND, command);
                 String temp = command.substring("/".length()).trim();
                 if (temp.startsWith("lang")) {
                     temp = temp.substring("lang".length()).trim();
                     if (temp.equalsIgnoreCase("english")) {
                         Standard.setLocalizer(Standard.getLocalizerEnglishUs());
-                        Logger.logDebug("Setted localizer to english us");
+                        loggerTODO.debug("Setted localizer to english us");
                         return true;
                     } else if (temp.equalsIgnoreCase("default")) {
                         Standard.setLocalizer(Standard.getLocalizerDefault());
-                        Logger.logDebug("Setted localizer to default");
+                        loggerTODO.debug("Setted localizer to default");
                         return true;
                     }
                 } else if (temp.startsWith("test")) {
                     temp = temp.substring("test".length()).trim();
                     if (temp.equalsIgnoreCase("1")) {
                         frame.setTitle("" + Math.random());
-                        Logger.logDebug("COMMAND: \"Test 1\"");
+                        loggerTODO.debug("COMMAND: \"Test 1\"");
                         return true;
                     }
                 }
                 //throw new NotYetImplementedRuntimeException(); //TODO Implement Command stuff
-                Logger.logWarning(String.format("Command \"%s\" does not exist", command));
+                loggerTODO.warn(String.format("Command \"%s\" does not exist", command), ex);
                 return false;
             }
             
@@ -133,7 +136,7 @@ public class ConsoleTest {
             final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                Logger.log(line, LogLevel.INPUT);
+                loggerTODO.info(LogLevel.INPUT, line);
             }
             bufferedReader.close();
         });
@@ -149,7 +152,7 @@ public class ConsoleTest {
             console.reloadWithoutException();
         };
         */
-        Logger.log("console=" + console);
+        loggerTODO.info("console=" + console);
         console.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //FIXME Testing only
         console.menuItem_exit.addActionListener((actionEvent) -> System.exit(1)); //FIXME Testing only
         console.menuItem_settings.addActionListener((actionEvent) -> console.consoleSettings.showAtConsole()); //FIXME Testing only

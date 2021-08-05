@@ -17,10 +17,11 @@
 package de.codemakers.security.util;
 
 import at.favre.lib.crypto.HKDF;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.security.interfaces.Decryptor;
 import de.codemakers.security.interfaces.Encryptor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
@@ -33,6 +34,8 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 public class EllipticCurveUtilTest {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final AdvancedFile ADVANCED_FILE_ECDSA_KEY_PAIR_1 = new AdvancedFile("src/test/resources/ec/keyPair_1.txt");
     public static final AdvancedFile ADVANCED_FILE_ECDSA_KEY_PAIR_2 = new AdvancedFile("src/test/resources/ec/keyPair_2.txt");
@@ -51,19 +54,19 @@ public class EllipticCurveUtilTest {
         // Partner 1
         final KeyPairGenerator keyPairGenerator_1 = EllipticCurveUtil.createKeyPairGeneratorEC(secureRandom, 256);
         final KeyPair keyPair_1 = keyPairGenerator_1.generateKeyPair();
-        Logger.log("keyPair_1=" + keyPair_1);
-        Logger.log("keyPair_1.getPrivate()=" + keyPair_1.getPrivate());
-        Logger.log("keyPair_1.getPublic()=" + keyPair_1.getPublic());
+        logger.info("keyPair_1=" + keyPair_1);
+        logger.info("keyPair_1.getPrivate()=" + keyPair_1.getPrivate());
+        logger.info("keyPair_1.getPublic()=" + keyPair_1.getPublic());
         final byte[] bytes_publicKey_1 = keyPair_1.getPublic().getEncoded();
-        Logger.log("bytes_publicKey_1=" + Arrays.toString(bytes_publicKey_1));
+        logger.info("bytes_publicKey_1=" + Arrays.toString(bytes_publicKey_1));
         // Partner 2
         final KeyPairGenerator keyPairGenerator_2 = EllipticCurveUtil.createKeyPairGeneratorEC(secureRandom, 256);
         final KeyPair keyPair_2 = keyPairGenerator_2.generateKeyPair();
-        Logger.log("keyPair_2=" + keyPair_2);
-        Logger.log("keyPair_2.getPrivate()=" + keyPair_2.getPrivate());
-        Logger.log("keyPair_2.getPublic()=" + keyPair_2.getPublic());
+        logger.info("keyPair_2=" + keyPair_2);
+        logger.info("keyPair_2.getPrivate()=" + keyPair_2.getPrivate());
+        logger.info("keyPair_2.getPublic()=" + keyPair_2.getPublic());
         final byte[] bytes_publicKey_2 = keyPair_2.getPublic().getEncoded();
-        Logger.log("bytes_publicKey_2=" + Arrays.toString(bytes_publicKey_2));
+        logger.info("bytes_publicKey_2=" + Arrays.toString(bytes_publicKey_2));
         //// Part 1.5
         /*
             PublicKeys are exchanged and signed/verified
@@ -87,7 +90,7 @@ public class EllipticCurveUtilTest {
         if (!signature_verify_1.verify(signature_publicKey_2)) {
             throw new Exception("ECDSA Verification 1 failed");
         } else {
-            Logger.log("Partner 1 verified with Partner 2's ECDSA PublicKey, that Partner 2's EC PublicKey is real");
+            logger.info("Partner 1 verified with Partner 2's ECDSA PublicKey, that Partner 2's EC PublicKey is real");
         }
         final PublicKey partner_1 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_2));
         // Partner 2
@@ -97,7 +100,7 @@ public class EllipticCurveUtilTest {
         if (!signature_verify_2.verify(signature_publicKey_1)) {
             throw new Exception("ECDSA Verification 2 failed");
         } else {
-            Logger.log("Partner 2 verified with Partner 1's ECDSA PublicKey, that Partner 1's EC PublicKey is real");
+            logger.info("Partner 2 verified with Partner 1's ECDSA PublicKey, that Partner 1's EC PublicKey is real");
         }
         final PublicKey partner_2 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_1));
         //// Part 2
@@ -106,26 +109,26 @@ public class EllipticCurveUtilTest {
          */
         // Partner 1
         final KeyAgreement keyAgreement_1 = EllipticCurveUtil.createKeyAgreement();
-        Logger.log("keyAgreement_1=" + keyAgreement_1);
+        logger.info("keyAgreement_1=" + keyAgreement_1);
         //final PublicKey partner_1 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_2));
-        Logger.log("partner_1=" + partner_1);
+        logger.info("partner_1=" + partner_1);
         keyAgreement_1.init(keyPair_1.getPrivate());
         keyAgreement_1.doPhase(partner_1, true);
-        Logger.log("keyAgreement_1=" + keyAgreement_1);
+        logger.info("keyAgreement_1=" + keyAgreement_1);
         final byte[] sharedSecret_1 = keyAgreement_1.generateSecret();
-        Logger.log("sharedSecret_1=" + Arrays.toString(sharedSecret_1));
-        Logger.log("sharedSecret_1.length=" + sharedSecret_1.length);
+        logger.info("sharedSecret_1=" + Arrays.toString(sharedSecret_1));
+        logger.info("sharedSecret_1.length=" + sharedSecret_1.length);
         // Partner 2
         final KeyAgreement keyAgreement_2 = EllipticCurveUtil.createKeyAgreement();
-        Logger.log("keyAgreement_2=" + keyAgreement_2);
+        logger.info("keyAgreement_2=" + keyAgreement_2);
         //final PublicKey partner_2 = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey_1));
-        Logger.log("partner_2=" + partner_2);
+        logger.info("partner_2=" + partner_2);
         keyAgreement_2.init(keyPair_2.getPrivate());
         keyAgreement_2.doPhase(partner_2, true);
-        Logger.log("keyAgreement_2=" + keyAgreement_2);
+        logger.info("keyAgreement_2=" + keyAgreement_2);
         final byte[] sharedSecret_2 = keyAgreement_2.generateSecret();
-        Logger.log("sharedSecret_2=" + Arrays.toString(sharedSecret_2));
-        Logger.log("sharedSecret_2.length=" + sharedSecret_2.length);
+        logger.info("sharedSecret_2=" + Arrays.toString(sharedSecret_2));
+        logger.info("sharedSecret_2.length=" + sharedSecret_2.length);
         //// Part 3
         /*
             Now both partners are generating the exact same high-quality AES SecretKey via an HKDF (HmacSha512) (library used for this)
@@ -133,20 +136,20 @@ public class EllipticCurveUtilTest {
         // Partner 1
         final HKDF hkdf_1 = HKDF.fromHmacSha512();
         final byte[] pseudoRandomKey_1 = hkdf_1.extract(staticSalt, sharedSecret_1);
-        Logger.log("pseudoRandomKey_1=" + Arrays.toString(pseudoRandomKey_1));
+        logger.info("pseudoRandomKey_1=" + Arrays.toString(pseudoRandomKey_1));
         final byte[] expandedAESKey_1 = hkdf_1.expand(pseudoRandomKey_1, "aes-key".getBytes(), 32);
         //final byte[] expandedIV_1 = hkdf_1.expand(pseudoRandomKey_1, "aes-iv".getBytes(), 32);
-        Logger.log("expandedAESKey_1=" + Arrays.toString(expandedAESKey_1));
-        //Logger.log("expandedIV_1=" + Arrays.toString(expandedIV_1));
+        logger.info("expandedAESKey_1=" + Arrays.toString(expandedAESKey_1));
+        //logger.info("expandedIV_1=" + Arrays.toString(expandedIV_1));
         final SecretKey secretKey_1 = new SecretKeySpec(expandedAESKey_1, AESCryptUtil.ALGORITHM_AES);
         // Partner 2
         final HKDF hkdf_2 = HKDF.fromHmacSha512();
         final byte[] pseudoRandomKey_2 = hkdf_2.extract(staticSalt, sharedSecret_2);
-        Logger.log("pseudoRandomKey_2=" + Arrays.toString(pseudoRandomKey_2));
+        logger.info("pseudoRandomKey_2=" + Arrays.toString(pseudoRandomKey_2));
         final byte[] expandedAESKey_2 = hkdf_1.expand(pseudoRandomKey_2, "aes-key".getBytes(), 32);
         //final byte[] expandedIV_2 = hkdf_1.expand(pseudoRandomKey_2, "aes-iv".getBytes(), 32);
-        Logger.log("expandedAESKey_2=" + Arrays.toString(expandedAESKey_2));
-        //Logger.log("expandedIV_2=" + Arrays.toString(expandedIV_2));
+        logger.info("expandedAESKey_2=" + Arrays.toString(expandedAESKey_2));
+        //logger.info("expandedIV_2=" + Arrays.toString(expandedIV_2));
         final SecretKey secretKey_2 = new SecretKeySpec(expandedAESKey_2, AESCryptUtil.ALGORITHM_AES);
         //// Part 4
         /*
@@ -160,25 +163,25 @@ public class EllipticCurveUtilTest {
         final Encryptor encryptor_2 = AESCryptUtil.createEncryptorAESGCMNoPadding(secretKey_2, 128);
         final Decryptor decryptor_2 = AESCryptUtil.createDecryptorAESGCMNoPadding(secretKey_2, 128);
         /// Encrypting
-        Logger.log("Encrypting");
+        logger.info("Encrypting");
         // Partner 1
         final String message_1 = "This is a message from Partner 1 to Partner 2";
-        Logger.log("message_1=" + message_1);
+        logger.info("message_1=" + message_1);
         final byte[] iv_1 = AESCryptUtil.generateSecureRandomIVAESGCM();
         final byte[] message_encrypted_1 = encryptor_1.encrypt(message_1.getBytes(), iv_1);
         // Partner 2
         final String message_2 = "This is a message from Partner 2 to Partner 1";
-        Logger.log("message_2=" + message_2);
+        logger.info("message_2=" + message_2);
         final byte[] iv_2 = AESCryptUtil.generateSecureRandomIVAESGCM();
         final byte[] message_encrypted_2 = encryptor_2.encrypt(message_2.getBytes(), iv_2);
         /// Decrypting
-        Logger.log("Decrypting");
+        logger.info("Decrypting");
         // Partner 1
         final byte[] message_decrypted_1 = decryptor_1.decrypt(message_encrypted_2, iv_2);
-        Logger.log("message_decrypted_1=" + new String(message_decrypted_1));
+        logger.info("message_decrypted_1=" + new String(message_decrypted_1));
         // Partner 2
         final byte[] message_decrypted_2 = decryptor_2.decrypt(message_encrypted_1, iv_1);
-        Logger.log("message_decrypted_2=" + new String(message_decrypted_2));
+        logger.info("message_decrypted_2=" + new String(message_decrypted_2));
     }
     
     private static void initECDSA(final SecureRandom secureRandom) throws Exception {
@@ -189,13 +192,13 @@ public class EllipticCurveUtilTest {
         } else {
             ECDSA_KEY_PAIR_1 = loadECDSA(ADVANCED_FILE_ECDSA_KEY_PAIR_1);
         }
-        Logger.log("ECDSA_KEY_PAIR_1=" + ECDSA_KEY_PAIR_1);
+        logger.info("ECDSA_KEY_PAIR_1=" + ECDSA_KEY_PAIR_1);
         if (!ADVANCED_FILE_ECDSA_KEY_PAIR_2.exists()) {
             ECDSA_KEY_PAIR_2 = createECDSA(ADVANCED_FILE_ECDSA_KEY_PAIR_2, secureRandom);
         } else {
             ECDSA_KEY_PAIR_2 = loadECDSA(ADVANCED_FILE_ECDSA_KEY_PAIR_2);
         }
-        Logger.log("ECDSA_KEY_PAIR_2=" + ECDSA_KEY_PAIR_2);
+        logger.info("ECDSA_KEY_PAIR_2=" + ECDSA_KEY_PAIR_2);
     }
     
     private static KeyPair createECDSA(AdvancedFile advancedFile, final SecureRandom secureRandom) throws Exception {
@@ -221,7 +224,8 @@ public class EllipticCurveUtilTest {
         dataInputStream.read(bytes_privateKey);
         dataInputStream.close();
         final PublicKey publicKey = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePublic(new X509EncodedKeySpec(bytes_publicKey));
-        final PrivateKey privateKey = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC).generatePrivate(new PKCS8EncodedKeySpec(bytes_privateKey));
+        final PrivateKey privateKey = KeyFactory.getInstance(EllipticCurveUtil.ALGORITHM_EC)
+                .generatePrivate(new PKCS8EncodedKeySpec(bytes_privateKey));
         return new KeyPair(publicKey, privateKey);
     }
     

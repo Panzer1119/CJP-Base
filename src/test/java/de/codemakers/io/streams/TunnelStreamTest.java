@@ -17,9 +17,9 @@
 package de.codemakers.io.streams;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.io.streams.exceptions.StreamClosedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -32,6 +32,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class TunnelStreamTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final byte ID_1 = 1;
     public static final byte ID_2 = ID_1 + 1;
     
@@ -42,13 +44,11 @@ public class TunnelStreamTest {
     public static final int PORT = 1454;
     
     public static void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendTimestamp().appendThread().appendText(": ").appendObject().finishWithoutException();
-        Logger.log("test");
-        Logger.log("test");
-        Logger.log(Arrays.toString("test".getBytes()));
-        Logger.log("t€st");
-        Logger.log(Arrays.toString("t€st".getBytes()));
+        logger.info("test");
+        logger.info("test");
+        logger.info(Arrays.toString("test".getBytes()));
+        logger.info("t€st");
+        logger.info(Arrays.toString("t€st".getBytes()));
         //test();
         //final PipedInputStream pipedInputStream = new PipedInputStream();
         //final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
@@ -67,7 +67,7 @@ public class TunnelStreamTest {
         Standard.async(() -> {
             Standard.silentSleepWhile(10000, () -> inputStreamAtomicReference.get() == null);
             Standard.silentSleepWhile(10000, () -> outputStreamAtomicReference.get() == null);
-            Logger.log("Waiting finished");
+            logger.info("Waiting finished");
             runReceiver(new TunnelInputStream(inputStreamAtomicReference.get()));
             runTransmitter(new TunnelOutputStream(outputStreamAtomicReference.get()));
         });
@@ -75,33 +75,33 @@ public class TunnelStreamTest {
     
     private static void test() throws Exception {
         final String lineSeparator = System.getProperty("line.separator");
-        Logger.logDebug("lineSeparator=" + lineSeparator);
-        Logger.logDebug("lineSeparator=" + Arrays.toString(lineSeparator.getBytes()));
+        logger.debug("lineSeparator=" + lineSeparator);
+        logger.debug("lineSeparator=" + Arrays.toString(lineSeparator.getBytes()));
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(byteArrayOutputStream));
         bufferedWriter.write(getRandomText((byte) 0));
-        Logger.logDebug("byteArrayOutputStream=" + Arrays.toString(byteArrayOutputStream.toByteArray()));
+        logger.debug("byteArrayOutputStream=" + Arrays.toString(byteArrayOutputStream.toByteArray()));
         bufferedWriter.flush();
-        Logger.logDebug("byteArrayOutputStream=" + Arrays.toString(byteArrayOutputStream.toByteArray()));
+        logger.debug("byteArrayOutputStream=" + Arrays.toString(byteArrayOutputStream.toByteArray()));
         bufferedWriter.newLine();
-        Logger.logDebug("byteArrayOutputStream=" + Arrays.toString(byteArrayOutputStream.toByteArray()));
+        logger.debug("byteArrayOutputStream=" + Arrays.toString(byteArrayOutputStream.toByteArray()));
         bufferedWriter.flush();
-        Logger.logDebug("byteArrayOutputStream=" + Arrays.toString(byteArrayOutputStream.toByteArray()));
+        logger.debug("byteArrayOutputStream=" + Arrays.toString(byteArrayOutputStream.toByteArray()));
     }
     
     private static void runReceiver(TunnelInputStream tunnelInputStream) throws Exception {
-        Logger.log("Starting receiver");
-        Logger.logDebug("START tunnelInputStream=" + tunnelInputStream);
+        logger.info("Starting receiver");
+        logger.debug("START tunnelInputStream=" + tunnelInputStream);
         Standard.async(() -> {
             Thread.sleep(1000);
-            Logger.logDebug("AFTER START tunnelInputStream=" + tunnelInputStream);
+            logger.debug("AFTER START tunnelInputStream=" + tunnelInputStream);
         });
         Standard.async(() -> {
             try {
                 final InputStream inputStream = tunnelInputStream.getOrCreateInputStream(ID_1);
                 while (Objects.equals(0, 1)) {
                     inputStream.read();
-                    //Logger.log("1 READ: " + inputStream.read());
+                    //logger.info("1 READ: " + inputStream.read());
                 }
                 /*
                 final byte[] buffer = new byte[35];
@@ -109,17 +109,17 @@ public class TunnelStreamTest {
                 while (true) {
                     final byte[] data = new byte[inputStream.read(buffer)];
                     System.arraycopy(buffer, 0, data, 0, data.length);
-                    Logger.log(String.format("[%d][times:%d] 1 buffer=%s", ID_1, times, Arrays.toString(buffer)));
-                    Logger.log(String.format("[%d][times:%d] 1 data  =%s", ID_1, times, Arrays.toString(data)));
-                    Logger.log(String.format("[%d][times:%d] 2 data  =%s", ID_1, times++, new String(data)));
+                    logger.info(String.format("[%d][times:%d] 1 buffer=%s", ID_1, times, Arrays.toString(buffer)));
+                    logger.info(String.format("[%d][times:%d] 1 data  =%s", ID_1, times, Arrays.toString(data)));
+                    logger.info(String.format("[%d][times:%d] 2 data  =%s", ID_1, times++, new String(data)));
                 }
                 */
                 final Scanner scanner = new Scanner(inputStream);
                 while (scanner.hasNextLine()) {
-                    Logger.log(String.format(FORMAT_RECEIVED, ID_1, scanner.nextLine()));
+                    logger.info(String.format(FORMAT_RECEIVED, ID_1, scanner.nextLine()));
                 }
-                Logger.logDebug(String.format(FORMAT_STOPPED, " RECEIVER  ", ID_1));
-                Logger.logDebug("1 tunnelInputStream=" + tunnelInputStream);
+                logger.debug(String.format(FORMAT_STOPPED, " RECEIVER  ", ID_1));
+                logger.debug("1 tunnelInputStream=" + tunnelInputStream);
             } catch (Exception ex) {
                 if ("Pipe broken".equals(ex.getMessage()) || ex instanceof StreamClosedException) {
                     return;
@@ -132,10 +132,10 @@ public class TunnelStreamTest {
                 final InputStream inputStream = tunnelInputStream.getOrCreateInputStream(ID_2);
                 final Scanner scanner = new Scanner(inputStream);
                 while (scanner.hasNextLine()) {
-                    Logger.log(String.format(FORMAT_RECEIVED, ID_2, scanner.nextLine()));
+                    logger.info(String.format(FORMAT_RECEIVED, ID_2, scanner.nextLine()));
                 }
-                Logger.logDebug(String.format(FORMAT_STOPPED, " RECEIVER  ", ID_2));
-                Logger.logDebug("2 tunnelInputStream=" + tunnelInputStream);
+                logger.debug(String.format(FORMAT_STOPPED, " RECEIVER  ", ID_2));
+                logger.debug("2 tunnelInputStream=" + tunnelInputStream);
             } catch (Exception ex) {
                 logger.error(ex);
             }
@@ -143,11 +143,11 @@ public class TunnelStreamTest {
     }
     
     private static void runTransmitter(TunnelOutputStream tunnelOutputStream) throws Exception {
-        Logger.log("Starting transmitter");
-        Logger.logDebug("START tunnelOutputStream=" + tunnelOutputStream);
+        logger.info("Starting transmitter");
+        logger.debug("START tunnelOutputStream=" + tunnelOutputStream);
         Standard.async(() -> {
             Thread.sleep(1000);
-            Logger.logDebug("AFTER START tunnelOutputStream=" + tunnelOutputStream);
+            logger.debug("AFTER START tunnelOutputStream=" + tunnelOutputStream);
         });
         Standard.async(() -> {
             final OutputStream outputStream = tunnelOutputStream.getOrCreateOutputStream(ID_1);
@@ -157,22 +157,22 @@ public class TunnelStreamTest {
                 bufferedWriter.write(text);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
-                Logger.log(String.format(FORMAT_TRANSMITTED, ID_1, text));
+                logger.info(String.format(FORMAT_TRANSMITTED, ID_1, text));
                 Thread.sleep(500);
             }
             Thread.sleep(6000);
             outputStream.write(getAllValues());
             bufferedWriter.newLine();
             bufferedWriter.flush();
-            Logger.log(String.format(FORMAT_TRANSMITTED, ID_1, Arrays.toString(getAllValues())));
+            logger.info(String.format(FORMAT_TRANSMITTED, ID_1, Arrays.toString(getAllValues())));
             Thread.sleep(1000);
             try {
                 bufferedWriter.close();
             } catch (Exception ex) {
-                Logger.logError(ex);
+                logger.error(ex);
             }
-            Logger.logDebug(String.format(FORMAT_STOPPED, "TRANSMITTER", ID_1));
-            Logger.logDebug("1 tunnelOutputStream=" + tunnelOutputStream);
+            logger.debug(String.format(FORMAT_STOPPED, "TRANSMITTER", ID_1));
+            logger.debug("1 tunnelOutputStream=" + tunnelOutputStream);
         });
         Standard.async(() -> {
             final OutputStream outputStream = tunnelOutputStream.getOrCreateOutputStream(ID_2);
@@ -182,17 +182,17 @@ public class TunnelStreamTest {
                 bufferedWriter.write(text);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
-                Logger.log(String.format(FORMAT_TRANSMITTED, ID_2, text));
+                logger.info(String.format(FORMAT_TRANSMITTED, ID_2, text));
                 Thread.sleep(500);
             }
             Thread.sleep(2000);
             try {
                 bufferedWriter.close();
             } catch (Exception ex) {
-                Logger.logError(ex);
+                logger.error(ex);
             }
-            Logger.logDebug(String.format(FORMAT_STOPPED, "TRANSMITTER", ID_2));
-            Logger.logDebug("2 tunnelOutputStream=" + tunnelOutputStream);
+            logger.debug(String.format(FORMAT_STOPPED, "TRANSMITTER", ID_2));
+            logger.debug("2 tunnelOutputStream=" + tunnelOutputStream);
         });
     }
     

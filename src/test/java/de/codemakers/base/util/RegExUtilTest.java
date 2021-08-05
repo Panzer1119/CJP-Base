@@ -16,23 +16,26 @@
 
 package de.codemakers.base.util;
 
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RegExUtilTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static void main(String[] args) {
         final String text = "This is a text s$archFor.this! haha";
-        Logger.log("text=" + text);
+        logger.info("text=" + text);
         final String textToSearchFor = "s$archFor.this!";
-        Logger.log("textToSearchFor=" + textToSearchFor);
+        logger.info("textToSearchFor=" + textToSearchFor);
         final String replacement = "I replace the old Text (hehe)!";
-        Logger.log("replacement=" + replacement);
+        logger.info("replacement=" + replacement);
         final String result_1 = text.replaceAll(textToSearchFor, replacement);
-        Logger.log("result_1=" + result_1);
+        logger.info("result_1=" + result_1);
         final String regEx = RegExUtil.escapeToRegEx(textToSearchFor);
-        Logger.log("regEx=" + regEx);
+        logger.info("regEx=" + regEx);
         final String result_2 = text.replaceAll(regEx, replacement);
-        Logger.log("result_2=" + result_2);
+        logger.info("result_2=" + result_2);
     }
     
 }

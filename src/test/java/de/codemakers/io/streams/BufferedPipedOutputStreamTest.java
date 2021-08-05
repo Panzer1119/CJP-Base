@@ -17,8 +17,8 @@
 package de.codemakers.io.streams;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -28,62 +28,61 @@ import java.util.Random;
 
 public class BufferedPipedOutputStreamTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendLogLevel().appendSource().appendText(": ").appendObject().finishWithoutException();
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendTimestamp().appendSource().appendText(": ").appendObject().finishWithoutException();
         if (false) {
             test();
             return;
         }
         final BufferedPipedOutputStream bufferedPipedOutputStream = new BufferedPipedOutputStream();
-        Logger.log("bufferedPipedOutputStream=" + bufferedPipedOutputStream);
+        logger.info("bufferedPipedOutputStream=" + bufferedPipedOutputStream);
         final PipedInputStream pipedInputStream = new PipedInputStream(bufferedPipedOutputStream);
-        Logger.log("pipedInputStream=" + pipedInputStream);
+        logger.info("pipedInputStream=" + pipedInputStream);
         Standard.async(() -> {
-            Logger.log("reading: " + pipedInputStream.read());
+            logger.info("reading: " + pipedInputStream.read());
             Thread.currentThread().setName("RECEIVER");
-            Logger.log("Started Receiving");
+            logger.info("Started Receiving");
             final ObjectInputStream objectInputStream = new ObjectInputStream(pipedInputStream);
-            Logger.log("received: \"" + objectInputStream.readObject() + "\"");
-            Logger.log("Stopping Receiving");
+            logger.info("received: \"" + objectInputStream.readObject() + "\"");
+            logger.info("Stopping Receiving");
             objectInputStream.close();
             /*
-            Logger.log("Started Receiving");
+            logger.info("Started Receiving");
             final DataInputStream dataInputStream = new DataInputStream(pipedInputStream);
-            Logger.log("received: \"" + dataInputStream.readInt() + "\"");
-            Logger.log("Stopping Receiving");
+            logger.info("received: \"" + dataInputStream.readInt() + "\"");
+            logger.info("Stopping Receiving");
             dataInputStream.close();
             */
         });
-        Logger.log("Waiting");
+        logger.info("Waiting");
         Thread.sleep(500);
-        Logger.log("Writing");
+        logger.info("Writing");
         bufferedPipedOutputStream.write(44);
         Thread.sleep(1000);
         Thread.currentThread().setName("TRANSMITTER");
-        Logger.log("Started Transmitting");
+        logger.info("Started Transmitting");
         final ObjectOutputStream objectOutputStream = new ObjectOutputStream(bufferedPipedOutputStream);
         /*
         for (int i = 0; i < 1; i++) {
             final TestObject testObject = new TestObject();
-            Logger.log("transmitting: \"" + testObject + "\"");
+            logger.info("transmitting: \"" + testObject + "\"");
             objectOutputStream.writeObject(testObject);
         }
         */
         final TestObject testObject = new TestObject();
-        Logger.log("transmitting: \"" + testObject + "\"");
+        logger.info("transmitting: \"" + testObject + "\"");
         objectOutputStream.writeObject(testObject);
         Thread.sleep(1000);
-        Logger.log("Stopping Transmitting");
+        logger.info("Stopping Transmitting");
         objectOutputStream.close();
         /*
-        Logger.log("Started Transmitting");
+        logger.info("Started Transmitting");
         final DataOutputStream dataOutputStream = new DataOutputStream(bufferedPipedOutputStream);
-        Logger.log("transmitting: \"42\"");
+        logger.info("transmitting: \"42\"");
         dataOutputStream.writeInt(42);
         Thread.sleep(1000);
-        Logger.log("Stopping Transmitting");
+        logger.info("Stopping Transmitting");
         dataOutputStream.close();
         */
     }
@@ -95,19 +94,19 @@ public class BufferedPipedOutputStreamTest {
             final byte[] buffer = new byte[16];
             int read = -1;
             while ((read = pipedInputStream.read(buffer)) >= 0) {
-                Logger.log(String.format("buffer=%s, read=%d", Arrays.toString(buffer), read));
+                logger.info(String.format("buffer=%s, read=%d", Arrays.toString(buffer), read));
             }
             pipedInputStream.close();
         });
         final Random random = new Random();
         final byte[] temp = new byte[64];
-        Logger.log("Start");
+        logger.info("Start");
         for (int i = 0; i < 8; i++) {
             random.nextBytes(temp);
-            Logger.log(String.format("temp=%s", Arrays.toString(temp)));
+            logger.info(String.format("temp=%s", Arrays.toString(temp)));
             bufferedPipedOutputStream.write(temp);
         }
-        Logger.log("Stop");
+        logger.info("Stop");
         bufferedPipedOutputStream.close();
     }
     

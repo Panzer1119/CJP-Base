@@ -16,13 +16,16 @@
 
 package de.codemakers.io.streams;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.AdvancedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 public class RedirectingStreamTest {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final void main(String[] args) throws Exception {
         final AdvancedFile advancedFile_input = new AdvancedFile("test/test.txt");
@@ -30,14 +33,14 @@ public class RedirectingStreamTest {
         final FileInputStream fileInputStream = (FileInputStream) advancedFile_input.createInputStream();
         final FileOutputStream fileOutputStream = (FileOutputStream) advancedFile_output.createOutputStream(false);
         final RedirectingStream<FileInputStream, FileOutputStream> redirectingStream = new RedirectingStream<>(fileInputStream, fileOutputStream);
-        Logger.log("redirectingStream=" + redirectingStream);
+        logger.info("redirectingStream=" + redirectingStream);
         redirectingStream.setStopOnClose(true);
-        Logger.log("redirectingStream=" + redirectingStream);
+        logger.info("redirectingStream=" + redirectingStream);
         redirectingStream.start();
-        Logger.log("RedirectingStream started");
+        logger.info("RedirectingStream started");
         redirectingStream.createWaiter().waitFor();
-        Logger.log("RedirectingStream finished");
-        Logger.log("redirectingStream=" + redirectingStream);
+        logger.info("RedirectingStream finished");
+        logger.info("redirectingStream=" + redirectingStream);
     }
     
 }

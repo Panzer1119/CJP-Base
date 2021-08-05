@@ -16,41 +16,50 @@
 
 package de.codemakers.io.file;
 
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.stream.Collectors;
 
 public class AdvancedFileInternTest {
     
+    private static final Logger logger = LogManager.getLogger();
+    
     public static final void main(String[] args) {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendThread().appendText(": ").appendObject().appendNewLine().appendSource().appendNewLine().finishWithoutException();
         AdvancedFile.DEBUG = true;
         AdvancedFile.DEBUG_FILE_PROVIDER = false;
         AdvancedFile.DEBUG_TO_STRING = true;
         AdvancedFile.DEBUG_TO_STRING_BIG = false;
         if (true) {
-            Logger.logDebug(new AdvancedFile(""));
-            Logger.logDebug(new AdvancedFile("").getPath());
-            Logger.logDebug(new AdvancedFile("").getAbsoluteFile().getPath());
-            Logger.logDebug(new AdvancedFile("").getAbsoluteFile().exists());
-            Logger.logDebug(new AdvancedFile("").getAbsoluteFile().listFiles(false));
+            logger.debug(new AdvancedFile(""));
+            logger.debug(new AdvancedFile("").getPath());
+            logger.debug(new AdvancedFile("").getAbsoluteFile().getPath());
+            logger.debug(new AdvancedFile("").getAbsoluteFile().exists());
+            logger.debug(new AdvancedFile("").getAbsoluteFile().listFiles(false));
         /*
         //Not useful on Windows (Because windows has not THE root folder, it uses multiple drive letters)
-        Logger.logDebug(new AdvancedFile("/"));
-        Logger.logDebug(new AdvancedFile("/").getPath());
-        Logger.logDebug(new AdvancedFile("/").exists());
-        Logger.logDebug(new AdvancedFile("/").listFiles(false));
+        logger.debug(new AdvancedFile("/"));
+        logger.debug(new AdvancedFile("/").getPath());
+        logger.debug(new AdvancedFile("/").exists());
+        logger.debug(new AdvancedFile("/").listFiles(false));
         */
-            Logger.logDebug(new AdvancedFile("intern:/"));
-            Logger.logDebug(new AdvancedFile("intern:/").getPath());
-            Logger.logDebug(new AdvancedFile("intern:/").listFiles(false));
-            Logger.logDebug(new AdvancedFile("intern:/").listFiles(false).stream().map(AdvancedFile::getPath).collect(Collectors.joining(", ", "[", "]")));
-            Logger.logDebug(new AdvancedFile("intern:/de").listFiles(false));
-            Logger.logDebug(new AdvancedFile("intern:/de").listFiles(false).stream().map(AdvancedFile::getPath).collect(Collectors.joining(", ", "[", "]")));
-            Logger.logDebug(new AdvancedFile("intern:/de/codemakers").listFiles(false));
-            Logger.logDebug(new AdvancedFile("intern:/de/codemakers").listFiles(false).stream().map(AdvancedFile::getPath).collect(Collectors.joining(", ", "[", "]")));
+            logger.debug(new AdvancedFile("intern:/"));
+            logger.debug(new AdvancedFile("intern:/").getPath());
+            logger.debug(new AdvancedFile("intern:/").listFiles(false));
+            logger.debug(new AdvancedFile("intern:/").listFiles(false)
+                    .stream()
+                    .map(AdvancedFile::getPath)
+                    .collect(Collectors.joining(", ", "[", "]")));
+            logger.debug(new AdvancedFile("intern:/de").listFiles(false));
+            logger.debug(new AdvancedFile("intern:/de").listFiles(false)
+                    .stream()
+                    .map(AdvancedFile::getPath)
+                    .collect(Collectors.joining(", ", "[", "]")));
+            logger.debug(new AdvancedFile("intern:/de/codemakers").listFiles(false));
+            logger.debug(new AdvancedFile("intern:/de/codemakers").listFiles(false)
+                    .stream()
+                    .map(AdvancedFile::getPath)
+                    .collect(Collectors.joining(", ", "[", "]")));
             final AdvancedFile advancedFile_file_1 = new AdvancedFile("intern:/de/codemakers/io/file/" + AdvancedFileInternTest.class.getSimpleName() + ".class");
             System.out.println("advancedFile_file_1: " + advancedFile_file_1);
             System.out.println("advancedFile_file_1 exists: " + advancedFile_file_1.exists());
@@ -74,13 +83,19 @@ public class AdvancedFileInternTest {
             advancedFile_folder_2.mkdirsWithoutException();
             System.out.println("advancedFile_folder_2 exists: " + advancedFile_folder_2.exists());
             System.out.println("advancedFile_folder_2 listFiles: " + advancedFile_folder_2.listFiles());
-            advancedFile_folder_2.listFiles().stream().filter(AdvancedFile::isFile).forEach((advancedFile) -> System.out.println(new String(advancedFile.readBytesWithoutException())));
+            advancedFile_folder_2.listFiles()
+                    .stream()
+                    .filter(AdvancedFile::isFile)
+                    .forEach((advancedFile) -> System.out.println(new String(advancedFile.readBytesWithoutException())));
             System.out.println("########");
             final AdvancedFile advancedFile_folder_3 = new AdvancedFile("../CJP-Base/test/test_1");
             System.out.println("advancedFile_folder_3: " + advancedFile_folder_3);
             System.out.println("advancedFile_folder_3 exists: " + advancedFile_folder_3.exists());
             System.out.println("advancedFile_folder_3 listFiles: " + advancedFile_folder_3.listFiles());
-            advancedFile_folder_3.listFiles().stream().filter(AdvancedFile::isFile).forEach((advancedFile) -> System.out.println(new String(advancedFile.readBytesWithoutException())));
+            advancedFile_folder_3.listFiles()
+                    .stream()
+                    .filter(AdvancedFile::isFile)
+                    .forEach((advancedFile) -> System.out.println(new String(advancedFile.readBytesWithoutException())));
             System.out.println("########");
             final AdvancedFile advancedFile_file_3 = new AdvancedFile(advancedFile_folder_2, "test.txt");
             advancedFile_file_3.writeBytesWithoutException(("Test " + Math.random()).getBytes());
@@ -94,13 +109,13 @@ public class AdvancedFileInternTest {
         System.out.println("=====================================================================================================================================================================================================================================");
         System.out.println();
         final AdvancedFile advancedFile_test_1231 = new AdvancedFile(AdvancedFile.PREFIX_INTERN, "test.txt");
-        Logger.logDebug("advancedFile_test_1231=" + advancedFile_test_1231);
-        Logger.logDebug("advancedFile_test_1231.exists()=" + advancedFile_test_1231.exists());
-        Logger.logDebug("advancedFile_test_1231.getPath()=" + advancedFile_test_1231.getPath());
-        Logger.logDebug("advancedFile_test_1231.getAbsolutePath()=" + advancedFile_test_1231.getAbsolutePath());
-        Logger.logDebug("advancedFile_test_1231.getAbsoluteFile()=" + advancedFile_test_1231.getAbsoluteFile());
-        Logger.logDebug("advancedFile_test_1231.getAbsoluteFile().exists()=" + advancedFile_test_1231.getAbsoluteFile().exists());
-        Logger.logDebug("advancedFile_test_1231.readBytesWithoutException()=\"" + new String(advancedFile_test_1231.readBytesWithoutException()) + "\"");
+        logger.debug("advancedFile_test_1231=" + advancedFile_test_1231);
+        logger.debug("advancedFile_test_1231.exists()=" + advancedFile_test_1231.exists());
+        logger.debug("advancedFile_test_1231.getPath()=" + advancedFile_test_1231.getPath());
+        logger.debug("advancedFile_test_1231.getAbsolutePath()=" + advancedFile_test_1231.getAbsolutePath());
+        logger.debug("advancedFile_test_1231.getAbsoluteFile()=" + advancedFile_test_1231.getAbsoluteFile());
+        logger.debug("advancedFile_test_1231.getAbsoluteFile().exists()=" + advancedFile_test_1231.getAbsoluteFile().exists());
+        logger.debug("advancedFile_test_1231.readBytesWithoutException()=\"" + new String(advancedFile_test_1231.readBytesWithoutException()) + "\"");
         System.out.println("=====================================================================================================================================================================================================================================");
         System.out.println("=====================================================================================================================================================================================================================================");
         System.out.println("=====================================================================================================================================================================================================================================");

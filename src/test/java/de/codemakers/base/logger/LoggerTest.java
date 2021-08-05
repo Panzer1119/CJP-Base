@@ -18,50 +18,60 @@ package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.util.StringUtil;
-import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.LogManager;
 
 public class LoggerTest {
     
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
+    
     public static final void main(String[] args) {
-        Logger.getDefaultAdvancedLeveledLogger().setLogFormat(Logger.LOG_FORMAT_VAR_TIMESTAMP + Logger.LOG_FORMAT_VAR_LOG_LEVEL + ": " + Logger.LOG_FORMAT_VAR_OBJECT + "\n" + Logger.LOG_FORMAT_VAR_THREAD + " " + Logger.LOG_FORMAT_VAR_SOURCE);
-        Logger.getDefaultAdvancedLeveledLogger().setSourceFormatter(((stackTraceElement, advancedLogger) -> {
-            if (stackTraceElement == null) {
-                return "";
-            }
-            return StringSubstitutor.replace(advancedLogger.sourceFormat, advancedLogger.createValueMap(stackTraceElement));
-        }));
-        Logger.log("Test");
+        logger.info("Test");
         for (int i = 0; i < 100; i++) {
-            Logger.log("i=" + i);
+            logger.info("i=" + i);
         }
         for (LogLevel logLevel : LogLevel.values()) {
-            Logger.log("logLevel=" + logLevel);
-            Logger.log("logLevel.getNameLeft() =" + logLevel.getNameLeft());
-            Logger.log("logLevel.getNameRight()=" + logLevel.getNameRight());
-            Logger.log("logLevel.getNameMid()  =" + logLevel.getNameMid());
-            Logger.log("#####################");
+            logger.info("logLevel=" + logLevel);
+            logger.info("logLevel.getNameLeft() =" + logLevel.getNameLeft());
+            logger.info("logLevel.getNameRight()=" + logLevel.getNameRight());
+            logger.info("logLevel.getNameMid()  =" + logLevel.getNameMid());
+            logger.info("#####################");
         }
-        Logger.log("LogLevel.MINIMUM_NAME_LENGTH=" + LogLevel.MINIMUM_NAME_LENGTH);
-        Logger.log("LogLevel.MAXIMUM_NAME_LENGTH=" + LogLevel.MAXIMUM_NAME_LENGTH);
-        Logger.log("LogLevel.MINIMUM_LEVEL=" + LogLevel.MINIMUM_LEVEL);
-        Logger.log("LogLevel.MAXIMUM_LEVEL=" + LogLevel.MAXIMUM_LEVEL);
+        logger.info("LogLevel.MINIMUM_NAME_LENGTH=" + LogLevel.MINIMUM_NAME_LENGTH);
+        logger.info("LogLevel.MAXIMUM_NAME_LENGTH=" + LogLevel.MAXIMUM_NAME_LENGTH);
+        logger.info("LogLevel.MINIMUM_LEVEL=" + LogLevel.MINIMUM_LEVEL);
+        logger.info("LogLevel.MAXIMUM_LEVEL=" + LogLevel.MAXIMUM_LEVEL);
         final LogFormatBuilder logFormatBuilder = new LogFormatBuilder();
-        Logger.log("logFormatBuilder=" + logFormatBuilder);
-        logFormatBuilder.appendTimestamp().appendLogLevel().appendText(": ").appendObject().appendNewLine().appendThread().appendLogLevel().appendText(" ").appendSource();
-        Logger.log("logFormatBuilder=" + logFormatBuilder);
+        logger.info("logFormatBuilder=" + logFormatBuilder);
+        logFormatBuilder.appendTimestamp()
+                .appendLogLevel()
+                .appendText(": ")
+                .appendObject()
+                .appendNewLine()
+                .appendThread()
+                .appendLogLevel()
+                .appendText(" ")
+                .appendSource();
+        logger.info("logFormatBuilder=" + logFormatBuilder);
         final SourceFormatBuilder sourceFormatBuilder = new SourceFormatBuilder();
-        Logger.log("sourceFormatBuilder=" + sourceFormatBuilder);
-        sourceFormatBuilder.appendClassName().appendText(".").appendMethodName().appendText("(").appendFileName().appendText(":").appendLineNumber().appendText(")");
-        Logger.log("sourceFormatBuilder=" + sourceFormatBuilder);
+        logger.info("sourceFormatBuilder=" + sourceFormatBuilder);
+        sourceFormatBuilder.appendClassName()
+                .appendText(".")
+                .appendMethodName()
+                .appendText("(")
+                .appendFileName()
+                .appendText(":")
+                .appendLineNumber()
+                .appendText(")");
+        logger.info("sourceFormatBuilder=" + sourceFormatBuilder);
         Logger.getDefaultAdvancedLeveledLogger().setLogFormat(logFormatBuilder.toFormat());
         Logger.getDefaultAdvancedLeveledLogger().setSourceFormat(sourceFormatBuilder.toFormat());
-        Logger.log("Test 2");
-        Logger.log("logFormatBuilder.example()=" + logFormatBuilder.example());
-        Logger.log("sourceFormatBuilder.example()=" + sourceFormatBuilder.example());
-        Logger.log("logFormatBuilder.example(sourceFormatBuilder)=" + logFormatBuilder.example(sourceFormatBuilder));
+        logger.info("Test 2");
+        logger.info("logFormatBuilder.example()=" + logFormatBuilder.example());
+        logger.info("sourceFormatBuilder.example()=" + sourceFormatBuilder.example());
+        logger.info("logFormatBuilder.example(sourceFormatBuilder)=" + logFormatBuilder.example(sourceFormatBuilder));
         Standard.silentError(() -> {
             Thread.currentThread().setName("Anonymous-Test-Thread${loglevel}");
-            Logger.log("Anonymous Test");
+            logger.info("Anonymous Test");
             final StackTraceElement stackTraceElement = AdvancedLogger.cutStackTrace(new Exception().getStackTrace());
             System.out.println(stackTraceElement);
             System.out.println(stackTraceElement.getClassName());
@@ -69,11 +79,17 @@ public class LoggerTest {
             System.out.println(stackTraceElement.getFileName());
             System.out.println(stackTraceElement.getLineNumber());
         });
-        Logger.log("StringUtil.STRING_SUBSTITUTOR_TO_REPLACE =" + StringUtil.STRING_SUBSTITUTOR_TO_REPLACE);
-        Logger.log("StringUtil.STRING_SUBSTITUTOR_REPLACEMENT=" + StringUtil.STRING_SUBSTITUTOR_REPLACEMENT);
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendText("NEW LOG FORMAT___").appendTimestamp().appendText(": ").appendObject().finishWithoutException();
-        Logger.log("Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder() Test");
-        Logger.log("Test if escape chars are causing problems $$ <- these are 2 dollar signs, this is just one -> $ and this are 3 -> $$$ (chars$around$signs) Test end");
+        logger.info("StringUtil.STRING_SUBSTITUTOR_TO_REPLACE =" + StringUtil.STRING_SUBSTITUTOR_TO_REPLACE);
+        logger.info("StringUtil.STRING_SUBSTITUTOR_REPLACEMENT=" + StringUtil.STRING_SUBSTITUTOR_REPLACEMENT);
+        Logger.getDefaultAdvancedLeveledLogger()
+                .createLogFormatBuilder()
+                .appendText("NEW LOG FORMAT___")
+                .appendTimestamp()
+                .appendText(": ")
+                .appendObject()
+                .finishWithoutException();
+        logger.info("Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder() Test");
+        logger.info("Test if escape chars are causing problems $$ <- these are 2 dollar signs, this is just one -> $ and this are 3 -> $$$ (chars$around$signs) Test end");
     }
     
 }

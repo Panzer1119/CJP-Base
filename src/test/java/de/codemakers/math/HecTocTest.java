@@ -16,13 +16,16 @@
 
 package de.codemakers.math;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.scripting.JavaScriptEngine;
 import de.codemakers.base.scripting.JavaScriptEngineBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 
 public class HecTocTest {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String NUMBERS_STRING = "0123456789";
     public static final char[] NUMBERS = NUMBERS_STRING.toCharArray();
@@ -36,20 +39,20 @@ public class HecTocTest {
     
     public static final void main(String[] args) throws Exception {
         final JavaScriptEngineBuilder javaScriptEngineBuilder = new JavaScriptEngineBuilder();
-        Logger.log("javaScriptEngineBuilder=" + javaScriptEngineBuilder);
+        logger.info("javaScriptEngineBuilder=" + javaScriptEngineBuilder);
         final JavaScriptEngine javaScriptEngine = javaScriptEngineBuilder.build();
-        Logger.log("javaScriptEngine=" + javaScriptEngine);
+        logger.info("javaScriptEngine=" + javaScriptEngine);
         //final char[] numbers = new char[6];
         final char[] numbers = "523954".toCharArray();
-        Logger.log("numbers=" + Arrays.toString(numbers));
+        logger.info("numbers=" + Arrays.toString(numbers));
         final long start = System.currentTimeMillis();
         final boolean found = test(javaScriptEngine, numbers);
         final long duration = System.currentTimeMillis() - start;
-        Logger.log("found=" + found);
-        Logger.log("Time taken: " + duration + " ms");
-        Logger.log("TESTED_ALL=" + TESTED_ALL);
-        Logger.log("TESTED    =" + TESTED);
-        Logger.log("FOUND     =" + FOUND);
+        logger.info("found=" + found);
+        logger.info("Time taken: " + duration + " ms");
+        logger.info("TESTED_ALL=" + TESTED_ALL);
+        logger.info("TESTED    =" + TESTED);
+        logger.info("FOUND     =" + FOUND);
     }
     
     public static boolean test(JavaScriptEngine javaScriptEngine, char[] numbers) throws Exception {
@@ -185,13 +188,13 @@ public class HecTocTest {
             final boolean found = (Boolean) result;
             if (found) {
                 FOUND++;
-                Logger.log("code=" + code);
-                Logger.log("result=" + result);
+                logger.info("code=" + code);
+                logger.info("result=" + result);
                 return true;
             }
             return false;
         } catch (Exception ex) {
-            //Logger.logError(ex.getMessage());
+            //logger.error(ex.getMessage());
             return false;
         }
         /*

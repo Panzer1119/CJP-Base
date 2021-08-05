@@ -17,16 +17,19 @@
 package de.codemakers.io.audio;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AudioSenderTest implements Closeable, IAudioTest, Startable, Stoppable {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     protected final AudioFormat audioFormat;
     protected final DataLine.Info info;
@@ -56,15 +59,15 @@ public class AudioSenderTest implements Closeable, IAudioTest, Startable, Stoppa
             while (!stopped.get()) {
                 read = targetDataLine.read(buffer, 0, buffer.length);
                 if (read == -1) {
-                    Logger.logWarning(String.format("%s ended with -1", targetDataLine.getClass().getSimpleName()));
+                    logger.warn(String.format("%s ended with -1", targetDataLine.getClass().getSimpleName()));
                     stopped.set(true);
                     break;
                 }
                 outputStream.write(buffer, 0, read);
             }
-            Logger.logDebug(String.format("%s Thread stopped", getClass().getSimpleName()));
+            logger.debug(String.format("%s Thread stopped", getClass().getSimpleName()));
         });
-        Logger.logDebug(String.format("%s initiated", getClass().getSimpleName()));
+        logger.debug(String.format("%s initiated", getClass().getSimpleName()));
     }
     
     @Override
@@ -72,7 +75,7 @@ public class AudioSenderTest implements Closeable, IAudioTest, Startable, Stoppa
         stopped.set(false);
         thread.start();
         targetDataLine.start();
-        Logger.logDebug(String.format("%s started", getClass().getSimpleName()));
+        logger.debug(String.format("%s started", getClass().getSimpleName()));
         return targetDataLine.isActive();
     }
     
@@ -84,7 +87,7 @@ public class AudioSenderTest implements Closeable, IAudioTest, Startable, Stoppa
         stopped.set(true);
         Thread.sleep(250);
         thread.interrupt();
-        Logger.logDebug(String.format("%s stopped", getClass().getSimpleName()));
+        logger.debug(String.format("%s stopped", getClass().getSimpleName()));
         return !targetDataLine.isActive();
     }
     
@@ -99,7 +102,7 @@ public class AudioSenderTest implements Closeable, IAudioTest, Startable, Stoppa
             }
             targetDataLine.close();
         }
-        Logger.logDebug(String.format("%s closed", getClass().getSimpleName()));
+        logger.debug(String.format("%s closed", getClass().getSimpleName()));
     }
     
     public AudioFormat getAudioFormat() {

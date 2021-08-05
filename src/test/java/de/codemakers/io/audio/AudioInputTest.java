@@ -17,8 +17,8 @@
 package de.codemakers.io.audio;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -29,11 +29,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AudioInputTest {
     
-    public static void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
+    private static final Logger logger = LogManager.getLogger();
     
+    public static void main(String[] args) throws Exception {
         final Mixer.Info[] mixers = AudioSystem.getMixerInfo();
-        for (int i = 0; i < mixers.length; i++){
+        for (int i = 0; i < mixers.length; i++) {
             System.out.println(i + " " + mixers[i]);
         }
         
@@ -45,42 +45,42 @@ public class AudioInputTest {
         }
         
         final AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
-        Logger.logDebug("audioFormat=" + audioFormat);
+        logger.debug("audioFormat=" + audioFormat);
         final DataLine.Info info_input = new DataLine.Info(TargetDataLine.class, audioFormat);
-        Logger.logDebug("info_input=" + info_input);
+        logger.debug("info_input=" + info_input);
         if (!AudioSystem.isLineSupported(info_input)) {
-            Logger.logError(String.format("Line info_input is not supported \"%s\" (%s)", info_input, info_input == null ? "" : info_input.getClass()));
+            logger.error(String.format("Line info_input is not supported \"%s\" (%s)", info_input, info_input == null ? "" : info_input.getClass()));
             return;
         }
         final DataLine.Info info_output = new DataLine.Info(SourceDataLine.class, audioFormat);
-        Logger.logDebug("info_output=" + info_output);
+        logger.debug("info_output=" + info_output);
         if (!AudioSystem.isLineSupported(info_output)) {
-            Logger.logError(String.format("Line info_output is not supported \"%s\" (%s)", info_output, info_output == null ? "" : info_output.getClass()));
+            logger.error(String.format("Line info_output is not supported \"%s\" (%s)", info_output, info_output == null ? "" : info_output.getClass()));
             return;
         }
         //final TargetDataLine targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
         final Mixer mixer_output = AudioSystem.getMixer(mixerInfo_output);
-        Logger.logDebug("mixer_output=" + mixer_output);
+        logger.debug("mixer_output=" + mixer_output);
         final SourceDataLine sourceDataLine = (SourceDataLine) mixer_output.getLine(info_output);
-        Logger.logDebug("sourceDataLine=" + sourceDataLine);
+        logger.debug("sourceDataLine=" + sourceDataLine);
         sourceDataLine.open(audioFormat);
-        Logger.logDebug("sourceDataLine.getControls=" + Arrays.toString(sourceDataLine.getControls()));
+        logger.debug("sourceDataLine.getControls=" + Arrays.toString(sourceDataLine.getControls()));
         ((FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN)).setValue(6.0F);
-        Logger.logDebug("sourceDataLine.getControls=" + Arrays.toString(sourceDataLine.getControls()));
-    
+        logger.debug("sourceDataLine.getControls=" + Arrays.toString(sourceDataLine.getControls()));
+        
         final Mixer mixer_input = AudioSystem.getMixer(mixerInfo_input);
-        Logger.logDebug("mixer_input=" + mixer_input);
-        final TargetDataLine targetDataLine= (TargetDataLine) mixer_input.getLine(info_input);
-        Logger.logDebug("targetDataLine=" + targetDataLine);
+        logger.debug("mixer_input=" + mixer_input);
+        final TargetDataLine targetDataLine = (TargetDataLine) mixer_input.getLine(info_input);
+        logger.debug("targetDataLine=" + targetDataLine);
         targetDataLine.open(audioFormat);
-        Logger.logDebug("targetDataLine.getControls=" + Arrays.toString(targetDataLine.getControls()));
+        logger.debug("targetDataLine.getControls=" + Arrays.toString(targetDataLine.getControls()));
         
         final File file_temp = File.createTempFile(AudioInputTest.class.getSimpleName() + "_", ".pcm");
         
-        Logger.logDebug("file_temp=" + file_temp);
+        logger.debug("file_temp=" + file_temp);
         
         final OutputStream outputStream = new FileOutputStream(file_temp);
-    
+        
         final byte[] buffer = new byte[targetDataLine.getBufferSize() / 5];
         
         final AtomicBoolean stopped = new AtomicBoolean(false);
@@ -88,12 +88,12 @@ public class AudioInputTest {
         
         Standard.async(() -> {
             Thread.sleep(8000);
-            Logger.log("Stopping capturing");
+            logger.info("Stopping capturing");
             stopped.set(true);
         });
         
-        Logger.log("Starting capturing");
-    
+        logger.info("Starting capturing");
+        
         targetDataLine.start();
         sourceDataLine.start();
         
@@ -102,7 +102,7 @@ public class AudioInputTest {
             outputStream.write(buffer, 0, read);
             sourceDataLine.write(buffer, 0, read);
         }
-    
+        
         targetDataLine.stop();
         sourceDataLine.stop();
         
@@ -112,12 +112,12 @@ public class AudioInputTest {
         Thread.sleep(1000);
         
         Standard.addShutdownHook(() -> {
-            Logger.logDebug("Shutting down targetDataLine \"" + targetDataLine + "\"");
+            logger.debug("Shutting down targetDataLine \"" + targetDataLine + "\"");
             targetDataLine.stop(); //TODO Necessary?
             targetDataLine.close();
         });
         Standard.addShutdownHook(() -> {
-            Logger.logDebug("Shutting down sourceDataLine \"" + sourceDataLine + "\"");
+            logger.debug("Shutting down sourceDataLine \"" + sourceDataLine + "\"");
             sourceDataLine.stop(); //TODO Necessary?
             sourceDataLine.close();
         });
