@@ -35,7 +35,7 @@ public class HibernatePropertiesTest {
         hibernateProperties.setDatabase("TEST-DB");
         hibernateProperties.setUsername("TEST-USER");
         hibernateProperties.setPassword("TEST-PASS");
-        final Properties properties = hibernateProperties.createProperties();
+        final Properties properties = hibernateProperties.create();
         Assertions.assertEquals("de.codemakers.database.dialects.JsonBPostgreSQLDialect", properties.getProperty("hibernate.dialect"));
         Assertions.assertEquals("audit_log_", properties.getProperty("org.hibernate.envers.audit_table_prefix"));
         Assertions.assertEquals("", properties.getProperty("org.hibernate.envers.audit_table_suffix"));
@@ -43,7 +43,6 @@ public class HibernatePropertiesTest {
         Assertions.assertEquals("TEST-PASS", properties.getProperty("hibernate.connection.password"));
         Assertions.assertEquals("TEST-USER", properties.getProperty("hibernate.connection.username"));
         Assertions.assertEquals("5432", properties.getProperty("default.port"));
-        
     }
     
 }
