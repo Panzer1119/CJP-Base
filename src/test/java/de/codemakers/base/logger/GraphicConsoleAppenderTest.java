@@ -17,6 +17,7 @@
 package de.codemakers.base.logger;
 
 import de.codemakers.base.Standard;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -39,12 +40,13 @@ public class GraphicConsoleAppenderTest {
         logger.debug("console={}", console);
         final Thread thread = Standard.toughThread(() -> {
             Thread.currentThread().setName("Console-InputStream-Reader");
+            final Level levelInput = Level.forName("INPUT", 350);
             final InputStream inputStream = console.getInputStream();
             final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                logger.info(line);
+                logger.log(levelInput, line);
             }
             bufferedReader.close();
         });
