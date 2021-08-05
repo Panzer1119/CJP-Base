@@ -17,9 +17,7 @@
 package de.codemakers.swing.frame;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.util.StringUtil;
 import de.codemakers.io.file.AdvancedFile;
-import org.apache.commons.text.StringSubstitutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,37 +25,14 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.InputStream;
-import java.util.Queue;
-import java.util.*;
-import java.util.stream.Collectors;
 
 //FIXME This is crap?! Maybe i need to create a completely new JFrameManager class...
 public class JFrameManager extends JFrame {
     
     private static final Logger logger = LogManager.getLogger();
     
-    public static final String TITLE_FORMAT_NAME = "name";
-    public static final String TITLE_FORMAT_VAR_NAME = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_NAME + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String TITLE_FORMAT_VERSION = "version";
-    public static final String TITLE_FORMAT_VAR_VERSION = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_VERSION + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String TITLE_FORMAT_IDE = "ide"; //TODO Rename this to "ide_state" or something similar?
-    public static final String TITLE_FORMAT_VAR_IDE = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_IDE + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String TITLE_FORMAT_PREFIX = "prefix";
-    public static final String TITLE_FORMAT_VAR_PREFIX = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_PREFIX + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String TITLE_FORMAT_SUFFIX = "suffix";
-    public static final String TITLE_FORMAT_VAR_SUFFIX = StringSubstitutor.DEFAULT_VAR_START + TITLE_FORMAT_SUFFIX + StringSubstitutor.DEFAULT_VAR_END;
-    /**
-     * Value = "{@link #TITLE_FORMAT_VAR_PREFIX}{@link #TITLE_FORMAT_VAR_NAME}{@link #TITLE_FORMAT_VAR_VERSION}{@link #TITLE_FORMAT_VAR_IDE}{@link #TITLE_FORMAT_VAR_SUFFIX}"
-     */
-    public static final String DEFAULT_TITLE_FORMAT = TITLE_FORMAT_VAR_PREFIX + TITLE_FORMAT_VAR_NAME + " V" + TITLE_FORMAT_VAR_VERSION + TITLE_FORMAT_VAR_IDE + TITLE_FORMAT_VAR_SUFFIX;
-    public static final String DEFAULT_PREFIX_OR_SUFFIX_DELIMITER = " - ";
-    
-    protected String name;
-    protected String version;
-    protected String titleFormat = DEFAULT_TITLE_FORMAT;
-    protected final Map<String, Object> titleFormatValues = new HashMap<>();
-    protected final Queue<Object> queue_prefix = new LinkedList<>();
-    protected final Queue<Object> queue_suffix = new LinkedList<>();
+    private final JFrameTitle frameTitle;
+    private final JFrameTitleFormatter frameTitleFormatter = JFrameTitleFormatter.createDefault();
     
     public JFrameManager() {
         this("");
@@ -69,7 +44,7 @@ public class JFrameManager extends JFrame {
     
     public JFrameManager(String name, String version) {
         super();
-        titleFormatValues.put(TITLE_FORMAT_IDE, Standard.RUNNING_JAR_IS_JAR ? "" : " IDE");
+        this.frameTitle = new JFrameTitle(!Standard.RUNNING_JAR_IS_JAR, name, version);
         updateTitle();
         setName(name);
         setVersion(version);
@@ -89,13 +64,7 @@ public class JFrameManager extends JFrame {
     }
     
     public void updateTitle() {
-        titleFormatValues.put(TITLE_FORMAT_PREFIX, queue_prefix.stream()
-                .map(StringUtil::toString)
-                .collect(Collectors.joining(DEFAULT_PREFIX_OR_SUFFIX_DELIMITER, "", " ")));
-        titleFormatValues.put(TITLE_FORMAT_SUFFIX, queue_suffix.stream()
-                .map(StringUtil::toString)
-                .collect(Collectors.joining(DEFAULT_PREFIX_OR_SUFFIX_DELIMITER, " ", "")));
-        setTitle(StringSubstitutor.replace(titleFormat, titleFormatValues));
+        setTitle(frameTitle.formatWithoutException(frameTitleFormatter));
     }
     
     public void setIconImage(String internPath) {
@@ -110,84 +79,54 @@ public class JFrameManager extends JFrame {
         }
     }
     
-    public JFrameTitleFormatBuilder createJFrameTitleFormatBuilder() {
-        return new JFrameTitleFormatBuilder() {
-            @Override
-            public String finish() throws Exception {
-                final String temp = toFormat();
-                setTitleFormat(temp);
-                return temp;
-            }
-        };
-    }
-    
     @Override
     public String getName() {
-        return name;
+        return frameTitle.getName();
     }
     
     @Override
     public void setName(String name) {
-        this.name = name;
-        titleFormatValues.put(TITLE_FORMAT_NAME, name);
+        frameTitle.setName(name);
         updateTitle();
     }
     
     public String getVersion() {
-        return version;
+        return frameTitle.getVersion();
     }
     
     public JFrameManager setVersion(String version) {
-        this.version = version;
-        titleFormatValues.put(TITLE_FORMAT_VERSION, version);
+        frameTitle.setVersion(version);
         updateTitle();
         return this;
     }
     
-    public String getTitleFormat() {
-        return titleFormat;
-    }
-    
-    public JFrameManager setTitleFormat(String titleFormat) {
-        this.titleFormat = Objects.requireNonNull(titleFormat, "titleFormat");
-        return this;
-    }
-    
-    public Queue<Object> getQueuePrefix() {
-        return queue_prefix;
-    }
-    
     public JFrameManager addPrefix(Object object) {
-        queue_prefix.add(object);
+        frameTitle.getPrefixes().add(object);
         updateTitle();
         return this;
     }
     
     public boolean removePrefix(Object object) {
-        queue_prefix.remove(object);
+        frameTitle.getPrefixes().remove(object);
         updateTitle();
-        return queue_prefix.contains(object);
-    }
-    
-    public Queue<Object> getQueueSuffix() {
-        return queue_suffix;
+        return frameTitle.getPrefixes().contains(object);
     }
     
     public JFrameManager addSuffix(Object object) {
-        queue_suffix.add(object);
+        frameTitle.getSuffixes().add(object);
         updateTitle();
         return this;
     }
     
     public boolean removeSuffix(Object object) {
-        queue_suffix.remove(object);
+        frameTitle.getSuffixes().remove(object);
         updateTitle();
-        return queue_suffix.contains(object);
+        return frameTitle.getSuffixes().contains(object);
     }
     
     @Override
     public String toString() {
-        return "JFrameManager{" + "name='" + name + '\'' + ", version='" + version + '\'' + ", titleFormat='" + titleFormat + '\'' + ", titleFormatValues=" + titleFormatValues + '}';
+        return "JFrameManager{" + "title=" + frameTitle + ", titleFormatter=" + frameTitleFormatter + '}';
     }
     
 }
