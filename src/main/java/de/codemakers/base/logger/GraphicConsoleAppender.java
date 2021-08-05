@@ -29,25 +29,25 @@ import org.apache.logging.log4j.core.config.plugins.validation.constraints.Requi
 
 import java.io.Serializable;
 
-@Plugin(name = ConsoleAppender.PLUGIN_NAME, category = "Core", elementType = Appender.ELEMENT_TYPE, printObject = true)
-public class ConsoleAppender extends AbstractAppender {
+@Plugin(name = GraphicConsoleAppender.PLUGIN_NAME, category = "Core", elementType = Appender.ELEMENT_TYPE, printObject = true)
+public class GraphicConsoleAppender extends AbstractAppender {
     
-    public static final String PLUGIN_NAME = "Console";
+    public static final String PLUGIN_NAME = "GraphicConsole";
     
     /**
      * Builds ConsoleAppender instances.
      *
      * @param <B> The type to build
      */
-    public static class Builder<B extends Builder<B>> extends AbstractAppender.Builder<B> implements org.apache.logging.log4j.core.util.Builder<ConsoleAppender> {
+    public static class Builder<B extends Builder<B>> extends AbstractAppender.Builder<B> implements org.apache.logging.log4j.core.util.Builder<GraphicConsoleAppender> {
         
         @PluginBuilderAttribute
         @Required
         private Console console;
         
         @Override
-        public ConsoleAppender build() {
-            return new ConsoleAppender(getName(), getFilter(), getLayout(), isIgnoreExceptions(), getPropertyArray(), getConsole());
+        public GraphicConsoleAppender build() {
+            return new GraphicConsoleAppender(getName(), getFilter(), getLayout(), isIgnoreExceptions(), getPropertyArray(), getConsole());
         }
     
         public Console getConsole() {
@@ -68,7 +68,7 @@ public class ConsoleAppender extends AbstractAppender {
     
     private final Console console;
     
-    public ConsoleAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties, Console console) {
+    public GraphicConsoleAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties, Console console) {
         super(name, filter, layout, ignoreExceptions, properties);
         this.console = console;
     }
