@@ -37,7 +37,7 @@ public final class LogLevel {
     public static final Level TRACE = Level.TRACE;
     public static final Level ALL = Level.ALL;
     
-    public static final Level[] LEVELS = {OFF, FATAL, ERROR, WARN, COMMAND, INPUT, INFO, DEBUG, FINE, FINER, FINEST, TRACE, ALL};
+    public static final Level[] LEVELS = {FATAL, ERROR, WARN, COMMAND, INPUT, INFO, DEBUG, FINE, FINER, FINEST, TRACE};
     public static final Level MINIMUM_LEVEL = Stream.of(LEVELS).min(Comparator.comparing(Level::intLevel)).orElse(Level.OFF);
     public static final Level MAXIMUM_LEVEL = Stream.of(LEVELS).max(Comparator.comparing(Level::intLevel)).orElse(Level.ALL);
     
