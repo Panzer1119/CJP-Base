@@ -17,7 +17,7 @@
 package de.codemakers.io.audio;
 
 import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
+import de.codemakers.base.logging.LogLevel;
 import de.codemakers.security.interfaces.Decryptor;
 import de.codemakers.security.interfaces.Encryptor;
 import de.codemakers.security.util.AESCryptUtil;

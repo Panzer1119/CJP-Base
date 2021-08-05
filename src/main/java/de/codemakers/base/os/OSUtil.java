@@ -18,7 +18,7 @@ package de.codemakers.base.os;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.env.SystemProperties;
-import de.codemakers.base.logger.LogLevel;
+import de.codemakers.base.logging.LogLevel;
 import de.codemakers.base.os.functions.OSFunction;
 import de.codemakers.base.os.functions.RegisterOSFunction;
 import de.codemakers.base.reflection.ReflectionUtil;

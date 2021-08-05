@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package de.codemakers.base.logger;
+package de.codemakers.base.logging;
 
 import de.codemakers.base.util.interfaces.Formattable;
 
