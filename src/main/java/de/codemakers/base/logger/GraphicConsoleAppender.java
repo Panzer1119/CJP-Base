@@ -28,6 +28,9 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Plugin(name = GraphicConsoleAppender.PLUGIN_NAME, category = "Core", elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class GraphicConsoleAppender extends AbstractAppender {
@@ -43,19 +46,24 @@ public class GraphicConsoleAppender extends AbstractAppender {
         
         @PluginBuilderAttribute
         @Required
-        private Console console;
+        private String consoleName = "default";
         
         @Override
         public GraphicConsoleAppender build() {
-            return new GraphicConsoleAppender(getName(), getFilter(), getLayout(), isIgnoreExceptions(), getPropertyArray(), getConsole());
+            final String consoleName = getConsoleName();
+            final Console<?> console = Standard.getConsoleByName(consoleName);
+            if (console == null) {
+                //TODO Throw error?
+            }
+            return new GraphicConsoleAppender(getName(), getFilter(), getLayout(), isIgnoreExceptions(), getPropertyArray(), console);
         }
-    
-        public Console getConsole() {
-            return console;
+        
+        public String getConsoleName() {
+            return consoleName;
         }
-    
-        public Builder setConsole(Console console) {
-            this.console = console;
+        
+        public Builder<B> setConsoleName(String consoleName) {
+            this.consoleName = consoleName;
             return this;
         }
         
@@ -66,11 +74,11 @@ public class GraphicConsoleAppender extends AbstractAppender {
         return new Builder<B>().asBuilder();
     }
     
-    private final Console console;
+    private final Console<?> console;
     
-    public GraphicConsoleAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties, Console console) {
+    public GraphicConsoleAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties, Console<?> console) {
         super(name, filter, layout, ignoreExceptions, properties);
-        this.console = console;
+        this.console = Objects.requireNonNull(console);
     }
     
     @Override
