@@ -26,6 +26,7 @@ import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
+import org.apache.logging.log4j.message.Message;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -97,7 +98,8 @@ public class GraphicConsoleAppender extends AbstractAppender {
         final long threadId = logEvent.getThreadId();
         final Thread thread = getThreadById(threadId);
         final boolean bad = logLevel != null && logLevel.isBad();
-        console.logEntries.add(new LeveledLogEntry(logEvent.getMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), bad, logLevel));
+        final Message message = logEvent.getMessage();
+        console.logEntries.add(new LeveledLogEntry(message.getFormattedMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), bad, logLevel));
         console.reloadWithoutException();
     }
     
