@@ -16,6 +16,8 @@
 
 package de.codemakers.base;
 
+import de.codemakers.base.logger.Console;
+import de.codemakers.base.logger.DefaultConsole;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.tough.*;
 import de.codemakers.io.file.AdvancedFile;
@@ -64,6 +66,8 @@ public class Standard {
     public static final String LANG_PATH = LanguageUtil.LANG_PATH;
     public static final AdvancedFile LANG_FOLDER = LanguageUtil.LANG_FOLDER;
     public static final String LANG_FILE_EXTENSION = LanguageUtil.LANG_FILE_EXTENSION;
+    
+    private static final Map<String, Console<?>> CONSOLES = new ConcurrentHashMap<>();
     
     static {
         Standard.async(LanguageUtil::initLocalizers);
@@ -320,6 +324,13 @@ public class Standard {
             return;
         }
         toughConsumer.acceptWithoutException(t);
+    }
+    
+    public static Console<?> getConsoleByName(String name) {
+        if (!CONSOLES.containsKey(name)) {
+            CONSOLES.put(name, new DefaultConsole());
+        }
+        return CONSOLES.get(name);
     }
     
 }
