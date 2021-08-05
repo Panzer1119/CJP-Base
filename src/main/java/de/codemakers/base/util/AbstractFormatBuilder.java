@@ -16,11 +16,12 @@
 
 package de.codemakers.base.util;
 
-import de.codemakers.base.util.interfaces.Finishable;
+import de.codemakers.base.util.interfaces.Builder;
+import de.codemakers.base.util.interfaces.Formatter;
 
 import java.util.Objects;
 
-public abstract class AbstractFormatBuilder<C extends AbstractFormatBuilder> implements Finishable<String> {
+public abstract class AbstractFormatBuilder<B extends AbstractFormatBuilder<?, ?>, F extends Formatter<?>> implements Builder<F> {
     
     public static final char NEW_LINE = '\n';
     
@@ -39,19 +40,19 @@ public abstract class AbstractFormatBuilder<C extends AbstractFormatBuilder> imp
         this.format = Objects.requireNonNull(format, "format");
     }
     
-    public C appendText(String text) {
+    public B appendText(String text) {
         if (checkAndCorrectAppendedText) {
             text = checkAndCorrectText(text);
         }
         format.append(text);
-        return (C) this;
+        return (B) this;
     }
     
     protected abstract String checkAndCorrectText(String text);
     
-    public C appendNewLine() {
+    public B appendNewLine() {
         format.append(NEW_LINE);
-        return (C) this;
+        return (B) this;
     }
     
     public abstract String example();
@@ -60,21 +61,23 @@ public abstract class AbstractFormatBuilder<C extends AbstractFormatBuilder> imp
         return format.toString();
     }
     
-    public C setFormat(String format) {
+    public B setFormat(String format) {
         //this.format = new StringBuilder(format);
         this.format.setLength(0);
         appendText(format);
-        return (C) this;
+        return (B) this;
     }
     
     public boolean isCheckAndCorrectAppendedText() {
         return checkAndCorrectAppendedText;
     }
     
-    public C setCheckAndCorrectAppendedText(boolean checkAndCorrectAppendedText) {
+    public B setCheckAndCorrectAppendedText(boolean checkAndCorrectAppendedText) {
         this.checkAndCorrectAppendedText = checkAndCorrectAppendedText;
-        return (C) this;
+        return (B) this;
     }
+    
+    public abstract F build();
     
     @Override
     public String toString() {
