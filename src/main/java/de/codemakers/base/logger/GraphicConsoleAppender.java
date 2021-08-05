@@ -16,6 +16,7 @@
 
 package de.codemakers.base.logger;
 
+import de.codemakers.base.Standard;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -82,9 +83,32 @@ public class GraphicConsoleAppender extends AbstractAppender {
     }
     
     @Override
-    public void append(LogEvent event) {
-        //TODO Append to console
-        System.out.println("Append: " + event); //REMOVE DEBUG Test
+    public void append(LogEvent logEvent) {
+        System.out.println("Append: " + logEvent); //REMOVE DEBUG Test
+        final Instant timestamp = Instant.ofEpochMilli(logEvent.getInstant().getEpochMillisecond());
+        int levelTemp = (logEvent.getLevel().intLevel() / 100) - 3;
+        if (levelTemp == 1) {
+            levelTemp++;
+        }
+        if (levelTemp == 2) {
+            levelTemp++;
+        }
+        levelTemp = Math.min(levelTemp, 7);
+        levelTemp = Math.max(levelTemp, -1);
+        final int level = levelTemp;
+        final LogLevel logLevel = Arrays.stream(LogLevel.values()).filter(temp -> temp.getLevel() == level).findFirst().orElse(null);
+        final long threadId = logEvent.getThreadId();
+        final Thread thread = getThreadById(threadId);
+        console.logEntries.add(new LeveledLogEntry(logEvent.getMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), logLevel != null && logLevel.isBad(), logLevel));
+    }
+    
+    public static Thread getThreadById(long id) {
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            if (thread.getId() == id) {
+                return thread;
+            }
+        }
+        return null;
     }
     
 }
