@@ -19,8 +19,12 @@ package de.codemakers.misc.os.functions;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.os.functions.OSFunction;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class SpeakText extends OSFunction {
+    
+    private static final Logger logger = LogManager.getLogger();
 
     public abstract boolean speak(String text) throws Exception;
     
