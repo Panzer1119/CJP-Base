@@ -77,7 +77,7 @@ public class SourceFormatterBuilder extends AbstractFormatBuilder<SourceFormatte
     
     @Override
     public String toString() {
-        return "SourceFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
+        return "SourceFormatterBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
     }
     
 }

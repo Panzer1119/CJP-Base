@@ -146,7 +146,7 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
     
     @Override
     public String toString() {
-        return "LogFormatBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
+        return "LogEventFormatterBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
     }
     
 }
