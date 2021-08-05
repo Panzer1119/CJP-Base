@@ -17,13 +17,14 @@
 package de.codemakers.base.util.tough;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public interface Tough<T, R> {
     
-    org.apache.logging.log4j.Logger logger = LogManager.getLogger();
-
+    Logger logger = LogManager.getLogger();
+    
     R action(T t) throws Exception;
-
+    
     default R action(T t, ToughConsumer<Throwable> failure) {
         try {
             return action(t);
@@ -36,13 +37,13 @@ public interface Tough<T, R> {
             return null;
         }
     }
-
+    
     default R actionWithoutException(T t) {
         return action(t, null);
     }
-
+    
     boolean canConsume();
-
+    
     boolean canSupply();
-
+    
 }

@@ -18,9 +18,13 @@ package de.codemakers.base.util.listeners;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @FunctionalInterface
 public interface PropertyChangeListener<T> {
+    
+    Logger logger = LogManager.getLogger();
     
     boolean onChange(T oldValue, T newValue) throws Exception;
     

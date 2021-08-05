@@ -18,9 +18,13 @@ package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @FunctionalInterface
 public interface Reloadable {
+    
+    Logger logger = LogManager.getLogger();
     
     boolean reload() throws Exception;
     

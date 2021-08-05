@@ -19,8 +19,12 @@ package de.codemakers.base.util.interfaces;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public interface Hasher {
+    
+    Logger logger = LogManager.getLogger();
     
     byte[] hash(byte[] data, int offset, int length) throws Exception;
     

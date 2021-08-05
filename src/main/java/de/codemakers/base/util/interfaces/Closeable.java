@@ -18,10 +18,14 @@ package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.util.tough.ToughConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public interface Closeable extends java.io.Closeable {
+    
+    Logger logger = LogManager.getLogger();
     
     @Override
     default void close() throws IOException {
