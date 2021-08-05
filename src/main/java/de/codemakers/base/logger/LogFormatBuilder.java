@@ -25,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class LogFormatBuilder extends AbstractFormatBuilder<LogFormatBuilder> {
     
     public LogFormatBuilder() {

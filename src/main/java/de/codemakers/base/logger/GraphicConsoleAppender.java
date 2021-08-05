@@ -33,7 +33,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Plugin(name = GraphicConsoleAppender.PLUGIN_NAME, category = "Core", elementType = Appender.ELEMENT_TYPE, printObject = true)
-public class GraphicConsoleAppender extends AbstractAppender {
+public class GraphicConsoleAppender extends AbstractAppender { //FIXME Use Standard. original system out streams für log4j2-test.xml? und dann fang den System.out new ab um ihn auch zu loggen
     
     public static final String PLUGIN_NAME = "GraphicConsole";
     

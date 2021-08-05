@@ -23,6 +23,7 @@ import java.time.Instant;
 /**
  * Logger Class for default Instances
  */
+@Deprecated
 public class Logger {
     
     /**

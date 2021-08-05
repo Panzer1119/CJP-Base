@@ -20,6 +20,7 @@ import de.codemakers.base.util.AbstractFormatBuilder;
 import de.codemakers.base.util.StringUtil;
 import org.apache.commons.text.StringSubstitutor;
 
+@Deprecated
 public class SourceFormatBuilder extends AbstractFormatBuilder<SourceFormatBuilder> {
     
     public SourceFormatBuilder() {

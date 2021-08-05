@@ -19,6 +19,7 @@ package de.codemakers.base.logger;
 import java.awt.*;
 import java.util.stream.Stream;
 
+@Deprecated
 public enum LogLevel {
     FINEST(false, 7, Color.WHITE, Color.LIGHT_GRAY),
     FINER(false, 6, Color.WHITE, Color.GRAY),

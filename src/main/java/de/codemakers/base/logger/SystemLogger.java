@@ -24,6 +24,7 @@ import java.io.PrintStream;
  * Standard {@link de.codemakers.base.logger.ILogger}, this implementation uses the original {@link java.lang.System} {@link java.io.PrintStream}s
  * to log messages and more
  */
+@Deprecated
 public class SystemLogger implements ILogger {
     
     /**

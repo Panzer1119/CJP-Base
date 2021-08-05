@@ -19,6 +19,7 @@ package de.codemakers.base.logger;
 /**
  * Logger Interface
  */
+@Deprecated
 public interface ILogger {
     
     /**

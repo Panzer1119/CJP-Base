@@ -19,6 +19,7 @@ package de.codemakers.base.logger;
 import java.time.Instant;
 import java.util.Objects;
 
+@Deprecated
 public class LeveledLogEntry extends LogEntry {
     
     protected final LogLevel logLevel; //LogLevel

@@ -23,6 +23,7 @@ import de.codemakers.base.util.tough.ToughConsumer;
  * Standard {@link de.codemakers.base.logger.AdvancedLogger}, this implementation uses the original {@link java.lang.System} {@link java.io.PrintStream}s
  * to log messages with timestamps and more
  */
+@Deprecated
 public class AdvancedSystemLogger extends AdvancedLogger {
     
     private ToughConsumer<LogEntry> preLogEntryToughConsumer = null; //TODO Writing LogEntries to Console?

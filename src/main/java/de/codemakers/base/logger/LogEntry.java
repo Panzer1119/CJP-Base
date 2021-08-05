@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
+@Deprecated
 public class LogEntry implements Formattable<AdvancedLogger>, Serializable {
     
     protected final Object object; //Object

@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
+@Deprecated
 public abstract class AdvancedLeveledLogger extends AdvancedLogger {
     
     /**

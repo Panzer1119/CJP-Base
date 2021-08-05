@@ -19,6 +19,7 @@ package de.codemakers.base.logger;
 import de.codemakers.base.Standard;
 import de.codemakers.base.util.tough.ToughConsumer;
 
+@Deprecated
 public class AdvancedLeveledSystemLogger extends AdvancedLeveledLogger {
     
     private ToughConsumer<LeveledLogEntry> preLogEntryToughConsumer = null; //TODO Writing LogEntries to Console?

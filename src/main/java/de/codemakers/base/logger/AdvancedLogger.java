@@ -34,6 +34,7 @@ import java.util.TimeZone;
 /**
  * Abstract AdvancedLogger Class
  */
+@Deprecated
 public abstract class AdvancedLogger implements ILogger {
     
     /**
