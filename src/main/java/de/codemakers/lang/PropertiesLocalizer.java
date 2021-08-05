@@ -22,11 +22,15 @@ import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.Properties;
 
 public class PropertiesLocalizer extends FileLocalizer {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String KEY_LANGUAGE_TAG = "language_tag";
     public static final String KEY_LANGUAGE_NAME_ENGLISH = "language_name_english";

@@ -22,12 +22,16 @@ import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.file.exceptions.isnot.FileIsNotExistingException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.util.Objects;
 
 public class XMLLocalizer extends FileLocalizer {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String KEY_LANGUAGE_TAG = "languageTag";
     public static final String KEY_LANGUAGE_NAME_ENGLISH = "languageNameEnglish";
