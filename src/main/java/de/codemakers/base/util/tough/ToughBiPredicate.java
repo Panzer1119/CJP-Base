@@ -16,8 +16,13 @@
 
 package de.codemakers.base.util.tough;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @FunctionalInterface
 public interface ToughBiPredicate<T, U> extends Tough<T, Boolean> {
+    
+    Logger logger = LogManager.getLogger();
     
     Boolean test(T t, U u) throws Exception;
     

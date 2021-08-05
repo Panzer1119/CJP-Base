@@ -16,7 +16,12 @@
 
 package de.codemakers.base.util.tough;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public interface ToughTriFunction<T, U, V, R> extends Tough<T, R> {
+    
+    Logger logger = LogManager.getLogger();
     
     R apply(T t, U u, V v) throws Exception;
     

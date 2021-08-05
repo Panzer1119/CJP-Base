@@ -16,8 +16,13 @@
 
 package de.codemakers.base.util.tough;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @FunctionalInterface
 public interface ToughTriConsumer<T, U, V> extends Tough<T, Void> {
+    
+    Logger logger = LogManager.getLogger();
     
     void accept(T t, U u, V v) throws Exception;
     

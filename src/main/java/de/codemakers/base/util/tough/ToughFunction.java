@@ -16,8 +16,13 @@
 
 package de.codemakers.base.util.tough;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @FunctionalInterface
 public interface ToughFunction<T, R> extends Tough<T, R> {
+    
+    Logger logger = LogManager.getLogger();
     
     R apply(T t) throws Exception;
     
