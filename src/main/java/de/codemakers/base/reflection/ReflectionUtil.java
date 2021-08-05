@@ -54,9 +54,6 @@ public class ReflectionUtil {
         Objects.requireNonNull(fieldName);
         Objects.requireNonNull(object);
         final Field field = object.getClass().getField(fieldName);
-        if (field == null) {
-            return null;
-        }
         final boolean accessible = field.isAccessible();
         if (!accessible) {
             field.setAccessible(true);
@@ -110,9 +107,6 @@ public class ReflectionUtil {
         Objects.requireNonNull(fieldName);
         Objects.requireNonNull(clazz_);
         final Field field = clazz_.getField(fieldName);
-        if (field == null) {
-            return null;
-        }
         final boolean accessible = field.isAccessible();
         if (!accessible) {
             field.setAccessible(true);
@@ -166,9 +160,6 @@ public class ReflectionUtil {
         Objects.requireNonNull(methodName);
         Objects.requireNonNull(object);
         final Method method = object.getClass().getMethod(methodName, objectsToClasses(parameters));
-        if (method == null) {
-            return null;
-        }
         final boolean accessible = method.isAccessible();
         if (!accessible) {
             method.setAccessible(true);
@@ -222,9 +213,6 @@ public class ReflectionUtil {
         Objects.requireNonNull(methodName);
         Objects.requireNonNull(clazz_);
         final Method method = clazz_.getMethod(methodName, objectsToClasses(parameters));
-        if (method == null) {
-            return null;
-        }
         final boolean accessible = method.isAccessible();
         if (!accessible) {
             method.setAccessible(true);
