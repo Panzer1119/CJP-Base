@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/Panzer1119/CJP-Database/compare/v0.1.6...v0.1.7) (2021-08-05)
+
+
+### Features
+
+* add setBasicProperty and setSubstitution to HibernateProperties.java ([bbb6e4d](https://github.com/Panzer1119/CJP-Database/commit/bbb6e4d5ebb062a2c2a5b1775449ab4e6c0e9b6b))
+
 ### [0.1.6](https://github.com/Panzer1119/CJP-Database/compare/v0.1.5...v0.1.6) (2021-08-04)
 
 
