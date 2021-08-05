@@ -25,8 +25,7 @@ import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
-import org.apache.logging.log4j.core.config.plugins.PluginFactory;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
+import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -46,7 +45,6 @@ public class GraphicConsoleAppender extends AbstractAppender {
     public static class Builder<B extends Builder<B>> extends AbstractAppender.Builder<B> implements org.apache.logging.log4j.core.util.Builder<GraphicConsoleAppender> {
         
         @PluginBuilderAttribute
-        @Required
         private String consoleName = "default";
         
         @Override
@@ -63,14 +61,14 @@ public class GraphicConsoleAppender extends AbstractAppender {
             return consoleName;
         }
         
-        public Builder<B> setConsoleName(String consoleName) {
+        public B setConsoleName(String consoleName) {
             this.consoleName = consoleName;
-            return this;
+            return asBuilder();
         }
         
     }
     
-    @PluginFactory
+    @PluginBuilderFactory
     public static <B extends Builder<B>> B newBuilder() {
         return new Builder<B>().asBuilder();
     }
@@ -99,7 +97,8 @@ public class GraphicConsoleAppender extends AbstractAppender {
         final LogLevel logLevel = Arrays.stream(LogLevel.values()).filter(temp -> temp.getLevel() == level).findFirst().orElse(null);
         final long threadId = logEvent.getThreadId();
         final Thread thread = getThreadById(threadId);
-        console.logEntries.add(new LeveledLogEntry(logEvent.getMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), logLevel != null && logLevel.isBad(), logLevel));
+        final boolean bad = logLevel != null && logLevel.isBad();
+        console.logEntries.add(new LeveledLogEntry(logEvent.getMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), bad, logLevel));
     }
     
     public static Thread getThreadById(long id) {
