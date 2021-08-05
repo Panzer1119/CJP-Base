@@ -30,7 +30,6 @@ import org.apache.logging.log4j.message.Message;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Objects;
 
 @Plugin(name = GraphicConsoleAppender.PLUGIN_NAME, category = "Core", elementType = Appender.ELEMENT_TYPE, printObject = true)
@@ -84,20 +83,24 @@ public class GraphicConsoleAppender extends AbstractAppender {
     @Override
     public void append(LogEvent logEvent) {
         final Instant timestamp = Instant.ofEpochMilli(logEvent.getInstant().getEpochMillisecond());
-        int levelTemp = (logEvent.getLevel().intLevel() / 100) - 3;
-        if (levelTemp == 1) {
-            levelTemp++;
+        final LogLevel logLevel = switch (logEvent.getLevel().intLevel()) {
+            case 0 -> null;
+            case 100, 200 -> LogLevel.ERROR;
+            case 300 -> LogLevel.WARNING;
+            case 340 -> LogLevel.COMMAND;
+            case 350 -> LogLevel.INPUT;
+            case 400 -> LogLevel.INFO;
+            case 500 -> LogLevel.DEBUG;
+            case 600 -> LogLevel.FINE;
+            case Integer.MAX_VALUE -> LogLevel.FINEST;
+            default -> throw new IllegalStateException("Unexpected value: " + logEvent.getLevel().intLevel());
+        };
+        if (logLevel == null) {
+            return;
         }
-        if (levelTemp == 2) {
-            levelTemp++;
-        }
-        levelTemp = Math.min(levelTemp, 7);
-        levelTemp = Math.max(levelTemp, -1);
-        final int level = levelTemp;
-        final LogLevel logLevel = Arrays.stream(LogLevel.values()).filter(temp -> temp.getLevel() == level).findFirst().orElse(null);
         final long threadId = logEvent.getThreadId();
         final Thread thread = getThreadById(threadId);
-        final boolean bad = logLevel != null && logLevel.isBad();
+        final boolean bad = logLevel.isBad();
         final Message message = logEvent.getMessage();
         console.logEntries.add(new LeveledLogEntry(message.getFormattedMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), bad, logLevel));
         console.reloadWithoutException();
