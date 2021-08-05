@@ -48,13 +48,6 @@ public class DefaultConsoleTest {
     }
     
     public static final void main(String[] args) throws Exception {
-        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINEST);
-        Logger.getDefaultAdvancedLeveledLogger().createLogFormatBuilder().appendTimestamp().appendLogLevel().appendText(": ").appendObject().appendText(" ").appendSource().appendThread().finishWithoutException();
-        Logger.getDefaultAdvancedLeveledLogger().setPostLogEntryToughConsumer((leveledLogEntry) -> {
-            BUFFERED_WRITER_LOG_FILE.write(leveledLogEntry.formatWithoutException(Logger.getDefaultAdvancedLeveledLogger()));
-            BUFFERED_WRITER_LOG_FILE.newLine();
-            BUFFERED_WRITER_LOG_FILE.flush();
-        });
         final DefaultConsole defaultConsole = new DefaultConsole();
         Standard.async(() -> {
             Thread.currentThread().setName("Console-InputStream-Reader");
@@ -69,10 +62,12 @@ public class DefaultConsoleTest {
         });
         //AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = console.logEntries::add;
         //Logger.getDefaultAdvancedLeveledLogger().setPreLogEntryToughConsumer(console.logEntries::add); //TODO Do this in the Console constructor?
+        /*
         Logger.getDefaultAdvancedLeveledLogger().setPreLogEntryToughConsumer((levelLogEntry) -> {
             defaultConsole.logEntries.add(levelLogEntry);
             defaultConsole.reloadWithoutException();
         }); //TODO Do this in the Console constructor?
+        */
         /*
         AdvancedLeveledLogger.LOG_ENTRY_CONSUMER = (logEntry) -> {
             console.logEntries.add(logEntry);

@@ -36,7 +36,7 @@ public class GraphicConsoleAppenderTest {
     @Test
     void test() throws InterruptedException {
         logger.info("This is a Message of Level INFO");
-        final Console<?> console = Standard.getConsoleByName("default");
+        final Console console = Standard.getConsoleByName("default");
         logger.debug("console={}", console);
         final Thread thread = Standard.toughThread(() -> {
             Thread.currentThread().setName("Console-InputStream-Reader");
