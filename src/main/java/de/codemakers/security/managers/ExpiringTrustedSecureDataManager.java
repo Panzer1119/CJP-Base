@@ -25,6 +25,8 @@ import de.codemakers.security.entities.ExpiringTrustedSecureData;
 import de.codemakers.security.interfaces.Decryptor;
 import de.codemakers.security.interfaces.Verifier;
 import de.codemakers.security.util.EasyCryptUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.Timer;
@@ -32,6 +34,8 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class ExpiringTrustedSecureDataManager {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     private final Multimap<Long, ExpiringTrustedSecureData> expiringTrustedSecureDatas = Multimaps.synchronizedMultimap(HashMultimap.create());
     protected ToughSupplier<Long> timeSupplier = null;

@@ -16,9 +16,14 @@
 
 package de.codemakers.security.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.crypto.SecretKeyFactory;
 
 public class KDFUtil {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String ALGORITHM_PBKDF2WithHmacSHA_1 = "PBKDF2WithHmacSHA1";
     public static final String ALGORITHM_PBKDF2WithHmacSHA_256 = "PBKDF2WithHmacSHA256";

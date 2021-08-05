@@ -16,11 +16,16 @@
 
 package de.codemakers.security.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.crypto.KeyAgreement;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 
 public class EllipticCurveUtil {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String ALGORITHM_EC = "EC";
     public static final String ALGORITHM_ECDH = "ECDH";

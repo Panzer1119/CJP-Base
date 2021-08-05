@@ -17,11 +17,15 @@
 package de.codemakers.security.util;
 
 import de.codemakers.base.util.interfaces.Hasher;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
 
 public class SecureHashUtil {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     public static final String ALGORITHM_SHA1withRSA = "SHA1withRSA";
     public static final String ALGORITHM_SHA256withRSA = "SHA256withRSA";
