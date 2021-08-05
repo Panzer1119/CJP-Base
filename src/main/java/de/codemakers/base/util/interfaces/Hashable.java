@@ -17,7 +17,6 @@
 package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.HashUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -33,7 +32,7 @@ public interface Hashable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -58,7 +57,7 @@ public interface Hashable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }

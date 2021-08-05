@@ -16,7 +16,6 @@
 
 package de.codemakers.lang;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.XMLUtil;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.base.util.tough.ToughConsumer;
@@ -63,7 +62,7 @@ public class XMLLocalizer extends FileLocalizer {
             return loadFromFile(advancedFile);
         } catch (Exception ex) {
             if (failure == null) {
-                Logger.handleError(ex);
+                logger.error(ex);
             } else {
                 failure.acceptWithoutException(ex);
             }

@@ -124,7 +124,7 @@ public class TunnelStreamTest {
                 if ("Pipe broken".equals(ex.getMessage()) || ex instanceof StreamClosedException) {
                     return;
                 }
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         });
         Standard.async(() -> {
@@ -137,7 +137,7 @@ public class TunnelStreamTest {
                 Logger.logDebug(String.format(FORMAT_STOPPED, " RECEIVER  ", ID_2));
                 Logger.logDebug("2 tunnelInputStream=" + tunnelInputStream);
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         });
     }

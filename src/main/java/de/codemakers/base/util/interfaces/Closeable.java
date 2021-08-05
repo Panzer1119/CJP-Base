@@ -17,7 +17,6 @@
 package de.codemakers.base.util.interfaces;
 
 import de.codemakers.base.action.RunningAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
 import java.io.IOException;
@@ -44,7 +43,7 @@ public interface Closeable extends java.io.Closeable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }

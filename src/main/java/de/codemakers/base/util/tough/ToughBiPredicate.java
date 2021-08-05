@@ -16,8 +16,6 @@
 
 package de.codemakers.base.util.tough;
 
-import de.codemakers.base.logger.Logger;
-
 @FunctionalInterface
 public interface ToughBiPredicate<T, U> extends Tough<T, Boolean> {
     
@@ -34,7 +32,7 @@ public interface ToughBiPredicate<T, U> extends Tough<T, Boolean> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return onError;
         }

@@ -16,7 +16,6 @@
 
 package de.codemakers.io.audio.net;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
@@ -72,7 +71,7 @@ public class AudioClientTest implements IAudioTest, Closeable, Startable, Stoppa
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
         }
     }
     

@@ -95,7 +95,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                         Logger.logDebug("Successfully auto registered FileProvider: " + fileProvider_);
                     }
                 } catch (Exception ex) {
-                    Logger.handleError(ex);
+                    logger.error(ex);
                 }
             });
         });
@@ -314,7 +314,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                 try {
                     clazz = AdvancedFile.class.getClassLoader().loadClass(stackTraceElements[i].getClassName());
                 } catch (Exception ex) {
-                    Logger.handleError(ex);
+                    logger.error(ex);
                 }
             }
         }
@@ -561,7 +561,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             try {
                 return fileProvider.isFile(this, file, parent != null ? this::createInputStream : null);
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
                 return false;
             }
         } else {
@@ -594,7 +594,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             try {
                 return fileProvider.isDirectory(this, file, parent != null ? this::createInputStream : null);
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
                 return false;
             }
         } else {
@@ -623,7 +623,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
             try {
                 return fileProvider.exists(this, file, this::createInputStream);
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
                 return false;
             }
         } else {
@@ -705,14 +705,14 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                     try {
                         myPath = fileSystem.getPath(getPath());
                     } catch (Exception ex) {
-                        Logger.handleError(ex);
+                        logger.error(ex);
                     }
                 } else {
                     myPath = Paths.get(uri);
                 }
                 return new CloseablePath(fileSystem, myPath);
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
                 return null;
             }
         }
@@ -987,7 +987,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                     Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, false, path_)).forEach(advancedFiles::add);
                 }
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             closeablePath.closeWithoutException();
             return advancedFiles;
@@ -998,7 +998,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         try {
             return fileProvider.listFiles(this, file, recursive, parent != null ? this::createInputStream : null);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -1038,7 +1038,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
                     Files.walk(myPath, 1).skip(1).map((path_) -> path_.toString().substring(myPath_length + 1)).map((path_) -> path_.endsWith(PATH_SEPARATOR) ? path_.substring(0, path_.length() - PATH_SEPARATOR.length()) : path_).map((path_) -> windowsSeparator ? path_.replaceAll(PATH_SEPARATOR_REGEX, FILE_SEPARATOR_WINDOWS_REGEX) : path_.replaceAll(FILE_SEPARATOR_WINDOWS_REGEX, PATH_SEPARATOR_REGEX)).map((path_) -> new AdvancedFile(this, true, path_)).filter(advancedFileFilter).forEach(advancedFiles::add);
                 }
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             closeablePath.closeWithoutException();
             return advancedFiles;
@@ -1049,7 +1049,7 @@ public class AdvancedFile extends IFile<AdvancedFile, AdvancedFileFilter> implem
         try {
             return fileProvider.listFiles(this, file, recursive, parent != null ? this::createInputStream : null, advancedFileFilter);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }

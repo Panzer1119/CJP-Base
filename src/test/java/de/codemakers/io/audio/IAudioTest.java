@@ -16,7 +16,6 @@
 
 package de.codemakers.io.audio;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface IAudioTest {
@@ -30,7 +29,7 @@ public interface IAudioTest {
             if (toughConsumer != null) {
                 toughConsumer.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }

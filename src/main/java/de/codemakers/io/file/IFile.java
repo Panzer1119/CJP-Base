@@ -19,7 +19,6 @@ package de.codemakers.io.file;
 import de.codemakers.base.action.ClosingAction;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.entities.data.Data;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Hashable;
 import de.codemakers.base.util.interfaces.Hasher;
 import de.codemakers.base.util.tough.ToughConsumer;
@@ -91,7 +90,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -110,7 +109,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -129,7 +128,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -150,7 +149,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -173,7 +172,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -196,7 +195,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -219,7 +218,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -244,7 +243,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -271,7 +270,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -298,7 +297,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -331,7 +330,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -378,7 +377,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -417,7 +416,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -445,7 +444,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -478,7 +477,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -519,7 +518,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -566,7 +565,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -611,7 +610,7 @@ public abstract class IFile<T extends IFile<?, ?>, P extends Predicate<T>> imple
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }

@@ -18,7 +18,6 @@ package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.exceptions.NotSupportedRuntimeException;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
 import javax.crypto.Cipher;
@@ -42,7 +41,7 @@ public interface Cryptor {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -67,7 +66,7 @@ public interface Cryptor {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -106,7 +105,7 @@ public interface Cryptor {
             }
             return toCipherOutputStream(dataOutputStream, iv);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -126,7 +125,7 @@ public interface Cryptor {
             dataInputStream.read(iv);
             return toCipherInputStream(dataInputStream, iv);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }

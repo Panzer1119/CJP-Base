@@ -243,7 +243,7 @@ public class EasyCryptUtil {
         try {
             return Signature.getInstance(ALGORITHM_SHA256withRSA);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -252,7 +252,7 @@ public class EasyCryptUtil {
         try {
             return Signature.getInstance(ALGORITHM_SHA512withRSA);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -261,7 +261,7 @@ public class EasyCryptUtil {
         try {
             return Signature.getInstance(ALGORITHM_SHA256withECDSA);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -492,7 +492,7 @@ public class EasyCryptUtil {
         try {
             return Cipher.getInstance(mode);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -501,7 +501,7 @@ public class EasyCryptUtil {
         try {
             return generateRandomBytes(bytes, SecureRandom.getInstanceStrong());
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -515,7 +515,7 @@ public class EasyCryptUtil {
         try {
             return generateRandomBytes(bytes, SecureRandom.getInstanceStrong());
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -545,7 +545,7 @@ public class EasyCryptUtil {
                     try {
                         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
                     } catch (Exception ex) {
-                        Logger.handleError(ex);
+                        logger.error(ex);
                     }
                     return cipher;
                 }
@@ -554,7 +554,7 @@ public class EasyCryptUtil {
             try {
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return encryptorOfCipher(cipher);
         }
@@ -581,7 +581,7 @@ public class EasyCryptUtil {
                     try {
                         temp.init(Cipher.ENCRYPT_MODE, secretKey, ivFunction.apply(iv));
                     } catch (Exception ex) {
-                        Logger.handleError(ex);
+                        logger.error(ex);
                     }
                     return temp;
                 }
@@ -614,7 +614,7 @@ public class EasyCryptUtil {
                     try {
                         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
                     } catch (Exception ex) {
-                        Logger.handleError(ex);
+                        logger.error(ex);
                     }
                     return cipher;
                 }
@@ -623,7 +623,7 @@ public class EasyCryptUtil {
             try {
                 cipher.init(Cipher.DECRYPT_MODE, secretKey);
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return decryptorOfCipher(cipher);
         }
@@ -650,7 +650,7 @@ public class EasyCryptUtil {
                     try {
                         temp.init(Cipher.DECRYPT_MODE, secretKey, ivFunction.apply(iv));
                     } catch (Exception ex) {
-                        Logger.handleError(ex);
+                        logger.error(ex);
                     }
                     return temp;
                 }

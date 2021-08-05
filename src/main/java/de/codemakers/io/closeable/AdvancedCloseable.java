@@ -18,7 +18,6 @@ package de.codemakers.io.closeable;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.exceptions.CJPRuntimeException;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
 
@@ -75,7 +74,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }
@@ -104,7 +103,7 @@ public class AdvancedCloseable<T extends Closeable, D> implements Closeable {
             if (failureFunction != null) {
                 failureFunction.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             close(failureClosing);
             return null;

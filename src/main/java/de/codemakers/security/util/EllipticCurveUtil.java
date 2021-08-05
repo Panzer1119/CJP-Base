@@ -16,8 +16,6 @@
 
 package de.codemakers.security.util;
 
-import de.codemakers.base.logger.Logger;
-
 import javax.crypto.KeyAgreement;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
@@ -40,7 +38,7 @@ public class EllipticCurveUtil {
             keyPairGenerator.initialize(keySize, secureRandom);
             return keyPairGenerator;
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -49,7 +47,7 @@ public class EllipticCurveUtil {
         try {
             return KeyAgreement.getInstance(ALGORITHM_ECDH);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }

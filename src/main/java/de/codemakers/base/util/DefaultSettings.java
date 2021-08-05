@@ -16,7 +16,6 @@
 
 package de.codemakers.base.util;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.io.IOUtil;
 import de.codemakers.io.file.AdvancedFile;
@@ -271,7 +270,7 @@ public class DefaultSettings extends Settings {
             return true;
         } catch (Exception ex) {
             IOUtil.closeQuietly(inputStream);
-            Logger.handleError(ex);
+            logger.error(ex);
             return false;
         }
     }
@@ -291,7 +290,7 @@ public class DefaultSettings extends Settings {
             return true;
         } catch (Exception ex) {
             IOUtil.closeQuietly(outputStream);
-            Logger.handleError(ex);
+            logger.error(ex);
             return false;
         }
     }

@@ -18,7 +18,6 @@ package de.codemakers.base;
 
 import de.codemakers.base.action.Action;
 import de.codemakers.base.action.RunningAction;
-import de.codemakers.base.logger.Logger;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -161,7 +160,7 @@ public class CJP {
                 executorService.shutdown();
                 executorService.awaitTermination(timeout, unit);
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
         return Math.max(0, timeout - (System.currentTimeMillis() - timestamp));

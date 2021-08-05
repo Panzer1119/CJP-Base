@@ -17,7 +17,6 @@
 package de.codemakers.base.action;
 
 import de.codemakers.base.CJP;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
@@ -44,7 +43,7 @@ public class ClosingAction<T extends AutoCloseable> extends ReturningAction<T> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }

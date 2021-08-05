@@ -16,8 +16,6 @@
 
 package de.codemakers.base.util.tough;
 
-import de.codemakers.base.logger.Logger;
-
 public interface Tough<T, R> {
 
     R action(T t) throws Exception;
@@ -29,7 +27,7 @@ public interface Tough<T, R> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }

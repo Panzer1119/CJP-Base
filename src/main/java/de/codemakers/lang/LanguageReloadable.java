@@ -17,7 +17,6 @@
 package de.codemakers.lang;
 
 import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Reloadable;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -36,7 +35,7 @@ public interface LanguageReloadable extends Reloadable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -59,7 +58,7 @@ public interface LanguageReloadable extends Reloadable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }

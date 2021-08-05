@@ -17,7 +17,6 @@
 package de.codemakers.base.util;
 
 import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 
@@ -112,7 +111,7 @@ public class Waiter {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }

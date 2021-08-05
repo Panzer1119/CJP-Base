@@ -84,7 +84,7 @@ public class OSUtil {
             Logger.log(String.format("[%s]: Registered %s: \"%s\" as %s (Annotation: \"%s\")", OSUtil.class.getSimpleName(), OSFunction.class.getSimpleName(), osFunction, osFunction.getClass().getSuperclass().getName(), registerOSFunction), LogLevel.FINER);
             return true;
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return false;
         }
     }

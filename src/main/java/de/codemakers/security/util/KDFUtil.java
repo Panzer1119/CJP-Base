@@ -16,8 +16,6 @@
 
 package de.codemakers.security.util;
 
-import de.codemakers.base.logger.Logger;
-
 import javax.crypto.SecretKeyFactory;
 
 public class KDFUtil {
@@ -31,7 +29,7 @@ public class KDFUtil {
         try {
             return SecretKeyFactory.getInstance(ALGORITHM_PBKDF2WithHmacSHA_1);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -40,7 +38,7 @@ public class KDFUtil {
         try {
             return SecretKeyFactory.getInstance(ALGORITHM_PBKDF2WithHmacSHA_256);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -49,7 +47,7 @@ public class KDFUtil {
         try {
             return SecretKeyFactory.getInstance(ALGORITHM_PBKDF2WithHmacSHA_384);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -58,7 +56,7 @@ public class KDFUtil {
         try {
             return SecretKeyFactory.getInstance(ALGORITHM_PBKDF2WithHmacSHA_512);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }

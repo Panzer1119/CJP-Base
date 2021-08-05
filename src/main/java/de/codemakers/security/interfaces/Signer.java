@@ -19,7 +19,6 @@ package de.codemakers.security.interfaces;
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.action.RunningAction;
 import de.codemakers.base.exceptions.NotSupportedRuntimeException;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.IOUtil;
 
@@ -47,7 +46,7 @@ public interface Signer extends Cryptor {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -73,7 +72,7 @@ public interface Signer extends Cryptor {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -100,7 +99,7 @@ public interface Signer extends Cryptor {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -127,7 +126,7 @@ public interface Signer extends Cryptor {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }

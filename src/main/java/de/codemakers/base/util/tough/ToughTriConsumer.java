@@ -16,8 +16,6 @@
 
 package de.codemakers.base.util.tough;
 
-import de.codemakers.base.logger.Logger;
-
 @FunctionalInterface
 public interface ToughTriConsumer<T, U, V> extends Tough<T, Void> {
     
@@ -30,7 +28,7 @@ public interface ToughTriConsumer<T, U, V> extends Tough<T, Void> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }

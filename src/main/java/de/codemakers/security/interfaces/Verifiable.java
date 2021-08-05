@@ -17,7 +17,6 @@
 package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
 public interface Verifiable {
@@ -31,7 +30,7 @@ public interface Verifiable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -54,7 +53,7 @@ public interface Verifiable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -77,7 +76,7 @@ public interface Verifiable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return this;
         }
@@ -100,7 +99,7 @@ public interface Verifiable {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return this;
         }

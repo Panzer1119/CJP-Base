@@ -16,8 +16,6 @@
 
 package de.codemakers.base.util.tough;
 
-import de.codemakers.base.logger.Logger;
-
 @FunctionalInterface
 public interface ToughFunction<T, R> extends Tough<T, R> {
     
@@ -30,7 +28,7 @@ public interface ToughFunction<T, R> extends Tough<T, R> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }

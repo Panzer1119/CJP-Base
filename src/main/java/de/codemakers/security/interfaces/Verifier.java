@@ -18,7 +18,6 @@ package de.codemakers.security.interfaces;
 
 import de.codemakers.base.action.ReturningAction;
 import de.codemakers.base.action.RunningAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughBiPredicate;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.IOUtil;
@@ -41,7 +40,7 @@ public interface Verifier extends ToughBiPredicate<byte[], byte[]> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -67,7 +66,7 @@ public interface Verifier extends ToughBiPredicate<byte[], byte[]> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -90,7 +89,7 @@ public interface Verifier extends ToughBiPredicate<byte[], byte[]> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }
@@ -117,7 +116,7 @@ public interface Verifier extends ToughBiPredicate<byte[], byte[]> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }

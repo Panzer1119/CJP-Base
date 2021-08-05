@@ -19,7 +19,6 @@ package de.codemakers.security.managers;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughPredicate;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.security.entities.ExpiringTrustedSecureData;
@@ -143,7 +142,7 @@ public class ExpiringTrustedSecureDataManager {
         try {
             expiringTrustedSecureDatas.keySet().removeIf((timestamp_) -> !timeTester.testWithoutException(timestamp_));
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
         }
     }
     

@@ -17,7 +17,6 @@
 package de.codemakers.io.sql;
 
 import de.codemakers.base.action.ClosingAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
 
@@ -69,7 +68,7 @@ public abstract class DatabaseManager {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -96,7 +95,7 @@ public abstract class DatabaseManager {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return null;
         }
@@ -119,7 +118,7 @@ public abstract class DatabaseManager {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }

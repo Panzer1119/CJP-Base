@@ -16,7 +16,6 @@
 
 package de.codemakers.security.util;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Hasher;
 
 import java.security.MessageDigest;
@@ -43,7 +42,7 @@ public class SecureHashUtil {
         try {
             return MessageDigest.getInstance(ALGORITHM_SHA_1);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -52,7 +51,7 @@ public class SecureHashUtil {
         try {
             return MessageDigest.getInstance(ALGORITHM_SHA_256);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -61,7 +60,7 @@ public class SecureHashUtil {
         try {
             return MessageDigest.getInstance(ALGORITHM_SHA_384);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }
@@ -70,7 +69,7 @@ public class SecureHashUtil {
         try {
             return MessageDigest.getInstance(ALGORITHM_SHA_512);
         } catch (Exception ex) {
-            Logger.handleError(ex);
+            logger.error(ex);
             return null;
         }
     }

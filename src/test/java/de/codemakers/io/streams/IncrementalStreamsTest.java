@@ -51,7 +51,7 @@ public class IncrementalStreamsTest {
                 System.err.println("[RECEIVER] TEST EOF");
             } catch (Exception ex) {
                 Logger.log("[RECEIVER] TEST errored");
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }).start();
         /*
@@ -67,7 +67,7 @@ public class IncrementalStreamsTest {
                 Logger.log("BUFFEREDREADER stopped");
             } catch (Exception ex) {
                 Logger.log("BUFFEREDREADER errored");
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }).start();
         */
@@ -104,7 +104,7 @@ public class IncrementalStreamsTest {
                 Thread.sleep(5000);
                 incrementalObjectOutputStream.close();
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }).start();
         //incrementalObjectInputStream.close();

@@ -17,7 +17,6 @@
 package de.codemakers.base.util;
 
 import com.google.gson.*;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.interfaces.Copyable;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
@@ -439,7 +438,7 @@ public class JsonSettings extends Settings {
         } catch (Exception ex) {
             jsonObject = new JsonObject();
             IOUtil.closeQuietly(inputStream);
-            Logger.handleError(ex);
+            logger.error(ex);
             return false;
         }
     }
@@ -467,7 +466,7 @@ public class JsonSettings extends Settings {
             return true;
         } catch (Exception ex) {
             IOUtil.closeQuietly(outputStream);
-            Logger.handleError(ex);
+            logger.error(ex);
             return false;
         }
     }

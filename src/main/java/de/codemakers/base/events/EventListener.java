@@ -16,7 +16,6 @@
 
 package de.codemakers.base.events;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 
 @FunctionalInterface
@@ -40,7 +39,7 @@ public interface EventListener<T extends Event> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }

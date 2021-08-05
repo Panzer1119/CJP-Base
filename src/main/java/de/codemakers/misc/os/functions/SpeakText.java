@@ -17,7 +17,6 @@
 package de.codemakers.misc.os.functions;
 
 import de.codemakers.base.action.ReturningAction;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.functions.OSFunction;
 import de.codemakers.base.util.tough.ToughConsumer;
 
@@ -32,7 +31,7 @@ public abstract class SpeakText extends OSFunction {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             return false;
         }

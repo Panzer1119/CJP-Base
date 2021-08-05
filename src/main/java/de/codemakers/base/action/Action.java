@@ -17,7 +17,6 @@
 package de.codemakers.base.action;
 
 import de.codemakers.base.CJP;
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.Tough;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughRunnable;
@@ -460,7 +459,7 @@ public abstract class Action<T extends Tough, R> {
             if (failure != null) {
                 failure.acceptWithoutException(ex);
             } else {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
         }
     }

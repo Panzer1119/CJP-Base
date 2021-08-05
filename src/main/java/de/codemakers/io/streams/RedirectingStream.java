@@ -16,7 +16,6 @@
 
 package de.codemakers.io.streams;
 
-import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.Waiter;
 import de.codemakers.base.util.interfaces.Startable;
 import de.codemakers.base.util.interfaces.Stoppable;
@@ -122,10 +121,10 @@ public class RedirectingStream<I extends InputStream, O extends OutputStream> im
                 if (stopOnClose) {
                     stopWithoutException();
                 } else {
-                    Logger.handleError(ex);
+                    logger.error(ex);
                 }
             } catch (Exception ex) {
-                Logger.handleError(ex);
+                logger.error(ex);
             }
             running = false;
         });
