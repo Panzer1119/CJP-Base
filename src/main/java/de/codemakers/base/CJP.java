@@ -31,7 +31,7 @@ public class CJP {
     private static final Logger logger = LogManager.getLogger();
     
     public static final String PROJECT_NAME = "CJP-Base";
-    public static final String VERSION = "0.16.10";
+    public static final String VERSION = "0.16.11";
     
     private static final CJP CJP = createInstance();
     
