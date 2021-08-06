@@ -113,5 +113,15 @@ publishing {
                 password = System.getenv("GITHUB_TOKEN")
             }
         }
+        maven {
+            name = "customRepository"
+            def releasesRepoUrl = System.getenv("MAVEN_URL_RELEASES")
+            def snapshotsRepoUrl = System.getenv("MAVEN_URL_SNAPSHOTS")
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
     }
 }
