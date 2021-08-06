@@ -37,7 +37,7 @@ public class OSUtil {
     
     public static final String[] STANDARD_OS_NAMES = new String[] {"Windows", "Linux", "Mac OS", "SunOS", "FreeBSD"};
     
-    public static final String OS_NAME = SystemProperties.getOsName();
+    public static final String OS_NAME = SystemProperties.getOSName();
     public static final String OS_ARCH = SystemProperties.getOSArch();
     public static final String JAVA_VERSION = SystemProperties.getJavaVersion();
     

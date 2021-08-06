@@ -19,45 +19,47 @@ package de.codemakers.base.env;
 public class SystemProperties {
     
     //OS
-    public static final String OS_NAME = "os.name";
-    public static final String OS_ARCH = "os.arch";
+    public static final String KEY_OS_NAME = "os.name";
+    public static final String KEY_OS_ARCH = "os.arch";
     //Java
-    public static final String JAVA_VERSION = "java.version";
+    public static final String KEY_JAVA_VERSION = "java.version";
     //User
-    public static final String USER_NAME = "user.name";
-    public static final String USER_DIR = "user.dir";
-    public static final String USER_HOME = "user.home";
+    public static final String KEY_USER_NAME = "user.name";
+    public static final String KEY_USER_DIR = "user.dir";
+    public static final String KEY_USER_HOME = "user.home";
+    //Misc
+    public static final String KEY_LINE_SEPARATOR = "line.separator";
     
-    public static final String getProperty(String name) {
+    public static String getProperty(String name) {
         return System.getProperty(name);
     }
     
-    public static final String getProperty(String name, String defaultValue) {
+    public static String getProperty(String name, String defaultValue) {
         return System.getProperty(name, defaultValue);
     }
     
-    public static String getOsName() {
-        return getProperty(OS_NAME);
+    public static String getOSName() {
+        return getProperty(KEY_OS_NAME);
     }
     
     public static String getOSArch() {
-        return getProperty(OS_ARCH);
+        return getProperty(KEY_OS_ARCH);
     }
     
     public static String getJavaVersion() {
-        return getProperty(JAVA_VERSION);
+        return getProperty(KEY_JAVA_VERSION);
     }
     
     public static String getUserName() {
-        return getProperty(USER_NAME);
+        return getProperty(KEY_USER_NAME);
     }
     
     public static String getUserDir() {
-        return getProperty(USER_DIR);
+        return getProperty(KEY_USER_DIR);
     }
     
     public static String getUserHome() {
-        return getProperty(USER_HOME);
+        return getProperty(KEY_USER_HOME);
     }
     
 }
