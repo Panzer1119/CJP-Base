@@ -22,6 +22,7 @@ import de.codemakers.io.file.AdvancedFile;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LogEvent;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -56,16 +57,16 @@ public class DefaultConsole extends Console {
     
     @Override
     public boolean reload() throws Exception {
-        final List<LeveledLogEntry> logEntries = getLogEntriesFilteredByLogLevel();
+        final List<LogEvent> logEvents = getLogEntriesFilteredByLogLevel();
         final StyledDocument styledDocument = textPane_output.getStyledDocument();
         styledDocument.remove(0, styledDocument.getLength()); //TODO Good? Because when there are too many LogEntries, this could cause lag
         final Style style = styledDocument.addStyle("LogEntryStyle", null);
-        for (LeveledLogEntry logEntry : logEntries) {
-            final Level level = logEntry.getLevel();
+        for (LogEvent logEvent : logEvents) {
+            final Level level = logEvent.getLevel();
             final LogLevelStyle logLevelStyle = LogLevelStyle.ofLevel(level);
             StyleConstants.setBackground(style, logLevelStyle.getColorBackground());
             StyleConstants.setForeground(style, logLevelStyle.getColorForeground());
-            styledDocument.insertString(styledDocument.getLength(), logEntry.formatWithoutException(null) + "\n", style);
+            styledDocument.insertString(styledDocument.getLength(), formatLogEvent(logEvent) + "\n", style);
         }
         textPane_output.setCaretPosition(styledDocument.getLength());
         return true;

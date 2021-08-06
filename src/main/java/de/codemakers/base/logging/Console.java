@@ -18,6 +18,7 @@ package de.codemakers.base.logging;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.entities.History;
+import de.codemakers.base.logging.format.LogEventFormatter;
 import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Finishable;
 import de.codemakers.base.util.interfaces.Reloadable;
@@ -30,6 +31,7 @@ import de.codemakers.lang.LanguageReloadable;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LogEvent;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -76,7 +78,9 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     
     public static final String DEFAULT_FONT_NAME = "Courier New";
     
-    protected final List<LeveledLogEntry> logEntries = new CopyOnWriteArrayList<>(); //FIXME Save them here?
+    protected final List<LogEvent> logEvents = new CopyOnWriteArrayList<>();
+    protected LogEventFormatter logEventFormatter = LogEventFormatter.createDefault();
+    
     protected final Map<Level, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
     protected final Set<Level> displayedLogLevels = new CopyOnWriteArraySet<>();
     
@@ -348,12 +352,17 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         textField_input.setText(input == null ? "" : input);
     }
     
-    protected List<LeveledLogEntry> getLogEntries() {
-        return logEntries;
+    protected String formatLogEvent(LogEvent logEvent) {
+        return logEventFormatter.formatWithoutException(logEvent);
     }
     
-    protected List<LeveledLogEntry> getLogEntriesFilteredByLogLevel() {
-        return logEntries.stream().filter((entry) -> entry.getLevel() == null || displayedLogLevels.contains(entry.getLevel())).collect(Collectors.toList());
+    protected void addLogEvent(LogEvent logEvent) {
+        logEvents.add(logEvent.toImmutable());
+        reloadWithoutException();
+    }
+    
+    protected List<LogEvent> getLogEntriesFilteredByLogLevel() {
+        return logEvents.stream().filter((entry) -> entry.getLevel() == null || displayedLogLevels.contains(entry.getLevel())).collect(Collectors.toList());
     }
     
     protected JFrame getFrame() {

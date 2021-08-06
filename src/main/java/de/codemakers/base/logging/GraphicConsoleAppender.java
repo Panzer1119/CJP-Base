@@ -17,7 +17,6 @@
 package de.codemakers.base.logging;
 
 import de.codemakers.base.Standard;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -27,10 +26,8 @@ import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
-import org.apache.logging.log4j.message.Message;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Objects;
 
 @Plugin(name = GraphicConsoleAppender.PLUGIN_NAME, category = "Core", elementType = Appender.ELEMENT_TYPE, printObject = true)
@@ -91,14 +88,7 @@ public class GraphicConsoleAppender extends AbstractAppender {
     
     @Override
     public void append(LogEvent logEvent) {
-        final Instant timestamp = Instant.ofEpochMilli(logEvent.getInstant().getEpochMillisecond());
-        final long threadId = logEvent.getThreadId();
-        final Thread thread = Standard.getThread(threadId);
-        final Message message = logEvent.getMessage();
-        final Level level = logEvent.getLevel();
-        //FIXME Pass the logEvent directly AFTER CLONING/COPYING IT!!!
-        console.logEntries.add(new LeveledLogEntry(message.getFormattedMessage(), timestamp, thread, logEvent.getSource(), logEvent.getThrown(), level));
-        console.reloadWithoutException();
+        console.addLogEvent(logEvent);
     }
     
 }
