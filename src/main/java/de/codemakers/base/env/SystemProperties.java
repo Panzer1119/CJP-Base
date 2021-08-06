@@ -62,4 +62,8 @@ public class SystemProperties {
         return getProperty(KEY_USER_HOME);
     }
     
+    public static String getLineSeparator() {
+        return getProperty(KEY_LINE_SEPARATOR);
+    }
+    
 }
