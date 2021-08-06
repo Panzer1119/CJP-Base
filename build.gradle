@@ -106,13 +106,11 @@ publishing {
     }
     repositories {
         maven {
-            name = "customRepository"
-            def releasesRepoUrl = System.getenv("MAVEN_URL_RELEASES")
-            def snapshotsRepoUrl = System.getenv("MAVEN_URL_SNAPSHOTS")
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Panzer1119/CJP-Base")
             credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
+                username = "Panzer1119"
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
