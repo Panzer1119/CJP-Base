@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.12](https://github.com/Panzer1119/CJP-Base/compare/v0.16.11...v0.16.12) (2021-08-06)
+
 ### [0.16.11](https://github.com/Panzer1119/CJP-Base/compare/v0.16.10...v0.16.11) (2021-08-06)
 
 ### [0.16.10](https://github.com/Panzer1119/CJP-Base/compare/v0.16.9...v0.16.10) (2021-08-06)
