@@ -21,6 +21,6 @@ jobs:
         run: gradle build && gradle shadowJar
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/lib/*.jar,dist/*.jar"
+          artifacts: "build/libs/*.jar,dist/*.jar"
           bodyFile: "CHANGELOG.md"
           token: ${{ secrets.GITHUB_TOKEN }}
