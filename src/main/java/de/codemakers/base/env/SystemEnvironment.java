@@ -20,12 +20,12 @@ public class SystemEnvironment {
     
     public static final String SYSTEM_DRIVE = "SystemDrive";
     
-    public static final String getenv(String name) {
+    public static String getEnvVariable(String name) {
         return System.getenv(name);
     }
     
     public static String getSystemDrive() {
-        return getenv(SYSTEM_DRIVE);
+        return getEnvVariable(SYSTEM_DRIVE);
     }
     
 }
