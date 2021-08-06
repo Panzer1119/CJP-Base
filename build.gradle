@@ -25,7 +25,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-text
     implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
     // CJP
-    implementation group: 'de.codemakers', name: 'cjp-base', version: '0.16.11'
+    implementation group: 'de.codemakers', name: 'cjp-base', version: '0.16.12'
     // Hibernate
     // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
     implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.0.0.Alpha8'
