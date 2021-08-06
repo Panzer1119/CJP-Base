@@ -12,7 +12,7 @@ version = '0.1.8'
 repositories {
     mavenCentral()
     maven {
-        url "https://reposilite.codemakers.de/releases"
+        url = uri("https://maven.pkg.github.com/Panzer1119/CJP-Base")
     }
 }
 
@@ -25,7 +25,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-text
     implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
     // CJP
-    implementation group: 'de.codemakers', name: 'cjp-base', version: '0.16.6'
+    implementation group: 'de.codemakers', name: 'cjp-base', version: '0.16.11'
     // Hibernate
     // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
     implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.0.0.Alpha8'
