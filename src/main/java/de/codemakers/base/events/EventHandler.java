@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class EventHandler<T extends Event> implements IEventHandler<T> {
     
     private final Map<EventListener<? extends T>, Class<? extends T>> eventListeners = new ConcurrentHashMap<>();
-    private ExecutorService executorService = null;
+    private ExecutorService executorService;
     private boolean containsNull = false;
     private boolean consumeEvents = true;
     private boolean forceEvents = false;
@@ -63,7 +63,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     @Override
     public final <E extends T> EventHandler<T> removeEventListener(Class<E> clazz, EventListener<E> eventListener) {
         eventListeners.remove(eventListener, clazz);
-        containsNull = eventListeners.values().contains(null);
+        containsNull = eventListeners.containsValue(null);
         return this;
     }
     
@@ -122,7 +122,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         return consumeEvents;
     }
     
-    public final EventHandler setConsumeEvents(boolean consumeEvents) {
+    public final EventHandler<T> setConsumeEvents(boolean consumeEvents) {
         this.consumeEvents = consumeEvents;
         return this;
     }
@@ -131,7 +131,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         return forceEvents;
     }
     
-    public final EventHandler setForceEvents(boolean forceEvents) {
+    public final EventHandler<T> setForceEvents(boolean forceEvents) {
         this.forceEvents = forceEvents;
         return this;
     }

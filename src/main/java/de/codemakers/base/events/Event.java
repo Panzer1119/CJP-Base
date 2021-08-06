@@ -26,6 +26,10 @@ public abstract class Event implements Snowflake {
     
     protected static final Random RANDOM_ID_GENERATOR = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
     
+    public static long nextId() {
+        return RANDOM_ID_GENERATOR.nextLong();
+    }
+    
     protected final long id;
     protected final long timestamp;
     
@@ -40,10 +44,6 @@ public abstract class Event implements Snowflake {
     public Event(long id, long timestamp) {
         this.id = id;
         this.timestamp = timestamp;
-    }
-    
-    public static final long nextId() {
-        return RANDOM_ID_GENERATOR.nextLong();
     }
     
     @Override
