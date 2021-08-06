@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Timer;
@@ -35,6 +36,9 @@ public class GraphicConsoleAppenderTest {
     
     @Test
     void test() throws InterruptedException {
+        if (!new File("package.json").exists()) {
+            return;
+        }
         logger.info("This is a Message of Level INFO");
         final Console console = Standard.getConsoleByName("default");
         logger.debug("console={}", console);
