@@ -43,7 +43,7 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
     public static final String FORMAT_VAR_OBJECT = StringSubstitutor.DEFAULT_VAR_START + FORMAT_OBJECT + StringSubstitutor.DEFAULT_VAR_END;
     
     private Formatter<Instant> timestampFormatter = LogFormatUtil::formatTimestamp;
-    private Formatter<Thread> threadFormatter = LogFormatUtil::formatThread;
+    private Formatter<String> threadFormatter = LogFormatUtil::formatThread;
     private SourceFormatter sourceFormatter = SourceFormatter.createDefault();
     private Formatter<Message> messageFormatter = Message::getFormattedMessage;
     
@@ -89,11 +89,11 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
         return this;
     }
     
-    public Formatter<Thread> getThreadFormatter() {
+    public Formatter<String> getThreadFormatter() {
         return threadFormatter;
     }
     
-    public LogEventFormatterBuilder setThreadFormatter(Formatter<Thread> threadFormatter) {
+    public LogEventFormatterBuilder setThreadFormatter(Formatter<String> threadFormatter) {
         this.threadFormatter = threadFormatter;
         return this;
     }

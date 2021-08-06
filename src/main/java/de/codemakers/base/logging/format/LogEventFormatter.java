@@ -16,7 +16,6 @@
 
 package de.codemakers.base.logging.format;
 
-import de.codemakers.base.Standard;
 import de.codemakers.base.util.StringUtil;
 import de.codemakers.base.util.interfaces.Formatter;
 import org.apache.commons.text.StringSubstitutor;
@@ -27,7 +26,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-public record LogEventFormatter(String format, Formatter<Instant> timestampFormatter, Formatter<Thread> threadFormatter,
+public record LogEventFormatter(String format, Formatter<Instant> timestampFormatter, Formatter<String> threadFormatter,
                                 SourceFormatter sourceFormatter, Formatter<Message> messageFormatter) implements Formatter<LogEvent> {
     
     /**
@@ -44,8 +43,7 @@ public record LogEventFormatter(String format, Formatter<Instant> timestampForma
         final Map<String, Object> map = new HashMap<>();
         final Instant timestamp = Instant.ofEpochMilli(logEvent.getInstant().getEpochMillisecond());
         map.put(LogEventFormatterBuilder.FORMAT_TIMESTAMP, formatTimestamp(timestamp));
-        final Thread thread = Standard.getThread(logEvent.getThreadId());
-        map.put(LogEventFormatterBuilder.FORMAT_THREAD, formatThread(thread));
+        map.put(LogEventFormatterBuilder.FORMAT_THREAD, formatThread(logEvent.getThreadName()));
         map.put(LogEventFormatterBuilder.FORMAT_SOURCE, formatStackTraceElement(logEvent.getSource()));
         map.put(LogEventFormatterBuilder.FORMAT_OBJECT, formatMessage(logEvent.getMessage()));
         return map;
@@ -55,8 +53,8 @@ public record LogEventFormatter(String format, Formatter<Instant> timestampForma
         return StringUtil.escapeStringSubstitutorVariableCalls(timestampFormatter.formatWithoutException(timestamp));
     }
     
-    private String formatThread(Thread thread) {
-        return StringUtil.escapeStringSubstitutorVariableCalls(threadFormatter.formatWithoutException(thread));
+    private String formatThread(String threadName) {
+        return StringUtil.escapeStringSubstitutorVariableCalls(threadFormatter.formatWithoutException(threadName));
     }
     
     private String formatStackTraceElement(StackTraceElement stackTraceElement) {

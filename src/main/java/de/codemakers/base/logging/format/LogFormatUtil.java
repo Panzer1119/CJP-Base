@@ -44,14 +44,25 @@ public class LogFormatUtil {
         if (timestamp == null) {
             return "";
         }
-        return "[" + timestamp.format(DATE_TIME_FORMATTER_DEFAULT) + "]";
+        return encaseString(timestamp.format(DATE_TIME_FORMATTER_DEFAULT));
     }
     
     public static String formatThread(Thread thread) {
         if (thread == null) {
             return "";
         }
-        return "[" + thread.getName() + "]";
+        return encaseString(thread.getName());
+    }
+    
+    public static String formatThread(String threadName) {
+        if (threadName == null) {
+            return "";
+        }
+        return encaseString(threadName);
+    }
+    
+    public static String encaseString(String text) {
+        return "[" + text + "]";
     }
     
 }
