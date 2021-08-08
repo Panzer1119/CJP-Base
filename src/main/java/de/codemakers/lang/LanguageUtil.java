@@ -170,10 +170,10 @@ public class LanguageUtil {
     }
     
     public static void initLocalizers() {
-        getLocalizerEnglishUs().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_US.toLanguageTag(), FILE_ENGLISH_US.getAbsolutePath()), ex));
-        getLocalizerEnglishGb().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_GB.toLanguageTag(), FILE_ENGLISH_GB.getAbsolutePath()), ex));
-        getLocalizerGermanDe().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_GERMAN_DE.toLanguageTag(), FILE_GERMAN_DE.getAbsolutePath()), ex));
-        getLocalizerDefault().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_DEFAULT.toLanguageTag(), FILE_DEFAULT.getAbsolutePath()), ex));
+        //getLocalizerEnglishUs().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_US.toLanguageTag(), FILE_ENGLISH_US.getAbsolutePath()), ex));
+        //getLocalizerEnglishGb().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_ENGLISH_GB.toLanguageTag(), FILE_ENGLISH_GB.getAbsolutePath()), ex));
+        //getLocalizerGermanDe().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_GERMAN_DE.toLanguageTag(), FILE_GERMAN_DE.getAbsolutePath()), ex));
+        //getLocalizerDefault().load((ex) -> logger.error(String.format(TEMPLATE_FAILED_TO_LOAD_LOCALIZER, LOCALE_DEFAULT.toLanguageTag(), FILE_DEFAULT.getAbsolutePath()), ex));
     }
     
     public static AdvancedLocalizer getLocalizerEnglishUs() {
