@@ -27,6 +27,7 @@ public final class I18nReloadEventHandler extends EventHandler<I18nReloadEvent> 
     
     static {
         INSTANCE = new I18nReloadEventHandler();
+        INSTANCE.setForceEvents(true);
     }
     
     private I18nReloadEventHandler() {
