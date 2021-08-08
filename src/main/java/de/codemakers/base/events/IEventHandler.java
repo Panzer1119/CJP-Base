@@ -18,46 +18,35 @@ package de.codemakers.base.events;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 public interface IEventHandler<E> extends EventListener<E> {
     
-    default IEventHandler<E> addEventListeners(Class<E> clazz, EventListener<E>... eventListeners) {
-        return addEventListeners(clazz, Arrays.asList(eventListeners));
+    default IEventHandler<E> addEventListeners(EventListener<E>... eventListeners) {
+        return addEventListeners(Arrays.asList(eventListeners));
     }
     
-    default IEventHandler<E> addEventListeners(Class<E> clazz, Collection<EventListener<E>> eventListeners) {
+    default IEventHandler<E> addEventListeners(Collection<EventListener<E>> eventListeners) {
         if (eventListeners != null && !eventListeners.isEmpty()) {
-            eventListeners.forEach((eventListener) -> addEventListener(clazz, eventListener));
+            eventListeners.forEach(this::addEventListener);
         }
         return this;
     }
     
-    default IEventHandler<E> addEventListener(EventListener<E> eventListener) {
-        return addEventListener(null, eventListener);
+    IEventHandler<E> addEventListener(EventListener<E> eventListener);
+    
+    default IEventHandler<E> removeEventListeners(EventListener<E>... eventListeners) {
+        return removeEventListeners(Arrays.asList(eventListeners));
     }
     
-    IEventHandler<E> addEventListener(Class<E> clazz, EventListener<E> eventListener);
-    
-    default IEventHandler<E> removeEventListeners(Class<E> clazz, EventListener<E>... eventListeners) {
-        return removeEventListeners(clazz, Arrays.asList(eventListeners));
-    }
-    
-    default IEventHandler<E> removeEventListeners(Class<E> clazz, Collection<EventListener<E>> eventListeners) {
+    default IEventHandler<E> removeEventListeners(Collection<EventListener<E>> eventListeners) {
         if (eventListeners != null && !eventListeners.isEmpty()) {
-            eventListeners.forEach((eventListener) -> removeEventListener(clazz, eventListener));
+            eventListeners.forEach(this::removeEventListener);
         }
         return this;
     }
     
-    default IEventHandler<E> removeEventListener(EventListener<E> eventListener) {
-        return removeEventListener(null, eventListener);
-    }
-    
-    IEventHandler<E> removeEventListener(Class<E> clazz, EventListener<E> eventListener);
+    IEventHandler<E> removeEventListener(EventListener<E> eventListener);
     
     IEventHandler<E> clearEventListeners();
-    
-    List<EventListener<E>> getEventListeners(Class<E> clazz);
     
 }
