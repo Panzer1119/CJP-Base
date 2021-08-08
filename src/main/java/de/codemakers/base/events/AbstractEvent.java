@@ -22,7 +22,7 @@ import de.codemakers.security.util.EasyCryptUtil;
 import java.util.Objects;
 import java.util.Random;
 
-public abstract class Event implements Snowflake {
+public abstract class AbstractEvent implements Snowflake {
     
     protected static final Random RANDOM_ID_GENERATOR = new Random(EasyCryptUtil.getSecurestRandom().nextLong());
     
@@ -33,15 +33,15 @@ public abstract class Event implements Snowflake {
     protected final long id;
     protected final long timestamp;
     
-    public Event() {
+    public AbstractEvent() {
         this(System.currentTimeMillis());
     }
     
-    public Event(long timestamp) {
+    public AbstractEvent(long timestamp) {
         this(nextId(), timestamp);
     }
     
-    public Event(long id, long timestamp) {
+    public AbstractEvent(long id, long timestamp) {
         this.id = id;
         this.timestamp = timestamp;
     }
@@ -71,8 +71,8 @@ public abstract class Event implements Snowflake {
         if (object == null) {
             return false;
         }
-        if (object instanceof Event) {
-            return id == ((Event) object).id;
+        if (object instanceof AbstractEvent) {
+            return id == ((AbstractEvent) object).id;
         }
         return false;
     }

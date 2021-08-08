@@ -26,9 +26,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class EventHandler<T extends Event> implements IEventHandler<T> {
+public class EventHandler<E> implements IEventHandler<E> {
     
-    private final Map<EventListener<? extends T>, Class<? extends T>> eventListeners = new ConcurrentHashMap<>();
+    private final Map<EventListener<? extends E>, Class<? extends E>> eventListeners = new ConcurrentHashMap<>();
     private ExecutorService executorService;
     private boolean containsNull = false;
     private boolean consumeEvents = true;
@@ -42,17 +42,17 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         this.executorService = executorService;
     }
     
-    public final ExecutorService getEexecutorService() {
+    public final ExecutorService getExecutorService() {
         return executorService;
     }
     
-    public final EventHandler<T> setExecutorService(ExecutorService executorService) {
+    public final EventHandler<E> setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
         return this;
     }
     
     @Override
-    public final <E extends T> EventHandler<T> addEventListener(Class<E> clazz, EventListener<E> eventListener) {
+    public final EventHandler<E> addEventListener(Class<E> clazz, EventListener<E> eventListener) {
         eventListeners.put(eventListener, clazz);
         if (clazz == null) {
             containsNull = true;
@@ -61,29 +61,29 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
     }
     
     @Override
-    public final <E extends T> EventHandler<T> removeEventListener(Class<E> clazz, EventListener<E> eventListener) {
+    public final EventHandler<E> removeEventListener(Class<E> clazz, EventListener<E> eventListener) {
         eventListeners.remove(eventListener, clazz);
         containsNull = eventListeners.containsValue(null);
         return this;
     }
     
     @Override
-    public final EventHandler<T> clearEventListeners() {
+    public final EventHandler<E> clearEventListeners() {
         return this;
     }
     
     @Override
-    public final <E extends T> List<EventListener<E>> getEventListeners(Class<E> clazz) {
+    public final List<EventListener<E>> getEventListeners(Class<E> clazz) {
         return eventListeners.entrySet().stream().filter((entry) -> Objects.equals(entry.getValue(), clazz)).map(Map.Entry::getKey).map((eventListener) -> (EventListener<E>) eventListener).collect(Collectors.toList());
     }
     
     @Override
-    public boolean onEvent(final T event) {
+    public boolean onEvent(final E event) {
         if (event == null) {
             return false;
         }
         final AtomicBoolean eventConsumed = new AtomicBoolean(false);
-        final Runnable runnable = () -> eventConsumed.set(eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<T>) eventListener).anyMatch((eventListener) -> {
+        final Runnable runnable = () -> eventConsumed.set(eventListeners.entrySet().stream().filter((entry) -> entry.getValue() != null).filter((entry) -> entry.getValue().isAssignableFrom(event.getClass())).map(Map.Entry::getKey).map((eventListener) -> (EventListener<E>) eventListener).anyMatch((eventListener) -> {
             if (forceEvents) {
                 eventListener.onEventWithoutException(event);
                 return false;
@@ -98,7 +98,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         if (containsNull) {
             final Runnable runnable_2 = () -> eventConsumed.set(eventListeners.entrySet().stream().filter((entry) -> entry.getValue() == null).map(Map.Entry::getKey).map((eventListener) -> {
                 try {
-                    return (EventListener<T>) eventListener;
+                    return (EventListener<E>) eventListener;
                 } catch (Exception ex) {
                     return null;
                 }
@@ -122,7 +122,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         return consumeEvents;
     }
     
-    public final EventHandler<T> setConsumeEvents(boolean consumeEvents) {
+    public final EventHandler<E> setConsumeEvents(boolean consumeEvents) {
         this.consumeEvents = consumeEvents;
         return this;
     }
@@ -131,7 +131,7 @@ public class EventHandler<T extends Event> implements IEventHandler<T> {
         return forceEvents;
     }
     
-    public final EventHandler<T> setForceEvents(boolean forceEvents) {
+    public final EventHandler<E> setForceEvents(boolean forceEvents) {
         this.forceEvents = forceEvents;
         return this;
     }

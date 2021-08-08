@@ -21,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @FunctionalInterface
-public interface EventListener<T extends Event> {
+public interface EventListener<E> {
     
     Logger logger = LogManager.getLogger();
     
@@ -34,9 +34,9 @@ public interface EventListener<T extends Event> {
      *
      * @throws Exception Error
      */
-    boolean onEvent(T event) throws Exception;
+    boolean onEvent(E event) throws Exception;
     
-    default boolean onEvent(T event, ToughConsumer<Throwable> failure) {
+    default boolean onEvent(E event, ToughConsumer<Throwable> failure) {
         try {
             return onEvent(event);
         } catch (Exception ex) {
@@ -49,7 +49,7 @@ public interface EventListener<T extends Event> {
         }
     }
     
-    default boolean onEventWithoutException(T event) {
+    default boolean onEventWithoutException(E event) {
         return onEvent(event, null);
     }
     
