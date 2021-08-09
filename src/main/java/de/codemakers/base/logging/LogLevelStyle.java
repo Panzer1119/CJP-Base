@@ -21,9 +21,10 @@ import org.apache.logging.log4j.Level;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public enum LogLevelStyle {
-    DEFAULT(Color.WHITE, Color.BLACK),
+    UNKNOWN(Color.WHITE, Color.BLACK),
     OFF(Color.WHITE, Color.WHITE, LogLevel.OFF),
     FATAL(Color.ORANGE, Color.RED, LogLevel.FATAL),
     ERROR(Color.WHITE, Color.RED, LogLevel.ERROR),
@@ -39,6 +40,8 @@ public enum LogLevelStyle {
     ALL(Color.WHITE, Color.BLACK, LogLevel.ALL);
     
     public static final LogLevelStyle[] USED_LEVELS = {FATAL, ERROR, WARNING, COMMAND, INPUT, INFO, DEBUG, FINE, FINER, FINEST, TRACE};
+    public static final int MINIMUM_NAME_LENGTH = Stream.of(USED_LEVELS).map(LogLevelStyle::name).map(String::length).min(Integer::compareTo).orElse(Integer.MAX_VALUE);
+    public static final int MAXIMUM_NAME_LENGTH = Stream.of(USED_LEVELS).map(LogLevelStyle::name).map(String::length).max(Integer::compareTo).orElse(Integer.MIN_VALUE);
     
     private Color colorBackground;
     private Color colorForeground;
@@ -97,7 +100,7 @@ public enum LogLevelStyle {
     public String getNameLeft() {
         if (nameLeft == null) {
             nameLeft = name();
-            while (nameLeft.length() < LogLevel.MAXIMUM_NAME_LENGTH) {
+            while (nameLeft.length() < MAXIMUM_NAME_LENGTH) {
                 nameLeft += " ";
             }
         }
@@ -107,9 +110,9 @@ public enum LogLevelStyle {
     public String getNameCenter() {
         if (nameCenter == null) {
             nameCenter = name();
-            while (nameCenter.length() < LogLevel.MAXIMUM_NAME_LENGTH) {
+            while (nameCenter.length() < MAXIMUM_NAME_LENGTH) {
                 nameCenter += " ";
-                if (nameCenter.length() < LogLevel.MAXIMUM_NAME_LENGTH) {
+                if (nameCenter.length() < MAXIMUM_NAME_LENGTH) {
                     nameCenter = " " + nameCenter;
                 }
             }
@@ -120,7 +123,7 @@ public enum LogLevelStyle {
     public String getNameRight() {
         if (nameRight == null) {
             nameRight = name();
-            while (nameRight.length() < LogLevel.MAXIMUM_NAME_LENGTH) {
+            while (nameRight.length() < MAXIMUM_NAME_LENGTH) {
                 nameRight = " " + nameRight;
             }
         }
@@ -129,14 +132,14 @@ public enum LogLevelStyle {
     
     public static LogLevelStyle ofLevel(Level level) {
         if (level == null) {
-            return DEFAULT;
+            return UNKNOWN;
         }
         for (LogLevelStyle logLevelStyle : values()) {
             if (Arrays.asList(logLevelStyle.levels).contains(level)) {
                 return logLevelStyle;
             }
         }
-        return DEFAULT;
+        return UNKNOWN;
     }
     
 }
