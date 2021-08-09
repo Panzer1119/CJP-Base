@@ -18,10 +18,14 @@ package de.codemakers.i18n;
 
 import de.codemakers.base.events.EventHandler;
 import de.codemakers.base.logging.LogLevel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Locale;
 
 public final class I18nReloadEventHandler extends EventHandler<I18nReloadEvent> {
+    
+    private static final Logger logger = LogManager.getLogger();
     
     private static final EventHandler<I18nReloadEvent> INSTANCE;
     
