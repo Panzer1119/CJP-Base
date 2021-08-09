@@ -20,4 +20,12 @@ import de.codemakers.base.events.EventListener;
 
 public interface I18nReloadEventListener extends EventListener<I18nReloadEvent> {
     
+    default void registerI18nReloadEventListener() {
+        I18nReloadEventHandler.addEventListener(this);
+    }
+    
+    default void unregisterI18nReloadEventListener() {
+        I18nReloadEventHandler.removeEventListener(this);
+    }
+    
 }
