@@ -1,5 +1,7 @@
 # CJP-Base
 
+[![Publish Package to GitHub and create a Release](https://github.com/Panzer1119/CJP-Base/actions/workflows/publish.yml/badge.svg)](https://github.com/Panzer1119/CJP-Base/actions/workflows/publish.yml)
+
 [![Quality Gate Status](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=alert_status)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
 
 [![Bugs](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=bugs)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
