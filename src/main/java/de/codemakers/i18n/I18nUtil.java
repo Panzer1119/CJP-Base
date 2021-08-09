@@ -30,7 +30,7 @@ public class I18nUtil {
     private static final String PATH_LOG_LEVEL = PATH_BASE + "log_level";
     private static final String PATH_UI = PATH_BASE + "ui";
     
-    private static volatile Locale LOCALE = null;
+    private static volatile Locale LOCALE = Locale.getDefault();
     
     private static ResourceBundle RESOURCE_BUNDLE_CONSOLE;
     private static ResourceBundle RESOURCE_BUNDLE_LOG_LEVEL;
@@ -38,11 +38,18 @@ public class I18nUtil {
     private static final Map<String, ResourceBundle> RESOURCE_BUNDLES = new ConcurrentHashMap<>();
     
     static {
-        setLocale(Locale.getDefault());
+        reload();
     }
     
     public static synchronized void setLocale(Locale locale) {
         LOCALE = locale;
+        Locale.setDefault(locale);
+        Locale.setDefault(Locale.Category.DISPLAY, locale);
+        Locale.setDefault(Locale.Category.FORMAT, locale);
+        reload();
+    }
+    
+    private static synchronized void reload() {
         loadResourceBundles();
         loadCustomResourceBundles();
         I18nReloadEventHandler.triggerReload(LOCALE);
