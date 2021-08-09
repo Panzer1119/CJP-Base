@@ -116,14 +116,6 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         
         private static final Logger logger = LogManager.getLogger();
         
-        public static final String LANGUAGE_KEY_SETTINGS = "settings";
-        public static final String LANGUAGE_KEY_TAB_GENERAL = "general";
-        public static final String LANGUAGE_KEY_TAB_VIEW = "view";
-        public static final String LANGUAGE_KEY_BUTTON_OK = "button_ok";
-        public static final String LANGUAGE_KEY_BUTTON_CANCEL = "button_cancel";
-        public static final String LANGUAGE_KEY_BUTTON_RESET = "button_reset";
-        public static final String LANGUAGE_KEY_BUTTON_APPLY = "button_apply";
-        
         protected final JDialog dialog = new JDialog(frame, true);
         
         // Bottom Buttons
