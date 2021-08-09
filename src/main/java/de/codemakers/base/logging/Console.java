@@ -60,6 +60,8 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FAT_COW_32x32_FOLDER, DEFAULT_ICON);
     public static final AdvancedFile DEFAULT_ICON_SETTINGS_FILE = new AdvancedFile(Standard.ICONS_FAT_COW_32x32_FOLDER, DEFAULT_ICON_SETTINGS);
     
+    public static final Level MINIMUM_LEVEL = Standard.RUNNING_JAR_IS_JAR ? LogLevel.INFO : LogLevel.DEBUG;
+    
     public static final String DEFAULT_FONT_NAME = "Courier New";
     
     protected final List<LogEvent> logEvents = new CopyOnWriteArrayList<>();
@@ -87,6 +89,7 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(logLevelStyle.getLocalizedName());
         //checkBoxMenuItem.setSelected(Logger.getDefaultAdvancedLeveledLogger().getMinimumLogLevel().isThisLevelLessImportantOrEqual(level));
         //TODO Where to set/determine from what level should be shown?
+        checkBoxMenuItem.setSelected(level.isMoreSpecificThan(MINIMUM_LEVEL));
         logLevelDisplayStatus.put(level, checkBoxMenuItem.isSelected());
         if (checkBoxMenuItem.isSelected()) {
             displayedLogLevels.add(level);
