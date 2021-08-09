@@ -31,41 +31,30 @@ public class VersionUtil {
     }
     
     public static Version parseToVersion(String text, String delimiter) {
-        final String[] split = text.split(RegExUtil.escapeToRegEx(delimiter));
+        return createVersion((Object[]) text.split(RegExUtil.escapeToRegEx(delimiter)));
+    }
+    
+    public static Version createVersion(Object... parts) {
         final List<VersionPart> versionParts = new ArrayList<>();
-        for (String versionPartString : split) {
-            final String temp = StringUtils.getDigits(versionPartString);
-            if (versionPartString.equals(temp)) {
-                versionParts.add(new IntegerVersionPart(versionParts.size(), Integer.parseInt(versionPartString)));
+        for (Object versionPart : parts) {
+            if (versionPart instanceof final String versionPartString) {
+                final String temp = StringUtils.getDigits(versionPartString);
+                if (versionPartString.equals(temp)) {
+                    versionParts.add(new IntegerVersionPart(versionParts.size(), Integer.parseInt(versionPartString)));
+                } else {
+                    versionParts.add(new StringVersionPart(versionParts.size(), versionPartString));
+                }
+            } else if (versionPart instanceof final Integer versionPartInteger) {
+                versionParts.add(new IntegerVersionPart(versionParts.size(), versionPartInteger));
             } else {
-                versionParts.add(new StringVersionPart(versionParts.size(), versionPartString));
+                throw new IllegalArgumentException(versionPart.getClass().getSimpleName() + " is not a valid " + VersionPart.class.getSimpleName() + " type");
             }
         }
         return new Version(versionParts);
     }
     
-    public static Version createVersion(Object... versionParts) {
-        final List<VersionPart> versionParts_list = new ArrayList<>();
-        for (Object versionPart : versionParts) {
-            if (versionPart instanceof String) {
-                final String versionPartString = (String) versionPart;
-                final String temp = StringUtils.getDigits(versionPartString);
-                if (versionPartString.equals(temp)) {
-                    versionParts_list.add(new IntegerVersionPart(versionParts_list.size(), Integer.parseInt(versionPartString)));
-                } else {
-                    versionParts_list.add(new StringVersionPart(versionParts_list.size(), versionPartString));
-                }
-            } else if (versionPart instanceof Integer) {
-                versionParts_list.add(new IntegerVersionPart(versionParts_list.size(), (Integer) versionPart));
-            } else {
-                throw new IllegalArgumentException(versionPart.getClass().getSimpleName() + " is not a valid " + VersionPart.class.getSimpleName() + " type");
-            }
-        }
-        return new Version(versionParts_list);
-    }
-    
-    public static int compareVersions(String version_1, String version_2) {
-        return parseToVersion(version_1).compareTo(parseToVersion(version_2));
+    public static int compareVersions(String versionA, String versionB) {
+        return parseToVersion(versionA).compareTo(parseToVersion(versionB));
     }
     
 }

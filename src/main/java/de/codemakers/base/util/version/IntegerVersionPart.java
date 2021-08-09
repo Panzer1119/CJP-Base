@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util.version;
 
-public class IntegerVersionPart extends AbstractVersionPart<Integer> {
+public class IntegerVersionPart extends AbstractVersionPart {
     
     protected final int versionPart;
     
@@ -75,11 +75,6 @@ public class IntegerVersionPart extends AbstractVersionPart<Integer> {
     @Override
     public String getAsString() {
         return "" + versionPart;
-    }
-    
-    @Override
-    public Integer get() {
-        return getAsInteger();
     }
     
     @Override

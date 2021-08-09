@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util.version;
 
-public interface VersionPart<T> extends ComparableVersion<VersionPart<T>> {
+public interface VersionPart extends ComparableVersion<VersionPart> {
     
     int getPriority();
     
@@ -64,7 +64,5 @@ public interface VersionPart<T> extends ComparableVersion<VersionPart<T>> {
     Integer getAsInteger();
     
     String getAsString();
-    
-    T get();
     
 }

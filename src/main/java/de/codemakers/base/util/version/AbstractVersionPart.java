@@ -16,7 +16,7 @@
 
 package de.codemakers.base.util.version;
 
-public abstract class AbstractVersionPart<T> implements VersionPart<T> {
+public abstract class AbstractVersionPart implements VersionPart {
     
     protected final int priority;
     

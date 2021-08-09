@@ -21,7 +21,7 @@ import de.codemakers.base.Standard;
 
 import java.util.Objects;
 
-public class StringVersionPart extends AbstractVersionPart<String> {
+public class StringVersionPart extends AbstractVersionPart {
     
     protected final String versionPart;
     protected final Integer parsed;
@@ -82,11 +82,6 @@ public class StringVersionPart extends AbstractVersionPart<String> {
     @Override
     public String getAsString() {
         return versionPart;
-    }
-    
-    @Override
-    public String get() {
-        return getAsString();
     }
     
     @Override
