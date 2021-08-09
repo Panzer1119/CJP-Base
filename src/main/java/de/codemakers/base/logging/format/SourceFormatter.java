@@ -31,7 +31,7 @@ public record SourceFormatter(String format) implements Formatter<StackTraceElem
     
     @Override
     public String format(StackTraceElement stackTraceElement) throws Exception {
-        return StringSubstitutor.replace(format, createValueMap(stackTraceElement));
+        return LogFormatUtil.encaseString(StringSubstitutor.replace(format, createValueMap(stackTraceElement)));
     }
     
     private Map<String, Object> createValueMap(StackTraceElement stackTraceElement) {
