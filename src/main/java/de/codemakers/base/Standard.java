@@ -21,10 +21,6 @@ import de.codemakers.base.logging.DefaultConsole;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.tough.*;
 import de.codemakers.io.file.AdvancedFile;
-import de.codemakers.lang.AdvancedLocalizer;
-import de.codemakers.lang.LanguageReloader;
-import de.codemakers.lang.LanguageUtil;
-import de.codemakers.lang.Localizer;
 
 import java.io.Closeable;
 import java.io.File;
@@ -32,7 +28,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,15 +58,12 @@ public class Standard {
     public static final AdvancedFile ICONS_FAT_COW_16x16_FOLDER = new AdvancedFile(ICONS_FAT_COW_FOLDER, ICONS_16x16_PATH);
     public static final String ICONS_32x32_PATH = "32x32/";
     public static final AdvancedFile ICONS_FAT_COW_32x32_FOLDER = new AdvancedFile(ICONS_FAT_COW_FOLDER, ICONS_32x32_PATH);
-    public static final String LANG_PATH = LanguageUtil.LANG_PATH;
-    public static final AdvancedFile LANG_FOLDER = LanguageUtil.LANG_FOLDER;
-    public static final String LANG_FILE_EXTENSION = LanguageUtil.LANG_FILE_EXTENSION;
     
     private static final Map<String, Console> CONSOLES = new ConcurrentHashMap<>();
     
     static {
-        Standard.async(LanguageUtil::initLocalizers);
-        addShutdownHookAsSingleThread(() -> SHUTDOWN_HOOKS.values().forEach(ToughRunnable::runWithoutException)); //TODO Clone/Copy the values before execution? So that if a Shutdown Hook modifies #SHUTDOWN_HOOKS no unwanted behaviour is happening?
+        addShutdownHookAsSingleThread(() -> SHUTDOWN_HOOKS.values()
+                .forEach(ToughRunnable::runWithoutException)); //TODO Clone/Copy the values before execution? So that if a Shutdown Hook modifies #SHUTDOWN_HOOKS no unwanted behaviour is happening?
     }
     
     public static final File getInternFileFromAbsolutePath(String path) {
@@ -82,7 +74,9 @@ public class Standard {
     public static final File getInternFileFromRelative(Class<?> clazz, String path) {
         Objects.requireNonNull(clazz);
         Objects.requireNonNull(path);
-        return new File(RUNNING_JAR_PATH_STRING + File.separator + clazz.getPackage().getName().replaceAll("\\.", OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()) + File.separator + path);
+        return new File(RUNNING_JAR_PATH_STRING + File.separator + clazz.getPackage()
+                .getName()
+                .replaceAll("\\.", OSUtil.CURRENT_OS_HELPER.getFileSeparatorRegex()) + File.separator + path);
     }
     
     public static final void async(ToughRunnable toughRunnable) {
@@ -228,90 +222,6 @@ public class Standard {
         return SHUTDOWN_HOOKS.remove(id);
     }
     
-    public static Locale getLocaleEnglishUs() {
-        return LanguageUtil.getLocaleEnglishUs();
-    }
-    
-    public static Locale getLocaleEnglishGb() {
-        return LanguageUtil.getLocaleEnglishGb();
-    }
-    
-    public static Locale getLocaleGermanDe() {
-        return LanguageUtil.getLocaleGermanDe();
-    }
-    
-    public static Locale getLocaleDefault() {
-        return LanguageUtil.getLocaleDefault();
-    }
-    
-    public static LanguageReloader getDefaultLanguageReloader() {
-        return LanguageUtil.getDefaultLanguageReloader();
-    }
-    
-    public static <L extends LanguageReloader> L getLanguageReloader() {
-        return LanguageUtil.getLanguageReloader();
-    }
-    
-    public static <L extends LanguageReloader> L getLanguageReloader(Class<L> clazz) {
-        return LanguageUtil.getLanguageReloader(clazz);
-    }
-    
-    public static void setLanguageReloader(LanguageReloader languageReloader) {
-        LanguageUtil.setLanguageReloader(languageReloader);
-    }
-    
-    public static boolean reloadLanguage() {
-        return LanguageUtil.reloadLanguageWithoutException();
-    }
-    
-    public static boolean unloadLanguage() {
-        return LanguageUtil.unloadLanguageWithoutException();
-    }
-    
-    public static AdvancedLocalizer getLocalizerEnglishUs() {
-        return LanguageUtil.getLocalizerEnglishUs();
-    }
-    
-    public static AdvancedLocalizer getLocalizerEnglishGb() {
-        return LanguageUtil.getLocalizerEnglishGb();
-    }
-    
-    public static AdvancedLocalizer getLocalizerGermanDe() {
-        return LanguageUtil.getLocalizerGermanDe();
-    }
-    
-    public static AdvancedLocalizer getLocalizerDefault() {
-        return LanguageUtil.getLocalizerDefault();
-    }
-    
-    public static <L extends Localizer> L getLocalizer() {
-        return LanguageUtil.getLocalizer();
-    }
-    
-    public static <L extends Localizer> L getLocalizer(Class<L> clazz) {
-        return LanguageUtil.getLocalizer(clazz);
-    }
-    
-    public static void setLocalizer(Localizer localizer) {
-        LanguageUtil.setLocalizer(localizer);
-    }
-    
-    public static String localizeWithArguments(String name, String defaultValue, Object... arguments) {
-        return LanguageUtil.localizeWithArguments(name, defaultValue, arguments);
-    }
-    
-    public static String localizeWithArguments(String name, Object... arguments) {
-        return LanguageUtil.localizeWithArguments(name, arguments);
-    }
-    
-    public static String localize(String name, String defaultValue) {
-        return LanguageUtil.localize(name, defaultValue);
-    }
-    
-    public static String localize(String name) {
-        return LanguageUtil.localize(name);
-    }
-    
     public static <R, T> R useWhenNotNull(T t, ToughFunction<T, R> toughFunction) {
         if (t == null || toughFunction == null) {
             return null;
@@ -347,7 +257,7 @@ public class Standard {
             return null;
         }
         for (Thread thread : Thread.getAllStackTraces().keySet()) {
-            if (Objects.equals(name,thread.getName())) {
+            if (Objects.equals(name, thread.getName())) {
                 return thread;
             }
         }
