@@ -149,6 +149,14 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         pipedOutputStream.flush();
     }
     
+    public LogEventFormatter getLogEventFormatter() {
+        return logEventFormatter;
+    }
+    
+    public void setLogEventFormatter(LogEventFormatter logEventFormatter) {
+        this.logEventFormatter = logEventFormatter;
+    }
+    
     protected abstract ConsoleSettings<S> createConsoleSettings(AdvancedFile iconAdvancedFile);
     
     /**

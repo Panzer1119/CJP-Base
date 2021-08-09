@@ -17,6 +17,8 @@
 package de.codemakers.base.logging;
 
 import de.codemakers.base.entities.UpdatableBoundResettableVariable;
+import de.codemakers.base.logging.format.LogEventFormatter;
+import de.codemakers.base.logging.format.SourceFormatter;
 import de.codemakers.i18n.I18nUtil;
 import de.codemakers.io.file.AdvancedFile;
 import org.apache.logging.log4j.Level;
@@ -128,8 +130,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         protected final JButton button_apply = new JButton("button.apply");
         
         protected final UpdatableBoundResettableVariable<String> titleBound = new UpdatableBoundResettableVariable<>(frame::getTitle, frame::setTitle); //FIXME Testing only //This is working great!
-        //protected final UpdatableBoundResettableVariable<String> logFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getLogFormat, DefaultConsole.this::setLogFormat); //FIXME Testing only
-        //protected final UpdatableBoundResettableVariable<String> sourceFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getSourceFormat, DefaultConsole.this::setSourceFormat); //FIXME Testing only
+        protected final UpdatableBoundResettableVariable<LogEventFormatter> logEventFormatterBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getLogEventFormatter, DefaultConsole.this::setLogEventFormatter);
         
         protected final boolean livePreview = true; //FIXME Testing only?
         
@@ -205,8 +206,79 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
             tabbedPane.addTab("settings.general", panel_tab_general);
             //TODO Test start
             panel_tab_view.setLayout(new GridLayout(2, 2));
+            
+            
             panel_tab_view.add(new JLabel("Log Format")); //FIXME Language reloading!!!
             final JTextPane textPane_logFormat = new JTextPane();
+            
+            
+            // NEW START
+            final JTextPane textPane_sourceFormat = new JTextPane();
+            
+            final Runnable updateLogEventFormatter = () -> {
+                final LogEventFormatter current = logEventFormatterBound.getCurrent();
+                logEventFormatterBound.setTemp(new LogEventFormatter(textPane_logFormat.getText(), current.timestampFormatter(), current.threadFormatter(), new SourceFormatter(textPane_sourceFormat
+                        .getText()), current.messageFormatter()));
+                if (livePreview) {
+                    logEventFormatterBound.testWithoutException();
+                }
+                onAction();
+            };
+            
+            
+            textPane_logFormat.setText(logEventFormatterBound.getCurrent().format());
+            textPane_logFormat.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent keyEvent) {
+                }
+                
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                }
+                
+                @Override
+                public void keyReleased(KeyEvent keyEvent) {
+                    updateLogEventFormatter.run();
+                }
+            });
+            
+            
+            textPane_sourceFormat.setText(logEventFormatterBound.getCurrent().sourceFormatter().format());
+            textPane_sourceFormat.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent keyEvent) {
+                }
+                
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                }
+                
+                @Override
+                public void keyReleased(KeyEvent keyEvent) {
+                    updateLogEventFormatter.run();
+                }
+            });
+            
+            
+            logEventFormatterBound.setToughConsumer((logEventFormatter) -> {
+                DefaultConsole.this.setLogEventFormatter(logEventFormatter);
+                final String logFormat = logEventFormatter.format();
+                if (!textPane_logFormat.getText().equals(logFormat)) {
+                    textPane_logFormat.setText(logFormat);
+                }
+                final String sourceFormat = logEventFormatter.sourceFormatter().format();
+                if (!textPane_sourceFormat.getText().equals(sourceFormat)) {
+                    textPane_sourceFormat.setText(sourceFormat);
+                }
+                DefaultConsole.this.reloadWithoutException(); //FIXME Or should this be executed in the finish method?
+            });
+            
+            // NEW END
+            
+    
+            
+            
+            
             /*
             //TODO
             final CustomDocumentFilter customDocumentFilter_1 = new CustomDocumentFilter(textPane_logFormat, Arrays.asList(Logger.LOG_FORMAT_TIMESTAMP, Logger.LOG_FORMAT_THREAD, Logger.LOG_FORMAT_SOURCE, Logger.LOG_FORMAT_LOG_LEVEL, Logger.LOG_FORMAT_OBJECT));
@@ -240,7 +312,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
             //panel_tab_view.add(textArea_logFormat);
             panel_tab_view.add(new JScrollPane(textPane_logFormat));
             panel_tab_view.add(new JLabel("Source Format")); //FIXME Language reloading!!!
-            final JTextPane textPane_sourceFormat = new JTextPane();
+            //final JTextPane textPane_sourceFormat = new JTextPane();
             /*
             //TODO
             final CustomDocumentFilter customDocumentFilter_2 = new CustomDocumentFilter(textPane_sourceFormat, Arrays.asList("test", Logger.SOURCE_FORMAT_CLASS, Logger.SOURCE_FORMAT_METHOD, Logger.SOURCE_FORMAT_FILE, Logger.SOURCE_FORMAT_LINE));
@@ -323,8 +395,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         @Override
         protected void showing() {
             titleBound.updateWithoutException();
-            //logFormatBound.updateWithoutException();
-            //sourceFormatBound.updateWithoutException();
+            logEventFormatterBound.updateWithoutException();
             onAction();
         }
         
@@ -362,12 +433,12 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         
         @Override
         protected boolean isEdited() {
-            return titleBound.isDifferent()/* || logFormatBound.isDifferent() || sourceFormatBound.isDifferent()*/;
+            return titleBound.isDifferent() || logEventFormatterBound.isDifferent();
         }
         
         @Override
         protected boolean isNotEdited() {
-            return titleBound.isSame()/* && logFormatBound.isSame() && sourceFormatBound.isSame()*/;
+            return titleBound.isSame() && logEventFormatterBound.isSame();
         }
         
         protected void reloadLanguage() {
@@ -399,8 +470,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         @Override
         public Boolean finish() throws Exception {
             titleBound.finish();
-            //logFormatBound.finish();
-            //sourceFormatBound.finish();
+            logEventFormatterBound.finish();
             return true;
         }
         
@@ -410,16 +480,9 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
             if (!titleBound.reset()) {
                 good = false;
             }
-            /*
-            if (!logFormatBound.reset()) {
+            if (!logEventFormatterBound.reset()) {
                 good = false;
             }
-            */
-            /*
-            if (!sourceFormatBound.reset()) {
-                good = false;
-            }
-            */
             return good;
         }
         
