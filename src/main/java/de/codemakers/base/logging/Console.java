@@ -184,8 +184,13 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         return false;
     }
     
-    protected void reloadLanguage() { //TODO Sort this by ResourceBundles UI, Console, LogLevel etc...
+    protected void reloadLanguage() {
+        // ResourceBundle console
         frame.setTitle(I18nUtil.getResourceBundleConsole().getString("console"));
+        label_displayedLogLevels.setText(I18nUtil.getResourceBundleConsole().getString("settings.displayed_log_levels"));
+        ((TitledBorder) scrollPane_output.getBorder()).setTitle(I18nUtil.getResourceBundleConsole().getString("output"));
+        ((TitledBorder) panel_input.getBorder()).setTitle(I18nUtil.getResourceBundleConsole().getString("input"));
+        // ResourceBundle ui
         menu_file.setText(I18nUtil.getResourceBundleUi().getString("menu.file"));
         menuItem_reload.setText(I18nUtil.getResourceBundleUi().getString("project.reload"));
         menuItem_settings.setText(I18nUtil.getResourceBundleUi().getString("project.settings"));
@@ -193,18 +198,12 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         menuItem_restart.setText(I18nUtil.getResourceBundleUi().getString("project.restart"));
         menuItem_exit.setText(I18nUtil.getResourceBundleUi().getString("project.exit"));
         menu_view.setText(I18nUtil.getResourceBundleUi().getString("menu.view"));
-        label_displayedLogLevels.setText(I18nUtil.getResourceBundleConsole().getString("settings.displayed_log_levels"));
+        button_input.setText(I18nUtil.getResourceBundleUi().getString("button.enter"));
+        // ResourceBundle log_level
         for (int i = 0; i < LogLevel.USED_LEVELS.length; i++) {
             checkBoxMenuItems_logLevels[i].setText(LogLevel.getLocalizedName(LogLevel.USED_LEVELS[i]));
         }
-        label_display.setText(I18nUtil.getResourceBundleConsole().getString("settings.display"));
-        checkBoxMenuItem_displayTimestamp.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.timestamp"));
-        checkBoxMenuItem_displayThread.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.thread"));
-        checkBoxMenuItem_displaySource.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.source"));
-        checkBoxMenuItem_displayLogLevel.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.log_level"));
-        button_input.setText(I18nUtil.getResourceBundleUi().getString("button.enter"));
-        ((TitledBorder) scrollPane_output.getBorder()).setTitle(I18nUtil.getResourceBundleConsole().getString("output"));
-        ((TitledBorder) panel_input.getBorder()).setTitle(I18nUtil.getResourceBundleConsole().getString("input"));
+        // Redraw
         frame.invalidate();
         frame.repaint();
         consoleSettings.reloadLanguage();

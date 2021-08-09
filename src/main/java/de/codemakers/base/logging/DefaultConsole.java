@@ -371,14 +371,17 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         }
         
         protected void reloadLanguage() {
+            // ResourceBundle console
             dialog.setTitle(I18nUtil.getResourceBundleConsole().getString("settings"));
             setTabTitle(panel_tab_general, "settings.general");
             setTabTitle(panel_tab_view, "settings.view");
             setTabTitle(scrollPane_Test, "settings.test");
+            // ResourceBundle ui
             button_ok.setText(I18nUtil.getResourceBundleUi().getString("button.ok"));
             button_cancel.setText(I18nUtil.getResourceBundleUi().getString("button.cancel"));
             button_reset.setText(I18nUtil.getResourceBundleUi().getString("button.reset")); //TODO Is this working with umlaute?
             button_apply.setText(I18nUtil.getResourceBundleUi().getString("button.apply"));
+            // Redraw
             dialog.invalidate();
             dialog.repaint();
         }
