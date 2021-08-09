@@ -19,6 +19,7 @@ package de.codemakers.base.logging.format;
 import de.codemakers.base.util.StringUtil;
 import de.codemakers.base.util.interfaces.Formatter;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.message.Message;
 
@@ -26,7 +27,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-public record LogEventFormatter(String format, Formatter<Instant> timestampFormatter, Formatter<String> threadFormatter,
+public record LogEventFormatter(String format, Formatter<Instant> timestampFormatter, Formatter<Level> levelFormatter, Formatter<String> threadFormatter,
                                 SourceFormatter sourceFormatter, Formatter<Message> messageFormatter) implements Formatter<LogEvent> {
     
     /**
@@ -47,6 +48,7 @@ public record LogEventFormatter(String format, Formatter<Instant> timestampForma
         final Map<String, Object> map = new HashMap<>();
         final Instant timestamp = Instant.ofEpochMilli(logEvent.getInstant().getEpochMillisecond());
         map.put(LogEventFormatterBuilder.FORMAT_TIMESTAMP, formatTimestamp(timestamp));
+        map.put(LogEventFormatterBuilder.FORMAT_LEVEL, formatLevel(logEvent.getLevel()));
         map.put(LogEventFormatterBuilder.FORMAT_THREAD, formatThread(logEvent.getThreadName()));
         map.put(LogEventFormatterBuilder.FORMAT_SOURCE, formatStackTraceElement(logEvent.getSource()));
         map.put(LogEventFormatterBuilder.FORMAT_OBJECT, formatMessage(logEvent.getMessage()));
@@ -63,6 +65,10 @@ public record LogEventFormatter(String format, Formatter<Instant> timestampForma
     
     private String formatStackTraceElement(StackTraceElement stackTraceElement) {
         return StringUtil.escapeStringSubstitutorVariableCalls(sourceFormatter.formatWithoutException(stackTraceElement));
+    }
+    
+    private String formatLevel(Level level) {
+        return StringUtil.escapeStringSubstitutorVariableCalls(levelFormatter.formatWithoutException(level));
     }
     
     private String formatMessage(Message message) {

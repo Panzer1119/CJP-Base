@@ -217,7 +217,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
             
             final Runnable updateLogEventFormatter = () -> {
                 final LogEventFormatter current = logEventFormatterBound.getCurrent();
-                logEventFormatterBound.setTemp(new LogEventFormatter(textPane_logFormat.getText(), current.timestampFormatter(), current.threadFormatter(), new SourceFormatter(textPane_sourceFormat
+                logEventFormatterBound.setTemp(new LogEventFormatter(textPane_logFormat.getText(), current.timestampFormatter(), current.levelFormatter(), current.threadFormatter(), new SourceFormatter(textPane_sourceFormat
                         .getText()), current.messageFormatter()));
                 if (livePreview) {
                     logEventFormatterBound.testWithoutException();

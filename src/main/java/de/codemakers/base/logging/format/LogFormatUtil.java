@@ -16,7 +16,9 @@
 
 package de.codemakers.base.logging.format;
 
+import de.codemakers.base.logging.LogLevelStyle;
 import de.codemakers.base.util.TimeUtil;
+import org.apache.logging.log4j.Level;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -45,6 +47,10 @@ public class LogFormatUtil {
             return "";
         }
         return encaseString(timestamp.format(DATE_TIME_FORMATTER_DEFAULT));
+    }
+    
+    public static String formatLevel(Level level) {
+        return encaseString(LogLevelStyle.ofLevel(level).getNameCenter());
     }
     
     public static String formatThread(Thread thread) {

@@ -22,6 +22,7 @@ import de.codemakers.base.util.StringUtil;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.interfaces.Formatter;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.message.Message;
 
 import java.time.Instant;
@@ -33,16 +34,17 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
     
     public static final String FORMAT_TIMESTAMP = "timestamp";
     public static final String FORMAT_VAR_TIMESTAMP = StringSubstitutor.DEFAULT_VAR_START + FORMAT_TIMESTAMP + StringSubstitutor.DEFAULT_VAR_END;
+    public static final String FORMAT_LEVEL = "level";
+    public static final String FORMAT_VAR_LEVEL = StringSubstitutor.DEFAULT_VAR_START + FORMAT_LEVEL + StringSubstitutor.DEFAULT_VAR_END;
     public static final String FORMAT_THREAD = "thread";
     public static final String FORMAT_VAR_THREAD = StringSubstitutor.DEFAULT_VAR_START + FORMAT_THREAD + StringSubstitutor.DEFAULT_VAR_END;
     public static final String FORMAT_SOURCE = "source";
     public static final String FORMAT_VAR_SOURCE = StringSubstitutor.DEFAULT_VAR_START + FORMAT_SOURCE + StringSubstitutor.DEFAULT_VAR_END;
-    public static final String FORMAT_LEVEL = "level";
-    public static final String FORMAT_VAR_LEVEL = StringSubstitutor.DEFAULT_VAR_START + FORMAT_LEVEL + StringSubstitutor.DEFAULT_VAR_END;
     public static final String FORMAT_OBJECT = "object";
     public static final String FORMAT_VAR_OBJECT = StringSubstitutor.DEFAULT_VAR_START + FORMAT_OBJECT + StringSubstitutor.DEFAULT_VAR_END;
     
     private Formatter<Instant> timestampFormatter = LogFormatUtil::formatTimestamp;
+    private Formatter<Level> levelFormatter = LogFormatUtil::formatLevel;
     private Formatter<String> threadFormatter = LogFormatUtil::formatThread;
     private SourceFormatter sourceFormatter = SourceFormatter.createDefault();
     private Formatter<Message> messageFormatter = Message::getFormattedMessage;
@@ -60,6 +62,11 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
         return this;
     }
     
+    public LogEventFormatterBuilder appendLogLevel() {
+        format.append(FORMAT_VAR_LEVEL);
+        return this;
+    }
+    
     public LogEventFormatterBuilder appendThread() {
         format.append(FORMAT_VAR_THREAD);
         return this;
@@ -67,11 +74,6 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
     
     public LogEventFormatterBuilder appendSource() {
         format.append(FORMAT_VAR_SOURCE);
-        return this;
-    }
-    
-    public LogEventFormatterBuilder appendLogLevel() {
-        format.append(FORMAT_VAR_LEVEL);
         return this;
     }
     
@@ -86,6 +88,15 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
     
     public LogEventFormatterBuilder setTimestampFormatter(Formatter<Instant> timestampFormatter) {
         this.timestampFormatter = timestampFormatter;
+        return this;
+    }
+    
+    public Formatter<Level> getLevelFormatter() {
+        return levelFormatter;
+    }
+    
+    public LogEventFormatterBuilder setLevelFormatter(Formatter<Level> levelFormatter) {
+        this.levelFormatter = levelFormatter;
         return this;
     }
     
@@ -123,7 +134,7 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
     
     @Override
     public LogEventFormatter build() {
-        return new LogEventFormatter(format.toString(), timestampFormatter, threadFormatter, sourceFormatter, messageFormatter);
+        return new LogEventFormatter(format.toString(), timestampFormatter, levelFormatter, threadFormatter, sourceFormatter, messageFormatter);
     }
     
     @Override
@@ -146,7 +157,7 @@ public class LogEventFormatterBuilder extends AbstractFormatBuilder<LogEventForm
     
     @Override
     public String toString() {
-        return "LogEventFormatterBuilder{" + "format='" + format + '\'' + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
+        return "LogEventFormatterBuilder{" + "timestampFormatter=" + timestampFormatter + ", levelFormatter=" + levelFormatter + ", threadFormatter=" + threadFormatter + ", sourceFormatter=" + sourceFormatter + ", messageFormatter=" + messageFormatter + ", format=" + format + ", checkAndCorrectAppendedText=" + checkAndCorrectAppendedText + '}';
     }
     
 }
