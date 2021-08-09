@@ -139,8 +139,8 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
             initIconImage(iconAdvancedFile);
             initListeners();
             dialog.setPreferredSize(new Dimension(600, 800)); //TODO Testing only
-            reloadLanguage();
             test(); //FIXME Testing only
+            reloadLanguage();
         }
         
         private JScrollPane scrollPane_Test = null;

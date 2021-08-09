@@ -137,6 +137,7 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         consoleSettings = createConsoleSettings(iconSettingsAdvancedFile);
         setPreferredSize(new Dimension(1200, 600)); //TODO Testing only
         reloadWithoutException(); //TODO Good?
+        reloadLanguage();
     }
     
     protected void write(int b) throws IOException {
