@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'de.codemakers'
-version = '0.16.12'
+version = '0.16.13'
 
 repositories {
     mavenCentral()

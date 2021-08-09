@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.13](https://github.com/Panzer1119/CJP-Base/compare/v0.16.12...v0.16.13) (2021-08-09)
+
+
+### Features
+
+* **i18n:** add convenient (un)register methods to I18nReloadEventListener.java ([d5717a1](https://github.com/Panzer1119/CJP-Base/commit/d5717a1c9de6365dfc682bf9e04e4603245c927d))
+* **i18n:** add custom ResourceBundle support to I18nUtil.java ([8ddaa5f](https://github.com/Panzer1119/CJP-Base/commit/8ddaa5fe6153396133b7f71041072958272d2d3a))
+* **i18n:** add i18n console ResourceBundle ([3ef586d](https://github.com/Panzer1119/CJP-Base/commit/3ef586deb202ff7cbeb45a10323aff303f8c5c53))
+* **i18n:** add i18n log_level ResourceBundle ([d9db3ad](https://github.com/Panzer1119/CJP-Base/commit/d9db3ad0d1903962a64b9432571af539a3bc9048))
+* **i18n:** add i18n ui ResourceBundle ([f4e4820](https://github.com/Panzer1119/CJP-Base/commit/f4e4820fa772087ea81c1d5c6219d9a043d42762))
+* **i18n:** create I18nReloadEvent.java, I18nReloadEventHandler.java and I18nReloadEventListener.java ([3a757e3](https://github.com/Panzer1119/CJP-Base/commit/3a757e39ff988dc2e811b3a8b8a0cb339b0a69e4))
+* **i18n:** create I18nUtil.java ([a923028](https://github.com/Panzer1119/CJP-Base/commit/a923028b0f06f4b828f1e27406e32efd802c5bf5))
+* **logging:** add default LogEventFormatter without source ([88e8dc7](https://github.com/Panzer1119/CJP-Base/commit/88e8dc7c9a9c8093db654748930c1dbdacbe0219))
+* rework EventHandler.java and IEventHandler.java ([5966970](https://github.com/Panzer1119/CJP-Base/commit/59669708f791b6c587432525bad7ae99cdfe7a09))
+
+
+### Bug Fixes
+
+* **console:** add minimum level to automatically set a bunch of log levels to be shown ([2ff44af](https://github.com/Panzer1119/CJP-Base/commit/2ff44af6e695282b33ea7b828c55d33769f4cac3))
+* **console:** load language as the last step in Console.java and DefaultConsole.java ([35f1eb7](https://github.com/Panzer1119/CJP-Base/commit/35f1eb79cb052ef408b34af3b3543887752d7d3d))
+* **console:** move localization of Log Levels from LogLevelStyle.java to LogLevel.java ([140044f](https://github.com/Panzer1119/CJP-Base/commit/140044fe69c901ab29392d9783f0c7fd56c727f2))
+* **i18n:** add logger to I18nReloadEventHandler.java ([ab93520](https://github.com/Panzer1119/CJP-Base/commit/ab93520103ccc9be555f3b37839598b26dfdbbf9))
+* **i18n:** add missing log level keys to i18n log_level ResourceBundle ([270660b](https://github.com/Panzer1119/CJP-Base/commit/270660b6b4e604cc3184612e75480d8b38446519))
+* **i18n:** add project.restart to i18n ui ResourceBundle ([f60fd58](https://github.com/Panzer1119/CJP-Base/commit/f60fd58028676b091498fc77eb181f7ef6f4b593))
+* **i18n:** add settings tabs to i18n console ResourceBundle ([e8ee800](https://github.com/Panzer1119/CJP-Base/commit/e8ee80037318cf22a456a7d99fbf4807f81820ee))
+* **i18n:** add ui key to ui ResourceBundle ([21bef2a](https://github.com/Panzer1119/CJP-Base/commit/21bef2af7fe434ee7b016714fc9b03286931867c))
+* **i18n:** disable loading languages in initLocalizers in LanguageUtil.java ([222ac88](https://github.com/Panzer1119/CJP-Base/commit/222ac88dba97eacd9b7c6b8404a0b912de4a8511))
+* **i18n:** set force events to true in I18nReloadEventHandler.java ([2ad3044](https://github.com/Panzer1119/CJP-Base/commit/2ad304463627dc969927c6a65a8c8fb53743f4fb))
+* **i18n:** use correct parameterization of ConsoleSettings in Console.java and DefaultConsole.java ([7da778b](https://github.com/Panzer1119/CJP-Base/commit/7da778bf4551754f0f81d584cb5fe2a36c517925))
+* **logging:** add log level formatting to LogEventFormatter and LogEventFormatterBuilder ([b0cb7e0](https://github.com/Panzer1119/CJP-Base/commit/b0cb7e0e11e0f00f9d626afcbc793904acd74fc0))
+* **logging:** encase SourceFormatter in square brackets ([2521948](https://github.com/Panzer1119/CJP-Base/commit/25219480228091dd0745a287ca14bc2a421c1813))
+* **logging:** use LogLevelStyle names to determine the MAXIMUM_NAME_LENGTH instead of Level names ([4f211b4](https://github.com/Panzer1119/CJP-Base/commit/4f211b42735d808d4076c11da2c72e5a32aba089))
+
 ### [0.16.12](https://github.com/Panzer1119/CJP-Base/compare/v0.16.11...v0.16.12) (2021-08-06)
 
 ### [0.16.11](https://github.com/Panzer1119/CJP-Base/compare/v0.16.10...v0.16.11) (2021-08-06)
