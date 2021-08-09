@@ -82,7 +82,7 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
     protected final JMenu menu_view = new JMenu("menu.view");
     //Output
     protected final JLabel label_displayedLogLevels = new JLabel("settings.displayed_log_levels");
-    protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.LEVELS).map((level) -> {
+    protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.USED_LEVELS).map((level) -> {
         final LogLevelStyle logLevelStyle = LogLevelStyle.ofLevel(level);
         final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(logLevelStyle.getLocalizedName());
         //checkBoxMenuItem.setSelected(Logger.getDefaultAdvancedLeveledLogger().getMinimumLogLevel().isThisLevelLessImportantOrEqual(level));
@@ -194,9 +194,8 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         menuItem_exit.setText(I18nUtil.getResourceBundleUi().getString("project.exit"));
         menu_view.setText(I18nUtil.getResourceBundleUi().getString("menu.view"));
         label_displayedLogLevels.setText(I18nUtil.getResourceBundleConsole().getString("settings.displayed_log_levels"));
-        final LogLevelStyle[] logLevelStyles = LogLevelStyle.values();
-        for (int i = 0; i < logLevelStyles.length; i++) {
-            checkBoxMenuItems_logLevels[i].setText(logLevelStyles[i].getLocalizedName());
+        for (int i = 0; i < LogLevel.USED_LEVELS.length; i++) {
+            checkBoxMenuItems_logLevels[i].setText(LogLevel.getLocalizedName(LogLevel.USED_LEVELS[i]));
         }
         label_display.setText(I18nUtil.getResourceBundleConsole().getString("settings.display"));
         checkBoxMenuItem_displayTimestamp.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.timestamp"));

@@ -16,6 +16,7 @@
 
 package de.codemakers.base.logging;
 
+import de.codemakers.i18n.I18nUtil;
 import org.apache.logging.log4j.Level;
 
 import java.util.Comparator;
@@ -37,12 +38,21 @@ public final class LogLevel {
     public static final Level TRACE = Level.TRACE;
     public static final Level ALL = Level.ALL;
     
-    public static final Level[] LEVELS = {FATAL, ERROR, WARN, COMMAND, INPUT, INFO, DEBUG, FINE, FINER, FINEST, TRACE};
-    public static final Level MINIMUM_LEVEL = Stream.of(LEVELS).min(Comparator.comparing(Level::intLevel)).orElse(Level.OFF);
-    public static final Level MAXIMUM_LEVEL = Stream.of(LEVELS).max(Comparator.comparing(Level::intLevel)).orElse(Level.ALL);
+    public static final Level[] USED_LEVELS = {FATAL, ERROR, WARN, COMMAND, INPUT, INFO, DEBUG, FINE, FINER, FINEST, TRACE};
+    public static final Level MINIMUM_LEVEL = Stream.of(USED_LEVELS).min(Comparator.comparing(Level::intLevel)).orElse(Level.OFF);
+    public static final Level MAXIMUM_LEVEL = Stream.of(USED_LEVELS).max(Comparator.comparing(Level::intLevel)).orElse(Level.ALL);
+    public static final int MINIMUM_NAME_LENGTH = Stream.of(USED_LEVELS).map(Level::name).map(String::length).min(Integer::compareTo).orElse(Integer.MAX_VALUE);
+    public static final int MAXIMUM_NAME_LENGTH = Stream.of(USED_LEVELS).map(Level::name).map(String::length).max(Integer::compareTo).orElse(Integer.MIN_VALUE);
     
     private LogLevel() {
         //Nothing
+    }
+    
+    public static String getLocalizedName(Level level) {
+        if (level == null) {
+            return I18nUtil.getResourceBundleLogLevel().getString("unknown");
+        }
+        return I18nUtil.getResourceBundleLogLevel().getString(level.name().toLowerCase());
     }
     
 }
