@@ -104,13 +104,6 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         });
         return checkBoxMenuItem;
     }).toArray(JCheckBoxMenuItem[]::new);
-    protected final JLabel label_display = new JLabel("settings.display");
-    //TODO Maybe make this customizable in a separate (settings) window? (Like switching positioning of the elements e.g. with another LogFormatBuilder)
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayTimestamp = new JCheckBoxMenuItem("settings.format.timestamp");
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayThread = new JCheckBoxMenuItem("settings.format.thread");
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displaySource = new JCheckBoxMenuItem("settings.format.source");
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayLogLevel = new JCheckBoxMenuItem("settings.format.log_level");
-    //TODO What was the "Debug Mode"?
     protected final JTextPane textPane_output = new JTextPane();
     protected final JScrollPane scrollPane_output = new JScrollPane(textPane_output);
     //Input
@@ -252,10 +245,6 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         //Output
         final ActionListener actionListener_reload = actionEvent -> reloadWithoutException();
         menuItem_reload.addActionListener(actionListener_reload);
-        checkBoxMenuItem_displayTimestamp.addActionListener(actionListener_reload);
-        checkBoxMenuItem_displayThread.addActionListener(actionListener_reload);
-        checkBoxMenuItem_displaySource.addActionListener(actionListener_reload);
-        checkBoxMenuItem_displayLogLevel.addActionListener(actionListener_reload);
         //Input
         textField_input.addKeyListener(new KeyListener() {
             @Override
@@ -301,12 +290,6 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         for (JCheckBoxMenuItem checkBoxMenuItem : checkBoxMenuItems_logLevels) {
             menu_view.add(checkBoxMenuItem); //TODO ActionListener or something similar?
         }
-        menu_view.add(new JSeparator());
-        menu_view.add(label_display);
-        menu_view.add(checkBoxMenuItem_displayTimestamp);
-        menu_view.add(checkBoxMenuItem_displayThread);
-        menu_view.add(checkBoxMenuItem_displaySource);
-        menu_view.add(checkBoxMenuItem_displayLogLevel);
         menuBar.add(menu_view);
         frame.setJMenuBar(menuBar);
         frame.setLayout(new BorderLayout());
