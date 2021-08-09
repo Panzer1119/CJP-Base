@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DefaultConsole extends Console {
+public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSettings> {
     
     private static final Logger logger = LogManager.getLogger();
     
@@ -51,7 +51,7 @@ public class DefaultConsole extends Console {
     }
     
     @Override
-    protected ConsoleSettings createConsoleSettings(AdvancedFile iconAdvancedFile) {
+    protected DefaultConsoleSettings createConsoleSettings(AdvancedFile iconAdvancedFile) {
         return new DefaultConsoleSettings(iconAdvancedFile);
     }
     
@@ -112,8 +112,8 @@ public class DefaultConsole extends Console {
         return false;
     }
     
-    public class DefaultConsoleSettings extends ConsoleSettings {
-    
+    public class DefaultConsoleSettings extends ConsoleSettings<DefaultConsoleSettings> {
+        
         private static final Logger logger = LogManager.getLogger();
         
         public static final String LANGUAGE_KEY_SETTINGS = "settings";
@@ -339,12 +339,12 @@ public class DefaultConsole extends Console {
         }
         
         @Override
-        public ConsoleSettings showAtConsole() {
+        public DefaultConsoleSettings showAtConsole() {
             return show(frame);
         }
         
         @Override
-        public ConsoleSettings show(Component component) {
+        public DefaultConsoleSettings show(Component component) {
             dialog.pack();
             dialog.setLocationRelativeTo(component);
             showing();
@@ -353,7 +353,7 @@ public class DefaultConsole extends Console {
         }
         
         @Override
-        public ConsoleSettings hide() {
+        public DefaultConsoleSettings hide() {
             dialog.setVisible(false);
             return this;
         }

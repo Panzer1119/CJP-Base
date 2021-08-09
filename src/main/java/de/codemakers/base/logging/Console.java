@@ -49,7 +49,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class Console implements Closeable, LanguageReloadable, Reloadable {
+public abstract class Console<S extends Console.ConsoleSettings<?>> implements Closeable, I18nReloadEventListener, Reloadable {
     
     private static final Logger logger = LogManager.getLogger();
     
@@ -137,7 +137,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
     protected final PipedInputStream pipedInputStream = new PipedInputStream();
     protected final int shutdownHookId = Standard.addShutdownHook(this::closeIntern);
     
-    protected final ConsoleSettings consoleSettings;
+    protected final ConsoleSettings<S> consoleSettings;
     
     protected final History<String> inputHistory = new History<>();
     
@@ -171,7 +171,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         pipedOutputStream.flush();
     }
     
-    protected abstract ConsoleSettings createConsoleSettings(AdvancedFile iconAdvancedFile);
+    protected abstract ConsoleSettings<S> createConsoleSettings(AdvancedFile iconAdvancedFile);
     
     /**
      * Handles input
@@ -410,7 +410,7 @@ public abstract class Console implements Closeable, LanguageReloadable, Reloadab
         return pipedInputStream;
     }
     
-    public abstract class ConsoleSettings<C extends ConsoleSettings> implements Finishable<Boolean>, LanguageReloadable, Resettable {
+    public abstract static class ConsoleSettings<C extends ConsoleSettings<?>> implements Finishable<Boolean>, I18nReloadEventListener, Resettable {
         
         protected abstract void showing();
         
