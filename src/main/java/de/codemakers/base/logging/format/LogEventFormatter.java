@@ -30,9 +30,13 @@ public record LogEventFormatter(String format, Formatter<Instant> timestampForma
                                 SourceFormatter sourceFormatter, Formatter<Message> messageFormatter) implements Formatter<LogEvent> {
     
     /**
-     * Value = "{@link LogEventFormatterBuilder#FORMAT_VAR_TIMESTAMP}{@link LogEventFormatterBuilder#FORMAT_VAR_THREAD}{@link LogEventFormatterBuilder#FORMAT_VAR_SOURCE}: {@link LogEventFormatterBuilder#FORMAT_VAR_OBJECT}"
+     * Value = "{@link LogEventFormatterBuilder#FORMAT_VAR_TIMESTAMP}{@link LogEventFormatterBuilder#FORMAT_VAR_LEVEL}{@link LogEventFormatterBuilder#FORMAT_VAR_THREAD}: {@link LogEventFormatterBuilder#FORMAT_VAR_OBJECT}"
      */
-    public static final String DEFAULT_FORMAT = LogEventFormatterBuilder.FORMAT_VAR_TIMESTAMP + LogEventFormatterBuilder.FORMAT_VAR_THREAD + LogEventFormatterBuilder.FORMAT_VAR_SOURCE;
+    public static final String DEFAULT_FORMAT = LogEventFormatterBuilder.FORMAT_VAR_TIMESTAMP + LogEventFormatterBuilder.FORMAT_VAR_LEVEL + LogEventFormatterBuilder.FORMAT_VAR_THREAD + ": " + LogEventFormatterBuilder.FORMAT_VAR_OBJECT;
+    /**
+     * Value = "{@link LogEventFormatterBuilder#FORMAT_VAR_TIMESTAMP}{@link LogEventFormatterBuilder#FORMAT_VAR_LEVEL}{@link LogEventFormatterBuilder#FORMAT_VAR_THREAD}{@link LogEventFormatterBuilder#FORMAT_VAR_SOURCE}: {@link LogEventFormatterBuilder#FORMAT_VAR_OBJECT}"
+     */
+    public static final String DEFAULT_FORMAT_WITH_SOURCE = LogEventFormatterBuilder.FORMAT_VAR_TIMESTAMP + LogEventFormatterBuilder.FORMAT_VAR_LEVEL + LogEventFormatterBuilder.FORMAT_VAR_THREAD + LogEventFormatterBuilder.FORMAT_VAR_SOURCE + ": " + LogEventFormatterBuilder.FORMAT_VAR_OBJECT;
     
     @Override
     public String format(LogEvent logEvent) throws Exception {
@@ -72,6 +76,10 @@ public record LogEventFormatter(String format, Formatter<Instant> timestampForma
     
     public static LogEventFormatter createDefault() {
         return new LogEventFormatterBuilder(DEFAULT_FORMAT).build();
+    }
+    
+    public static LogEventFormatter createDefaultWithSource() {
+        return new LogEventFormatterBuilder(DEFAULT_FORMAT_WITH_SOURCE).build();
     }
     
 }
