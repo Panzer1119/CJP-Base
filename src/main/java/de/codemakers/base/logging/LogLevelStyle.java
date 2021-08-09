@@ -16,6 +16,7 @@
 
 package de.codemakers.base.logging;
 
+import de.codemakers.i18n.I18nUtil;
 import org.apache.logging.log4j.Level;
 
 import java.awt.*;
@@ -40,14 +41,12 @@ public enum LogLevelStyle {
     
     public static final int MINIMUM_NAME_LENGTH = Stream.of(LogLevel.LEVELS).map(Level::name).map(String::length).min(Integer::compareTo).orElse(Integer.MAX_VALUE);
     public static final int MAXIMUM_NAME_LENGTH = Stream.of(LogLevel.LEVELS).map(Level::name).map(String::length).max(Integer::compareTo).orElse(Integer.MIN_VALUE);
-    public static final String LANGUAGE_KEY_PREFIX = "de.codemakers.base.logging.loglevel.";
     
     private Color colorBackground;
     private Color colorForeground;
     private Level[] levels;
     //
     private final String nameLowerCase = name().toLowerCase();
-    private final String langKey = LANGUAGE_KEY_PREFIX + nameLowerCase;
     private transient String nameLeft = null;
     private transient String nameCenter = null;
     private transient String nameRight = null;
@@ -89,8 +88,8 @@ public enum LogLevelStyle {
         return nameLowerCase;
     }
     
-    public String getLangKey() {
-        return langKey;
+    public String getLocalizedName() {
+        return I18nUtil.getResourceBundleLogLevel().getString(nameLowerCase);
     }
     
     public String toText() {

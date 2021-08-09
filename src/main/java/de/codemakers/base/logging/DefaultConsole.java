@@ -16,8 +16,8 @@
 
 package de.codemakers.base.logging;
 
-import de.codemakers.base.Standard;
 import de.codemakers.base.entities.UpdatableBoundResettableVariable;
+import de.codemakers.i18n.I18nUtil;
 import de.codemakers.io.file.AdvancedFile;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -91,13 +91,13 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         if (temp.startsWith("lang")) {
             temp = temp.substring("lang".length()).trim();
             if (temp.equalsIgnoreCase("english")) {
-                Standard.setLocalizer(Standard.getLocalizerEnglishUs());
-                logger.debug("Setted localizer to english us");
-                return true;
+                //Standard.setLocalizer(Standard.getLocalizerEnglishUs()); //FIXME
+                //logger.debug("Set localizer to english us");
+                return false;
             } else if (temp.equalsIgnoreCase("default")) {
-                Standard.setLocalizer(Standard.getLocalizerDefault());
-                logger.debug("Setted localizer to default");
-                return true;
+                //Standard.setLocalizer(Standard.getLocalizerDefault()); //FIXME
+                //logger.debug("Set localizer to default");
+                return false;
             }
         } else if (temp.startsWith("test")) {
             temp = temp.substring("test".length()).trim();
@@ -127,13 +127,13 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         protected final JDialog dialog = new JDialog(frame, true);
         
         // Bottom Buttons
-        protected final JButton button_ok = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
+        protected final JButton button_ok = new JButton("button.ok");
         protected final JTabbedPane tabbedPane = new JTabbedPane();
         protected final JPanel panel_tab_general = new JPanel();
         protected final JPanel panel_tab_view = new JPanel();
-        protected final JButton button_cancel = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
-        protected final JButton button_reset = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_RESET));
-        protected final JButton button_apply = new JButton(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
+        protected final JButton button_cancel = new JButton("button.cancel");
+        protected final JButton button_reset = new JButton("button.reset");
+        protected final JButton button_apply = new JButton("button.apply");
         
         protected final UpdatableBoundResettableVariable<String> titleBound = new UpdatableBoundResettableVariable<>(frame::getTitle, frame::setTitle); //FIXME Testing only //This is working great!
         //protected final UpdatableBoundResettableVariable<String> logFormatBound = new UpdatableBoundResettableVariable<>(DefaultConsole.this::getLogFormat, DefaultConsole.this::setLogFormat); //FIXME Testing only
@@ -142,13 +142,16 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
         protected final boolean livePreview = true; //FIXME Testing only?
         
         public DefaultConsoleSettings(AdvancedFile iconAdvancedFile) {
+            super();
             init();
             initIconImage(iconAdvancedFile);
             initListeners();
             dialog.setPreferredSize(new Dimension(600, 800)); //TODO Testing only
-            reloadLanguageWithoutException();
+            reloadLanguage();
             test(); //FIXME Testing only
         }
+        
+        private JScrollPane scrollPane_Test = null;
         
         private void test() { //FIXME Testing only
             final JTextArea textArea = new JTextArea();
@@ -157,7 +160,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
                 frame.setTitle(title);
                 textArea.setText(title);
             });
-            final JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane_Test = new JScrollPane(textArea);
             textArea.addKeyListener(new KeyListener() {
                 @Override
                 public void keyTyped(KeyEvent keyEvent) {
@@ -177,7 +180,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
                 }
             });
             //dialog.add(scrollPane, BorderLayout.CENTER);
-            tabbedPane.addTab(Standard.localize("test"), scrollPane); //TODO What if language reloads?
+            tabbedPane.addTab("settings.test", scrollPane_Test);
             final JPanel panel = new JPanel();
             button_ok.addActionListener((actionEvent) -> {
                 finishWithoutException();
@@ -207,7 +210,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
             dialog.setResizable(false);
             dialog.setLayout(new BorderLayout());
             tabbedPane.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
-            tabbedPane.addTab(Standard.localize(LANGUAGE_KEY_TAB_GENERAL), panel_tab_general); //TODO What if language reloads?
+            tabbedPane.addTab("settings.general", panel_tab_general);
             //TODO Test start
             panel_tab_view.setLayout(new GridLayout(2, 2));
             panel_tab_view.add(new JLabel("Log Format")); //FIXME Language reloading!!!
@@ -279,7 +282,7 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
             //panel_tab_view.add(textArea_sourceFormat);
             panel_tab_view.add(new JScrollPane(textPane_sourceFormat));
             //TODO Test end
-            tabbedPane.addTab(Standard.localize(LANGUAGE_KEY_TAB_VIEW), panel_tab_view); //TODO What if language reloads?
+            tabbedPane.addTab("settings.view", panel_tab_view);
             dialog.add(tabbedPane, BorderLayout.CENTER);
         }
         
@@ -375,21 +378,27 @@ public class DefaultConsole extends Console<DefaultConsole.DefaultConsoleSetting
             return titleBound.isSame()/* && logFormatBound.isSame() && sourceFormatBound.isSame()*/;
         }
         
-        @Override
-        public boolean reloadLanguage() throws Exception {
-            dialog.setTitle(Standard.localize(LANGUAGE_KEY_SETTINGS));
-            button_ok.setText(Standard.localize(LANGUAGE_KEY_BUTTON_OK));
-            button_cancel.setText(Standard.localize(LANGUAGE_KEY_BUTTON_CANCEL));
-            button_reset.setText(new String(Standard.localize(LANGUAGE_KEY_BUTTON_RESET).getBytes(), "UTF-8")); //FIXME Why is this not working?
-            button_apply.setText(Standard.localize(LANGUAGE_KEY_BUTTON_APPLY));
+        protected void reloadLanguage() {
+            dialog.setTitle(I18nUtil.getResourceBundleConsole().getString("settings"));
+            setTabTitle(panel_tab_general, "settings.general");
+            setTabTitle(panel_tab_view, "settings.view");
+            setTabTitle(scrollPane_Test, "settings.test");
+            button_ok.setText(I18nUtil.getResourceBundleUi().getString("button.ok"));
+            button_cancel.setText(I18nUtil.getResourceBundleUi().getString("button.cancel"));
+            button_reset.setText(I18nUtil.getResourceBundleUi().getString("button.reset")); //TODO Is this working with umlaute?
+            button_apply.setText(I18nUtil.getResourceBundleUi().getString("button.apply"));
             dialog.invalidate();
             dialog.repaint();
-            return true;
         }
         
-        @Override
-        public boolean unloadLanguage() throws Exception {
-            return true;
+        private void setTabTitle(Component tabComponent, String key) {
+            synchronized (tabbedPane) {
+                final int index = tabbedPane.indexOfComponent(tabComponent);
+                if (index < 0) {
+                    return;
+                }
+                tabbedPane.setTitleAt(index, I18nUtil.getResourceBundleConsole().getString(key));
+            }
         }
         
         @Override

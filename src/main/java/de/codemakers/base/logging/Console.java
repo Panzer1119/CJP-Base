@@ -23,11 +23,13 @@ import de.codemakers.base.util.interfaces.Closeable;
 import de.codemakers.base.util.interfaces.Finishable;
 import de.codemakers.base.util.interfaces.Reloadable;
 import de.codemakers.base.util.interfaces.Resettable;
+import de.codemakers.i18n.I18nReloadEvent;
+import de.codemakers.i18n.I18nReloadEventListener;
+import de.codemakers.i18n.I18nUtil;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.io.streams.BufferedPipedOutputStream;
 import de.codemakers.io.streams.PipedInputStream;
 import de.codemakers.io.streams.PipedOutputStream;
-import de.codemakers.lang.LanguageReloadable;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,24 +59,6 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
     public static final String DEFAULT_ICON_SETTINGS = "gear_in.png";
     public static final AdvancedFile DEFAULT_ICON_FILE = new AdvancedFile(Standard.ICONS_FAT_COW_32x32_FOLDER, DEFAULT_ICON);
     public static final AdvancedFile DEFAULT_ICON_SETTINGS_FILE = new AdvancedFile(Standard.ICONS_FAT_COW_32x32_FOLDER, DEFAULT_ICON_SETTINGS);
-    //Language key constants
-    public static final String LANGUAGE_KEY_CONSOLE = "console";
-    public static final String LANGUAGE_KEY_FILE = "file";
-    public static final String LANGUAGE_KEY_RELOAD = "reload";
-    public static final String LANGUAGE_KEY_SETTINGS = "settings";
-    public static final String LANGUAGE_KEY_SAVE_AS = "save_as";
-    public static final String LANGUAGE_KEY_RESTART = "restart";
-    public static final String LANGUAGE_KEY_EXIT = "exit";
-    public static final String LANGUAGE_KEY_VIEW = "view";
-    public static final String LANGUAGE_KEY_DISPLAYED_LOG_LEVELS = "console_displayed_log_levels";
-    public static final String LANGUAGE_KEY_DISPLAY = "console_display";
-    public static final String LANGUAGE_KEY_TIMESTAMP = "console_timestamp";
-    public static final String LANGUAGE_KEY_THREAD = "console_thread";
-    public static final String LANGUAGE_KEY_SOURCE = "console_source";
-    public static final String LANGUAGE_KEY_LOG_LEVEL = "console_log_level";
-    public static final String LANGUAGE_KEY_ENTER = "button_enter";
-    public static final String LANGUAGE_KEY_OUTPUT = "console_output";
-    public static final String LANGUAGE_KEY_INPUT = "console_input";
     
     public static final String DEFAULT_FONT_NAME = "Courier New";
     
@@ -84,23 +68,23 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
     protected final Map<Level, Boolean> logLevelDisplayStatus = new ConcurrentHashMap<>();
     protected final Set<Level> displayedLogLevels = new CopyOnWriteArraySet<>();
     
-    protected final JFrame frame = new JFrame(Standard.localize(LANGUAGE_KEY_CONSOLE)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JFrame frame = new JFrame("console");
     protected final JMenuBar menuBar = new JMenuBar();
-    protected final JMenu menu_file = new JMenu(Standard.localize(LANGUAGE_KEY_FILE)); //FIXME Language/Localization stuff?! //Reloading Language??
-    protected final JMenuItem menuItem_reload = new JMenuItem(Standard.localize(LANGUAGE_KEY_RELOAD)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JMenu menu_file = new JMenu("menu.file");
+    protected final JMenuItem menuItem_reload = new JMenuItem("project.reload");
     //JSeparator
-    protected final JMenuItem menuItem_settings = new JMenuItem(Standard.localize(LANGUAGE_KEY_SETTINGS));
+    protected final JMenuItem menuItem_settings = new JMenuItem("project.settings");
     //JSeparator
-    protected final JMenuItem menuItem_saveAs = new JMenuItem(Standard.localize(LANGUAGE_KEY_SAVE_AS)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JMenuItem menuItem_saveAs = new JMenuItem("project.save_as");
     //JSeparator
-    protected final JMenuItem menuItem_restart = new JMenuItem(Standard.localize(LANGUAGE_KEY_RESTART)); //FIXME Language/Localization stuff?! //Reloading Language??
-    protected final JMenuItem menuItem_exit = new JMenuItem(Standard.localize(LANGUAGE_KEY_EXIT)); //FIXME Language/Localization stuff?! //Reloading Language??
-    protected final JMenu menu_view = new JMenu(Standard.localize(LANGUAGE_KEY_VIEW));
+    protected final JMenuItem menuItem_restart = new JMenuItem("project.restart");
+    protected final JMenuItem menuItem_exit = new JMenuItem("project.exit");
+    protected final JMenu menu_view = new JMenu("menu.view");
     //Output
-    protected final JLabel label_displayedLogLevels = new JLabel(Standard.localize(LANGUAGE_KEY_DISPLAYED_LOG_LEVELS)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JLabel label_displayedLogLevels = new JLabel("settings.displayed_log_levels");
     protected final JCheckBoxMenuItem[] checkBoxMenuItems_logLevels = Stream.of(LogLevel.LEVELS).map((level) -> {
         final LogLevelStyle logLevelStyle = LogLevelStyle.ofLevel(level);
-        final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(Standard.localize(logLevelStyle.getLangKey())); //FIXME Language/Localization stuff?! //Reloading Language??
+        final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(logLevelStyle.getLocalizedName());
         //checkBoxMenuItem.setSelected(Logger.getDefaultAdvancedLeveledLogger().getMinimumLogLevel().isThisLevelLessImportantOrEqual(level));
         //TODO Where to set/determine from what level should be shown?
         logLevelDisplayStatus.put(level, checkBoxMenuItem.isSelected());
@@ -120,19 +104,19 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         });
         return checkBoxMenuItem;
     }).toArray(JCheckBoxMenuItem[]::new);
-    protected final JLabel label_display = new JLabel(Standard.localize(LANGUAGE_KEY_DISPLAY)); //FIXME Rename this? //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JLabel label_display = new JLabel("settings.display");
     //TODO Maybe make this customizable in a separate (settings) window? (Like switching positioning of the elements e.g. with another LogFormatBuilder)
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayTimestamp = new JCheckBoxMenuItem(Standard.localize(LANGUAGE_KEY_TIMESTAMP)); //FIXME Language/Localization stuff?! //Reloading Language??
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayThread = new JCheckBoxMenuItem(Standard.localize(LANGUAGE_KEY_THREAD)); //FIXME Language/Localization stuff?! //Reloading Language??
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displaySource = new JCheckBoxMenuItem(Standard.localize(LANGUAGE_KEY_SOURCE)); //FIXME Language/Localization stuff?! //Reloading Language??
-    protected final JCheckBoxMenuItem checkBoxMenuItem_displayLogLevel = new JCheckBoxMenuItem(Standard.localize(LANGUAGE_KEY_LOG_LEVEL)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayTimestamp = new JCheckBoxMenuItem("settings.format.timestamp");
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayThread = new JCheckBoxMenuItem("settings.format.thread");
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displaySource = new JCheckBoxMenuItem("settings.format.source");
+    protected final JCheckBoxMenuItem checkBoxMenuItem_displayLogLevel = new JCheckBoxMenuItem("settings.format.log_level");
     //TODO What was the "Debug Mode"?
     protected final JTextPane textPane_output = new JTextPane();
     protected final JScrollPane scrollPane_output = new JScrollPane(textPane_output);
     //Input
     protected final JPanel panel_input = new JPanel();
     protected final JTextField textField_input = new JTextField();
-    protected final JButton button_input = new JButton(Standard.localize(LANGUAGE_KEY_ENTER)); //FIXME Language/Localization stuff?! //Reloading Language??
+    protected final JButton button_input = new JButton("input");
     protected final BufferedPipedOutputStream pipedOutputStream = new BufferedPipedOutputStream();
     protected final PipedInputStream pipedInputStream = new PipedInputStream();
     protected final int shutdownHookId = Standard.addShutdownHook(this::closeIntern);
@@ -194,36 +178,36 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
     }
     
     @Override
-    public boolean reloadLanguage() throws Exception {
-        frame.setTitle(Standard.localize(LANGUAGE_KEY_CONSOLE));
-        menu_file.setText(Standard.localize(LANGUAGE_KEY_FILE));
-        menuItem_reload.setText(Standard.localize(LANGUAGE_KEY_RELOAD));
-        menuItem_settings.setText(Standard.localize(LANGUAGE_KEY_SETTINGS));
-        menuItem_saveAs.setText(Standard.localize(LANGUAGE_KEY_SAVE_AS));
-        menuItem_restart.setText(Standard.localize(LANGUAGE_KEY_RESTART));
-        menuItem_exit.setText(Standard.localize(LANGUAGE_KEY_EXIT));
-        menu_view.setText(Standard.localize(LANGUAGE_KEY_VIEW));
-        label_displayedLogLevels.setText(Standard.localize(LANGUAGE_KEY_DISPLAYED_LOG_LEVELS));
-        final LogLevelStyle[] logLevelStyles = LogLevelStyle.values();
-        for (int i = 0; i < logLevelStyles.length; i++) {
-            checkBoxMenuItems_logLevels[i].setText(Standard.localize(logLevelStyles[i].getLangKey()));
-        }
-        label_display.setText(Standard.localize(LANGUAGE_KEY_DISPLAY));
-        checkBoxMenuItem_displayTimestamp.setText(Standard.localize(LANGUAGE_KEY_TIMESTAMP));
-        checkBoxMenuItem_displayThread.setText(Standard.localize(LANGUAGE_KEY_THREAD));
-        checkBoxMenuItem_displaySource.setText(Standard.localize(LANGUAGE_KEY_SOURCE));
-        checkBoxMenuItem_displayLogLevel.setText(Standard.localize(LANGUAGE_KEY_LOG_LEVEL));
-        button_input.setText(Standard.localize(LANGUAGE_KEY_ENTER));
-        ((TitledBorder) scrollPane_output.getBorder()).setTitle(Standard.localize(LANGUAGE_KEY_OUTPUT));
-        ((TitledBorder) panel_input.getBorder()).setTitle(Standard.localize(LANGUAGE_KEY_INPUT));
-        frame.invalidate();
-        frame.repaint();
-        return consoleSettings.reloadLanguage();
+    public boolean onEvent(I18nReloadEvent event) {
+        reloadLanguage();
+        return false;
     }
     
-    @Override
-    public boolean unloadLanguage() throws Exception {
-        return consoleSettings.unloadLanguage();
+    protected void reloadLanguage() { //TODO Sort this by ResourceBundles UI, Console, LogLevel etc...
+        frame.setTitle(I18nUtil.getResourceBundleConsole().getString("console"));
+        menu_file.setText(I18nUtil.getResourceBundleUi().getString("menu.file"));
+        menuItem_reload.setText(I18nUtil.getResourceBundleUi().getString("project.reload"));
+        menuItem_settings.setText(I18nUtil.getResourceBundleUi().getString("project.settings"));
+        menuItem_saveAs.setText(I18nUtil.getResourceBundleUi().getString("project.save_as"));
+        menuItem_restart.setText(I18nUtil.getResourceBundleUi().getString("project.restart"));
+        menuItem_exit.setText(I18nUtil.getResourceBundleUi().getString("project.exit"));
+        menu_view.setText(I18nUtil.getResourceBundleUi().getString("menu.view"));
+        label_displayedLogLevels.setText(I18nUtil.getResourceBundleConsole().getString("settings.displayed_log_levels"));
+        final LogLevelStyle[] logLevelStyles = LogLevelStyle.values();
+        for (int i = 0; i < logLevelStyles.length; i++) {
+            checkBoxMenuItems_logLevels[i].setText(logLevelStyles[i].getLocalizedName());
+        }
+        label_display.setText(I18nUtil.getResourceBundleConsole().getString("settings.display"));
+        checkBoxMenuItem_displayTimestamp.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.timestamp"));
+        checkBoxMenuItem_displayThread.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.thread"));
+        checkBoxMenuItem_displaySource.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.source"));
+        checkBoxMenuItem_displayLogLevel.setText(I18nUtil.getResourceBundleConsole().getString("settings.format.log_level"));
+        button_input.setText(I18nUtil.getResourceBundleUi().getString("button.enter"));
+        ((TitledBorder) scrollPane_output.getBorder()).setTitle(I18nUtil.getResourceBundleConsole().getString("output"));
+        ((TitledBorder) panel_input.getBorder()).setTitle(I18nUtil.getResourceBundleConsole().getString("input"));
+        frame.invalidate();
+        frame.repaint();
+        consoleSettings.reloadLanguage();
     }
     
     private void initStreams() {
@@ -305,7 +289,7 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
     }
     
     private void init() {
-        Standard.getDefaultLanguageReloader().addLanguageReloadable(this);
+        registerI18nReloadEventListener();
         menu_file.add(menuItem_settings);
         menu_file.add(new JSeparator());
         menu_file.add(menuItem_reload);
@@ -330,12 +314,12 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         textPane_output.setEditable(false);
         final Font font = textPane_output.getFont();
         textPane_output.setFont(new Font(DEFAULT_FONT_NAME, font.getStyle(), font.getSize()));
-        scrollPane_output.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), Standard.localize(LANGUAGE_KEY_OUTPUT))); //TODO Is this looking good? //FIXME Language/Localization stuff?! //Reloading Language??
+        scrollPane_output.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "output")); //TODO Is this looking good?
         frame.add(scrollPane_output, BorderLayout.CENTER);
         panel_input.setLayout(new BoxLayout(panel_input, BoxLayout.X_AXIS));
         panel_input.add(textField_input);
         panel_input.add(button_input);
-        panel_input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), Standard.localize(LANGUAGE_KEY_INPUT))); //TODO Is this looking good? //FIXME Language/Localization stuff?! //Reloading Language??
+        panel_input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "input")); //TODO Is this looking good?
         frame.add(panel_input, BorderLayout.SOUTH);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
@@ -394,7 +378,7 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
     public void closeIntern() throws Exception {
         pipedInputStream.close();
         pipedOutputStream.close(); //TODO Is the order important? Close OutputStream before InputStream or vice versa?
-        Standard.getDefaultLanguageReloader().removeLanguageReloadable(this);
+        unregisterI18nReloadEventListener();
     }
     
     /*
@@ -412,6 +396,10 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
     
     public abstract static class ConsoleSettings<C extends ConsoleSettings<?>> implements Finishable<Boolean>, I18nReloadEventListener, Resettable {
         
+        public ConsoleSettings() {
+            registerI18nReloadEventListener();
+        }
+        
         protected abstract void showing();
         
         protected abstract void closing();
@@ -427,6 +415,14 @@ public abstract class Console<S extends Console.ConsoleSettings<?>> implements C
         protected abstract boolean isEdited();
         
         protected abstract boolean isNotEdited();
+        
+        protected abstract void reloadLanguage();
+    
+        @Override
+        public boolean onEvent(I18nReloadEvent event) {
+            reloadLanguage();
+            return false;
+        }
         
     }
     
