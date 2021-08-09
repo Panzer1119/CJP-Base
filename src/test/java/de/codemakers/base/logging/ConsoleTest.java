@@ -106,13 +106,13 @@ public class ConsoleTest {
                 if (temp.startsWith("lang")) {
                     temp = temp.substring("lang".length()).trim();
                     if (temp.equalsIgnoreCase("english")) {
-                        Standard.setLocalizer(Standard.getLocalizerEnglishUs());
-                        logger.debug("Setted localizer to english us");
-                        return true;
+                        //Standard.setLocalizer(Standard.getLocalizerEnglishUs()); //FIXME
+                        //logger.debug("Set localizer to english us");
+                        return false;
                     } else if (temp.equalsIgnoreCase("default")) {
-                        Standard.setLocalizer(Standard.getLocalizerDefault());
-                        logger.debug("Setted localizer to default");
-                        return true;
+                        //Standard.setLocalizer(Standard.getLocalizerDefault()); //FIXME
+                        //logger.debug("Set localizer to default");
+                        return false;
                     }
                 } else if (temp.startsWith("test")) {
                     temp = temp.substring("test".length()).trim();

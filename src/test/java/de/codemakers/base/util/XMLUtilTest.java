@@ -17,9 +17,6 @@
 package de.codemakers.base.util;
 
 
-import de.codemakers.io.file.AdvancedFile;
-import de.codemakers.lang.LanguageUtil;
-import de.codemakers.lang.XMLLocalizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -47,6 +44,7 @@ public class XMLUtilTest {
             final String test_textContent = root.getTextContent();
             logger.info("test_textContent=" + test_textContent);
         }
+        /*
         final AdvancedFile langFile = new AdvancedFile(LanguageUtil.LANG_FOLDER, "de-DE.xml");
         logger.info("langFile=" + langFile);
         logger.info("langFile.exists()=" + langFile.exists());
@@ -57,6 +55,7 @@ public class XMLUtilTest {
         logger.info("xmlLocalizer.getLanguageNameLocal()=" + xmlLocalizer.getLanguageNameLocal());
         logger.info("xmlLocalizer=" + xmlLocalizer);
         logger.info("xmlLocalizer.localize(\"test_sentence\")=" + xmlLocalizer.localize("test_sentence"));
+        */
     }
     
 }

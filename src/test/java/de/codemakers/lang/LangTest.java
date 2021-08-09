@@ -16,7 +16,6 @@
 
 package de.codemakers.lang;
 
-import de.codemakers.base.Standard;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,6 +44,7 @@ public class LangTest {
         logger.info("locale.getVariant()=" + locale.getVariant());
         logger.info("locale.toLanguageTag()=" + locale.toLanguageTag());
         logger.info(Locale.forLanguageTag("en"));
+        /*
         final AdvancedLocalizer advancedLocalizer = LanguageUtil.getLocalizerDefault();
         logger.info("advancedLocalizer=" + advancedLocalizer);
         //logger.info("advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH)=" + advancedLocalizer.localize(Localizer.KEY_LANGUAGE_NAME_ENGLISH));
@@ -52,6 +52,7 @@ public class LangTest {
         logger.info("Standard.localize(\"test_123\", null)=" + Standard.localize("test_123", null));
         logger.info("Standard.localize(\"test_123\")=" + Standard.localize("test_1234"));
         //test();
+        */
     }
     
     private static void test() {
