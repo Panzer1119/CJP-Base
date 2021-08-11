@@ -7,8 +7,12 @@ plugins {
     id 'maven-publish'
 }
 
-group 'de.codemakers'
-version = '0.16.14'
+allprojects {
+
+    group 'de.codemakers'
+    version = '0.16.14'
+
+}
 
 subprojects {
 
