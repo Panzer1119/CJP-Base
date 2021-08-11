@@ -1,18 +1,18 @@
-# CJP-Base
+# cjp
 
-[![Publish Package to GitHub and create a Release](https://github.com/Panzer1119/CJP-Base/actions/workflows/publish.yml/badge.svg)](https://github.com/Panzer1119/CJP-Base/actions/workflows/publish.yml)
+[![Publish Package to GitHub and create a Release](https://github.com/Panzer1119/cjp/actions/workflows/publish.yml/badge.svg)](https://github.com/Panzer1119/cjp/actions/workflows/publish.yml)
 
-[![Quality Gate Status](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=alert_status)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
+[![Quality Gate Status](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3Acjp&metric=alert_status)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3Acjp)
 
-[![Bugs](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=bugs)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
+[![Bugs](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3Acjp&metric=bugs)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3Acjp)
 
-[![Vulnerabilities](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=vulnerabilities)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
+[![Vulnerabilities](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3Acjp&metric=vulnerabilities)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3Acjp)
 
-[![Code Smells](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=code_smells)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
+[![Code Smells](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3Acjp&metric=code_smells)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3Acjp)
 
-[![Duplicated Lines (%)](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=duplicated_lines_density)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
+[![Duplicated Lines (%)](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3Acjp&metric=duplicated_lines_density)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3Acjp)
 
-[![Lines of Code](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3ACJP-Base&metric=ncloc)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3ACJP-Base)
+[![Lines of Code](https://sonarqube.codemakers.de/api/project_badges/measure?project=de.codemakers%3Acjp&metric=ncloc)](https://sonarqube.codemakers.de/dashboard?id=de.codemakers%3Acjp)
 
 Base Library of the CJP Library (Codemakers Java Plus)
 
