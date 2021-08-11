@@ -1,0 +1,151 @@
+plugins {
+    id 'java-library'
+    id "org.sonarqube" version "3.3"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "com.github.ben-manes.versions" version "0.39.0"
+    id 'signing'
+    id 'maven-publish'
+}
+
+group 'de.codemakers'
+version = '0.16.12'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://reposilite.codemakers.de/releases")
+    }
+}
+
+dependencies {
+    // Logging
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    // Extending
+    // Apache
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-text
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+    // CJP
+    implementation group: 'de.codemakers', name: 'cjp-base', version: '0.16.14'
+    // Hibernate
+    // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
+    implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.0.0.Alpha8'
+    // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-envers
+    implementation group: 'org.hibernate.orm', name: 'hibernate-envers', version: '6.0.0.Alpha8'
+    // JDBC
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.26'
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
+    // MinIO
+    // https://mvnrepository.com/artifact/io.minio/minio
+    implementation group: 'io.minio', name: 'minio', version: '8.3.0'
+    // Jackson
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.4'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.4'
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0-M1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0-M1'
+}
+
+compileJava {
+    options.release = 16
+}
+
+test {
+    useJUnitPlatform()
+}
+
+shadowJar {
+    getDestinationDirectory().set(new File(projectDir, "./dist"))
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'cjp-database'
+            from components.java
+            //artifact shadowJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'CJP-Database'
+                description = 'Base Library of the CJP Library (Codemakers Java Plus)'
+                url = 'https://github.com/Panzer1119/CJP-Database'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'https://apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'panzer1119'
+                        name = 'Paul Hagedorn'
+                        email = 'panzer1119@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Panzer1119/CJP-Database")
+            credentials {
+                username = "Panzer1119"
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+        maven {
+            name = "customRepository"
+            def releasesRepoUrl = System.getenv("MAVEN_URL_RELEASES")
+            def snapshotsRepoUrl = System.getenv("MAVEN_URL_SNAPSHOTS")
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+}
+
+def hasSigningKey = project.hasProperty("signingKeyId") || project.hasProperty("signingKey")
+if(hasSigningKey) {
+    sign(project)
+}
+void sign(Project project) {
+    project.signing {
+        required { project.gradle.taskGraph.hasTask("required") }
+        def signingKeyId = project.findProperty("signingKeyId")
+        def signingKey = project.findProperty("signingKey")
+        def signingPassword = project.findProperty("signingPassword")
+        if (signingKeyId) {
+            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        } else if (signingKey) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+        }
+        sign publishing.publications.mavenJava
+    }
+}
