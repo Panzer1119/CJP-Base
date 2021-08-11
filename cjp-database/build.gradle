@@ -1,32 +1,6 @@
-plugins {
-    id 'java-library'
-    id "org.sonarqube" version "3.3"
-    id "com.github.johnrengelman.shadow" version "7.0.0"
-    id "com.github.ben-manes.versions" version "0.39.0"
-    id 'signing'
-    id 'maven-publish'
-}
-
-group 'de.codemakers'
-version = '0.16.12'
-
-repositories {
-    mavenCentral()
-    maven {
-        url = uri("https://reposilite.codemakers.de/releases")
-    }
-}
-
 dependencies {
-    // Logging
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
-    // Extending
-    // Apache
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-text
-    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
     // CJP
-    implementation group: 'de.codemakers', name: 'cjp-base', version: '0.16.14'
+    implementation project(":cjp-core")
     // Hibernate
     // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
     implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.0.0.Alpha8'
@@ -47,32 +21,6 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.4'
-    // Testing
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0-M1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0-M1'
-}
-
-compileJava {
-    options.release = 16
-}
-
-test {
-    useJUnitPlatform()
-}
-
-shadowJar {
-    getDestinationDirectory().set(new File(projectDir, "./dist"))
-}
-
-javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
 }
 
 publishing {
@@ -132,9 +80,11 @@ publishing {
 }
 
 def hasSigningKey = project.hasProperty("signingKeyId") || project.hasProperty("signingKey")
-if(hasSigningKey) {
+
+if (hasSigningKey) {
     sign(project)
 }
+
 void sign(Project project) {
     project.signing {
         required { project.gradle.taskGraph.hasTask("required") }
