@@ -38,9 +38,9 @@ publishing {
                 }
             }
             pom {
-                name = 'CJP-Database'
+                name = 'cjp-database'
                 description = 'Base Library of the CJP Library (Codemakers Java Plus)'
-                url = 'https://github.com/Panzer1119/CJP-Database'
+                url = 'https://github.com/Panzer1119/cjp-database'
                 licenses {
                     license {
                         name = 'The Apache License, Version 2.0'
@@ -60,7 +60,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Panzer1119/CJP-Database")
+            url = uri("https://maven.pkg.github.com/Panzer1119/cjp-database")
             credentials {
                 username = "Panzer1119"
                 password = System.getenv("GITHUB_TOKEN")
