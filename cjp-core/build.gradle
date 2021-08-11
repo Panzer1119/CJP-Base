@@ -1,3 +1,6 @@
+group 'de.codemakers'
+version = '0.16.14'
+
 dependencies {
     // https://mvnrepository.com/artifact/com.j256.simplemagic/simplemagic
     implementation group: 'com.j256.simplemagic', name: 'simplemagic', version: '1.16'

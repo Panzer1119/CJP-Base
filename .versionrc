@@ -11,6 +11,14 @@
       "type": "gradle"
     },
     {
+      "filename": "cjp-core/build.gradle",
+      "type": "gradle"
+    },
+    {
+      "filename": "cjp-database/build.gradle",
+      "type": "gradle"
+    },
+    {
       "filename": "src/main/java/de/codemakers/base/CJP.java",
       "updater": "java-version-updater.js"
     },
